@@ -1,0 +1,497 @@
+€´materialadaptivetapAndSlidetapOnly	slideOnly
+slideThumbvaluesecondaryTrackValue	onChangedonChangeStartonChangeEndminmax	divisionslabelactiveColorinactiveColorsecondaryActiveColor
+thumbColoroverlayColormouseCursorsemanticFormatterCallback	focusNode	autofocusallowedInteractionpaddingshowValueIndicatoryear2023_sliderTypecreateStatedebugFillPropertiesenableAnimationDurationvalueIndicatorAnimationDurationoverlayControllervalueIndicatorControllerenableControllerpositionControllerinteractionTimer_renderObjectKey_traditionalNavShortcutMap_directionalNavShortcutMap
+_actionMap_enabledpaintValueIndicator	_dragging_currentChangedValue
+_focusNode&_valueIndicatorOverlayPortalController	initStatedispose_handleChanged_handleDragStart_handleDragEnd_actionHandler_focused_handleFocusHighlightChanged	_hovering_handleHoverChanged_lerp_discretize_convert_unlerpbuild_buildMaterialSlider_buildCupertinoSlider
+_layerLink_buildValueIndicatorsliderThemetextScaleFactor
+screenSizeonDidGainAccessibilityFocusstatehasFocushoveringcreateRenderObjectupdateRenderObject_positionAnimationDuration_minimumInteractionTime_minPreferredTrackWidth_maxSliderPartWidth_maxSliderPartHeight_thumbSizeHeight_overlayHeight_sliderPartSizes_minPreferredTrackHeight_state_overlayAnimation_valueIndicatorAnimation_enableAnimation_labelPainter_drag_tap_active_currentDragValueoverlayRect
+_trackRectisInteractive
+isDiscrete_value_secondaryTrackValuegestureSettings	_platformplatform_semanticFormatterCallback
+_divisions_label_sliderTheme_textScaleFactor_screenSize
+_onChangedtextDirection_textDirection	_hasFocus_hoveringThumbhoveringThumb_allowedInteraction_updateForFocus_updateForHovershouldAlwaysShowValueIndicator#shouldShowValueIndicatorWhenDragged_adjustmentUnit_updateLabelPaintersystemFontsDidChangeattachdetach_getValueFromVisualPosition_getValueFromGlobalPosition_startInteraction_endInteraction_handleDragUpdate_handleTapDown_handleTapUp_isPointerOnOverlayhitTestSelfhandleEventcomputeMinIntrinsicWidthcomputeMaxIntrinsicWidthcomputeMinIntrinsicHeightcomputeMaxIntrinsicHeightsizedByParentcomputeDryLayoutpaint_calcThumbCenter_semanticThumbCenterassembleSemanticsNodedescribeSemanticsConfiguration_semanticActionUnitonFocusActionincreaseActiondecreaseActioncurrentValueincreaseValuedecreaseValuetyperightleftupdowncontext_colorsactiveTrackColorinactiveTrackColorsecondaryActiveTrackColordisabledActiveTrackColordisabledInactiveTrackColor!disabledSecondaryActiveTrackColoractiveTickMarkColorinactiveTickMarkColordisabledActiveTickMarkColordisabledInactiveTickMarkColordisabledThumbColorvalueIndicatorTextStylevalueIndicatorColorvalueIndicatorShape
+thumbShape
+trackShapeoverlayShapetickMarkShape	thumbSizetrackGapPaintValueIndicator_SliderTypeSliderInteractionSlider_SliderState_SliderRenderObjectWidget_RenderSlider_AdjustSliderIntent_SliderAdjustmentType!_ValueIndicatorRenderObjectWidget_RenderValueIndicator_SliderDefaultsM2_SliderDefaultsM3Year2023_SliderDefaultsM3„timeDilation	RenderBoxOverlayvoidPaintingContextOffset	slideOnlyyear2023secondaryTrackValueMaterial
+MediaQueryMaterialApp
+WidgetsAppSliderThemeDataSliderTheme	ThemeDatasliderThemeThemeRadioCheckboxSwitchStatefulWidget
+DeprecatedmaterialCupertinoSliderplatformadaptivedoublesecondaryActiveColorvalueStatesetStateValueChangedintshowValueIndicator	TextTheme	bodyLargeColorScheme	onPrimaryvalueIndicatorTextStyleSliderComponentShapeStringactiveTrackColorprimaryColorinactiveTrackColoruseMaterial3secondaryContainersurfaceContainerHighestsecondaryActiveTrackColor
+thumbColoroverlayColorWidgetStatePropertyWidgetStateMouseCursorresolveWidgetStatedraggedhoveredfocuseddisabledmouseCursor	clickableMouseCursorSemanticFormatterCallback	FocusNodebooltapOnlytapAndSlideEdgeInsetsGeometryShowValueIndicatoronlyForDiscreteoverrideDiagnosticPropertiesBuilderdebugFillPropertiesaddDoublePropertyObjectFlagPropertyifNullhasIntPropertyStringPropertyColorPropertyFlagPropertyifTrueTickerProviderStateMixinDurationmillisecondsAnimationControllerTimer	GlobalKeyMapShortcutActivatorIntentSingleActivatorLogicalKeyboardKeyarrowUpup	arrowDowndown	arrowLeftleft
+arrowRightrightTypeActionwidget	onChanged	focusNodeOverlayPortalController
+debugLabelshow	initStatedurationkRadialReactionDurationvsynczeroCallbackActiononInvokecanceldisposeonChangeStartcallonChangeEndTextDirectionDirectionalityofcurrentContexttypertlltrfindRenderObjectincreaseActiondecreaseActionmaxmin	divisionsroundWidgetBuildContextdebugCheckHasMaterialdebugCheckHasMediaQuery_sliderTypeTargetPlatformandroidfuchsialinuxwindowsiOSmacOSvalueIndicatorShape$RectangularSliderValueIndicatorShapevalueIndicatorColor
+alphaBlendcolorScheme	onSurfacewithOpacitysurfaceactiveColor	resolveAs	TextStyle
+boldTextOfmerge
+fontWeight
+FontWeightboldcopyWithtrackHeightinactiveColordisabledActiveTrackColordisabledInactiveTrackColor!disabledSecondaryActiveTrackColoractiveTickMarkColorinactiveTickMarkColordisabledActiveTickMarkColordisabledInactiveTickMarkColordisabledThumbColor
+trackShapetickMarkShape
+thumbShapeoverlayShapepadding	thumbSizetrackGapallowedInteractionSizesizeOfVoidCallbackhasFocuscanRequestFocusrequestFocusnavigationModeOfNavigationModedirectionaltraditionalfontSizekDefaultFontSize
+TextScalertextScalerOfclampmaxScaleFactorscaleCompositedTransformTargetlinkchildkeylabeltextScaleFactor
+screenSizestatesemanticFormatterCallbackonDidGainAccessibilityFocushoveringPaddingOverlayPortal
+controlleroverlayChildBuilderFocusableActionDetectoractions	shortcuts	autofocusenabledonShowFocusHighlightonShowHoverHighlightincludeFocusSemanticsSizedBoxwidthinfinityCupertinoColorswhite	LayerLinkCompositedTransformFollowernevershrinkonlyForContinuousalwaysVisiblealwaysonDragLeafRenderObjectWidgettextDirectiongestureSettingsgestureSettingsOf"RelayoutWhenSystemFontsChangeMixinDeviceGestureSettingsGestureArenaTeamHorizontalDragGestureRecognizerteamonStartonUpdateonEndonCancelTapGestureRecognizer	onTapDownonTapUpCurvedAnimationparentoverlayControllercurveCurvesfastOutSlowInvalueIndicatorControllerenableController	easeInOutmapsizereduceheightgetPreferredSizeList	isEnabledTextPainterRectgetPreferredRect	parentBox
+isDiscretepositionControllerabs	animateTomarkNeedsSemanticsUpdatemarkNeedsPaintforwardreversetextTextSpanstylelayoutmarkNeedsLayoutsystemFontsDidChangePipelineOwnerattachaddListenerremoveListenerdetachglobalToLocaldxclampDoublemounted
+slideThumbinteractionTimerisCompletedDragStartDetailsglobalPositionDragUpdateDetailsprimaryDeltaDragEndDetailsTapDownDetailsTapUpDetailscontainsPointerEventBoxHitTestEntrydebugHandleEventPointerDownEvent
+addPointerlocalPositionBoxConstraintshasBoundedWidthmaxWidthhasBoundedHeight	maxHeightoffset	trackRectvisualPosition
+fromCirclecenterradiussecondaryVisualPositiondypressedpaintenableAnimationthumbCentersecondaryOffsetisDismissedactivationAnimationlabelPaintersizeWithOverflowisEmptyipaintValueIndicatorattachedAlwaysStoppedAnimationWidgetStatePropertyAll	isRoundedSemanticsNodeSemanticsConfigurationIterablerect
+fromCenterkMinInteractiveDimension
+updateWithconfigdescribeSemanticsConfigurationisSemanticBoundaryisSliderisFocusable	isFocused
+onIncrease
+onDecreaseonFocus_lerpincreasedValuedecreasedValue_statesmallest	textThemecolor$RoundedRectSliderValueIndicatorShapeinverseSurfaceRoundSliderThumbShapeSliderTrackShapeRoundedRectSliderTrackShapeRoundSliderOverlayShapeSliderTickMarkShapeRoundSliderTickMarkShapeonSurfaceVariantWidgetStateColorresolveWithSetstatesColorstransparentlabelMediumDropSliderValueIndicatorShapeonSecondaryContaineronInverseSurface
+labelLargeHandleThumbShapeGappedSliderTrackShapetickMarkRadiusStatefulWidgetStateTickerProviderStateMixinLeafRenderObjectWidget	RenderBox"RelayoutWhenSystemFontsChangeMixinIntentSliderThemeDataàarXÛ=¡Åÿ”»×œƒĞ    H   
+dart:async  ]   ormathr	dart:math  z   package:flutter/cupertino.dart  £   package:flutter/foundation.dart  Í   package:flutter/gestures.dart  õ   package:flutter/rendering.dart‚E‚VtimeDilation ‚   package:flutter/scheduler.dart  ‚Y   package:flutter/services.dart  ‚‚   color_scheme.dart  ‚   colors.dart  ‚´   constants.dart  ‚Í   
+debug.dart  ‚â   material.dart  ‚ú   slider_parts.dart  ƒ   slider_theme.dart  ƒ2   !slider_value_indicator_shape.dart  ƒ^   
+theme.dartÀ ‹õ ÀC`‰U <€†€¤€¥€À€à€ı=FG\xy¢Ìô‚‚X‚€‚‚‚³‚Ì‚á‚ùƒƒ1ƒ]ƒrƒsƒ‹ƒ ƒ½ƒãƒä„1„5„…„É………G…H…‚…›…ì† ††?†E††ß†÷‡‡‡U‡f‡l‡’‡‡‡ì‡ıˆˆ)ˆ6ˆ7ˆ„ˆŠˆËˆÙˆÛˆÜˆúˆş‰)‰-‰p‰t‰ˆ‰ÈŠDŠzŠ~ŠÃŠÓŠ×Šë‹;‹h‹l‹±‹Á‹ÅŒŒcŒ²K†Š·»b¬ï<R¡·»HLé‘4‘…‘Í’’ ’p’¾“““E“I“™“æ”””Z”¨”ó•D•’•Â•Æ•Ô•Ø–%–Q––Ú——Y——§—­—ı˜G˜”˜ã˜õ˜û™@™™™ïššSšgšmš²šş›6›G›V›o››ª›Â›Ø›ìœ œœ$œ:œRœqœ†œœ³œ×œë$6Sd¾/kq„¯ÊÙŸ ŸFŸPŸ_ŸÃ   M N ™ ±¡!¡'¡{¡£¡©¡ø¢G¢€¢†¢×¢ñ£ ££7£T£l£‚£–£ª£¾£Î£ä£ú¤¤1¤F¤]¤¤•¤±¤Î¤ë¤ü¥V¥Ç¦¦	¦¦G¦^¦y¦ˆ¦¯¦õ¦ÿ§§r§¿§É§ü§ı¨1¨7¨‡¨¨¨Ï¨Õ©$©n©t©¾©ÄªªMªrªsªÄª×ªİ«)«u«‚«ˆ«Á«Ç¬¬c¬„¬Š¬ ¬¦¬´¬Â¬î­ ­­*­N­u­­¾­Ì­×­ß­é­û®®®®c®€®É®æ¯¯¯X¯^¯¦¯÷°5°;°Š°°¤°º°À°Î°Ü±±±-±D±h±±§±Ø±æ±ñ²²P²[²c²m²²…²•²›²é²ü³)³*³s³y³Á´´H´N´d´j´x´†´²´Ä´×´îµµ9µQµ‚µµ›µÄµòµı¶¶¶!¶'¶7¶=¶ˆ¶™¶Ä¶Å¶ò¶ø·4·:··•·–·Ã·É¸¸¸U¸i¸j¸’¸˜¸Ş¸ä¹¹%¹&¹k¹¤¹ª¹úº&º,º}ºÈºø»)»/»n»t»´»º»Ê»Ğ¼¼+¼B¼C¼¼”¼à¼õ¼û½<½‡½®½´½ş¾4¾P¾Q¾¾•¾ã¾ø¾ş¿O¿¢¿öÀ @HÀ @}À @ƒÀ @ÍÀ AÀ A	À AIÀ AgÀ AhÀ A¹À AáÀ AçÀ B8À BMÀ BSÀ B™À B°À B¶À C À C6À C<À C|À C¡À C¢À CÀÀ CÆÀ DÀ DYÀ D_À DÀ D¤À DÖÀ EÀ EÀ EÀ E_À E—À EÀ EâÀ F$À F8À F>À FÀ FÈÀ GÀ G_À G—À GÊÀ GËÀ HÀ HMÀ H[À HaÀ H—À HåÀ HëÀ IÀ I+À IKÀ IlÀ IÀ I‡À I×À JÀ J>À J?À J‡À JÀ JÂÀ JÈÀ KÀ K^À KdÀ KzÀ K€À KÊÀ KøÀ KşÀ LÀ LÀ L>À LQÀ LeÀ L‰À L°À LÈÀ LñÀ LÿÀ M
+À MAÀ MqÀ M{À M„À MÀ M À M¦À MåÀ N#À N$À NSÀ NqÀ NrÀ N¡À N¹À NºÀ NøÀ NşÀ OMÀ O›À O¶À O¼À OïÀ PÀ PÀ PQÀ PWÀ P¢À PëÀ Q1À Q[À Q€À QÀ QËÀ QÑÀ RÀ RSÀ R‘À RÁÀ RÂÀ SÀ S(À S.À S€À S¹À S¿À T
+À TÀ TqÀ TàÀ UÀ UÀ U6À U7À UXÀ UYÀ UeÀ U–À U—À U£À UèÀ VÀ VGÀ V—À V«À WÀ WÀ WpÀ WÎÀ WşÀ X.À XgÀ X›À XÚÀ YÀ YnÀ Y‚À Y¶À YÛÀ YşÀ ZÀ ZÀ Z]À Z³À Z·À Z¹À ZºÀ [À [QÀ [¨À [©À [øÀ \'À \UÀ \£À \³À \èÀ ]2À ]_À ]ªÀ ]ÒÀ ^À ^À ^À ^OÀ ^PÀ ^|À ^ÇÀ ^êÀ _9À _ŒÀ _ßÀ `4À `=À `>À `ŒÀ `ÜÀ a'À aJÀ aÀ aòÀ aûÀ aüÀ b&À bSÀ bTÀ b…À bÁÀ bíÀ bîÀ cÀ c	À cPÀ c—À cÑÀ cñÀ còÀ dÀ dIÀ dJÀ d¾À e À eIÀ eVÀ eWÀ ecÀ exÀ eÀ eìÀ f À fQÀ fdÀ fkÀ fÇÀ gÀ g^À g•À g¾À hÀ hÀ hCÀ hƒÀ h¥À h«À h¯À h°À h¼À hÏÀ hïÀ iÀ i8À iXÀ izÀ i•À iªÀ i®À i¯À iÕÀ iûÀ j&À jSÀ j{À j­À jßÀ jçÀ jíÀ jñÀ jòÀ kÀ k,À kDÀ kLÀ kzÀ k~À kÀ k¥À k·À kĞÀ kØÀ kùÀ l%À l)À l*À l^À l¼À lóÀ mÀ mFÀ mÀ mÙÀ màÀ máÀ n;À nŠÀ nÀ nÀ n¨À nÜÀ nûÀ oÀ o+À o5À o;À o?À o@À oZÀ o†À o§À o»À oÙÀ oãÀ oéÀ oíÀ oîÀ p;À pXÀ pwÀ p‘À p«À pæÀ pêÀ pëÀ qÀ q6À q`À qaÀ qÀ qÂÀ qÆÀ qÇÀ qéÀ r
+À r.À rLÀ rRÀ rbÀ rfÀ rgÀ rµÀ rÖÀ r÷À sÀ suÀ syÀ szÀ s†À s­À sÙÀ tÀ tÀ t*À tKÀ tyÀ tzÀ t›À t¥À tÚÀ tşÀ u'À uPÀ uwÀ u À uÔÀ uùÀ v À vUÀ vaÀ vkÀ vqÀ vuÀ vvÀ v¬À vÛÀ wÀ waÀ w¤À wşÀ x)À x0À x1À xÀ xËÀ yÀ ybÀ y¨À y»À y¼À zÀ zpÀ zqÀ z“À z¾À zèÀ {À {;À {BÀ {CÀ {”À {ÈÀ |À |[À |À |ÚÀ |ÿÀ }FÀ }bÀ }À }«À }æÀ ~À ~,À ~9À ~UÀ ~·À ~½À ~¾À ~ãÀ À KÀ  À ğÀ öÀ ÷À €À €qÀ €›À €ÚÀ À À À  À HÀ ŒÀ ¤À ÿÀ ‚À ‚zÀ ‚›À ‚ÄÀ ‚÷À ƒ%À ƒEÀ ƒšÀ ƒ¼À „À „>À „yÀ „¯À „ÊÀ …-À …JÀ …¯À …ÒÀ †-À †RÀ †±À †ÃÀ ‡'À ‡€À ‡­À ‡İÀ ˆÀ ˆhÀ ˆ©À ˆğÀ ‰ À ‰:À ‰À ‰ÖÀ ŠÀ ŠJÀ Š…À ŠŒÀ Š¹À ‹À ‹@À ‹zÀ ‹´À ŒÀ ŒÀ Œ`À Œ¯À ŒÌÀ À À 5À SÀ vÀ ™À ¸À ÙÀ úÀ 	À ,À [À §À éÀ À À &À ,À -À ‰À ˜À ¡À áÀ !À (À )À ˆÀ ÚÀ ‘À ‘IÀ ‘€À ‘¿À ’À ’IÀ ’uÀ ’ĞÀ ’ÑÀ “ À “À “@À “_À “†À “ÈÀ “üÀ ”À ”5À ”RÀ ”tÀ ”¡À ”ÃÀ •'À •PÀ •uÀ •ŠÀ •ÏÀ –À –1À –NÀ –‡À –À –—À –˜À –çÀ —À —;À —AÀ —]À ——À —ËÀ ˜À ˜À ˜/À ˜6À ˜7À ˜[À ˜vÀ ˜”À ˜°À ˜ÓÀ ˜ìÀ ™&À ™WÀ ™€À ™¤À ™¹À ™ÀÀ ™ÄÀ ™ÅÀ ™üÀ šLÀ š›À š±À šÆÀ šäÀ ›À ›À ›DÀ ›qÀ ›šÀ ›³À ›ÌÀ ›ñÀ œÀ œZÀ œcÀ œjÀ œnÀ œoÀ œ›À œâÀ !À 9À vÀ }À ¦À áÀ À ZÀ ˆÀ ÕÀ ÿÀ Ÿ"À ŸUÀ Ÿ\À Ÿ`À ŸbÀ ŸcÀ Ÿ¤À ŸÈÀ Ÿ×À ŸğÀ  À  4À  MÀ  lÀ  À  ­À  ÊÀ  ëÀ ¡
+À ¡#À ¡PÀ ¡À ¡›À ¡·À ¡İÀ ¡ãÀ ¡äÀ ¡úÀ ¢À ¢7À ¢NÀ ¢sÀ ¢“À ¢¬À ¢ÕÀ £À £-À £kÀ £À £ºÀ £ÑÀ £èÀ ¤À ¤À ¤#À ¤^À ¤xÀ ¤ŒÀ ¤¼À ¤ØÀ ¤ìÀ ¥À ¥4À ¥RÀ ¥nÀ ¥’À ¥²À ¥ÆÀ ¥÷À ¦3À ¦sÀ ¦ŸÀ ¦¹À ¦ÓÀ §À §?À §FÀ §JÀ §KÀ §WÀ §¥À §¶À ¨À ¨4À ¨RÀ ¨hÀ ¨šÀ ¨°À ¨ÒÀ ¨üÀ ©À ©:À ©`À ©‚À ©µÀ ©óÀ ª5À ªcÀ ªÀ ª›À ªÛÀ «À «ZÀ «£À «§À «©À «ªÀ «úÀ ¬À ¬'À ¬QÀ ¬nÀ ¬ŠÀ ¬´À ¬ÙÀ ¬÷À ­À ­KÀ ­À ­½À ­ŞÀ ­ıÀ ®À ®HÀ ®dÀ ®€À ®´À ®çÀ ¯À ¯#À ¯‡À ¯‘À ¯®À ¯íÀ °À °À °NÀ °mÀ °À °»À °ÜÀ °ûÀ ±À ±9À ±VÀ ±sÀ ±¥À ±ÀÀ ±åÀ ²À ²'À ²JÀ ²oÀ ²À ²±À ²ÜÀ ²şÀ ³À ³5À ³TÀ ³À ³¨À ³ĞÀ ³óÀ ³úÀ ´*À ´YÀ ´|À ´ƒÀ ´åÀ ´éÀ µ:À µ‰À µŠÀ µÄÀ µûÀ µüÀ ¶IÀ ¶™À ¶µÀ ¶ÙÀ ·!À ·FÀ ·À ·°À ¸À ¸"À ¸wÀ ¸¤À ¸®À ¹À ¹JÀ ¹QÀ ¹›À ¹ÍÀ ¹íÀ ºÀ ºÀ ºÀ º]À º^À º{À º¥À ºÖÀ ºÿÀ »2À »`À »‚À »šÀ »ÇÀ »éÀ »şÀ »ÿÀ ¼MÀ ¼™À ¼¥À ¼éÀ ¼şÀ ½À ½4À ½9À ½:À ½iÀ ½jÀ ½¨À ½©À ½ÇÀ ½ØÀ ½÷À ¾'À ¾xÀ ¾œÀ ¾ªÀ ¾°À ¾ÍÀ ¾ãÀ ¿3À ¿À ¿ÏÀ ¿ñÀ ÀAÀ À|À À¶À ÀÑÀ Á%À Á2À ÁjÀ ÁpÀ ÁÀ Á”À Á•À ÁĞÀ ÁğÀ ÂÀ ÂdÀ ÂÀ ÂÀ Â¤À ÂÉÀ ÂßÀ ÂÿÀ ÃÀ ÃÀ ÃKÀ Ã‹À Ã¸À ÃäÀ ÃèÀ ÃéÀ ÄÀ Ä1À ÄXÀ ÄvÀ Ä„À ÄŠÀ Ä¡À ÄÁÀ ÄÅÀ ÄÆÀ ÄÿÀ ÅYÀ ÅÀ ÅÌÀ ÅÚÀ ÅàÀ ÆÀ Æ(À Æ,À Æ-À ÆQÀ ÆdÀ Æ‚À Æ¡À Æ¯À ÆµÀ ÆÍÀ ÆãÀ ÆçÀ ÆèÀ ÇÀ ÇÀ Ç6À ÇQÀ Ç_À ÇeÀ ÇyÀ Ç”À Ç˜À Ç™À ÇÌÀ ÇìÀ ÈÀ È8À ÈFÀ ÈLÀ ÈfÀ ÈÀ È…À È†À È¸À ÈÓÀ ÈùÀ ÉÀ É,À É2À ÉPÀ ÉkÀ ÉoÀ ÉpÀ É–À ÉªÀ ÉÉÀ ÉéÀ É÷À ÉıÀ ÊÀ Ê,À Ê0À Ê1À ÊfÀ ÊŠÀ Ê¹À ÊØÀ ÊæÀ ÊìÀ ËÀ Ë3À Ë^À ËyÀ Ë¤À Ë³À ËŞÀ ËæÀ ËşÀ Ì À Ì&À Ì*À Ì+À ÌRÀ ÌwÀ ÌxÀ Ì­À ÌÍÀ ÌøÀ ÍÀ Í)À Í/À ÍKÀ ÍfÀ ÍjÀ ÍkÀ ÍšÀ Í¼À ÍÎÀ ÍëÀ Î	À ÎÀ ÎÀ Î4À ÎTÀ ÎtÀ ÎxÀ ÎyÀ Î·À ÎÙÀ ÎëÀ ÏÀ Ï&À Ï4À Ï:À ÏQÀ ÏqÀ ÏuÀ ÏvÀ Ï¼À ÏİÀ ÏüÀ Ğ(À ĞJÀ ĞmÀ Ğ{À ĞÀ ĞÀ Ğ½À ĞÁÀ ĞÂÀ ĞëÀ Ñ.À ÑbÀ ÑŠÀ Ñ˜À ÑÀ Ñ¿À ÑßÀ ÑãÀ ÑäÀ ÒÀ ÒÀ ÒHÀ ÒyÀ Ò¬À Ò´À ÒÁÀ ÒëÀ ÓÀ ÓOÀ ÓWÀ Ó]À ÓaÀ ÓbÀ Ó‰À ÓÆÀ ÓêÀ ÔÀ Ô!À ÔeÀ ÔˆÀ Ô´À Ô¼À ÔÂÀ ÔÆÀ ÔÇÀ ÔôÀ Õ?À ÕÀ ÕÓÀ ÖÀ ÖPÀ Ö›À Ö À Ö¡À ÖÀÀ ÖÙÀ ÖøÀ ×À ×SÀ ×gÀ ×ŠÀ ×­À ×ÎÀ ×ñÀ Ø/À ØDÀ ØJÀ ØNÀ ØOÀ ØnÀ Ø‡À Ø›À ØïÀ ÙÀ ÙCÀ ÙWÀ ÙdÀ Ù…À Ù‹À ÙÜÀ Ú+À Ú|À Ú“À Ú—À Ú˜À Ú¤À ÚÄÀ ÚæÀ ÛÀ Û&À Û*À Û+À Û7À Û\À ÛuÀ Û¨À ÛâÀ ÜÀ ÜOÀ ÜSÀ ÜTÀ Ü`À ÜrÀ Ü¨À ÜåÀ İÀ İXÀ İlÀ İpÀ İqÀ İ}À İÀ İ¥À İ¹À İÖÀ İöÀ ŞÀ Ş?À ŞTÀ ŞXÀ ŞYÀ Ş—À Ş»À ŞìÀ ßÀ ßÀ ß"À ß#À ßaÀ ßƒÀ ßÔÀ àÀ àÀ àÀ à6À àhÀ à~À à¹À à¿À àÒÀ àÖÀ à×À á	À á$À á2À á8À á]À áÀ á­À áÕÀ áïÀ â:À âeÀ âšÀ â¶À âİÀ âéÀ ãÀ ã-À ãRÀ ãZÀ ã[À ãpÀ ãÃÀ äÀ äMÀ ä~À ä²À äŞÀ åÀ åFÀ åsÀ åÊÀ åöÀ æAÀ æzÀ æˆÀ æ–À æ À æ¨À æ®À æ²À æ³À æÎÀ æéÀ æ÷À æıÀ æşÀ ç#À ç\À çsÀ ç’À ç¼À èÀ èCÀ èKÀ èQÀ èUÀ èVÀ èŠÀ è¹À è½À è¾À èôÀ éÀ éÀ é#À é$À éFÀ épÀ é˜À éÁÀ ééÀ ê7À êoÀ êÀ êÊÀ ê×À ëÀ ëÀ ë=À ëlÀ ë{À ëÀ ë…À ë†À ë¶À ëÍÀ ëÑÀ ëÒÀ ìÀ ì1À ì5À ì6À ìbÀ ìyÀ ì}À ì~À ì²À ìóÀ ì÷À ìøÀ íÀ í1À í2À í>À í~À í™À í§À í­À íÙÀ îÀ îOÀ înÀ îŒÀ î’À îÂÀ ïÀ ï
+À ïÀ ïÀ ïÀ ï~À ïÀ ï‹À ïîÀ ïïÀ ïûÀ ğ/À ğoÀ ğpÀ ğ|À ğ°À ğğÀ ğñÀ ğıÀ ñÀ ñ À ñ,À ñbÀ ñsÀ ñ•À ñ¶À ññÀ òÀ ò6À ò|À òƒÀ ò‡À òˆÀ ò”À òËÀ óÀ óÀ ó^À óªÀ óÒÀ ô0À ôŒÀ ôİÀ õ!À õ(À õ)À õoÀ õ†À õœÀ õ½À õÛÀ õâÀ õãÀ öÀ ö0À öVÀ ö]À ö^À öwÀ öØÀ ÷3À ÷9À ÷À ÷áÀ ÷ñÀ ÷òÀ øRÀ ø À øòÀ ùLÀ ùzÀ ùÏÀ ùêÀ ùùÀ úÀ úkÀ ú™À ú·À úßÀ úçÀ ûÀ û,À û4À û:À û;À û_À ûnÀ û|À û“À ûÑÀ ûúÀ üÀ ü?À ügÀ ü…À ü¥À ü¬À ü­À ü×À üÿÀ ıÀ ı%À ıUÀ ı€À ı À ıÅÀ ıŞÀ şÀ ş(À ş?À şjÀ ş¬À şµÀ ş»À ş¼À şÒÀ ÿÀ ÿbÀ ÿtÀ ÿ°À  À KÀ À ¾À îÀÀnÀ¤ÀÀ9ÀfÀ{À—À´ÀÛÀ
+À5À[ÀÀÀ˜À À¦À§ÀÀÀÙÀ4ÀcÀ±ÀçÀÀ/ÀQÀ‘ÀËÀ÷À3ÀmÀ‘ÀµÀŞÀûÀ"ÀMÀhÀ–ÀÜÀéÀóÀüÀ	À2À8À9À]ÀlÀÀ­ÀÖÀôÀ	À	.À	kÀ	À	åÀ	óÀ
+À
+2À
+GÀ
+oÀ
+¯À
+¶À
+ºÀ
+»ÀÀNÀTÀ¢ÀëÀBÀšÀÆÀÀYÀ«ÀÿÀNÀcÀuÀ|ÀÖÀéÀJÀeÀlÀpÀqÀ•ÀĞÀùÀÀ#ÀwÀ{À|ÀˆÀ¦À¾ÀáÀÀÀ.ÀRÀyÀ¡À¨À©ÀÎÀÒÀÓÀßÀ&ÀXÀYÀŒÀĞÀ!ÀKÀqÀrÀ˜À±ÀÎÀÔÀğÀÀ9À:ÀiÀ±À·ÀáÀúÀ$ÀNÀtÀzÀ{À¨ÀîÀ(ÀrÀ{ÀµÀÿÀÀÀGÀeÀ¹À×À+À1À5À6À’À“À¬ÀÅÀâÀòÀúÀÀ:ÀBÀHÀLÀMÀgÀ€À¤ÀÓÀïÀÀ*À:ÀBÀHÀLÀMÀgÀ€À¤ÀÓÀïÀÀ*À:ÀBÀHÀLÀMÀiÀ’À–À—À²ÀñÀõÀöÀÀPÀTÀVÀWÀ‚ÀµÀ¶À ÀÀIÀJÀÀÀ×ÀØÀüÀşÀÿÀ4À5À~ÀÀÀÁÀİÀŞÀêÀ-À]ÀaÀbÀnÀÄÀåÀéÀëÀìÀ DÀ À ¾À íÀ!À!À!À!LÀ!cÀ!dÀ!pÀ!’À!“À!ŸÀ!ÄÀ!İÀ"À"RÀ"VÀ"WÀ"cÀ"uÀ"²À"ğÀ#À#À#	À#À#LÀ#ƒÀ#‡À#ˆÀ#”À#ÊÀ#ëÀ#ïÀ#ğÀ#üÀ$À$7À$LÀ$PÀ$RÀ$SÀ$…À$ÂÀ$ÃÀ$áÀ%#À%gÀ%hÀ%tÀ%¦À%§À%³À%ùÀ%úÀ&À&SÀ&TÀ&`À&®À&¯À&»À'À'À'À'oÀ'pÀ'|À'ÅÀ'ÆÀ'ÒÀ(À(À((À(yÀ(zÀ(†À(ÙÀ(ÚÀ(æÀ)À)À)À)BÀ)À)À)œÀ)ÜÀ)İÀ)éÀ*À*fÀ*gÀ*sÀ*–À*éÀ+À+À+0À+4À+5À+AÀ+¢À+£À+¯À+øÀ+ùÀ,À,PÀ,QÀ,]À,ªÀ,«À,·À-À-À-À-BÀ-‡À-ˆÀ-¦À-èÀ-éÀ-õÀ.'À.(À.4À.xÀ.yÀ.…À.ÒÀ.ÓÀ.ßÀ/-À/.À/:À/ŠÀ/‹À/—À/îÀ/ïÀ/ûÀ0DÀ0EÀ0QÀ0£À0¤À0°À1À1À1À1aÀ1bÀ1nÀ1šÀ1›À1§À1ÊÀ2À2À2%À2{À2«À2ÚÀ2àÀ3À3@À3FÀ3vÀ3¥À3«À3¬À3ËÀ3ÑÀ3ÒÀ3ŞÀ4
+À4]À4^À4jÀ4ŸÀ4 À4¬À5À5À5À5\À5]À5iÀ5´À5µÀ5ÁÀ6À6À6À6iÀ6kÀ6lÀ6™À6šÀ6İÀ7!À7IÀ7|À7}À7À7ÂÀ7äÀ8À8À8#À8eÀ8fÀ8rÀ8¤À8¥À8±À8ğÀ8ñÀ8ıÀ9JÀ9KÀ9WÀ9¥À9¦À9²À:À:À:À:fÀ:gÀ:sÀ:»À:¼À:ÈÀ;À;À;*À;pÀ;qÀ;}À;¾À;¿À;ËÀ;÷À;øÀ<À<LÀ<MÀ<YÀ<¯À<ßÀ=À=À=DÀ=tÀ=zÀ=ªÀ=ÙÀ=ßÀ=àÀ=ÿÀ>À>À>À>pÀ>•À>šÀ>›À>§À>ãÀ>äÀ>ğÀ?QÀ?RÀ?^À?¢À?£À?¯À?õÀ?öÀ@À@OÀ@PÀ@\À@ÁÀ@ÂÀ@ÎÀ@üÀACÀAvÀAœÀA¤ÀAÖÀAüÀBÀB6ÀB\ÀBdÀB–ÀB¼ÀBÄÀBèÀBğÀBôÀBõÀCÀC ÀC"ÀC4ÀC5ÀC`   €—/// @docImport 'app.dart';
+/// @docImport 'checkbox.dart';
+/// @docImport 'radio.dart';
+/// @docImport 'switch.dart';
+/// @docImport 'text_theme.dart';G  \r y  ¢  Ì  ô  ‚ ‚E‚V‚X  ‚  ‚  ‚³  ‚Ì  ‚á  ‚ù  ƒ  ƒ1  ƒ]    
+  ›> ›D    ›K›K	›Q   ›Z›Z›h   ›s›s›x   ›‘›‘›Ÿ   ›®›®›³   ›Æ›Æ›Ë   ›Ü›Ü›á   ›ğ›ğ›õ   œœœ	   œœ
+œ   œ(œ(œ-   œ>œ>œC   œVœVœ[   œuœuœz   œŠœŠœ   œ¡œ¡œ¦   œ·œ·œ¼   œÛœÛœà   œïœïœô      ((-   ::?   WW+z O›ç›û WXbojÄ5—‹™¤¥¶¼ÇÁ½ÄÑ×şŸMïèâëøòûŸ	ŸŸŸŸ.Ÿ/Ÿ2Ÿ?Ÿ@ŸCŸWŸ]ŸÁ Ÿ„Ÿ|ŸhŸŸ‡ŸÀŸ£ŸœŸˆŸŸŸºŸ¦Ÿ½ŸÌŸÜŸİŸğ     	 
+  ! ' J : 2 ( 5 G = I——ˆË ƒ/// Creates a Material Design slider.
+///
+/// The slider itself does not maintain any state. Instead, when the state of
+/// the slider changes, the widget calls the [onChanged] callback. Most
+/// widgets that use a slider will listen for the [onChanged] callback and
+/// rebuild the slider with a new [value] to update the visual appearance of
+/// the slider.
+///
+/// * [value] determines currently selected value for this slider.
+/// * [onChanged] is called while the user is selecting a new value for the
+///   slider.
+/// * [onChangeStart] is called when the user starts to select a new value for
+///   the slider.
+/// * [onChangeEnd] is called when the user is done selecting a new value for
+///   the slider.
+///
+/// You can override some of the colors with the [activeColor] and
+/// [inactiveColor] properties, although more fine-grained control of the
+/// appearance is achieved using a [SliderThemeData].  ¢ß¢å¢î    ¢õ¢õ	¢û   £££   £££"   £;£;£I   £X£X£]   £p£p£u   £†£†£‹   £š£š£Ÿ   £®£®£³   £Â£Â
+£Ç   £Ò£Ò£×   £è£è£í   £ş£ş¤   ¤¤¤   ¤5¤5¤:   ¤J¤J¤O   ¤a¤a¤f   ¤…¤…¤Š   ¤™¤™¤   ¤µ¤µ¤º   ¤Ò¤Ò¤×   ¤ï¤ï+¦ R£‘£¥¤ª¤ï¤ğ¤ú¦¥¥\¥Í¦/¦#¦1¦<¦=¦V¦N¦X¦e¦k¦v¦p¦l¦s¦€¦†¦­¦ü¦¦—¦‘¦š¦§¦¡¦ª¦¸¦¿¦À¦Å¦İ¦Ş¦á¦î¦ï¦ò§§§p§Æ§3§+§§.§6§o§R§K§7§N§i§U§l§{§‹§Œ§Ÿ§¯§°§³§¸§¹§¼§Ğ§Ö§ù§é§á§×§ä§ö§ì§ø P P‡«¢æ‚p/// Creates an adaptive [Slider] based on the target platform, following
+/// Material design's
+/// [Cross-platform guidelines](https://material.io/design/platform-guidance/cross-platform-adaptation.html).
+///
+/// Creates a [CupertinoSlider] if the target platform is iOS or macOS, creates a
+/// Material Design slider otherwise.
+///
+/// If a [CupertinoSlider] is created, the following parameters are ignored:
+/// [secondaryTrackValue], [label], [inactiveColor], [secondaryActiveColor],
+/// [semanticFormatterCallback], [showValueIndicator].
+///
+/// The target platform is based on the current [Theme]: [ThemeData.platform].  ¨–§ÿ€œ¨–€ƒ/// The currently selected value for this slider.
+///
+/// The slider's thumb is drawn at a position that corresponds to this value. ª]¨ Ğª]œ/// The secondary track value for this slider.
+///
+/// If not null, a secondary track using [Slider.secondaryActiveColor] color
+/// is drawn between the thumb and this value, over the inactive track.
+///
+/// If less than [Slider.value], then the secondary track is not shown.
+///
+/// It can be ideal for media scenarios such as showing the buffering progress
+/// while the [Slider.value] shows the play progress. ¯ªu„˜¯„(/// Called during a drag when the user is selecting a new value for the slider
+/// by dragging.
+///
+/// The slider passes the new value to the callback but does not actually
+/// change state until the parent widget rebuilds the slider with the new
+/// value.
+///
+/// If null, the slider will be displayed as disabled.
+///
+/// The callback provided to onChanged should update the state of the parent
+/// [StatefulWidget] using the [State.setState] method, so that the parent
+/// gets rebuilt; for example:
+///
+/// {@tool snippet}
+///
+/// ```dart
+/// Slider(
+///   value: _duelCommandment.toDouble(),
+///   min: 1.0,
+///   max: 10.0,
+///   divisions: 10,
+///   label: '$_duelCommandment',
+///   onChanged: (double newValue) {
+///     setState(() {
+///       _duelCommandment = newValue.round();
+///     });
+///   },
+/// )
+/// ```
+/// {@end-tool}
+///
+/// See also:
+///
+///  * [onChangeStart] for a callback that is called when the user starts
+///    changing the value.
+///  * [onChangeEnd] for a callback that is called when the user stops
+///    changing the value. ³¯„³ƒ§/// Called when the user starts selecting a new value for the slider.
+///
+/// This callback shouldn't be used to update the slider [value] (use
+/// [onChanged] for that), but rather to be notified when the user has started
+/// selecting a new value by starting a drag or with a tap.
+///
+/// The value passed will be the last [value] that the slider had before the
+/// change began.
+///
+/// {@tool snippet}
+///
+/// ```dart
+/// Slider(
+///   value: _duelCommandment.toDouble(),
+///   min: 1.0,
+///   max: 10.0,
+///   divisions: 10,
+///   label: '$_duelCommandment',
+///   onChanged: (double newValue) {
+///     setState(() {
+///       _duelCommandment = newValue.round();
+///     });
+///   },
+///   onChangeStart: (double startValue) {
+///     print('Started change at $startValue');
+///   },
+/// )
+/// ```
+/// {@end-tool}
+///
+/// See also:
+///
+///  * [onChangeEnd] for a callback that is called when the value change is
+///    complete. ¶·³,ƒ–¶·ƒ0/// Called when the user is done selecting a new value for the slider.
+///
+/// This callback shouldn't be used to update the slider [value] (use
+/// [onChanged] for that), but rather to know when the user has completed
+/// selecting a new [value] by ending a drag or a click.
+///
+/// {@tool snippet}
+///
+/// ```dart
+/// Slider(
+///   value: _duelCommandment.toDouble(),
+///   min: 1.0,
+///   max: 10.0,
+///   divisions: 10,
+///   label: '$_duelCommandment',
+///   onChanged: (double newValue) {
+///     setState(() {
+///       _duelCommandment = newValue.round();
+///     });
+///   },
+///   onChangeEnd: (double newValue) {
+///     print('Ended change on $newValue');
+///   },
+/// )
+/// ```
+/// {@end-tool}
+///
+/// See also:
+///
+///  * [onChangeStart] for a callback that is called when a value change
+///    begins. ·¶Ç€Ì·€±/// The minimum value the user can select.
+///
+/// Defaults to 0.0. Must be less than or equal to [max].
+///
+/// If the [max] is equal to the [min], then the slider is disabled. ¸d·˜€Ï¸d€´/// The maximum value the user can select.
+///
+/// Defaults to 1.0. Must be greater than or equal to [min].
+///
+/// If the [max] is equal to the [min], then the slider is disabled. ¹¸l€·¹€˜/// The number of discrete divisions.
+///
+/// Typically used with [label] to show the current discrete value.
+///
+/// If null, the slider is continuous. ¼;¹(ƒ¼;‚Ş/// A label to show above the slider when the slider is active and
+/// [SliderThemeData.showValueIndicator] is satisfied.
+///
+/// It is used to display the value of a discrete slider, and it is displayed
+/// as part of the value indicator shape.
+///
+/// The label is rendered using the active [ThemeData]'s [TextTheme.bodyLarge]
+/// text style, with the theme data's [ColorScheme.onPrimary] color. The
+/// label's text style can be overridden with
+/// [SliderThemeData.valueIndicatorTextStyle].
+///
+/// If null, then the value indicator will not be displayed.
+///
+/// Ignored if this slider is created with [Slider.adaptive].
+///
+/// See also:
+///
+///  * [SliderComponentShape] for how to create a custom value indicator
+///    shape. ¾C¼E‚	¾CÚ/// The color to use for the portion of the slider track that is active.
+///
+/// The "active" side of the slider is the side between the thumb and the
+/// minimum value.
+///
+/// If null, [SliderThemeData.activeTrackColor] of the ambient
+/// [SliderTheme] is used. If that is null, [ColorScheme.primary] of the
+/// surrounding [ThemeData] is used.
+///
+/// Using a [SliderTheme] gives much more fine-grained control over the
+/// appearance of various components of the slider. À AX¾SƒÀ AX‚Ù/// The color for the inactive portion of the slider track.
+///
+/// The "inactive" side of the slider is the side between the thumb and the
+/// maximum value.
+///
+/// If null, [SliderThemeData.inactiveTrackColor] of the ambient [SliderTheme]
+/// is used. If [Slider.year2023] is false and [ThemeData.useMaterial3] is true,
+/// then [ColorScheme.secondaryContainer] is used and if [ThemeData.useMaterial3]
+/// is false, [ColorScheme.primary] with an opacity of 0.24 is used. Otherwise,
+/// [ColorScheme.surfaceContainerHighest] is used.
+///
+/// Using a [SliderTheme] gives much more fine-grained control over the
+/// appearance of various components of the slider.
+///
+/// Ignored if this slider is created with [Slider.adaptive]. À C‹À Aj‚5À C‹ù/// The color to use for the portion of the slider track between the thumb and
+/// the [Slider.secondaryTrackValue].
+///
+/// Defaults to the [SliderThemeData.secondaryActiveTrackColor] of the current
+/// [SliderTheme].
+///
+/// If that is also null, defaults to [ColorScheme.primary] with an
+/// opacity of 0.54.
+///
+/// Using a [SliderTheme] gives much more fine-grained control over the
+/// appearance of various components of the slider.
+///
+/// Ignored if this slider is created with [Slider.adaptive]. À EÀ C¤wÀ EM/// The color of the thumb.
+///
+/// If this color is null, [Slider] will use [activeColor], If [activeColor]
+/// is also null, [Slider] will use [SliderThemeData.thumbColor].
+///
+/// If that is also null, defaults to [ColorScheme.primary].
+///
+/// * [CupertinoSlider] will have a white thumb
+/// (like the native default iOS slider). À G¼À E ‚¨À G¼‚`/// The highlight color that's typically used to indicate that
+/// the slider thumb is focused, hovered, or dragged.
+///
+/// If this property is null, [Slider] will use [activeColor] with
+/// an opacity of 0.12, If null, [SliderThemeData.overlayColor]
+/// will be used.
+///
+/// If that is also null, If [ThemeData.useMaterial3] is true,
+/// Slider will use [ColorScheme.primary] with an opacity of 0.08 when
+/// slider thumb is hovered and with an opacity of 0.1 when slider thumb
+/// is focused or dragged, If [ThemeData.useMaterial3] is false, defaults
+/// to [ColorScheme.primary] with an opacity of 0.12. À J1À GÍ‚oÀ J1‚2/// {@template flutter.material.slider.mouseCursor}
+/// The cursor for a mouse pointer when it enters or is hovering over the
+/// widget.
+///
+/// If [mouseCursor] is a [WidgetStateMouseCursor],
+/// [WidgetStateProperty.resolve] is used for the following [WidgetState]s:
+///
+///  * [WidgetState.dragged].
+///  * [WidgetState.hovered].
+///  * [WidgetState.focused].
+///  * [WidgetState.disabled].
+/// {@endtemplate}
+///
+/// If null, then the value of [SliderThemeData.mouseCursor] is used. If that
+/// is also null, then [WidgetStateMouseCursor.clickable] is used. À NÀ JAƒàÀ Nƒg/// The callback used to create a semantic value from a slider value.
+///
+/// Defaults to formatting values as a percentage.
+///
+/// This is used by accessibility frameworks like TalkBack on Android to
+/// inform users what the currently selected value is with more context.
+///
+/// {@tool snippet}
+///
+/// In the example below, a slider for currency values is configured to
+/// announce a value with a currency label.
+///
+/// ```dart
+/// Slider(
+///   value: _dollars.toDouble(),
+///   min: 20.0,
+///   max: 330.0,
+///   label: '$_dollars dollars',
+///   onChanged: (double newValue) {
+///     setState(() {
+///       _dollars = newValue.round();
+///     });
+///   },
+///   semanticFormatterCallback: (double newValue) {
+///     return '${newValue.round()} dollars';
+///   }
+///  )
+/// ```
+/// {@end-tool}
+///
+/// Ignored if this slider is created with [Slider.adaptive] À NfÀ N&IÀ Nf,/// {@macro flutter.widgets.Focus.focusNode} À N®À NtCÀ N®,/// {@macro flutter.widgets.Focus.autofocus} À P
+À N¼`À P
+&/// Allowed way for the user to interact with the [Slider].
+///
+/// For example, if this is set to [SliderInteraction.tapOnly], the user can
+/// interact with the slider only by tapping anywhere on the track. Sliding
+/// will have no effect.
+///
+/// Defaults to [SliderInteraction.tapAndSlide]. À QwÀ P!]À Qw//// Determines the padding around the [Slider].
+///
+/// If specified, this padding overrides the default vertical padding of
+/// the [Slider], defaults to the height of the overlay shape, and the
+/// horizontal padding, defaults to the width of the thumb shape or
+/// overlay shape, whichever is larger. À R­À Qƒ<À R­/// Determines the conditions under which the value indicator is shown.
+///
+/// If [Slider.showValueIndicator] is null then the
+/// ambient [SliderThemeData.showValueIndicator] is used. If that is also
+/// null, defaults to [ShowValueIndicator.onlyForDiscrete].À TÀ TÀ TÀ UÀ TÀ TuÀ TäÀ U,À RÄ‚pÀ U,9/// When true, the [Slider] will use the 2023 Material Design 3 appearance.
+/// Defaults to true.
+///
+/// If this is set to false, the [Slider] will use the latest Material Design 3
+/// appearance, which was introduced in December 2023.
+///
+/// If [ThemeData.useMaterial3] is false, then this property is ignored. À UKÀ U9À UK     À U[À U\À U[À U[:À Uu    À U¾À U¾&À UÚ À U™À UšÀ U™À U™…À Uª  ˆÜˆÜÀ QÜ—_|/// A Material Design slider.
+///
+/// Used to select from a range of values.
+///
+/// {@youtube 560 315 https://www.youtube.com/watch?v=ufb4gIPDmEs}
+///
+/// {@tool dartpad}
+/// This example showcases non-discrete and discrete [Slider]s.
+/// The [Slider]s will show the updated ![Material 3 Design appearance](https://m3.material.io/components/sliders/overview)
+/// when setting the [Slider.year2023] flag to false.
+///
+/// ** See code in examples/api/lib/material/slider/slider.0.dart **
+/// {@end-tool}
+///
+/// {@tool dartpad}
+/// This example shows a [Slider] widget using the [Slider.secondaryTrackValue]
+/// to show a secondary track in the slider.
+///
+/// ** See code in examples/api/lib/material/slider/slider.1.dart **
+/// {@end-tool}
+///
+/// A slider can be used to select from either a continuous or a discrete set of
+/// values. The default is to use a continuous range of values from [min] to
+/// [max]. To use discrete values, use a non-null value for [divisions], which
+/// indicates the number of discrete intervals. For example, if [min] is 0.0 and
+/// [max] is 50.0 and [divisions] is 5, then the slider can take on the
+/// discrete values 0.0, 10.0, 20.0, 30.0, 40.0, and 50.0.
+///
+/// The terms for the parts of a slider are:
+///
+///  * The "thumb", which is a shape that slides horizontally when the user
+///    drags it.
+///  * The "track", which is the line that the slider thumb slides along.
+///  * The "value indicator", which is a shape that pops up when the user
+///    is dragging the thumb to indicate the value being selected.
+///  * The "active" side of the slider is the side between the thumb and the
+///    minimum value.
+///  * The "inactive" side of the slider is the side between the thumb and the
+///    maximum value.
+///
+/// The slider will be disabled if [onChanged] is null or if the range given by
+/// [min]..[max] is empty (i.e. if [min] is equal to [max]).
+///
+/// The slider widget itself does not maintain any state. Instead, when the state
+/// of the slider changes, the widget calls the [onChanged] callback. Most
+/// widgets that use a slider will listen for the [onChanged] callback and
+/// rebuild the slider with a new [value] to update the visual appearance of the
+/// slider. To know when the value starts to change, or when it is done
+/// changing, set the optional callbacks [onChangeStart] and/or [onChangeEnd].
+///
+/// By default, a slider will be as wide as possible, centered vertically. When
+/// given unbounded constraints, it will attempt to make the track 144 pixels
+/// wide (with margins on each side) and will shrink-wrap vertically.
+///
+/// Requires one of its ancestors to be a [Material] widget.
+///
+/// Requires one of its ancestors to be a [MediaQuery] widget. Typically, these
+/// are introduced by the [MaterialApp] or [WidgetsApp] widget at the top of
+/// your application widget tree.
+///
+/// To determine how it should be displayed (e.g. colors, thumb shape, etc.),
+/// a slider uses the [SliderThemeData] available from either a [SliderTheme]
+/// widget or the [ThemeData.sliderTheme] a [Theme] widget above it in the
+/// widget tree. You can also override some of the colors with the [activeColor]
+/// and [inactiveColor] properties, although more fine-grained control of the
+/// look is achieved using a [SliderThemeData].
+///
+/// See also:
+///
+///  * [SliderTheme] and [SliderThemeData] for information about controlling
+///    the visual appearance of the slider.
+///  * [Radio], for selecting among a set of explicit values.
+///  * [Checkbox] and [Switch], for toggling a particular value on or off.
+///  * <https://material.io/design/components/sliders.html>
+///  * [MediaQuery], from which the text scale factor is obtained.  À [5À [=À [NÀ [JÀ [>À [LÀ [À [JÀ [ À [‹À [“À [¥À [ À [”À [¢À [iÀ [SSÀ [i  À \BÀ \)*À \B  À \ÎÀ \µ1À \Î  À ]MÀ ]4)À ]M  À ]íÀ ]Ô+À ]í  À ^
+À ^À ^
+ À ^BÀ ^KÀ ^LÀ ^/À ^.À ^/ 6À ^èÀ `:À ^ÍÀ ^çÀ ^ÎÀ ^áÀ _À ^òÀ _À _À _À _À _À _À _2À _3À _5À _6À _nÀ _AÀ _PÀ _mÀ _QÀ _cÀ _dÀ _pÀ _ƒÀ _„À _ˆÀ _‰À _ÁÀ _”À _£À _ÀÀ _¤À _¶À _·À _ÃÀ _ÖÀ _×À _ÛÀ _ÜÀ `À _çÀ _öÀ `À _÷À `	À `
+À `À `*À `+À `0À `1À ^ªÀ ^~½À ^ª À aHÀ aøÀ a-À aGÀ a.À aAÀ aÀ aRÀ aaÀ a~À abÀ atÀ auÀ aÀ a”À a•À a™À ašÀ aÓÀ a¥À a´À aÒÀ aµÀ aÇÀ aÈÀ aÕÀ aèÀ aéÀ aîÀ aïÀ a
+À `ŞÀ a
+  À bGÀ b()À bG  À bØÀ bÃ(À bØ À cÀ bõÀ bğÀ bõ  À cÛÀ cÓÀ cÛ  À cÿÀ côÀ cÿ 
+À eÀ eÀ eKÀ e.À e$À e0À eLÀ eNÀ eRÀ eSÀ dŞÀ dÀ€”À dŞ À n¡À n–À n‘À n– À oSÀ oGÀ oBÀ oG À œÀ œ—À œ˜À œÀ œq(À œ    À bVÀ bV.À b_    À dÀ d;À d    À eYÀ eZÀ eYÀ eYƒUÀ ej   À h²À h³À h²À h²€ûÀ hÃ    À iÅÀ iÅÀ iÌ  À i±À i±?À i¶    À k
+À k
+À k  À jôÀ jô€‰À jù    À k•À k•À kœ  À kÀ k€§À k†    À l@À l@À lT  À l,À l,‚aÀ l1    À nÌÀ nÌÀ nÑ  À nªÀ nª€”À n¯    À ouÀ ouÀ oz  À o\À o\€À oa    À pgÀ pgÀ pn  À pZÀ pZ€À pa    À q À q À q  À píÀ pí€ØÀ pô    À qÙÀ qÙÀ qà  À qÉÀ qÉ€œÀ qĞ    À rÆÀ rÆÀ rÍ  À r·À r·€ÁÀ r¾    À s•À s•À s¢ À s|À s}À s|À s|‚øÀ s    À v”À v”À v¡  À vxÀ vx£KÀ v    À ™äÀ ™äÀ ™ñ  À ™ÇÀ ™Ç‚¦À ™Î    À œ¹À œ¹%À œÌ  À œÀ œ‚ÂÀ œ¤  À ZºÀ ZºÀ D§À ZÀ   À Ÿ¬ À ŸÅ    À ŸÌÀ ŸÌ	À ŸÒ   À ŸÛÀ ŸÛÀ Ÿé   À ŸôÀ Ÿô!À     À  À  À  )   À  8À  8À  F   À  QÀ  QÀ  _   À  pÀ  pÀ  ~   À  “À  “À  ¡   À  ±À  ±À  ¿   À  ÎÀ  ÎÀ  Ü   À  ïÀ  ïÀ  ı   À ¡À ¡À ¡   À ¡'À ¡''À ¡5   À ¡TÀ ¡T)À ¡b   À ¡ƒÀ ¡ƒÀ ¡‘   À ¡ŸÀ ¡ŸÀ ¡­   À ¡»À ¡» À ¡É  À Ÿ¦À Ÿ¦‚<    À ¡óÀ ¡æÀ ¡ó  À ¢
+À ¡ü!À ¢
+  À ¢,À ¢!À ¢,  À ¢GÀ ¢9À ¢G  À ¢fÀ ¢P!À ¢f  À ¢‚À ¢uÀ ¢‚  À ¢ À ¢•À ¢   À ¢ÊÀ ¢®%À ¢Ê  À ¢óÀ ¢×)À ¢ó  À £ À £'À £   À £PÀ £/:À £P  À £À £m/À £  À £³À £ À £³  À £ÇÀ £¼À £Ç  À £ŞÀ £ÓÀ £Ş  À ¤À £ê*À ¤      À ¤FÀ ¤FÀ ¤S À ¤À ¤À ¤À ¤ƒ0À ¤3    À §qÀ §qÀ §~   À §‡À §‡À §• À §MÀ §NÀ §MÀ §M„YÀ §^  À ŸcÀ ŸcŒEÀ Ÿi   À «ü À ¬	    À ¬À ¬À ¬    À ¬+À ¬+$À ¬<   À ¬UÀ ¬UÀ ¬c   À ¬rÀ ¬rÀ ¬ƒ   À ¬À ¬$À ¬§   À ¬¸À ¬¸À ¬È   À ¬İÀ ¬İÀ ¬ë   À ¬ûÀ ¬û À ­   À ­!À ­!(À ­@   À ­OÀ ­O=À ­s   À ­’À ­’)À ­    À ­ÁÀ ­ÁÀ ­Ï   À ­âÀ ­âÀ ­ğ   À ®À ®À ®   À ®"À ®"$À ®9   À ®LÀ ®LÀ ®Z   À ®hÀ ®hÀ ®v   À ®„À ®„.À ®£   À ®¸À ®¸-À ®Ó GÀ ®îÀ ®ôÀ ¯À ¯À ®ûÀ ®õÀ ®şÀ ¯À ¯À ¯À ¯À ¯!À ¯À ¯HÀ ¯@À ¯,À ¯CÀ ¯KÀ ¯„À ¯gÀ ¯`À ¯LÀ ¯cÀ ¯~À ¯jÀ ¯À ¯¢À ¯˜À ¯¤À ¯ĞÀ ¯µÀ ¯ÒÀ ¯ûÀ ¯ôÀ ¯ıÀ °À °À °À °7À °"À °9À °`À °UÀ °bÀ °À °tÀ °ƒÀ °¨À °—À °ªÀ °ÎÀ °ÂÀ °ĞÀ °îÀ °ãÀ °ğÀ ±	À ±À ±À ±(À ±À ±*À ±JÀ ±@À ±LÀ ±gÀ ±]À ±iÀ ±À ±zÀ ±À «üÀ «üˆì   À µÀ µ&À µ7À µ3À µ'À µ5À µÀ ´ëMÀ µ À µlÀ µtÀ µ†À µÀ µuÀ µƒÀ µRÀ µ<KÀ µR À µôÀ µÚÀ µÆ3À µÚ  À ºsÀ º`À ºs  À º’À º}&À º’  À º¼À º§-À º¼  À ºíÀ ºØ%À ºí À »#À ».À »/À »À »/À »  À »YÀ »4*À »Y  À »|À »bÀ »| À »“À »‰À »„À »‰  À »ªÀ »œ)À »ª À »äÀ »ĞÀ »ÉÀ »Ğ  À »ñÀ »ëÀ »ñ  À ½ĞÀ ½ÉÀ ½Ğ  À ÁÚÀ ÁÒÀ ÁÚ  À ÃúÀ ÃëÀ Ãú  À ÄãÀ ÄÈ5À Äã  À ÆXÀ ÆSÀ ÆX  À ÇÀ Ç	À Ç  À ÇŞÀ ÇÎÀ ÇŞ  À ÈÁÀ ÈºÀ ÈÁ  À ÉÀ É˜À É  À Ê~À Êh À Ê~  À ÌCÀ Ì-#À ÌC  À ÌjÀ ÌT!À Ìj  À Ì½À Ì¯À Ì½  À ÍÃÀ Í¾À ÍÃ  À ÎàÀ ÎÛÀ Îà À ÏõÀ ÏäÀ Ïx€‚À Ïäb/// True if the slider is interactive and the slider thumb is being
+/// hovered over by a pointer. À ĞÖÀ ĞÄ%À ĞÖ     À ¶·À ¶·iÀ ¶Â    À ·#À ·#kÀ ·.    À ·‘À ·‘qÀ ·œ    À ¸À ¸qÀ ¸    À ¸yÀ ¸yŸÀ ¸ˆ    À ºÀ ºAÀ º&    À ¼§À ¼§€‘À ¼°    À ½<À ½<,À ½E    À ½lÀ ½l;À ½u    À ½«À ½«À ½¶    À Á—À Á—8À Á£    À ÃÀ ÃDÀ Ã!    À ÄÀ Ä)À Ä    À ÅÀ ÅWÀ Å     À Æ/À Æ/!À Æ8    À ÆêÀ ÆêÀ Æö    À Ç›À Ç›0À Ç¯    À ÈˆÀ Èˆ/À È“    À ÉrÀ Ér#À É{    À Ê3À Ê32À ÊM    À ÌzÀ Ìz2À ÌŒ    À ÍmÀ ÍmNÀ Í¥,/// True if this slider has the input focus.   À Î{À Î{]À ÎÂ;/// True if this slider is being hovered over by a pointer.   À ÏşÀ Ïş)À Ğ    À ĞíÀ Ğí@À Ñ    À ÔÉÀ ÔÉuÀ ÔÒ    À ÕAÀ ÕA^À ÕJ    À Ö£À Ö£ªÀ Ö®   À ğóÀ ğôÀ ğóÀ ğó+À ñ    ÀsÀsÀ~    À8À8YÀC    ÀOÀOFÀZ    À ½äÀ ½äÀ ½ë  À ½ÚÀ ½Úƒ¹À ½Ş    À Â
+À Â
+À Â  À ÁòÀ ÁòÀ Áö    À ÃaÀ Ãa&À Ãx  À ÃMÀ ÃM€šÀ ÃQ    À Ä@À Ä@À ÄO  À Ä3À Ä3€‘À Ä7    À ÅyÀ Åy À Å”  À Å[À Å[€ĞÀ Å_    À ÆtÀ Æt
+À Æy  À ÆfÀ Æf€€À Æj    À Ç%À Ç%À Ç-  À ÇÀ Ç|À Ç    À ÇşÀ ÇşÀ È  À ÇîÀ Çî€–À Çò    À ÈéÀ ÈéÀ Èğ  À ÈÕÀ ÈÕ€™À ÈÙ    À É»À É»
+À ÉÀ  À É¬À É¬€ƒÀ É°    À ÊšÀ ÊšÀ Ê°  À ÊŒÀ ÊŒÀ Ê    À ÌáÀ ÌáÀ Ìï  À ÌÏÀ ÌÏ€šÀ ÌÓ    À ÍİÀ Íİ
+À Íâ  À ÍĞÀ ÍĞ€§À ÍÔ    À ÎúÀ Îú
+À Îÿ  À ÎíÀ Îí€‡À Îñ    À Ğ<À Ğ<
+À ĞA  À Ğ*À Ğ*€–À Ğ.    À ÑGÀ ÑGÀ ÑY  À Ñ0À Ñ0€²À Ñ4 "   À ÑûÀ ÑûÀ Ò   À ÑæÀ ÑæzÀ Ñë    À ÓyÀ ÓyÀ Ó~  À ÓdÀ ÓdaÀ Ói    À ØQÀ ØQ‚EÀ ØV   À ÚšÀ Ú›À ÚšÀ Úš€À Ú«    À ÛEÀ ÛEÀ ÛS À Û-À Û.À Û-À Û-%À Û>   À ÜVÀ ÜWÀ ÜVÀ ÜVÀ Üg   À İsÀ İtÀ İsÀ İs€äÀ İ„    À Ş~À Ş~À Ş…  À Ş[À Ş[€ÆÀ Şb    À ßHÀ ßHÀ ßO  À ß%À ß%€êÀ ß,    À à&À à&À à-  À àÀ à€ÂÀ à    À àğÀ àğÀ à÷  À àÙÀ àÙ…ØÀ àŞ    À æµÀ æµŸÀ æº    À ènÀ ènÀ è  À èXÀ èXdÀ è]    À è×À è×À èé  À èÀÀ èÀ‚ÄÀ èÅ    À ëœÀ ëœÀ ë«  À ëˆÀ ëˆHÀ ë    À ëèÀ ëèÀ ë÷  À ëÔÀ ëÔ`À ëÙ    À ìJÀ ìJÀ ìW  À ì8À ì8DÀ ì=    À ì™À ì™À ì   À ì€À ì€vÀ ì…    À íÀ íÀ í À ìúÀ ìûÀ ìúÀ ìú6À í    À íQÀ íQÀ í^   À íeÀ íeÀ íu À í4À í5À í4À í4ÙÀ íE    À ï=À ï=À ïD À ïÀ ïÀ ïÀ ïlÀ ï$    À ï­À ï­À ï´ À ïÀ ï‚À ïÀ ïlÀ ï”    À ğÀ ğÀ ğ% À ïñÀ ïòÀ ïñÀ ïñ}À ğ    À ğŸÀ ğŸÀ ğ¦ À ğrÀ ğsÀ ğrÀ ğr}À ğ…    À ñDÀ ñDÀ ñS À ñ"À ñ#À ñ"À ñ"dÀ ñ3    À ò¡À ò¡À ò±   À òºÀ òºÀ òÁ À òŠÀ ò‹À òŠÀ òŠ˜/À ò›    ÀÀÀ   ÀÀÀ/  À
+½À
+½„²Àô%/// Calculates the local coordinate center of the [Slider] thumb given its
+/// physical placement on the track from 0.0 (left) to 1.0 (right).
+///
+/// The [visualPosition] is provided by the caller so semantics can use the
+/// raw logical value while paint can use the smoothly animated value.   ÀªÀªÀ¸   ÀÂÀÂÀÙ   ÀåÀå Àı À~ÀÀ~À~SÀ    ÀÀÀ ÀÕÀÖÀÕÀÕ†_Àæ    À•À•€¶Àš    ÀOÀO€üÀT    ÀOÀO€üÀT    À™À™[À     ÀøÀø[Àÿ  À «ªÀ «ªÀ p«À «°   ÀŠ À    ÀŸÀŸÀ­  À„À„0    À¾ÀÑÀ×   ÀáÀÜÀãÀøÀùÀ¸À¸GÀÒ   À	ÀÀ!   À+À&À-ÀBÀCÀÀEÀ   ÀRÀeÀh   ÀrÀmÀtÀ‰ÀŠÀLÀLAÀf   À—ÀªÀ¯   À¹À´À»ÀĞÀÑÀ‘À‘EÀ«   ÀöÀÚ Àö     ÀWÀW¦À]   À† À§    À©À©À·  À€À€?    ÀÖÀÃÀÖ      ÀÀÀ" ÀàÀáÀàÀà€€À    ÀˆÀˆÀ•   ÀÀ"À´ ÀdÀeÀdÀd€„Àu  À5À5µÀ;   À F À [    À ]À ]À s À „À }À †À FÀ F€Ô    À!2À!-À!2  À![À!NÀ![   À!fÀ!gÀ!fÀ!f+À!{     À!­À!­À!» À!•À!–À!•À!•€ÀÀ!¦   À"YÀ"ZÀ"YÀ"Y€®À"j    À#"À#"À#2   À#;À#;À#B À#À#À#À#{À#    À#¬À#¬À#» À#ŠÀ#‹À#ŠÀ#ŠdÀ#›   À#òÀ#óÀ#òÀ#ò]À$  ÀìÀì„eÀò   À$‡ À$˜    À$™À$™À$ À$©À$®À$¿À$ºÀ$¯À$¼À$‡À$‡:    À$ØÀ$ÅÀ$Ø À%À%	À%
+À%À%À%À%À%À$úÀ$ã>À$ú À%NÀ%YÀ%ZÀ%\À%dÀ%]À%@À%%@À%@   À%jÀ%kÀ%jÀ%j;À%   À%©À%ªÀ%©À%©OÀ%À   À%üÀ%ıÀ%üÀ%üVÀ&   À&VÀ&WÀ&VÀ&VWÀ&m   À&±À&²À&±À&±YÀ&È   À'À'À'À'`À'%   À'rÀ'sÀ'rÀ'rRÀ'‰   À'ÈÀ'ÉÀ'ÈÀ'ÈRÀ'ß   À(À(À(À(ZÀ(5   À(|À(}À(|À(|\À(“   À(ÜÀ(İÀ(ÜÀ(Ü5À(ó   À)À)À)À)yÀ),   À)’À)“À)’À)’IÀ)©   À)ßÀ)àÀ)ßÀ)ß€†À)ú   À*iÀ*jÀ*iÀ*i€ÊÀ*€   À+7À+8À+7À+7jÀ+]   À+¥À+¦À+¥À+¥RÀ+Ë   À+ûÀ+üÀ+ûÀ+ûTÀ,   À,SÀ,TÀ,SÀ,SVÀ,y   À,­À,®À,­À,­WÀ,Ò    À$SÀ$Sˆ³À$Y   À-D À-]    À-^À-^À-c À-nÀ-sÀ-„À-À-tÀ-À-DÀ-DB    À-À-ŠÀ- À-ÉÀ-ÎÀ-ÏÀ-ÑÀ-ÙÀ-ÒÀ-ÚÀ-ÛÀ-¿À-¨>À-¿   À-ëÀ-ìÀ-ëÀ-ë;À.   À.*À.+À.*À.*MÀ.A   À.{À.|À.{À.{VÀ.’   À.ÕÀ.ÖÀ.ÕÀ.ÕWÀ.ì   À/0À/1À/0À/0YÀ/G   À/À/À/À/`À/¤   À/ñÀ/òÀ/ñÀ/ñRÀ0   À0GÀ0HÀ0GÀ0G[À0^   À0¦À0§À0¦À0¦ZÀ0½   À1À1À1À1\À1   À1dÀ1eÀ1dÀ1d5À1{   À1À1À1À1zÀ1´   À2À2À2À2µÀ22   À3ÔÀ3ÕÀ3ÔÀ3Ô€ˆÀ3ï   À4`À4aÀ4`À4`>À4w   À4¢À4£À4¢À4¢cÀ4È   À5	À5
+À5	À5	RÀ5/   À5_À5`À5_À5_TÀ5   À5·À5¸À5·À5·VÀ5İ   À6À6À6À6WÀ66    À-À-‰bÀ-   À7Ä À7Õ    À7ÖÀ7ÖÀ7Û À7êÀ7ïÀ8À7ûÀ7ğÀ7ıÀ7ÄÀ7Ä?    À8À8À8 À8FÀ8KÀ8LÀ8NÀ8VÀ8OÀ8WÀ8XÀ8<À8%>À8<   À8hÀ8iÀ8hÀ8h;À8   À8§À8¨À8§À8§HÀ8¾   À8óÀ8ôÀ8óÀ8óVÀ9
+   À9MÀ9NÀ9MÀ9MWÀ9d   À9¨À9©À9¨À9¨YÀ9¿   À:À:À:À:`À:   À:iÀ:jÀ:iÀ:iQÀ:€   À:¾À:¿À:¾À:¾^À:Õ   À; À;!À; À; OÀ;7   À;sÀ;tÀ;sÀ;sJÀ;Š   À;ÁÀ;ÂÀ;ÁÀ;Á5À;Ø   À;úÀ;ûÀ;úÀ;úQÀ<   À<OÀ<PÀ<OÀ<OµÀ<f   À>À>	À>À>€‘À>#   À>À>À>À>EÀ>´   À>æÀ>çÀ>æÀ>æjÀ?   À?TÀ?UÀ?TÀ?TMÀ?z   À?¥À?¦À?¥À?¥OÀ?Ç   À?øÀ?ùÀ?øÀ?øVÀ@   À@RÀ@SÀ@RÀ@RnÀ@w   À@ÄÀ@ÅÀ@ÄÀ@Ä‚/À@ğ   ÀB÷ÀBøÀB÷ÀB÷(ÀC    À7À7‹‘À7–     …2…2…2  …<…<…<     ……'…$    ……g†ùK/// Allows the user to interact with a [Slider] by tapping or sliding anywhere
+/// on the track.
+///
+/// Essentially all possible interactions are allowed.
+///
+/// This is different from [SliderInteraction.slideOnly] as when you try
+/// to slide anywhere other than the thumb, the thumb will move to the first
+/// point of contact. ‡	‡	€’‡”€‚/// Allows the user to interact with a [Slider] by only tapping anywhere on
+/// the track.
+///
+/// Sliding interaction is ignored. ‡ ‡ €”ˆ+€‚/// Allows the user to interact with a [Slider] only by sliding anywhere on
+/// the track.
+///
+/// Tapping interaction is ignored. ˆ9ˆ9€ˆÍ€/// Allows the user to interact with a [Slider] only by sliding the thumb.
+///
+/// Tapping and sliding interactions on the track are ignored.    …H…Hƒ’…‡9/// Possible ways for a user to interact with a [Slider].   ÀÀÀ  À#À#À#  À)À)À)  À-À-À-     ÀÿÀÿ4À          ƒäƒä9„Ñ€ä/// [Slider] uses this callback to paint the value indicator on the overlay.
+///
+/// Since the value indicator is painted on the Overlay; this method paints the
+/// value indicator in a [RenderBox] that appears in the [Overlay].   €®  app.dart  €É  checkbox.dart  €é  
+radio.dart    switch.dart  $  text_theme.dart ‰U <€†€¤€¥€À€à€ı=FG\xy¢Ìô‚‚X‚€‚‚‚³‚Ì‚á‚ùƒƒ1ƒ]ƒrƒsƒ‹ƒ ƒ½ƒãƒä„1„5„…„É………G…H…‚…›…ì† ††?†E††ß†÷‡‡‡U‡f‡l‡’‡‡‡ì‡ıˆˆ)ˆ6ˆ7ˆ„ˆŠˆËˆÙˆÛˆÜˆúˆş‰)‰-‰p‰t‰ˆ‰ÈŠDŠzŠ~ŠÃŠÓŠ×Šë‹;‹h‹l‹±‹Á‹ÅŒŒcŒ²K†Š·»b¬ï<R¡·»HLé‘4‘…‘Í’’ ’p’¾“““E“I“™“æ”””Z”¨”ó•D•’•Â•Æ•Ô•Ø–%–Q––Ú——Y——§—­—ı˜G˜”˜ã˜õ˜û™@™™™ïššSšgšmš²šş›6›G›V›o››ª›Â›Ø›ìœ œœ$œ:œRœqœ†œœ³œ×œë$6Sd¾/kq„¯ÊÙŸ ŸFŸPŸ_ŸÃ   M N ™ ±¡!¡'¡{¡£¡©¡ø¢G¢€¢†¢×¢ñ£ ££7£T£l£‚£–£ª£¾£Î£ä£ú¤¤1¤F¤]¤¤•¤±¤Î¤ë¤ü¥V¥Ç¦¦	¦¦G¦^¦y¦ˆ¦¯¦õ¦ÿ§§r§¿§É§ü§ı¨1¨7¨‡¨¨¨Ï¨Õ©$©n©t©¾©ÄªªMªrªsªÄª×ªİ«)«u«‚«ˆ«Á«Ç¬¬c¬„¬Š¬ ¬¦¬´¬Â¬î­ ­­*­N­u­­¾­Ì­×­ß­é­û®®®®c®€®É®æ¯¯¯X¯^¯¦¯÷°5°;°Š°°¤°º°À°Î°Ü±±±-±D±h±±§±Ø±æ±ñ²²P²[²c²m²²…²•²›²é²ü³)³*³s³y³Á´´H´N´d´j´x´†´²´Ä´×´îµµ9µQµ‚µµ›µÄµòµı¶¶¶!¶'¶7¶=¶ˆ¶™¶Ä¶Å¶ò¶ø·4·:··•·–·Ã·É¸¸¸U¸i¸j¸’¸˜¸Ş¸ä¹¹%¹&¹k¹¤¹ª¹úº&º,º}ºÈºø»)»/»n»t»´»º»Ê»Ğ¼¼+¼B¼C¼¼”¼à¼õ¼û½<½‡½®½´½ş¾4¾P¾Q¾¾•¾ã¾ø¾ş¿O¿¢¿öÀ @HÀ @}À @ƒÀ @ÍÀ AÀ A	À AIÀ AgÀ AhÀ A¹À AáÀ AçÀ B8À BMÀ BSÀ B™À B°À B¶À C À C6À C<À C|À C¡À C¢À CÀÀ CÆÀ DÀ DYÀ D_À DÀ D¤À DÖÀ EÀ EÀ EÀ E_À E—À EÀ EâÀ F$À F8À F>À FÀ FÈÀ GÀ G_À G—À GÊÀ GËÀ HÀ HMÀ H[À HaÀ H—À HåÀ HëÀ IÀ I+À IKÀ IlÀ IÀ I‡À I×À JÀ J>À J?À J‡À JÀ JÂÀ JÈÀ KÀ K^À KdÀ KzÀ K€À KÊÀ KøÀ KşÀ LÀ LÀ L>À LQÀ LeÀ L‰À L°À LÈÀ LñÀ LÿÀ M
+À MAÀ MqÀ M{À M„À MÀ M À M¦À MåÀ N#À N$À NSÀ NqÀ NrÀ N¡À N¹À NºÀ NøÀ NşÀ OMÀ O›À O¶À O¼À OïÀ PÀ PÀ PQÀ PWÀ P¢À PëÀ Q1À Q[À Q€À QÀ QËÀ QÑÀ RÀ RSÀ R‘À RÁÀ RÂÀ SÀ S(À S.À S€À S¹À S¿À T
+À TÀ TqÀ TàÀ UÀ UÀ U6À U7À UXÀ UYÀ UeÀ U–À U—À U£À UèÀ VÀ VGÀ V—À V«À WÀ WÀ WpÀ WÎÀ WşÀ X.À XgÀ X›À XÚÀ YÀ YnÀ Y‚À Y¶À YÛÀ YşÀ ZÀ ZÀ Z]À Z³À Z·À Z¹À ZºÀ [À [QÀ [¨À [©À [øÀ \'À \UÀ \£À \³À \èÀ ]2À ]_À ]ªÀ ]ÒÀ ^À ^À ^À ^OÀ ^PÀ ^|À ^ÇÀ ^êÀ _9À _ŒÀ _ßÀ `4À `=À `>À `ŒÀ `ÜÀ a'À aJÀ aÀ aòÀ aûÀ aüÀ b&À bSÀ bTÀ b…À bÁÀ bíÀ bîÀ cÀ c	À cPÀ c—À cÑÀ cñÀ còÀ dÀ dIÀ dJÀ d¾À e À eIÀ eVÀ eWÀ ecÀ exÀ eÀ eìÀ f À fQÀ fdÀ fkÀ fÇÀ gÀ g^À g•À g¾À hÀ hÀ hCÀ hƒÀ h¥À h«À h¯À h°À h¼À hÏÀ hïÀ iÀ i8À iXÀ izÀ i•À iªÀ i®À i¯À iÕÀ iûÀ j&À jSÀ j{À j­À jßÀ jçÀ jíÀ jñÀ jòÀ kÀ k,À kDÀ kLÀ kzÀ k~À kÀ k¥À k·À kĞÀ kØÀ kùÀ l%À l)À l*À l^À l¼À lóÀ mÀ mFÀ mÀ mÙÀ màÀ máÀ n;À nŠÀ nÀ nÀ n¨À nÜÀ nûÀ oÀ o+À o5À o;À o?À o@À oZÀ o†À o§À o»À oÙÀ oãÀ oéÀ oíÀ oîÀ p;À pXÀ pwÀ p‘À p«À pæÀ pêÀ pëÀ qÀ q6À q`À qaÀ qÀ qÂÀ qÆÀ qÇÀ qéÀ r
+À r.À rLÀ rRÀ rbÀ rfÀ rgÀ rµÀ rÖÀ r÷À sÀ suÀ syÀ szÀ s†À s­À sÙÀ tÀ tÀ t*À tKÀ tyÀ tzÀ t›À t¥À tÚÀ tşÀ u'À uPÀ uwÀ u À uÔÀ uùÀ v À vUÀ vaÀ vkÀ vqÀ vuÀ vvÀ v¬À vÛÀ wÀ waÀ w¤À wşÀ x)À x0À x1À xÀ xËÀ yÀ ybÀ y¨À y»À y¼À zÀ zpÀ zqÀ z“À z¾À zèÀ {À {;À {BÀ {CÀ {”À {ÈÀ |À |[À |À |ÚÀ |ÿÀ }FÀ }bÀ }À }«À }æÀ ~À ~,À ~9À ~UÀ ~·À ~½À ~¾À ~ãÀ À KÀ  À ğÀ öÀ ÷À €À €qÀ €›À €ÚÀ À À À  À HÀ ŒÀ ¤À ÿÀ ‚À ‚zÀ ‚›À ‚ÄÀ ‚÷À ƒ%À ƒEÀ ƒšÀ ƒ¼À „À „>À „yÀ „¯À „ÊÀ …-À …JÀ …¯À …ÒÀ †-À †RÀ †±À †ÃÀ ‡'À ‡€À ‡­À ‡İÀ ˆÀ ˆhÀ ˆ©À ˆğÀ ‰ À ‰:À ‰À ‰ÖÀ ŠÀ ŠJÀ Š…À ŠŒÀ Š¹À ‹À ‹@À ‹zÀ ‹´À ŒÀ ŒÀ Œ`À Œ¯À ŒÌÀ À À 5À SÀ vÀ ™À ¸À ÙÀ úÀ 	À ,À [À §À éÀ À À &À ,À -À ‰À ˜À ¡À áÀ !À (À )À ˆÀ ÚÀ ‘À ‘IÀ ‘€À ‘¿À ’À ’IÀ ’uÀ ’ĞÀ ’ÑÀ “ À “À “@À “_À “†À “ÈÀ “üÀ ”À ”5À ”RÀ ”tÀ ”¡À ”ÃÀ •'À •PÀ •uÀ •ŠÀ •ÏÀ –À –1À –NÀ –‡À –À –—À –˜À –çÀ —À —;À —AÀ —]À ——À —ËÀ ˜À ˜À ˜/À ˜6À ˜7À ˜[À ˜vÀ ˜”À ˜°À ˜ÓÀ ˜ìÀ ™&À ™WÀ ™€À ™¤À ™¹À ™ÀÀ ™ÄÀ ™ÅÀ ™üÀ šLÀ š›À š±À šÆÀ šäÀ ›À ›À ›DÀ ›qÀ ›šÀ ›³À ›ÌÀ ›ñÀ œÀ œZÀ œcÀ œjÀ œnÀ œoÀ œ›À œâÀ !À 9À vÀ }À ¦À áÀ À ZÀ ˆÀ ÕÀ ÿÀ Ÿ"À ŸUÀ Ÿ\À Ÿ`À ŸbÀ ŸcÀ Ÿ¤À ŸÈÀ Ÿ×À ŸğÀ  À  4À  MÀ  lÀ  À  ­À  ÊÀ  ëÀ ¡
+À ¡#À ¡PÀ ¡À ¡›À ¡·À ¡İÀ ¡ãÀ ¡äÀ ¡úÀ ¢À ¢7À ¢NÀ ¢sÀ ¢“À ¢¬À ¢ÕÀ £À £-À £kÀ £À £ºÀ £ÑÀ £èÀ ¤À ¤À ¤#À ¤^À ¤xÀ ¤ŒÀ ¤¼À ¤ØÀ ¤ìÀ ¥À ¥4À ¥RÀ ¥nÀ ¥’À ¥²À ¥ÆÀ ¥÷À ¦3À ¦sÀ ¦ŸÀ ¦¹À ¦ÓÀ §À §?À §FÀ §JÀ §KÀ §WÀ §¥À §¶À ¨À ¨4À ¨RÀ ¨hÀ ¨šÀ ¨°À ¨ÒÀ ¨üÀ ©À ©:À ©`À ©‚À ©µÀ ©óÀ ª5À ªcÀ ªÀ ª›À ªÛÀ «À «ZÀ «£À «§À «©À «ªÀ «úÀ ¬À ¬'À ¬QÀ ¬nÀ ¬ŠÀ ¬´À ¬ÙÀ ¬÷À ­À ­KÀ ­À ­½À ­ŞÀ ­ıÀ ®À ®HÀ ®dÀ ®€À ®´À ®çÀ ¯À ¯#À ¯‡À ¯‘À ¯®À ¯íÀ °À °À °NÀ °mÀ °À °»À °ÜÀ °ûÀ ±À ±9À ±VÀ ±sÀ ±¥À ±ÀÀ ±åÀ ²À ²'À ²JÀ ²oÀ ²À ²±À ²ÜÀ ²şÀ ³À ³5À ³TÀ ³À ³¨À ³ĞÀ ³óÀ ³úÀ ´*À ´YÀ ´|À ´ƒÀ ´åÀ ´éÀ µ:À µ‰À µŠÀ µÄÀ µûÀ µüÀ ¶IÀ ¶™À ¶µÀ ¶ÙÀ ·!À ·FÀ ·À ·°À ¸À ¸"À ¸wÀ ¸¤À ¸®À ¹À ¹JÀ ¹QÀ ¹›À ¹ÍÀ ¹íÀ ºÀ ºÀ ºÀ º]À º^À º{À º¥À ºÖÀ ºÿÀ »2À »`À »‚À »šÀ »ÇÀ »éÀ »şÀ »ÿÀ ¼MÀ ¼™À ¼¥À ¼éÀ ¼şÀ ½À ½4À ½9À ½:À ½iÀ ½jÀ ½¨À ½©À ½ÇÀ ½ØÀ ½÷À ¾'À ¾xÀ ¾œÀ ¾ªÀ ¾°À ¾ÍÀ ¾ãÀ ¿3À ¿À ¿ÏÀ ¿ñÀ ÀAÀ À|À À¶À ÀÑÀ Á%À Á2À ÁjÀ ÁpÀ ÁÀ Á”À Á•À ÁĞÀ ÁğÀ ÂÀ ÂdÀ ÂÀ ÂÀ Â¤À ÂÉÀ ÂßÀ ÂÿÀ ÃÀ ÃÀ ÃKÀ Ã‹À Ã¸À ÃäÀ ÃèÀ ÃéÀ ÄÀ Ä1À ÄXÀ ÄvÀ Ä„À ÄŠÀ Ä¡À ÄÁÀ ÄÅÀ ÄÆÀ ÄÿÀ ÅYÀ ÅÀ ÅÌÀ ÅÚÀ ÅàÀ ÆÀ Æ(À Æ,À Æ-À ÆQÀ ÆdÀ Æ‚À Æ¡À Æ¯À ÆµÀ ÆÍÀ ÆãÀ ÆçÀ ÆèÀ ÇÀ ÇÀ Ç6À ÇQÀ Ç_À ÇeÀ ÇyÀ Ç”À Ç˜À Ç™À ÇÌÀ ÇìÀ ÈÀ È8À ÈFÀ ÈLÀ ÈfÀ ÈÀ È…À È†À È¸À ÈÓÀ ÈùÀ ÉÀ É,À É2À ÉPÀ ÉkÀ ÉoÀ ÉpÀ É–À ÉªÀ ÉÉÀ ÉéÀ É÷À ÉıÀ ÊÀ Ê,À Ê0À Ê1À ÊfÀ ÊŠÀ Ê¹À ÊØÀ ÊæÀ ÊìÀ ËÀ Ë3À Ë^À ËyÀ Ë¤À Ë³À ËŞÀ ËæÀ ËşÀ Ì À Ì&À Ì*À Ì+À ÌRÀ ÌwÀ ÌxÀ Ì­À ÌÍÀ ÌøÀ ÍÀ Í)À Í/À ÍKÀ ÍfÀ ÍjÀ ÍkÀ ÍšÀ Í¼À ÍÎÀ ÍëÀ Î	À ÎÀ ÎÀ Î4À ÎTÀ ÎtÀ ÎxÀ ÎyÀ Î·À ÎÙÀ ÎëÀ ÏÀ Ï&À Ï4À Ï:À ÏQÀ ÏqÀ ÏuÀ ÏvÀ Ï¼À ÏİÀ ÏüÀ Ğ(À ĞJÀ ĞmÀ Ğ{À ĞÀ ĞÀ Ğ½À ĞÁÀ ĞÂÀ ĞëÀ Ñ.À ÑbÀ ÑŠÀ Ñ˜À ÑÀ Ñ¿À ÑßÀ ÑãÀ ÑäÀ ÒÀ ÒÀ ÒHÀ ÒyÀ Ò¬À Ò´À ÒÁÀ ÒëÀ ÓÀ ÓOÀ ÓWÀ Ó]À ÓaÀ ÓbÀ Ó‰À ÓÆÀ ÓêÀ ÔÀ Ô!À ÔeÀ ÔˆÀ Ô´À Ô¼À ÔÂÀ ÔÆÀ ÔÇÀ ÔôÀ Õ?À ÕÀ ÕÓÀ ÖÀ ÖPÀ Ö›À Ö À Ö¡À ÖÀÀ ÖÙÀ ÖøÀ ×À ×SÀ ×gÀ ×ŠÀ ×­À ×ÎÀ ×ñÀ Ø/À ØDÀ ØJÀ ØNÀ ØOÀ ØnÀ Ø‡À Ø›À ØïÀ ÙÀ ÙCÀ ÙWÀ ÙdÀ Ù…À Ù‹À ÙÜÀ Ú+À Ú|À Ú“À Ú—À Ú˜À Ú¤À ÚÄÀ ÚæÀ ÛÀ Û&À Û*À Û+À Û7À Û\À ÛuÀ Û¨À ÛâÀ ÜÀ ÜOÀ ÜSÀ ÜTÀ Ü`À ÜrÀ Ü¨À ÜåÀ İÀ İXÀ İlÀ İpÀ İqÀ İ}À İÀ İ¥À İ¹À İÖÀ İöÀ ŞÀ Ş?À ŞTÀ ŞXÀ ŞYÀ Ş—À Ş»À ŞìÀ ßÀ ßÀ ß"À ß#À ßaÀ ßƒÀ ßÔÀ àÀ àÀ àÀ à6À àhÀ à~À à¹À à¿À àÒÀ àÖÀ à×À á	À á$À á2À á8À á]À áÀ á­À áÕÀ áïÀ â:À âeÀ âšÀ â¶À âİÀ âéÀ ãÀ ã-À ãRÀ ãZÀ ã[À ãpÀ ãÃÀ äÀ äMÀ ä~À ä²À äŞÀ åÀ åFÀ åsÀ åÊÀ åöÀ æAÀ æzÀ æˆÀ æ–À æ À æ¨À æ®À æ²À æ³À æÎÀ æéÀ æ÷À æıÀ æşÀ ç#À ç\À çsÀ ç’À ç¼À èÀ èCÀ èKÀ èQÀ èUÀ èVÀ èŠÀ è¹À è½À è¾À èôÀ éÀ éÀ é#À é$À éFÀ épÀ é˜À éÁÀ ééÀ ê7À êoÀ êÀ êÊÀ ê×À ëÀ ëÀ ë=À ëlÀ ë{À ëÀ ë…À ë†À ë¶À ëÍÀ ëÑÀ ëÒÀ ìÀ ì1À ì5À ì6À ìbÀ ìyÀ ì}À ì~À ì²À ìóÀ ì÷À ìøÀ íÀ í1À í2À í>À í~À í™À í§À í­À íÙÀ îÀ îOÀ înÀ îŒÀ î’À îÂÀ ïÀ ï
+À ïÀ ïÀ ïÀ ï~À ïÀ ï‹À ïîÀ ïïÀ ïûÀ ğ/À ğoÀ ğpÀ ğ|À ğ°À ğğÀ ğñÀ ğıÀ ñÀ ñ À ñ,À ñbÀ ñsÀ ñ•À ñ¶À ññÀ òÀ ò6À ò|À òƒÀ ò‡À òˆÀ ò”À òËÀ óÀ óÀ ó^À óªÀ óÒÀ ô0À ôŒÀ ôİÀ õ!À õ(À õ)À õoÀ õ†À õœÀ õ½À õÛÀ õâÀ õãÀ öÀ ö0À öVÀ ö]À ö^À öwÀ öØÀ ÷3À ÷9À ÷À ÷áÀ ÷ñÀ ÷òÀ øRÀ ø À øòÀ ùLÀ ùzÀ ùÏÀ ùêÀ ùùÀ úÀ úkÀ ú™À ú·À úßÀ úçÀ ûÀ û,À û4À û:À û;À û_À ûnÀ û|À û“À ûÑÀ ûúÀ üÀ ü?À ügÀ ü…À ü¥À ü¬À ü­À ü×À üÿÀ ıÀ ı%À ıUÀ ı€À ı À ıÅÀ ıŞÀ şÀ ş(À ş?À şjÀ ş¬À şµÀ ş»À ş¼À şÒÀ ÿÀ ÿbÀ ÿtÀ ÿ°À  À KÀ À ¾À îÀÀnÀ¤ÀÀ9ÀfÀ{À—À´ÀÛÀ
+À5À[ÀÀÀ˜À À¦À§ÀÀÀÙÀ4ÀcÀ±ÀçÀÀ/ÀQÀ‘ÀËÀ÷À3ÀmÀ‘ÀµÀŞÀûÀ"ÀMÀhÀ–ÀÜÀéÀóÀüÀ	À2À8À9À]ÀlÀÀ­ÀÖÀôÀ	À	.À	kÀ	À	åÀ	óÀ
+À
+2À
+GÀ
+oÀ
+¯À
+¶À
+ºÀ
+»ÀÀNÀTÀ¢ÀëÀBÀšÀÆÀÀYÀ«ÀÿÀNÀcÀuÀ|ÀÖÀéÀJÀeÀlÀpÀqÀ•ÀĞÀùÀÀ#ÀwÀ{À|ÀˆÀ¦À¾ÀáÀÀÀ.ÀRÀyÀ¡À¨À©ÀÎÀÒÀÓÀßÀ&ÀXÀYÀŒÀĞÀ!ÀKÀqÀrÀ˜À±ÀÎÀÔÀğÀÀ9À:ÀiÀ±À·ÀáÀúÀ$ÀNÀtÀzÀ{À¨ÀîÀ(ÀrÀ{ÀµÀÿÀÀÀGÀeÀ¹À×À+À1À5À6À’À“À¬ÀÅÀâÀòÀúÀÀ:ÀBÀHÀLÀMÀgÀ€À¤ÀÓÀïÀÀ*À:ÀBÀHÀLÀMÀgÀ€À¤ÀÓÀïÀÀ*À:ÀBÀHÀLÀMÀiÀ’À–À—À²ÀñÀõÀöÀÀPÀTÀVÀWÀ‚ÀµÀ¶À ÀÀIÀJÀÀÀ×ÀØÀüÀşÀÿÀ4À5À~ÀÀÀÁÀİÀŞÀêÀ-À]ÀaÀbÀnÀÄÀåÀéÀëÀìÀ DÀ À ¾À íÀ!À!À!À!LÀ!cÀ!dÀ!pÀ!’À!“À!ŸÀ!ÄÀ!İÀ"À"RÀ"VÀ"WÀ"cÀ"uÀ"²À"ğÀ#À#À#	À#À#LÀ#ƒÀ#‡À#ˆÀ#”À#ÊÀ#ëÀ#ïÀ#ğÀ#üÀ$À$7À$LÀ$PÀ$RÀ$SÀ$…À$ÂÀ$ÃÀ$áÀ%#À%gÀ%hÀ%tÀ%¦À%§À%³À%ùÀ%úÀ&À&SÀ&TÀ&`À&®À&¯À&»À'À'À'À'oÀ'pÀ'|À'ÅÀ'ÆÀ'ÒÀ(À(À((À(yÀ(zÀ(†À(ÙÀ(ÚÀ(æÀ)À)À)À)BÀ)À)À)œÀ)ÜÀ)İÀ)éÀ*À*fÀ*gÀ*sÀ*–À*éÀ+À+À+0À+4À+5À+AÀ+¢À+£À+¯À+øÀ+ùÀ,À,PÀ,QÀ,]À,ªÀ,«À,·À-À-À-À-BÀ-‡À-ˆÀ-¦À-èÀ-éÀ-õÀ.'À.(À.4À.xÀ.yÀ.…À.ÒÀ.ÓÀ.ßÀ/-À/.À/:À/ŠÀ/‹À/—À/îÀ/ïÀ/ûÀ0DÀ0EÀ0QÀ0£À0¤À0°À1À1À1À1aÀ1bÀ1nÀ1šÀ1›À1§À1ÊÀ2À2À2%À2{À2«À2ÚÀ2àÀ3À3@À3FÀ3vÀ3¥À3«À3¬À3ËÀ3ÑÀ3ÒÀ3ŞÀ4
+À4]À4^À4jÀ4ŸÀ4 À4¬À5À5À5À5\À5]À5iÀ5´À5µÀ5ÁÀ6À6À6À6iÀ6kÀ6lÀ6™À6šÀ6İÀ7!À7IÀ7|À7}À7À7ÂÀ7äÀ8À8À8#À8eÀ8fÀ8rÀ8¤À8¥À8±À8ğÀ8ñÀ8ıÀ9JÀ9KÀ9WÀ9¥À9¦À9²À:À:À:À:fÀ:gÀ:sÀ:»À:¼À:ÈÀ;À;À;*À;pÀ;qÀ;}À;¾À;¿À;ËÀ;÷À;øÀ<À<LÀ<MÀ<YÀ<¯À<ßÀ=À=À=DÀ=tÀ=zÀ=ªÀ=ÙÀ=ßÀ=àÀ=ÿÀ>À>À>À>pÀ>•À>šÀ>›À>§À>ãÀ>äÀ>ğÀ?QÀ?RÀ?^À?¢À?£À?¯À?õÀ?öÀ@À@OÀ@PÀ@\À@ÁÀ@ÂÀ@ÎÀ@üÀACÀAvÀAœÀA¤ÀAÖÀAüÀBÀB6ÀB\ÀBdÀB–ÀB¼ÀBÄÀBèÀBğÀBôÀBõÀCÀC ÀC"ÀC4ÀC5ÀC`   _SliderTypeSliderInteractionSlider_SliderState_SliderRenderObjectWidget_RenderSlider_AdjustSliderIntent_SliderAdjustmentType!_ValueIndicatorRenderObjectWidget_RenderValueIndicator_SliderDefaultsM2_SliderDefaultsM3Year2023_SliderDefaultsM3#flutter.material.slider.mouseCursor0The cursor for a mouse pointer when it enters or is hovering over the
+widget.
+
+If [mouseCursor] is a [WidgetStateMouseCursor],
+[WidgetStateProperty.resolve] is used for the following [WidgetState]s:
+
+ * [WidgetState.dragged].
+ * [WidgetState.hovered].
+ * [WidgetState.focused].
+ * [WidgetState.disabled]. –B

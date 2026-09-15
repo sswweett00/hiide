@@ -1,0 +1,2026 @@
+RdetachtoString_containerLayerestimatedBoundsrepaintCompositedChild_repaintCompositedChildupdateLayerProperties%debugInstrumentRepaintCompositedChild
+paintChild_compositeChildappendLayer_isRecording_currentLayer	_recorder_canvasrecordercanvas_startRecordingaddCompositionCallbackstopRecordingIfNeededsetIsComplexHintsetWillChangeHintaddLayer	pushLayercreateChildContextpushClipRectpushClipRRectpushClipRSuperellipsepushClipPathpushColorFilterpushTransformpushOpacityisTightisNormalizeddebugAssertIsValid_ownerlistenerdisposeonNeedVisualUpdateonSemanticsOwnerCreatedonSemanticsUpdateonSemanticsOwnerDisposedrequestVisualUpdaterootNode	_rootNode_shouldMergeDirtyNodes_nodesNeedingLayoutnodesNeedingLayoutdebugDoingLayout_debugDoingLayout_debugDoingChildLayoutflushLayout#_debugAllowMutationsToDirtySubtrees_enableMutationsToDirtySubtrees"_nodesNeedingCompositingBitsUpdateflushCompositingBits_nodesNeedingPaintnodesNeedingPaintdebugDoingPaint_debugDoingPaint
+flushPaintsemanticsOwner_semanticsOwner debugOutstandingSemanticsHandles_outstandingSemanticsHandlesensureSemantics_updateSemanticsOwner_didDisposeSemanticsHandle_debugDoingSemantics_nodesNeedingSemanticsUpdate$_nodesNeedingSemanticsGeometryUpdateflushSemanticsdebugDescribeChildrendebugFillProperties	_children	_manifold_debugParent_debugSetParent%_debugRootSuffixForTimelineEventNamesattach!_debugAllowChildListModifications
+adoptChild	dropChildvisitChildrensemanticsEnabled
+reassembledebugDisposed_debugDisposed
+parentDatasetupParentDatadepth_depthredepthChildredepthChildrenparent_parentdebugCreator_reportExceptiondebugDoingThisResize_debugDoingThisResizedebugDoingThisLayout_debugDoingThisLayoutdebugActiveLayout_debugActiveLayout_withDebugActiveLayoutCleareddebugCanParentUseSize_debugCanParentUseSize_debugMutationsLocked_debugCanPerformMutationsdebugLayoutParentownerattacheddebugNeedsLayout_needsLayout_isRelayoutBoundary debugDoingThisLayoutWithCallback_doingThisLayoutWithCallbackconstraints_constraintsdebugAssertDoesMeetConstraintsdebugCheckingIntrinsics._debugRelayoutBoundaryAlreadyMarkedNeedsLayoutmarkNeedsLayoutmarkParentNeedsLayout%markNeedsLayoutForSizedByParentChangescheduleInitialLayout_layoutWithoutResizelayoutdebugResetSizesizedByParentperformResizeperformLayoutinvokeLayoutCallbackdebugDoingThisPaint_debugDoingThisPaintdebugActivePaint_debugActivePaintisRepaintBoundary!debugRegisterRepaintBoundaryPaintalwaysNeedsCompositing_wasRepaintBoundaryupdateCompositedLayerlayer_layerHandle
+debugLayer_needsCompositingBitsUpdatemarkNeedsCompositingBitsUpdate_needsCompositingneedsCompositing_updateCompositingBitsdebugNeedsPaint_needsPaintdebugNeedsCompositedLayerUpdate_needsCompositedLayerUpdatemarkNeedsPaintmarkNeedsCompositedLayerUpdate_skippedPaintingOnLayerscheduleInitialPaintreplaceRootLayer_paintWithContextpaintBounds
+debugPaintpaintapplyPaintTransformpaintsChildgetTransformTodescribeApproximatePaintClipdescribeSemanticsClipscheduleInitialSemanticsdescribeSemanticsConfigurationsendSemanticsEventsemanticBoundsdebugNeedsSemanticsUpdatedebugSemanticsclearSemanticsmarkNeedsSemanticsUpdate
+_semanticsvisitChildrenForSemanticsassembleSemanticsNodehandleEventtoStringShorttoStringDeeptoStringShallowshowOnScreendescribeForErrordebugValidateChild_childchild_needsRebuildlayoutCallbackrunLayoutCallbackscheduleLayoutCallbackpreviousSiblingnextSibling_debugUltimatePreviousSiblingOf_debugUltimateNextSiblingOf_childCount
+childCount_firstChild
+_lastChild_insertIntoChildListinsertaddaddAll_removeFromChildListremove	removeAllmove
+firstChild	lastChildchildBefore
+childAftersystemFontsDidChange'_hasPendingSystemFontsDidChangeCallBack_scheduleSystemFontsUpdateinitSemanticsAnnotations
+properties_properties	container
+_containerexplicitChildNodes_explicitChildNodesexcludeSemantics_excludeSemanticsblockUserActions_blockUserActionslocaleForSubtree_localeForSubtree_updateAttributedFields_effectiveAttributedLabel_effectiveAttributedValue"_effectiveAttributedIncreasedValue"_effectiveAttributedDecreasedValue_effectiveAttributedHint_attributedLabel_attributedValue_attributedIncreasedValue_attributedDecreasedValue_attributedHinttextDirection_textDirection_performTap_performLongPress_performDismiss_performScrollLeft_performScrollRight_performScrollUp_performScrollDown_performIncrease_performDecrease_performCopy_performCut_performPaste$_performMoveCursorForwardByCharacter%_performMoveCursorBackwardByCharacter_performMoveCursorForwardByWord _performMoveCursorBackwardByWord_performSetSelection_performSetText!_performDidGainAccessibilityFocus!_performDidLoseAccessibilityFocus_performFocus_performExpand_performCollapsemergeIntoParentblocksUserActionsaccessibilityFocusBlockTypetagsForChildrenlocaleForChildren==hashCode_renderObject_isEffectiveConfigWritable_originalConfiguration_effectiveConfigurationwasSemanticsBoundary	effectiveoriginalupdateConfig	absorbAllresetclearconfigToMergeUpmergesToSibling markSiblingConfigurationConflictrenderObject_hasSiblingConflict_blocksPreviousSibling_containsIncompleteFragmentbuiltcachedSemanticsNodesemanticsNodesmergeUpsiblingMergeGroups_producedSiblingNodesAndOwnersgeometryconfigProviderparentInSemanticsTreeparentDataDirtygeometryDirty_currentTreeShapeToken"firstAncestorNodeWithCleanGeometrycomputeAncestorInfocontributesToSemanticsTreeisRootshouldFormSemanticsNodedebugCheckForParentDatadebugCheckForBuildsisBlockingPreviousSibling
+shouldDropmarkNeedsBuildupdateChildren_getNonBlockedChildren_getTagsForChildren#_collectChildMergeUpAndSiblingGroup_didUpdateParentDataensureGeometry_updateChildGeometry_updateGeometryensureSemanticsNode_buildSemantics_buildSemanticsSubtree_produceSemanticsNode_createSemanticsNode_mergeSiblingGroup_updateSemanticsNodeGeometry_updateSiblingNodesGeometriesmarkNeedsUpdate_marksConflictsInMergeGroup	transformsemanticsClipRectpaintClipRectrect	isVisiblehiddencomputeChildGeometry_transformRect_intersectRects
+ParentDataPaintingContextCallback_TransformRectPaintingContextConstraintsRenderObjectVisitorLayoutCallback_LocalSemanticsHandlePipelineOwnerPipelineOwnerVisitorPipelineManifoldRenderObjectRenderObjectWithChildMixin#RenderObjectWithLayoutCallbackMixinContainerParentDataMixinContainerRenderObjectMixin"RelayoutWhenSystemFontsChangeMixinSemanticsAnnotationsMixin_SemanticsParentData_SemanticsConfigurationProvider_SemanticsFragment_IncompleteSemanticsFragment_MergeUpAndSiblingMergeGroups_RenderObjectSemantics"debugDumpRenderObjectSemanticsTree'_debugCollectRenderObjectSemanticsTrees_SemanticsGeometryDiagnosticsDebugCreator‚¶PictureRecorderDiagnosticPropertiesBuilderDiagnosticsNodeDiagnosticsPropertyDoublePropertyEnumPropertyErrorDescription	ErrorHintErrorSummaryFlagPropertyFlutterErrorInformationCollectorIntPropertyStringPropertyHitTestEntryHitTestResultsetupParentData	protectedmustCallSupervoidoverrideStringcanvasOffsetRectMatrix4CanvasrepaintCompositedChildClipContextContainerLayerisRepaintBoundarybool_needsPaintdebugAlsoPaintedParent!debugRegisterRepaintBoundaryPaintincludedParentincludedChild_layerHandlelayerOffsetLayerupdateCompositedLayeroldLayerattachedoffsetremoveAllChildren	identical_needsCompositedLayerUpdatedebugCreatorruntimeTypechildContextpaintBounds_paintWithContextzerostopRecordingIfNeeded_wasRepaintBoundarycustomContextdebugOnProfilePaintcallgetSaveCountLayerremoveappendPictureLayerRendererBindinginstancecreatePictureRecordercreateCanvasCompositionCallbackaddCompositionCallbackVoidCallbackdebugRepaintRainbowEnabledPaintstylePaintingStylestrokestrokeWidthcolordebugCurrentRepaintColortoColordrawRectdeflatedebugPaintLayerBordersEnabledColorpictureendRecordingisComplexHintwillChangeHintalwaysNeedsCompositinghasChildrenchildPaintBoundsneedsCompositingClipRectLayerCliphardEdgeclipBehaviornoneshiftclipRectclipRectAndPaintClipRRectLayerRRect	antiAlias	clipRRectclipRRectAndPaintRSuperellipseClipRSuperellipseLayerclipRSuperellipseclipRSuperellipseAndPaintPathClipPathLayerclipPathclipPathAndPaintColorFilterColorFilterLayercolorFilterTransformLayertranslationValuesdxdymultiplytranslateByDouble	transformMatrixUtilsinverseTransformRectsavestoragerestoreOpacityLayerintalphaobjectRuntimeTypehashCodeBoxConstraintsdebugAssertIsValid==toStringdebugDumpRenderTree	immutabledoublenanRenderConstrainedBoxadditionalConstraintslayoutvisitChildrenvisitChildrenForSemanticsinvokeLayoutCallbackTSemanticsHandledebugMaybeDispatchCreatedsemanticsOwneraddListenerdebugMaybeDispatchDisposedremoveListener_didDisposeSemanticsHandleDiagnosticableTreeMixinrequestVisualUpdateSemanticsUpdateFlutterViewSemanticsUpdateCallbackdetachattachList
+nonVirtualIterablekReleaseModeMap#debugEnhanceLayoutTimelineArgumentslengthFlutterTimeline	startSync	arguments
+isNotEmptysortadepthbiaddAllgetRange_needsLayoutowner_layoutWithoutResizechildflushLayoutisEmpty
+finishSyncnode_needsCompositingBitsUpdate_updateCompositingBitsclearflushCompositingBits"debugEnhancePaintTimelineArgumentsupdateLayerProperties_skippedPaintingOnLayer
+flushPaintsemanticsEnabledSemanticsOwnerSemanticsBinding debugOutstandingSemanticsHandles
+DeprecatedensureSemantics_listeneronSemanticsUpdatedisposemarkNeedsUpdateSetscheduleInitialSemanticswhereobjecttoListrootNode
+_semanticsparentDataDirtyupdateChildrendebugCheckForParentDatashouldFormSemanticsNodegeometryDirty_isRelayoutBoundarygeometrycontributesToSemanticsTreemergeUp	whereType	_childrennodeInSubtreeObjectcomputeAncestorInfo"firstAncestorNodeWithCleanGeometryaddrenderObjectensureGeometryreversed	isVisibleisRootparentInSemanticsTreetargetensureSemanticsNodedebugCheckForBuildssendSemanticsUpdateflushSemanticstoDiagnosticsNodedebugFillPropertiesdefaultValue_debugParent	drawFramecontainsforEach
+adoptChild
+ListenableonNeedVisualUpdateSchedulerBindingensureVisualUpdate	RenderBoxRenderObjectElementPictureImageSizesize
+RenderViewhitTestmarkNeedsLayoutHitTestTargetdebugPaintSizeEnabledBindingBasereassembleApplication
+reassemble
+parentData_depthredepthChildren_parentparentDebugCreatorwidgets
+StackTracereportErrorFlutterErrorDetails	exceptionstacklibrarycontextinformationCollector
+kDebugModeDiagnosticsTreeStyletruncateChildrenpragma	fromPartserrorPropertydebugDoingLayout#_debugAllowMutationsToDirtySubtrees_doingThisLayoutWithCallback_debugMutationsLockeddebugLayoutParentdebugActiveLayoutdebugDoingThisLayoutperformLayoutconfigProvider	effectiveisSemanticBoundarybuiltRenderSliverSliverGeometry
+StateError_debugDoingThisLayoutdebugPrintMarkNeedsLayoutStacksdebugPrintStacklabel_nodesNeedingLayout_debugDoingLayoutdebugPrintLayouts
+debugPrintedebugProfileLayoutsEnabledtoTimelineArgumentsisAppliedConstraintcurrentsplitPatternRegExpmatchAsPrefixMatch
+groupCountgrouptrimparentUsesSizeisTightcomputeDryLayoutOverlayPortaloverlayChildLayoutBuilder	GlobalKey_enableMutationsToDirtySubtreesRepaintBoundaryLayerHandlemarkNeedsCompositingBitsUpdate"_nodesNeedingCompositingBitsUpdate_nodesNeedingPaintremoveWheretdebugDoingPaintdebugPrintMarkNeedsPaintStacksmarkNeedsPaintRenderOpacity_debugDoingPaintdebugProfilePaintsEnableddescribeForError
+paintChildRenderOffstagepaintsChildidentityindexapplyPaintTransforminvertpushClipRectSemanticsNodeRenderViewportBasecacheExtent_debugDoingSemantics_semanticsOwner_nodesNeedingSemanticsUpdate$_nodesNeedingSemanticsGeometryUpdateSemanticsConfigurationSemanticsEvent	sendEventcachedSemanticsNodeisMergedIntoParentsendSemanticsEventclearSemantics
+updateWithconfigchildrenInInversePaintOrderPointerEventdescribeIdentityDiagnosticLevelinfodebugtoStringDeepprefixLineOneprefixOtherLinesminLevel	wrapWidthtoStringShallowjoinervalueifTrueleveltooltipmissingIfNull+isBlockingSemanticsOfPreviouslyPaintedNodesshowInViewportSingleChildScrollViewDurationCurveCurveseaseshowOnScreen
+descendantrectdurationcurveshallownameSingleChildRenderObjectWidget	ChildTypeErrorSpacer_child	dropChildredepthChildlayoutCallbackscheduleLayoutCallbackOverlayOverlayEntryLayoutBuilderrunLayoutCallbackSliverLayoutBuildervisibleForOverriding_needsRebuilddebugNeedsLayoutnextSiblingpreviousSibling
+firstChild	lastChildParentDataTypeRenderBoxContainerDefaultsMixinContainerBoxParentDataMultiChildRenderObjectWidget!SlottedContainerRenderObjectMixinequals_childCountafter_firstChild
+_lastChild_debugUltimatePreviousSiblingOf_debugUltimateNextSiblingOf_insertIntoChildListinsert_removeFromChildListsystemFontsDidChangeTextPainter	ParagraphSchedulerPhasetransientCallbacksidleschedulerPhase'_hasPendingSystemFontsDidChangeCallBackscheduleFrameCallbackdebugDisposedPaintingBindingsystemFonts_scheduleSystemFontsUpdateSemanticsPropertiesLocaleTextDirection_properties
+properties
+_container	container_explicitChildNodesexplicitChildNodes_excludeSemanticsexcludeSemantics_blockUserActionsblockUserActions_localeForSubtreelocaleForSubtree_textDirectiontextDirection_updateAttributedFieldsmarkNeedsSemanticsUpdateExcludeSemantics	SemanticsSemanticsActiontap	longPress_attributedLabel_effectiveAttributedLabel_attributedValue_effectiveAttributedValue_attributedIncreasedValue"_effectiveAttributedIncreasedValue_attributedDecreasedValue"_effectiveAttributedDecreasedValue_attributedHint_effectiveAttributedHintAttributedStringattributedLabelattributedValueattributedIncreasedValueincreasedValueattributedDecreasedValuedecreasedValueattributedHinthintdescribeSemanticsConfiguration
+identifierisBlockingUserActionsscopesRoutetoggledcheckedenabled	isEnabled	isCheckedmixedisCheckStateMixed	isToggledselected
+isSelectedbuttonisButtonexpanded
+isExpandedlinkisLinklinkUrlsliderisSliderkeyboardKeyisKeyboardKeyheaderisHeaderheadingLevel	textFieldisTextFieldreadOnly
+isReadOnly	focusableisFocusablefocused	isFocusedaccessibilityFocusBlockTypeinMutuallyExclusiveGroupisInMutuallyExclusiveGroupobscured
+isObscured	multilineisMultilinehiddenisHiddenimageisImage
+isRequiredtraversalParentIdentifiertraversalChildIdentifierhintOverrides
+namesRoute
+liveRegionmaxValueLengthcurrentValueLengthsortKeytagForChildrenaddTagForChildrenrolecontrolsNodesvalidationResulthitTestBehavior	inputTypeminValuemaxValueonTap_performTaponLongPress_performLongPress	onDismiss_performDismissonScrollLeft_performScrollLeftonScrollRight_performScrollRight
+onScrollUp_performScrollUponScrollDown_performScrollDown
+onIncrease_performIncrease
+onDecrease_performDecreaseonCopy_performCopyonCut_performCutonPaste_performPasteonMoveCursorForwardByCharacter$_performMoveCursorForwardByCharacteronMoveCursorBackwardByCharacter%_performMoveCursorBackwardByCharacteronMoveCursorForwardByWord_performMoveCursorForwardByWordonMoveCursorBackwardByWord _performMoveCursorBackwardByWordonSetSelection_performSetSelection	onSetText_performSetTextonDidGainAccessibilityFocus!_performDidGainAccessibilityFocusonDidLoseAccessibilityFocus!_performDidLoseAccessibilityFocusonFocus_performFocusonExpand_performExpand
+onCollapse_performCollapsecustomSemanticsActionsTextSelectionMergeSemanticsIgnorePointerAbsorbPointerAccessibilityFocusBlockTypeSemanticsTagmergeIntoParentblocksUserActionslocaleForChildren	setEqualstagsForChildrenhashhashAllUnorderedoriginalchildConfigurationsDelegateValueSettercopyabsorbRenderParagraphhasBeenAnnotated_getNonBlockedChildrenBlockSemanticsisBlockingPreviousSiblingisInvisible	semanticsmarkNeedsBuildresetblockSubtreeisMergingSemanticsOfDescendants$1$2toSet	isMergeUpmapfragmentconfigToMergeUp	absorbAllchildSemanticssiblingMergeGroups	removeAllremovedChildupdateConfiglocalerenderChild$ChildSemanticsConfigurationsDelegate_didUpdateParentData"ChildSemanticsConfigurationsResultsemanticBoundsrootonlyDirtyChildrencomputeChildGeometryparentPaintClipRectpaintClipRectparentSemanticsClipRectsemanticsClipRectparentTransform_updateGeometrynewGeometryexpandsiblingChildexplicitSiblingChildusedSemanticsIdstagsid_buildSemanticssemanticsNodesassembleSemanticsNodemergesToSiblingexplicitChildMapEntryentriesentry	intersecttransformRectexpandToIncludekeywasSemanticsBoundary_blocksPreviousSibling markSiblingConfigurationConflictisCompatibleWithjquotedrenderViews
+renderViewjoinisZerodescribeApproximatePaintClipdescribeSemanticsClipclonemultiplyInPlaceapply	ClipContextSemanticsHandleDiagnosticableTreeMixin
+ListenableHitTestTargetRenderObject
+ParentData_SemanticsFragmentDiagnosticsPropertyRRzû¢á§³ïKüBƒ,„rDiagnosticPropertiesBuilderDiagnosticsNodeDiagnosticsPropertyDoublePropertyEnumPropertyErrorDescription	ErrorHintErrorSummaryFlagPropertyFlutterErrorInformationCollectorIntPropertyStringProperty ‚ÿpackage:flutter/foundation.dart„›„»HitTestEntryHitTestResult „tpackage:flutter/gestures.dart  „½package:flutter/painting.dart 
+°ÄPictureRecorder š   ª­ui­dart:ui  È   package:flutter/animation.dart  ñ   package:flutter/foundation.dart  ‚   package:flutter/gestures.dart  ‚C   package:flutter/painting.dart  ‚k   package:flutter/scheduler.dart  ‚”   package:flutter/semantics.dart  ‚¾   binding.dart  ‚Õ   
+debug.dart  ‚ê   
+layer.dartÀ#€ Àúušv <€†€¤€¥€¿€Ã€ò€ö2So˜™ÆÇğ‚‚B‚j‚“‚¼‚½‚Ô‚é‚ş‚ÿƒ(ƒ1ƒVƒoƒŒƒ¤ƒºƒÔƒçƒı„„)„G„\„t„½„å„æ….…2…|…Ä…ø…ü†
+††Y††±†î†û‡‡‡ ‡,‡M‡O‡P‡…‡‰‡Úˆ&ˆ*ˆ`ˆ¹ˆº‰‰ ‰f‰g‰}‰‰ÓŠŠbŠvŠzŠË‹‹k‹µ‹Ï‹ÓŒŒXŒ„Œ¦Œ¬ŒôWX€ÎV\¨ÆÇîô?Œİùÿe†è‘‘[‘_‘`‘‡‘¡‘Ê‘í‘ô’’)’`’’¿’Ü’å’ø““A“_“…“µ“¶””N”™”À••B•O•Œ•ª•¼•é•ş–
+–0–Š–˜–Å——|—Ç—Ğ˜˜˜:˜;˜x˜­˜½™™™$™%™j™¢™£™òš&šcšš‘š’šàšæ›1›~›Ìœœœœ#œsœ”œÎ0^_ ¼Ìö	kw¢ôŸUŸŸ¥ŸØ    Y © İ ã ó ù¡F¡`¡•¡¯¡Ø¢¢¢¢:¢I¢¢¦¢¯¢Â¢Ì¢Ğ¢Ñ¢õ¢û£I£˜£è¤¤/¤W¤j¤t¤u¤˜¤·¤İ¥+¥t¥ ¥×¥ş¦+¦8¦e¦k¦o¦p¦¬¦Ç¦ì§)§*§l§§§ê§÷¨&¨L¨T¨f¨Ÿ¨Ò© ©5©A©G©|©Ã©éªªªª]ªlªrª»««.«4««”«¡«Ã«Ş«ò¬¬¬¬4¬[¬k¬‚¬©¬Ì¬í¬ü­#­F­g­o­‚­Œ­¢­¦­§­¼­Û­ü®®®P®€®†®½®ù¯¯:¯S¯Y¯|¯“¯—¯˜¯¼¯Â°°V°u°°—°²°Ë°Ñ°ô±	±±±)±D±w±¹±ú²&²*²+²|²‹²‘²ß³-³w³·³½³ù³ÿ´´:´€´½´Á´Â´ıµµOµµíµú¶ ¶O¶š¶¬¶¹¶Ê¶ë····(·P·n·—·µ·í¸+¸3¸^¸|¸¥¸Ã¸ğ¹!¹)¹<¹F¹~¹˜¹®¹Â¹Æ¹Çºº+º1º€ºÉºØºŞ»)»y»Å»ç¼¼$¼=¼C¼l¼p¼q¼Ä¼Ê½½c½°½â½è¾3¾ƒ¾Ï¾ñ¿¿/¿H¿N¿x¿|¿}¿²¿¸À @	À @DÀ @JÀ @—À @éÀ A9À AÀ A…À A•À A›À AéÀ AöÀ BÀ B2À BJÀ BNÀ BOÀ B À BïÀ C?À CaÀ CgÀ C¶À CúÀ DÀ DÀ DYÀ D©À DùÀ EGÀ EŠÀ EŸÀ E¥À EöÀ FGÀ F”À FåÀ G5À GsÀ GyÀ G‰À GÀ GÚÀ GîÀ H À HÀ HDÀ HYÀ HuÀ H|À HÊÀ IÀ I=À IcÀ IiÀ I†À I£À IàÀ IòÀ JÀ J$À J%À JHÀ JrÀ JvÀ JwÀ J¿À JÅÀ KÀ KÀ KgÀ K—À K›À KœÀ KËÀ KÑÀ L#À LkÀ L¢À LîÀ M>À M|À MÀÀ MÆÀ NÀ NXÀ NmÀ NsÀ N»À OÀ OMÀ ObÀ OhÀ O¹À PÀ PÀ PÀ PgÀ P¨À P®À P÷À PıÀ QGÀ Q”À QØÀ R(À RxÀ RÀÀ SÀ SBÀ SWÀ SvÀ S‘À S¤À S·À SŞÀ TÀ T"À T)À TNÀ TkÀ T~À T„À T¼À TØÀ UÀ U#À UGÀ UnÀ U¹À UÍÀ UÚÀ V=À VPÀ VVÀ VZÀ V[À V’À V˜À VçÀ VíÀ W2À W8À WˆÀ WËÀ WÑÀ X!À XlÀ X“À X™À XêÀ Y,À Y2À YƒÀ Y‰À YĞÀ YñÀ ZÀ ZÀ Z0À ZEÀ ZlÀ Z”À Z²À Z¹À ZŞÀ ZûÀ [À [À [HÀ [ƒÀ [ŸÀ [àÀ [ìÀ \À \9À \‚À \–À \£À ]À ]À ]À ]#À ]$À ]^À ]dÀ ]³À ]¹À ]şÀ ^À ^TÀ ^—À ^À ^øÀ _CÀ _jÀ _pÀ _ÉÀ `À `À `jÀ `pÀ `ÀÀ `ÆÀ aÀ a>À aYÀ alÀ a}À a¢À aÉÀ añÀ bÀ bÀ bCÀ b`À bsÀ byÀ b­À bôÀ cÀ caÀ cmÀ c—À c¾À dÀ dÀ d(À dIÀ d^À dtÀ dŠÀ d¯À d¸À dËÀ dÑÀ dÕÀ dÖÀ e À eÀ eUÀ e[À e À e¦À eöÀ f9À f?À fÀ fÙÀ fõÀ fûÀ gKÀ gŒÀ g’À gÖÀ gÜÀ h#À hBÀ h]À hpÀ hÀ h”À h»À hãÀ i À iÀ i,À iIÀ i\À ibÀ i–À iÎÀ iêÀ j)À j5À jYÀ j€À jÉÀ jİÀ jêÀ kKÀ k^À kdÀ khÀ kiÀ k›À k¡À kãÀ kéÀ l:À l`À lfÀ l¶À lıÀ mÀ mJÀ mPÀ mÀ mïÀ n?À n…À n©À n¼À nÙÀ o À o À o'À ojÀ oÀ o¶À oÈÀ oÌÀ oÍÀ oşÀ pÀ pSÀ pYÀ pªÀ pĞÀ pÖÀ q"À qsÀ q¬À q²À rÀ rEÀ rKÀ r’À r³À rÎÀ ráÀ røÀ sÀ s=À sDÀ s˜À s´À síÀ t	À tJÀ tvÀ t‡À t–À t§À t·À uÀ u!À u5À uBÀ uOÀ u`À u‘À u®À uÆÀ uÙÀ ußÀ uãÀ uäÀ vÀ vÀ viÀ v•À v›À vëÀ w4À w„À wŠÀ w×À xÀ xÀ xdÀ xjÀ x·À y	À yYÀ yŸÀ y»À yÎÀ yİÀ zÀ z À z'À zbÀ zlÀ z‚À z›À zÇÀ zÙÀ zİÀ zŞÀ zêÀ {À {|À {~À {À {ªÀ {®À {úÀ |;À |?À |eÀ |iÀ |¹À }À })À }-À }|À }ÌÀ ~À ~À ~mÀ ~»À 	À VÀ cÀ gÀ ¯À şÀ €HÀ €‰À €ÙÀ )À wÀ ½À ÙÀ İÀ ‚,À ‚wÀ ‚ÆÀ ƒÀ ƒFÀ ƒ–À ƒ®À ƒ²À „ À „NÀ „À „·À „»À …À …\À …gÀ …„À …ÕÀ †À †4À †5À †À †“À †”À †ÖÀ †ïÀ †ğÀ ‡À ‡$À ‡gÀ ‡mÀ ‡¼À ‡ØÀ ‡ŞÀ ˆ,À ˆ|À ˆËÀ ‰À ‰MÀ ‰À ‰ïÀ Š À ŠÀ ŠTÀ Š¡À ŠÚÀ ŠàÀ ‹"À ‹>À ‹dÀ ‹”À ‹›À ‹µÀ ‹ÎÀ ‹ÒÀ ‹ÔÀ ‹ÕÀ ŒÀ ŒÀ ŒuÀ Œ¶À Œ·À ŒòÀ ŒöÀ 'À uÀ vÀ ¯À  À SÀ oÀ ¤À ªÀ ®À ¯À ÍÀ ÎÀ À 8À 9À EÀ XÀ †À ¢À ÚÀ àÀ 	À À À À GÀ KÀ ›À ìÀ ‘9À ‘QÀ ‘UÀ ‘ À ‘çÀ ’1À ’]À ’¦À ’ôÀ “DÀ “•À “ãÀ ”+À ”qÀ ”¿À •
+À •JÀ •–À •äÀ –1À –5À –„À –ÎÀ —À —9À —=À —À —ÜÀ ˜+À ˜xÀ ˜ÄÀ ™À ™SÀ ™WÀ ™£À ™ñÀ šAÀ š‹À šºÀ šòÀ ›À ›À ›eÀ ›²À ›ØÀ ›êÀ œÀ œ)À œEÀ œhÀ œoÀ œºÀ œ¾À œ¿À À 3À 9À ŠÀ ×À $À CÀ IÀ À İÀ Ÿ&À ŸPÀ ŸQÀ Ÿ—À ŸÀ ŸåÀ ŸûÀ  *À  +À  ‚À  ˆÀ  İÀ ¡
+À ¡>À ¡?À ¡‡À ¡À ¡ÎÀ ¡şÀ ¡ÿÀ ¢EÀ ¢KÀ ¢›À ¢ÂÀ ¢áÀ £À £$À £1À £YÀ £_À £cÀ £dÀ £©À £ÔÀ £ïÀ ¤À ¤3À ¤AÀ ¤GÀ ¤`À ¤wÀ ¤”À ¤˜À ¤™À ¤åÀ ¥0À ¥mÀ ¥rÀ ¥»À ¦À ¦PÀ ¦ˆÀ ¦À ¦ÉÀ §À §gÀ §³À §ÈÀ §ïÀ ¨,À ¨-À ¨‚À ¨¨À ¨®À ¨óÀ ©<À ©ŠÀ ©ĞÀ ©ÖÀ ª'À ª-À ª{À ªˆÀ ª–À ªŞÀ ªßÀ «À «#À «cÀ «iÀ «¬À «ÈÀ «úÀ ¬À ¬CÀ ¬DÀ ¬†À ¬ŒÀ ¬ÜÀ ­'À ­]À ­cÀ ­¬À ­ÃÀ ­ÜÀ ®À ®!À ®TÀ ®‰À ®ÅÀ ®÷À ¯À ¯À ¯#À ¯/À ¯PÀ ¯ˆÀ ¯³À ¯¼À ¯ÂÀ ¯ÒÀ ¯òÀ °À °À °À °HÀ °qÀ °´À °äÀ ±4À ±jÀ ±’À ±¾À ±ğÀ ²EÀ ²ZÀ ²hÀ ²tÀ ²§À ²àÀ ³	À ³À ³À ³jÀ ³À ³µÀ ³½À ³¾À ³ĞÀ ³÷À ´À ´À ´MÀ ´jÀ ´rÀ ´€À ´¥À ´ëÀ ´ôÀ µÀ µ*À µ<À µ_À µ‡À µœÀ µ¨À µÃÀ µéÀ µñÀ µ÷À µûÀ µüÀ ¶JÀ ¶›À ¶èÀ ·7À ·dÀ ·˜À ·™À ·ÇÀ ¸À ¸&À ¸:À ¸JÀ ¸€À ¸²À ¸ÅÀ ¸ÏÀ ¸ÙÀ ¸ëÀ ¸ûÀ ¹ À ¹2À ¹kÀ ¹€À ¹ŒÀ ¹’À ¹–À ¹—À ¹éÀ ¹êÀ º"À º(À ºvÀ ºŠÀ ºªÀ ºÃÀ »'À »-À »‘À »ÛÀ ¼À ¼FÀ ¼NÀ ¼TÀ ¼„À ¼·À ¼ÛÀ ¼áÀ ¼íÀ ½À ½cÀ ½jÀ ½ƒÀ ½§À ½­À ½±À ½²À ½îÀ ½ïÀ ¾AÀ ¾GÀ ¾”À ¾éÀ ¿1À ¿†À ¿šÀ ¿ À ¿çÀ ¿ôÀ ÀÀ ÀHÀ ÀIÀ À†À ÀŒÀ ÀËÀ ÀÑÀ ÁÀ Á0À Á`À ÁÀ Á‚À Á¹À Á¿À ÂÀ ÂXÀ Â©À Â¯À ÂøÀ ÃÀ Ã'À ÃZÀ ÃlÀ ÃÀ ÃÓÀ ÄÀ Ä?À ÄLÀ ÄVÀ ÄkÀ ÄwÀ Ä˜À ÄÏÀ ÄúÀ ÅÀ Å	À ÅÀ Å%À ÅFÀ Å[À ÅgÀ Å§À ÅÔÀ ÅÕÀ ÆÀ ÆyÀ ÆªÀ ÇÀ Ç9À ÇeÀ Ç‰À ÇÅÀ ÇÚÀ ÈÀ È#À È6À ÈbÀ ÈnÀ ÈxÀ È€À ÈµÀ ÈÑÀ ÈÙÀ ÈçÀ ÉÀ ÉQÀ ÉZÀ ÉjÀ É|À ÉÀ É³À É¿À ÉÚÀ Ê À ÊÀ ÊÀ ÊÀ ÊÀ Ê`À ÊfÀ Ê·À ËÀ Ë8À Ë‚À ËÌÀ ÌÀ Ì+À Ì1À ÌzÀ Ì—À ÌĞÀ ÌóÀ ÌôÀ ÍÀ ÍÀ ÍXÀ Í¨À ÍçÀ ÍöÀ Î<À ÎmÀ Î¨À Î¬À ÎøÀ Ï À Ï!À Ï3À Ï9À Ï„À ÏÔÀ ĞÀ ĞÀ ĞÀ ĞçÀ Ñ"À Ñ&À ÑdÀ Ñ‹À Ñ¨À ÑÜÀ ÑàÀ ÑáÀ ÒÀ ÒXÀ Ò}À ÒÀ Ò²À ÓÀ ÓÀ ÓlÀ Ó•À ÓÀ ÓÇÀ ÓéÀ ÔÀ Ô/À Ô5À Ô9À Ô:À Ô`À Ô…À Ô¬À ÔÉÀ ÔÍÀ ÔÎÀ ÔóÀ ÔôÀ ÕÀ Õ"À Õ‚À ÕÂÀ ÕÈÀ ÖÀ ÖZÀ Ö[À ÖŒÀ Ö’À ÖéÀ ÖïÀ ×=À × À Ø À ØSÀ ØTÀ Ø À Ø®À Ø´À ØéÀ Ù2À Ù8À Ù…À ÙÀÀ ÙÿÀ ÚÀ ÚNÀ ÚÀ Ú¹À ÚÓÀ ÚöÀ ÛÀ Û
+À Û#À ÛwÀ Û}À Û¢À Û²À ÛÕÀ ÛèÀ ÛòÀ ÛüÀ ÜPÀ Ü‚À Ü²À ÜÙÀ İ5À İMÀ İ˜À İÄÀ İßÀ ŞÀ Ş&À ŞZÀ Ş…À Ş´À ŞêÀ ß@À ß’À ßáÀ àÀ àÀ à`À à²À àÓÀ àçÀ àñÀ áÀ á#À á>À ádÀ álÀ ámÀ áÀ á»À áÛÀ âÀ â)À â>À âJÀ âKÀ âfÀ â¥À â­À âüÀ ãDÀ ã`À ã½À ãÏÀ ãôÀ äXÀ ädÀ äyÀ ä­À ä®À åÀ å@À åIÀ å¨À æÀ æ
+À æcÀ æÃÀ æêÀ çÀ çuÀ ç§À ç»À çÅÀ çÆÀ è$À è‚À èÂÀ èíÀ éÀ éÀ éÀ éGÀ éÀ éäÀ êÀ êfÀ ê—À ê¼À êÑÀ ë!À ëyÀ ë¶À ì
+À ìIÀ ìxÀ ìˆÀ ì–À ì¢À ì¶À ìÀÀ íÀ íkÀ íÂÀ íÚÀ î*À îKÀ îUÀ î]À î^À îÁÀ îÊÀ ïÀ ïkÀ ïœÀ ï¥À ïìÀ ğÀ ğÀ ğSÀ ğ†À ğÇÀ ñÀ ñNÀ ñ§À ñ±À ñ¹À ñºÀ ñçÀ òÀ ò]À òšÀ ò©À òÈÀ òĞÀ òÑÀ òìÀ óÀ óÀ óÀ ó6À ózÀ ó‚À óÃÀ ô À ô4À ôaÀ ô­À ôûÀ õÀ õÀ õjÀ õ·À öÀ ö:À ö‹À öÍÀ ÷À ÷5À ÷oÀ ÷£À ÷ºÀ øÀ ø[À øºÀ øüÀ ù?À ùQÀ ùaÀ ùoÀ ù{À ù£À ù­À ù®À ùÖÀ ùşÀ úEÀ ú[À úgÀ úÀ ú™À ú¡À ú¢À ú´À úÔÀ ûÀ û)À û>À ûJÀ ûKÀ ûfÀ ûŒÀ û”À û•À ûÃÀ ûøÀ üÀ ü À ü.À ü\À ü¢À ü«À ü¹À üïÀ ı?À ıHÀ ıXÀ ıjÀ ıÀ ı¥À ı±À ıÌÀ ıòÀ ıúÀ ş À şÀ şÀ şÀ şCÀ şaÀ ş¯À ş¶À şºÀ ş»À şÇÀ ÿÀ ÿ7À ÿ˜À ÿœÀ ÿÀ ÿ²À ÿ³À ÿíÀ À À ,À qÀ ’À £À §À ¨ÀÀÀSÀYÀ¤ÀóÀÀAÀ`ÀzÀ­ÀÊÀËÀşÀÀ"À&À'ÀTÀZÀ¥ÀöÀÀ*ÀIÀÀ•ÀäÀ5ÀvÀwÀªÀÀÀÆÀÊÀËÀÀWÀ¥ÀôÀ$ÀqÀrÀÀ¤ÀóÀ@ÀÀØÀ	%À	tÀ	ÅÀ	åÀ	ëÀ
+,À
+PÀ
+VÀ
+§À
+öÀ
+üÀ'ÀPÀxÀ ÀùÀÀ,ÀPÀVÀsÀ“À™ÀÀÀçÀíÀ>ÀPÀVÀ¥ÀôÀÀDÀkÀÄÀáÀúÀÀ$ÀAÀWÀ]ÀaÀbÀªÀ°ÀÀÀÆÀìÀÀIÀiÀmÀnÀ§À­ÀüÀKÀœÀ¢ÀŞÀñÀÀ.ÀMÀoÀÀ½ÀÙÀúÀ*ÀJÀtÀxÀzÀ{À¼ÀÀÀíÀ0À1ÀYÀ]ÀÀêÀ9À‡ÀÔÀûÀÿÀOÀ ÀæÀÀ
+ÀXÀ¤ÀÜÀ'ÀiÀoÀ¿ÀÀÀÀÀdÀ¢À¿ÀÀÀÀ\ÀuÀ{ÀÌÀÀfÀ…À‹ÀÒÀ!ÀoÀuÀ…À‹ÀÔÀÀ4À6À7ÀYÀ]À¡ÀÁÀÅÀÀÀXÀ¨ÀóÀÀÀbÀ°ÀùÀ IÀ –À åÀ!5À!\À!`À!¤À!ËÀ!ÏÀ!àÀ!äÀ"1À"À"ÒÀ"ìÀ"ğÀ#<À#ŠÀ#ÚÀ$+À$iÀ$mÀ$”À$˜À$ŞÀ%,À%yÀ%ÄÀ&À&aÀ&±À&ÿÀ'GÀ'–À'ãÀ(.À(oÀ(sÀ(ÂÀ)À)cÀ)ŸÀ)£À)²À)¶À)ıÀ*DÀ*`À*dÀ*²À+À+OÀ+œÀ+áÀ,"À,&À,vÀ,©À,­À,ÁÀ,ÅÀ-À-?À-CÀ-À-ŞÀ./À.wÀ.ÁÀ/À/\À/À/…À/³À/·À0À0YÀ0¤À0ôÀ1EÀ1\À1`À1°À1ÀÀ1ÄÀ2À2RÀ2cÀ2gÀ2´À3À3À3:À3>À3À3àÀ4/À4zÀ4ÅÀ4ÉÀ5À5dÀ5³À5ÿÀ6NÀ6À6ÒÀ7#À7sÀ7€À7ÔÀ8À8À8cÀ8¨À8ÕÀ8ÙÀ8ÚÀ9)À9xÀ9ÃÀ9òÀ9øÀ:9À:ŠÀ:ÖÀ:õÀ:ûÀ;GÀ;MÀ;]À;cÀ;À;¦À;½À;ãÀ;ùÀ<À<BÀ<\À<dÀ<hÀ<iÀ<À<•À<ÒÀ<îÀ=À=À=3À=FÀ=PÀ=eÀ=iÀ=jÀ=‰À=ŠÀ=ÂÀ=ÈÀ>À>bÀ>­À>ìÀ?5À?…À?À?£À?îÀ@À@À@WÀ@hÀ@{À@˜À@ÆÀ@åÀ@õÀABÀATÀA‚ÀA•ÀA¸ÀB&ÀB4ÀBAÀB^ÀBqÀB{ÀBÀB€ÀBŒÀBÀB½ÀBÃÀCÀC_ÀC¯ÀCíÀCóÀD>ÀDmÀD½ÀDûÀELÀE˜ÀEäÀFÀF9ÀF:ÀF{ÀFÀFÑÀGÀG9ÀG`ÀG‹ÀG²ÀG¸ÀG¼ÀG½ÀG÷ÀGıÀHMÀH•ÀHÒÀHØÀI&ÀIqÀIÁÀJÀJVÀJ¦ÀJ¬ÀJôÀKDÀKcÀK~ÀKÀK‘ÀKâÀKñÀK÷ÀL8ÀLEÀLoÀL‘ÀL³ÀLÔÀLóÀLùÀLıÀLşÀM8ÀM>ÀMÀMÇÀMÔÀMğÀMñÀN,ÀN2ÀNrÀN™ÀN²ÀN³ÀNûÀOÀOPÀO£ÀO´ÀOÁÀOéÀPÀPÀP3ÀPWÀPtÀP|ÀPÅÀPØÀPâÀPãÀPÿÀQÀQ<ÀQ\ÀQvÀQŠÀQ§ÀQ­ÀQÆÀQÊÀQËÀRÀR#ÀRrÀRÅÀRÖÀRãÀS
+ÀS-ÀSUÀS{ÀS«ÀSÓÀSÙÀSùÀTÀT0ÀTDÀTZÀT`ÀTwÀTÀT½ÀTÁÀTÂÀUÀUÀU\ÀU‘ÀU’ÀUĞÀUÖÀUôÀUúÀV
+ÀVÀVdÀV|ÀV}ÀVÊÀVèÀWÀW!ÀW7ÀW]ÀW”ÀWËÀXÀXJÀX¤ÀXÀÀYÀY(ÀYyÀYÊÀZÀZRÀZ¬ÀZ·ÀZÀÀZÇÀZËÀZÌÀ[À[À[jÀ[wÀ[±À[×À[ØÀ\#À\)À\vÀ\ƒÀ\½À\ãÀ\äÀ]À]%À]rÀ]~À]ÂÀ]íÀ]îÀ^5À^~À^ÌÀ^éÀ_À_&À_FÀ_ˆÀ_µÀ_ÅÀ_ûÀ`À`/À`9À`WÀ`gÀ`À`°À`ºÀ`ÍÀ`ÑÀ`ÒÀa"Àa.Àa4ÀatÀazÀaÀÀaıÀbÀbÀbDÀbEÀb{ÀbÀbÑÀc!ÀccÀciÀc·ÀcŞÀcôÀdÀd ÀdXÀd˜ÀdÅÀdòÀeÀe;ÀeHÀeTÀe\Àe]ÀeŒÀeÚÀf+ÀfCÀfyÀfÀf¥Àf­Àf®ÀfÛÀgÀg9Àg‹ÀgçÀhÀhpÀh½ÀiÀi4Ài[Ài«ÀiÄÀiÛÀiåÀiæÀjÀj^ÀjoÀj”Àj¥Àj¯Àj·Àj¸ÀkÀkMÀkiÀk†ÀkáÀk÷ÀkøÀlÀlVÀl§ÀlÃÀm)Àm6ÀmcÀm•Àm§ÀmŞÀmëÀnÀndÀnƒÀnºÀnÇÀnÓÀnÛÀnÜÀoÀo:ÀoÀpÀp.Àp`ÀprÀp©Àp¶ÀpËÀq1Àq>ÀqJÀqRÀqSÀq°ÀqùÀr'Àr†ÀréÀsÀsÀsUÀsfÀsÀs¸ÀsèÀsøÀt-Àt8ÀtcÀtÖÀtóÀu(Àu3ÀuUÀu‚Àu«ÀuÉÀv ÀvÀv Àv¤ÀwÀwÀwÀw'Àw:Àw>Àw?ÀwÀw½ÀwÃÀxÀxaÀxªÀx°ÀxûÀy4Ày„ÀyÕÀyêÀy÷ÀzÀz?ÀzOÀzlÀzÀz‰Àz¢Àz¦Àz§ÀzäÀzêÀ{*À{JÀ{pÀ{‰À{ŠÀ{èÀ{îÀ|#À|)À|_À|†À|‡À|ÅÀ|ËÀ}À}MÀ}SÀ}‘À}ÇÀ~À~À~DÀ~aÀ~}À~‘À~ßÀ&À]ÀÀÍÀéÀ€À€À€/À€ZÀ€‚À€ˆÀ€½À€üÀ+ÀFÀ^ÀdÀ¦ÀãÀ‚À‚À‚À‚À‚TÀ‚ZÀ‚ªÀ‚ÕÀ‚ÛÀƒÀƒ_Àƒ}ÀƒÀƒ Àƒ¼ÀƒÏÀ„À„À„À„PÀ„VÀ„§À„óÀ…@À…wÀ…}À…³À…ÑÀ…çÀ…÷À†À†'À†1À†DÀ†HÀ†IÀ†eÀ†fÀ†¦À†¬À†üÀ‡KÀ‡À‡ŞÀ‡äÀˆ-ÀˆwÀˆÈÀ‰À‰jÀ‰¼ÀŠ
+ÀŠÀŠÀŠqÀŠ¿À‹À‹\À‹ŒÀ‹’À‹ŞÀŒ,ÀŒGÀŒMÀŒÀŒæÀÀÀVÀ£ÀĞÀÑÀÀÀ[ÀÀÀ®ÀÎÀ3À9ÀSÀWÀXÀuÀvÀÇÀÀfÀ³ÀŞÀëÀ‘À‘À‘fÀ‘´À‘ØÀ‘ŞÀ’-À’À’ÑÀ’øÀ“'À“(À“bÀ“lÀ“À“ÅÀ“ŞÀ“æÀ”CÀ”jÀ”€À”ˆÀ”¯À”ÄÀ”ÌÀ”ÒÀ”ãÀ”çÀ”èÀ•9À•ŠÀ•ĞÀ•ÖÀ•êÀ•ğÀ–AÀ–À–ÜÀ—À—!À—qÀ—¦À—¬À—üÀ˜EÀ˜•À˜âÀ™/À™|À™¶À™¼À™ıÀšKÀšÀš”Àš«Àš±ÀšúÀ›DÀ›“À›ÒÀœÀœ`Àœ|Àœ‚Àœ®ÀœúÀÀ<ÀTÀ”À¢À¨ÀÁÀÀ(ÀWÀŸÀ©À¾ÀÊÀõÀŸÀŸ9ÀŸXÀŸ^ÀŸbÀŸcÀŸ²ÀŸÄÀŸÊÀ À _À ®À ßÀ åÀ¡À¡ À¡AÀ¡hÀ¡À¡¢À¡ĞÀ¡ùÀ¢À¢&À¢RÀ¢XÀ¢{À¢À¢€À¢ÂÀ£À£NÀ£TÀ£À££À£ÑÀ¤À¤À¤6À¤:À¤;À¤‡À¤À¤ÚÀ¥ À¥À¥JÀ¥kÀ¥ˆÀ¥À¥ºÀ¥áÀ¦
+À¦*À¦:À¦`À¦sÀ¦}À¦§À¦«À¦¬À¦ÙÀ¦ùÀ§À§nÀ§›À§¿À§êÀ¨À¨&À¨JÀ¨nÀ¨¤À¨ÅÀ¨äÀ©À©%À©8À©BÀ©LÀ©cÀ©…À©À©ÑÀ©×À©çÀªÀªBÀªgÀªzÀª„ÀªÀª´Àª¸Àª¹ÀªêÀªğÀ«?À«À«ŞÀ¬À¬À¬`À¬°À­À­MÀ­‘À­áÀ®À®"À®oÀ®ºÀ¯À¯À¯VÀ¯¥À¯òÀ°À°LÀ°”À°±À°èÀ±À±-À±`À±®À±¸À±ÍÀ±ÙÀ²-À²3À²?À²eÀ²ˆÀ²«À²ûÀ³À³yÀ³¯À³õÀ´À´FÀ´[À´iÀ´uÀ´¸ÀµÀµeÀµ‘ÀµßÀ¶À¶8À¶^À¶~À¶ÔÀ·'À·\À·‚À·“À·¢À·®À·ÔÀ·ßÀ·èÀ·ïÀ¸À¸7À¸GÀ¸vÀ¸‰À¸“À¸”À¸ùÀ¹1À¹CÀ¹‘À¹ÒÀºÀº1Àº}Àº ÀººÀºòÀ»À»@À»UÀ»aÀ»šÀ»ÀÀ»ÈÀ»ÖÀ»ÜÀ»üÀ»ıÀ¼!À¼LÀ¼\À¼€À¼ŸÀ¼³À½À½ À½(À½;À½EÀ½^À½pÀ½–À½«À½·À½ÃÀ½ÜÀ½ğÀ¾À¾3À¾AÀ¾\À¾‘À¾™À¾«À¾ÒÀ¾çÀ¾óÀ¾ùÀ¿&À¿6À¿ZÀ¿À¿±À¿ÄÀ¿ÎÀ¿ØÀ¿ïÀÀÀÀ#ÀÀMÀÀbÀÀnÀÀ‡ÀÀºÀÀÀÀÀĞÀÁÀÁ+ÀÁPÀÁcÀÁmÀÁ‡ÀÁÀÁÀÁÕÀÁùÀÁÿÀÂÀÂÀÂPÀÂ™ÀÂæÀÃ2ÀÃƒÀÃ°ÀÃ½ÀÃØÀÃÙÀÄ&ÀÄUÀÄ[ÀÄ£ÀÄòÀÅ4ÀÅ:ÀÅŠÀÅÙÀÆÀÆÀÆ^ÀÆ¤ÀÆâÀÇÀÇÀÇ6ÀÇ7ÀÇvÀÇ¸ÀÇ¾ÀÈÀÈXÀÈ£ÀÈÜÀÈâÀÉ!ÀÉ6ÀÉ<ÀÉÀÉÜÀÊÀÊÀÊ-ÀÊ.ÀÊpÀÊvÀÊÅÀËÀË[ÀË”ÀËšÀËêÀÌ;ÀÌ‰ÀÌÚÀÌëÀÌñÀÍ=ÀÍ‹ÀÍĞÀÎ ÀÎiÀÎ¡ÀÎ§ÀÎíÀÏ<ÀÏ‹ÀÏÜÀĞ,ÀĞMÀĞZÀĞrÀĞsÀĞºÀÑ
+ÀÑWÀÑ£ÀÑ¿ÀÑÅÀÒÀÒdÀÒµÀÒşÀÓÀÓUÀÓ¥ÀÓ«ÀÓáÀÓîÀÔ?ÀÔbÀÔ…ÀÔ°ÀÔÙÀÔãÀÕÀÕ9ÀÕCÀÕSÀÕÀÕ…ÀÕ‰ÀÕŠÀÕ˜ÀÕ™ÀÕÜÀÕâÀÖ/ÀÖ<ÀÖtÀÖ™ÀÖšÀÖÍÀÖÓÀ× À×,À×nÀ×˜À×™À×ßÀ×åÀØ6ÀØÀØĞÀØâÀØèÀÙ8ÀÙÀÙÔÀÚ(ÀÚRÀÚXÀÚ©ÀÚºÀÚÀÀÛÀÛ?ÀÛ@ÀÛÀÛÆÀÛÌÀÜÀÜ9ÀÜdÀÜ„ÀÜ¤ÀÜ¬ÀÜ­ÀÜèÀÜîÀİ<Àİ‹ÀİµÀİ»ÀŞÀŞZÀŞgÀŞ“ÀŞ”ÀŞµÀŞ¶ÀŞõÀŞûÀßJÀßPÀß›ÀßêÀà;ÀàŠÀàÕÀàåÀàëÀá8ÀábÀáhÀá»ÀâÀâYÀâ«Àâ¾ÀãÀãcÀãµÀãÔÀãúÀãşÀãÿÀäDÀäJÀäšÀäçÀå4ÀåƒÀåÖÀæ$ÀæjÀæ¶ÀçÀç9Àç?ÀçŒÀçÚÀè$ÀèpÀè¿ÀéÀé-Àé3Àé‚ÀéÏÀêÀê(Àê5ÀêSÀê¶ÀêÕÀêÙÀêÚÀêçÀëÀëÀë5Àë}ÀëÄÀëåÀëìÀìÀìÀìÀìfÀìgÀì»ÀìÁÀíÀíeÀíuÀí{Àí¨ÀíËÀíçÀí÷ÀîÀî-Àî7ÀîJÀîNÀîOÀî ÀîâÀîèÀï8ÀïˆÀï•Àï›Àï×ÀğÀğeÀğ¬ÀğñÀñ&Àñ,ÀñqÀñ·ÀñğÀòÀò7Àò^ÀòlÀòrÀòšÀòÈÀòâÀóÀó"Àó*Àó+Àó‚Àó³ÀóÃÀóËÀóÑÀôÀôGÀôKÀôLÀôÀôÑÀô×Àõ(ÀõPÀõVÀõ•ÀõÒÀõğÀöNÀölÀöpÀöqÀö“Àö»ÀöÉÀöÏÀ÷À÷&À÷OÀ÷uÀ÷™À÷»À÷ÃÀ÷ËÀøÀø"Àø(ÀøwÀøÂÀùÀùeÀù°ÀùåÀú Àú+Àú€Àú«ÀúÃÀúşÀû)ÀûAÀûNÀûyÀûÀûƒÀû„ÀûÃÀûÉÀüÀüfÀü³ÀüìÀüòÀı(Àı.ÀızÀıÉÀşÀşZÀş•Àş²ÀşÈÀşØÀşôÀÿÀÿÀÿ$Àÿ(Àÿ)ÀÿDÀÿEÀÿ„ÀÿŠÀÿÛÀ 'À tÀ ­À ³À éÀÀ,À<ÀhÀ{À…À˜ÀœÀÀÉÀÊÀÀÀ\À©ÀùÀHÀ`ÀfÀ±ÀíÀóÀ3À€ÀÂÀÈÀØÀŞÀ,À~ÀÀ¨ÀÅÀûÀÀ À&À>À„À¦ÀÚÀìÀÀaÀkÀ€ÀŒÀÏÀÀ6ÀQÀ~À¤À¬ÀÍÀíÀúÀ	À	:À	—À	¡À	¶À	ÂÀ
+À
+VÀ
+šÀ
+ØÀ
+áÀÀ]ÀÀ‡À‹ÀŒÀÙÀæÀìÀ=À‘ÀÜÀ+ÀtÀzÀËÀÀ>ÀDÀTÀZÀªÀéÀÀ0ÀfÀœÀªÀ°ÀØÀÀ@ÀtÀ·ÀíÀÀ2À_À…ÀÀšÀ²À¸À¼À½ÀÀ[À¬ÀõÀ.ÀQÀgÀ†À¾ÀæÀÀ2ÀMÀqÀ À÷ÀÀÀCÀŸÀ°ÀºÀÛÀãÀıÀÀÀÀSÀYÀ§ÀÏÀÕÀÀQÀqÀ‡À£ÀÉÀèÀÀ4ÀMÀvÀzÀ{ÀÀÀÀÀÀ^ÀÀ¬ÀÌÀâÀşÀ$ÀCÀ–À¸ÀÜÀòÀöÀ÷À:ÀWÀgÀ‰ÀÁÀÀ#ÀsÀÀÀ¹ÀÀÀ,À8À@ÀSÀ]À©À÷ÀEÀ”ÀàÀ-ÀvÀÀœÀ¢ÀØÀ À À OÀ À §À ¼À ÈÀ!À!"À!2À![À!À!«À!ÒÀ"À")À"OÀ"]À"kÀ"À"ÉÀ"åÀ#5À#VÀ#gÀ# À#æÀ$À$WÀ$«À$ïÀ% À%]À%mÀ%yÀ%ƒÀ%»À%ÓÀ&!À&9À&FÀ&bÀ&³À&çÀ&ôÀ'À'^À'«À'ëÀ'øÀ(QÀ(]À(eÀ(xÀ(‚À(ªÀ(ºÀ(İÀ)À)-À)mÀ)€À)ŠÀ)£À)ÌÀ)ùÀ*À*!À*zÀ*ÒÀ*ëÀ+À+À+,À+OÀ+À+£À+¶À+ÀÀ+öÀ,À, À,$À,%À,qÀ,»À,ÁÀ-À-*À-BÀ-CÀ-~À-»À-¼À.À.À.YÀ.À.ìÀ/9À/_À/eÀ/³À0À0QÀ0hÀ0nÀ0ºÀ1À1SÀ1…À1½À1¾À2À2)À2/À2€À2ÑÀ2îÀ2ôÀ3>À3ŠÀ3ÖÀ4À4kÀ4¤À4òÀ5À5À5À5`À5fÀ5¶À6À6SÀ6lÀ6rÀ6¹À7À7RÀ7¢À7òÀ8À8BÀ8dÀ8uÀ8yÀ8zÀ8ºÀ9À9À9!À9kÀ9»À9ÖÀ9ÜÀ:.À:oÀ:uÀ:ÄÀ;À;5À;;À;†À;ÊÀ;êÀ;ÿÀ<À<QÀ< À<îÀ==À=OÀ=€À=–À=æÀ>À>&À>wÀ>ˆÀ>ªÀ>øÀ?À?0À?1À?FÀ?xÀ?yÀ?œÀ?ÄÀ?èÀ?éÀ@À@3À@NÀ@¦À@ãÀ@şÀAÀA(ÀANÀA³ÀAÃÀAİÀB-ÀB8ÀBtÀB‹ÀB“ÀB™ÀBšÀB¶ÀBÒÀBõÀCÀCwÀC²ÀDÀDÀDÀD+ÀD]ÀDcÀDdÀDƒÀD¯ÀDğÀE9ÀE?ÀEdÀE¬ÀEÉÀEÏÀFÀFÀFÀF^ÀF ÀFáÀFçÀGÀG#ÀGiÀGÀG–ÀGæÀH3ÀHƒÀH½ÀI	ÀI
+ÀIQÀI ÀIìÀJ8ÀJ‰ÀJÕÀK ÀK-ÀK3ÀK~ÀKËÀLÀL2ÀL8ÀL‰ÀL×ÀM%ÀMuÀMÄÀN	ÀNÀNÀN%ÀNqÀN­ÀNóÀNôÀOÀOÀOKÀOpÀOvÀO½ÀOÔÀOÚÀP#ÀPGÀPdÀPzÀP–ÀPÀÀPıÀQ)ÀQ\ÀQ—ÀQ¹ÀQ½ÀQ¾ÀRÀRÀR`ÀR|ÀR‚ÀRËÀSÀSeÀS­ÀSıÀTDÀTJÀT`ÀTfÀT¶ÀTÉÀTÏÀTİÀU$ÀU6ÀUƒÀU»ÀUÌÀUíÀVÀV2ÀV<ÀVBÀV^ÀVyÀVƒÀV‹ÀV•ÀV§ÀV´ÀVûÀWÀW ÀW!ÀWvÀW|ÀWÇÀXÀXÀXCÀXIÀX•ÀXĞÀXùÀYÀYÀYMÀYÀY§ÀYÈÀYúÀZ ÀZÀZÀZEÀZoÀZŠÀZ‹ÀZÜÀZâÀ[À[5À[MÀ[aÀ[gÀ[À[’À[“À[¾À[ÄÀ\À\VÀ\}À\ƒÀ\ÑÀ\İÀ]À]RÀ]wÀ]¤À]ÑÀ]×À]èÀ]ìÀ]íÀ^6À^<À^‹À^‘À^ÚÀ_&À_7À_QÀ_iÀ_’À_°À_¸À_¼À_½À`À`À`RÀ`£À`ÏÀ`óÀaÀaGÀa~ÀaŒÀa’Àa´Àa¸Àa¹ÀbÀb	ÀbBÀbHÀb˜ÀbáÀbóÀbùÀc2ÀcvÀc¶ÀcÒÀcÖÀc×ÀdÀdÀdHÀd™ÀdãÀe3Àe^ÀedÀe°ÀeÈÀeÎÀfÀffÀf—ÀfµÀfÍÀfğÀgÀgÀgPÀgÉÀh,Àh0Àh1Àh=Àh>ÀhÀh›ÀhãÀhäÀhõÀhöÀiDÀiŒÀi¤Ài©ÀiñÀj=ÀjRÀj¢ÀjñÀk?ÀklÀk§Àk®Àk³ÀlÀl8Àl9ÀldÀlpÀl‹Àl·ÀlĞÀlìÀmÀm"Àm*Àm+Àm@ÀmLÀmoÀm­ÀmÈÀmÒÀnÀnÀn)Àn3ÀnGÀnOÀnfÀn–ÀnÀn¸ÀnÛÀnãÀnüÀoÀo&ÀoOÀoƒÀo‹Ào¢ÀoÁÀoÉÀoÏÀoâÀoæÀoçÀoóÀpLÀpMÀpŠÀpÒÀpùÀqÀqÀq<Àq_Àq•Àq­Àq´ÀqŞÀqşÀr$ÀrPÀrlÀrŠÀr“ÀršÀrÀrŸÀrãÀsÀsÀscÀsŸÀs«ÀtÀt:ÀtÀtˆÀtŒÀtÀtšÀt¦ÀtëÀuÀu*Àu‰ÀuÀu¤ÀuÈÀuÛÀuñÀvÀv3Àv<ÀvCÀvWÀv~Àv”Àv¨ÀvôÀwÀwÀw!Àw5ÀwÀw–ÀwõÀx	ÀxeÀxlÀx€ÀxàÀxçÀxûÀyÀyFÀy¦ÀyşÀzÀzÀz"Àz6ÀzTÀz›ÀzÀÀzÉÀzĞÀzÔÀzÕÀzáÀ{)À{*À{{À{ŒÀ{’À{İÀ|!À|'À|wÀ|¶À}À}NÀ}“À}³À}¹À~À~FÀ~LÀ~\À~bÀ~®À~çÀ~ıÀÀ+ÀRÀqÀxÀ’À¸ÀÊÀäÀøÀÿÀ€À€À€UÀ€kÀ€qÀ€ÁÀÀ>ÀDÀ”ÀáÀ‚À‚À‚WÀ‚^À‚–À‚šÀ‚œÀ‚À‚ÒÀ‚ÖÀƒÀƒWÀƒ[Àƒ ÀƒÊÀ„À„nÀ„“À„™À„ÈÀ„ÎÀ„éÀ…À…)À…JÀ…‚À…šÀ…ëÀ†À†+À†GÀ†“À†ŞÀ‡0À‡À‡À‡§À‡ÏÀˆÀˆ9ÀˆpÀˆ}Àˆ–Àˆ¾À‰À‰/À‰OÀ‰†À‰“À‰ŸÀ‰§À‰ºÀ‰ÄÀ‰ÕÀ‰ÙÀ‰ÚÀ‰ïÀ‰ğÀŠÀŠ:ÀŠZÀŠtÀŠÀŠ”ÀŠ¨ÀŠÂÀŠİÀŠãÀŠçÀŠèÀŠôÀ‹À‹2À‹MÀ‹QÀ‹RÀ‹^À‹pÀ‹„À‹šÀ‹À‹ŸÀ‹«À‹ÆÀ‹àÀ‹ıÀŒÀŒÀŒÀŒÀŒHÀŒbÀŒzÀŒ€ÀŒ„ÀŒ…ÀŒ‘ÀŒÃÀŒÜÀ!À@ÀDÀFÀGÀ–ÀáÀÿÀÀSÀ£ÀìÀ9ÀŠÀ×À ÀjÀ»À‘	À‘[À‘«À‘¾À‘ÂÀ’À’LÀ’PÀ’^À’bÀ’©À’åÀ“3À“ƒÀ“ÒÀ“ïÀ“ğÀ”0À”6À”vÀ”ÅÀ”ùÀ•À•*À•+À•gÀ•mÀ•¸À–À–À–.À–KÀ–mÀ– À–»À–¿À–ÀÀ—À—aÀ—¯À—ÀÀ—âÀ—ûÀ˜À˜)À˜/À˜IÀ˜–À˜éÀ™9À™sÀ™À™ïÀšÀš3Àš7Àš9Àš:ÀšwÀš{ÀšÇÀ›À›DÀ›pÀ›¿À›öÀœÀœÀœHÀœbÀœcÀœ…Àœ‘Àœ£Àœ¯ÀœÎÀÀÀ„À˜ÀœÀÀŸÀİÀáÀ2ÀHÀLÀŸÀµÀ¹ÀŸÀŸTÀŸ‰ÀŸ×ÀŸÛÀ .À €À ‘À •À ûÀ ÿÀ¡À¡À¡ZÀ¡{À¡À¡¿À¡üÀ¡şÀ¢À¢cÀ¢¢À¢ØÀ£À£@À£}À£ƒÀ£ŸÀ££À£¤À£ïÀ¤.À¤`À¤”À¤ÀÀ¤ıÀ¥À¥À¥#À¥$À¥;À¥<À¥ZÀ¥À¥€À¥ÑÀ¥öÀ¥üÀ¦+À¦1À¦LÀ¦|À¦ŒÀ¦­À¦åÀ¦ıÀ§NÀ§À§À§ªÀ§öÀ¨AÀ¨“À¨äÀ¨ñÀ©
+À©2À©‚À©œÀ©ÓÀ©àÀ©ùÀª!ÀªtÀª’Àª²ÀªéÀªöÀ«À«
+À«À«'À«8À«<À«=À«WÀ«pÀ«³À«ôÀ¬%À¬ZÀ¬pÀ¬À¬¦À¬ÑÀ­À­#À­tÀ­ªÀ­²À­ÍÀ­éÀ­öÀ®À®;À®†À®ÌÀ¯À¯@À¯’À¯·À¯èÀ°À°1À°@À°ŠÀ°¹À°üÀ±-À±\À±‹À±×À²À²JÀ²†À²ÂÀ²øÀ³ À³À³
+À³À³ZÀ³`À³°À³âÀ´À´dÀ´pÀ´…À´ïÀ´öÀµEÀµgÀµˆÀµŸÀµ«ÀµÕÀ¶.À¶‰À¶ßÀ¶æÀ·À·À·À·\À·zÀ· À·¤À·¥À·ïÀ¸À¸6À¸:À¸;À¸jÀ¸«À¸ôÀ¹8À¹VÀ¹‰À¹­À¹ŞÀ¹ëÀºÀºbÀº²Àº¸ÀºçÀ»
+À»>À»KÀ»°À¼À¼
+À¼6À¼^À¼tÀ¼xÀ¼yÀ¼¦À¼¬À¼æÀ½À½(À½>À½BÀ½CÀ½‰À½À½ÅÀ½ÚÀ½şÀ¾À¾]À¾˜À¾ÆÀ¾ğÀ¿À¿À¿"À¿:À¿QÀ¿fÀ¿jÀ¿kÀ¿µÀ¿»ÀÀ
+ÀÀ[ÀÀÀÀÃÀÀŞÀÀùÀÁÀÁ7ÀÁxÀÁ¬ÀÁºÀÁÀÀÁáÀÂÀÂ'ÀÂ+ÀÂ,ÀÂ8ÀÂ]ÀÂvÀÂšÀÂ¶ÀÂÑÀÃÀÃ?ÀÃEÀÃIÀÃJÀÃVÀÃhÀÃ|ÀÃ ÀÃ¼ÀÃÒÀÄÀÄ@ÀÄFÀÄJÀÄKÀÄWÀÄrÀÄ–ÀÄ²ÀÄÍÀÅÀÅ;ÀÅAÀÅEÀÅFÀÅRÀÅ†ÀÅªÀÅÆÀÅÜÀÆÀÆJÀÆPÀÆTÀÆUÀÆ~ÀÆªÀÆ«ÀÆÓÀÆıÀÆşÀÇAÀÇmÀÇÀÇĞÀÇüÀÈ ÀÈÀÈ?ÀÈjÀÈŒÀÈÍÀÈõÀÈùÀÈúÀÉÀÉ8ÀÉbÀÉ€ÀÉ¥ÀÉºÀÉÏÀÊÀÊ6ÀÊGÀÊQÀÊeÀÊªÀÊØÀÊàÀÊæÀÊûÀÊÿÀËÀËÀËRÀËkÀËoÀË¼ÀÌÀÌ0ÀÌkÀÌ«ÀÌ±ÀÌòÀÍ5ÀÍ…ÀÍ×ÀÍİÀÎ!ÀÎ@ÀÎFÀÎ–ÀÎµÀÎÂÀÎÓÀÎóÀÏ
+ÀÏÀÏÀÏGÀÏmÀÏyÀÏÀÀĞ'ÀĞkÀĞrÀĞ¥ÀĞ³ÀĞ¹ÀĞíÀÑ8ÀÑoÀÑ¦ÀÑ´ÀÑáÀÒFÀÒOÀÒeÀÒ…ÀÒÀÒ•ÀÒ™ÀÒšÀÒ¦ÀÒËÀÒäÀÓ1ÀÓÀÓÏÀÔÀÔWÀÔ[ÀÔ\ÀÔhÀÔzÀÔ°ÀÕÀÕÀÕÀÕÀÕ ÀÕjÀÕÀÕ³ÀÕïÀÖ;ÀÖgÀÖ‰ÀÖ¶ÀÖÓÀÖùÀ×À×AÀ×hÀ×“À×šÀ×¸À×ÔÀØÀØ,ÀØVÀØ€ÀØ¤ÀØÎÀØÒÀØÓÀÙ ÀÙUÀÙ}ÀÙ«ÀÙËÀÙÙÀÙßÀÙøÀÚ"ÀÚBÀÚFÀÚGÀÚÀÚÑÀÛÀÛ	ÀÛ]ÀÛ¬ÀÛÈÀÛìÀÜÀÜ"ÀÜ@ÀÜNÀÜTÀÜlÀÜŒÀÜÀÜ‘ÀÜŞÀİ!Àİ'ÀİwÀİÇÀİÜÀŞ'ÀŞkÀŞÀŞ•ÀŞÊÀßÀßNÀß„Àß¥ÀßÌÀßôÀàÀàÀà)ÀàIÀàMÀàNÀàšÀàµÀà»ÀáÀáUÀáÀáÏÀáîÀâÀâ9ÀâGÀâMÀâlÀâŒÀâÀâ‘ÀâÕÀâÛÀã!Àã\ÀãÀã±ÀãĞÀãõÀäÀä)Àä/ÀäNÀänÀärÀäsÀä¡Àä§ÀäôÀå)ÀåFÀånÀå”Àå¢Àå¨ÀåÇÀåçÀåëÀåìÀæ(ÀæaÀæšÀæåÀç0ÀçgÀçkÀçlÀç·ÀèÀèÀèÀèjÀèÍÀèÑÀèÒÀé&ÀéSÀé¬Àé°Àé±ÀêÀê7ÀêÀê”Àê•ÀêßÀë?ÀëCÀëDÀëjÀëÀë¿ÀëîÀìÀìÀìdÀìqÀìwÀì½ÀìéÀíÀíOÀí’ÀíÈÀíéÀîÀî7ÀîEÀîKÀîgÀî‡Àî‹ÀîŒÀî˜ÀîØÀîôÀïÀïÀï6Àï:Àï;ÀïGÀïÀïÀÀğÀğCÀğxÀğœÀğÎÀğÔÀğàÀñ$ÀñSÀñ›Àñ¢Àñ®ÀñùÀòBÀòIÀòJÀòqÀòŸÀò¥ÀòÌÀòúÀó Àó%ÀóYÀó_Àó†Àó´ÀóºÀóâÀôÀôÀô?ÀôlÀôrÀôšÀôÊÀôĞÀôôÀõÀõ#ÀõJÀõvÀõ|Àõ¢ÀõÏÀõÕÀö Àö7Àö=ÀöcÀöÀö–ÀöÂÀöùÀöÿÀ÷(À÷[À÷aÀ÷‰À÷ºÀ÷ÀÀ÷éÀøÀø"ÀøIÀøwÀø}Àø¸ÀùÀùÀùKÀùœÀù¢ÀùÊÀùûÀúÀú*Àú]ÀúcÀú‰Àú¶Àú¼ÀúáÀûÀûÀû<ÀûnÀûtÀûÀûÑÀû×ÀüÀü`ÀüfÀüÀüìÀüòÀıÀıHÀıNÀırÀı¤ÀıªÀı×ÀşÀş!ÀşNÀş’Àş˜Àş»ÀşëÀşñÀÿÀÿEÀÿKÀÿ¡ÀÿÙÀÿßÀ 
+À ?À EÀ oÀ ¢À ¨À ÒÀÀÀ9ÀsÀyÀ«ÀíÀóÀÀ@ÀFÀmÀ™ÀŸÀÍÀ
+ÀÀ3ÀZÀ`ÀÀÅÀËÀÀLÀRÀSÀ‚À¿ÀÅÀÆÀïÀ À&ÀNÀ|À‚ÀªÀØÀŞÀßÀ,À{À½ÀâÀÀ
+À5ÀcÀiÀ’À¼ÀÂÀîÀÀ$ÀQÀƒÀ‰À³ÀßÀåÀ	À	AÀ	GÀ	qÀ	À	£À	ÍÀ	ùÀ	ÿÀ
+%À
+IÀ
+OÀ
+tÀ
+–À
+œÀ
+ÃÀ
+éÀ
+ïÀ-ÀÀ‡ÀÆÀÀ"À[À¥À«ÀåÀ1À7ÀeÀ™ÀŸÀÈÀòÀøÀ3ÀÀ‡ÀÂÀÀÀ=ÀcÀiÀ‘À¹À¿ÀéÀÀÀQÀœÀ¢À¦À§À¾ÀİÀáÀâÀÿÀ$À(À)ÀDÀgÀkÀlÀŠÀ°À´ÀµÀÔÀûÀÿÀ ÀÀ@ÀDÀEÀcÀ‰ÀÀÀªÀÎÀÒÀÓÀïÀÀÀÀ0ÀPÀTÀUÀlÀ‹ÀÀÀ©ÀÊÀÎÀÏÀÀZÀ^À_À¤ÀìÀğÀñÀ0ÀrÀvÀwÀ·ÀúÀşÀÿÀ6ÀgÀkÀlÀ’À¹À½À¾ÀëÀ À$À%ÀRÀ‡À‹ÀŒÀ¥ÀÆÀÊÀËÀåÀÀÀÀ(ÀLÀPÀRÀSÀšÀ¥ÀÈÀçÀ
+À/ÀUÀxÀÀÌÀÒÀÓÀ$ÀFÀLÀ‘À¯À°ÀÀJÀPÀ–À®ÀÎÀÏÀ)À/ÀiÀ¶ÀÀÀNÀÀ‘ÀÂÀÀÀNÀ‰ÀªÀ«ÀáÀ!ÀMÀNÀqÀrÀ~À¡ÀÍÀ À 9À sÀ «À ôÀ øÀ ùÀ!À!À!2À!IÀ!bÀ!|À!•À!ßÀ!æÀ!êÀ!ìÀ!íÀ"=À"VÀ"ZÀ"«À"÷À#À#À#YÀ#¨À#úÀ$À$À$>À$‹À$ÚÀ%À%)À%`À%aÀ%”À%¸À%¹À%äÀ&À&IÀ&JÀ&¢À&£À&ğÀ'À'IÀ'MÀ'NÀ'“À'™À'åÀ(6À(…À(¤À(ÌÀ(öÀ)IÀ)–À)¤À)ÛÀ*$À*˜À*¡À*§À*ËÀ*ÏÀ*ĞÀ*éÀ*ïÀ+5À+HÀ+ŒÀ+³À+äÀ,À,À,;À,?À,@À,pÀ,­À,àÀ-À-À-À-À-AÀ-RÀ-zÀ-¢À-¦À-§À-ÑÀ-×À. À.bÀ.sÀ.›À.¿À.âÀ.æÀ.èÀ.éÀ/'À/JÀ/NÀ/—À/ÔÀ0$À0nÀ0‘À0µÀ0äÀ0åÀ1	À1
+À1*À1+À1cÀ1eÀ1fÀ1ŒÀ1ÅÀ1ÉÀ2À2VÀ2À2ÁÀ2ÅÀ2õÀ35À3wÀ3xÀ3„À3´À3µÀ3ÁÀ3çÀ3èÀ3ôÀ4-À4DÀ4HÀ4JÀ4KÀ4uÀ4™À4ÎÀ4ÑÀ4ÒÀ5À5<À5@À5\À5`À5¥À5ëÀ63À6„À6¼À7À7LÀ7”À7äÀ8À8À80À84À8‚À8ÓÀ8ûÀ8ÿÀ9À9À9bÀ9sÀ9wÀ9ÂÀ:À:aÀ:kÀ:oÀ:À:ƒÀ:ÔÀ;À;fÀ;jÀ;¢À;ßÀ;ãÀ;óÀ;÷À<%À<bÀ<fÀ<vÀ<zÀ<³À<íÀ<ñÀ=>À=À=˜À=ïÀ>À>aÀ>bÀ>–À>¹À>ºÀ>ŞÀ>şÀ>ÿÀ?NÀ?mÀ?rÀ?ÀÀ@À@MÀ@yÀ@zÀ@ÉÀ@ÎÀAÀAjÀA€ÀAÀA¸ÀA¾ÀBÀBTÀBjÀBpÀB¿ÀBÕÀBÛÀCÀC@ÀCfÀCgÀC¡ÀC§ÀCôÀDEÀDˆÀDÀDÛÀEÀELÀEMÀE–ÀEÙÀEÚÀF)ÀF@ÀFÀFÀFÊÀG$ÀGzÀG­ÀG®ÀGÒÀGòÀGóÀH+ÀH,ÀH8ÀHdÀHeÀH–ÀH—ÀH»ÀIÀIÀI"ÀI4ÀIHÀINÀImÀIqÀIrÀIÀIŸÀI³ÀI¹ÀIÖÀIÚÀIÛÀJÀJ!ÀJqÀJ·ÀJéÀJêÀK1ÀK7ÀK„ÀKÂÀKÃÀLÀL!ÀLrÀL²ÀL¸ÀMÀMIÀMOÀMÀMÄÀMøÀNÀNÀN9ÀNKÀN|ÀNŠÀNÀN¿ÀNÚÀNèÀNîÀOÀO3ÀOOÀO‚ÀOŠÀO®ÀO»ÀOÎÀPÀP2ÀPzÀPÃÀQÀQ&ÀQ.ÀQ4ÀQ5ÀQMÀQ[ÀQaÀQbÀQ˜ÀQÈÀRÀR"ÀR&ÀR'ÀRqÀR´ÀRÀÀRñÀS2ÀS3ÀS[ÀS“ÀSºÀSñÀTÀTÀTÀT+ÀT,ÀTQÀTˆÀT›ÀT¡ÀT³ÀTÆÀTÌÀTóÀUÀUÀUÀUÀU4ÀUƒÀUÔÀUÛÀVÀV!ÀV"ÀV]ÀV§ÀVÑÀW!ÀW'ÀW(ÀW[ÀW_ÀW`ÀW¡ÀW¹ÀWêÀWîÀWïÀX9ÀXwÀX}ÀXÌÀXÿÀY&ÀYPÀYvÀY|ÀY}ÀYàÀYáÀZÀZÀZÀZÀZUÀZiÀZoÀZpÀZ²ÀZøÀ[.À[UÀ[]À[eÀ[‰À[À[À[ĞÀ[ÑÀ[ëÀ[şÀ\6À\DÀ\JÀ\‘À\óÀ]À]0À]:À]lÀ]¼À]ÏÀ]õÀ]ÿÀ^À^À^À^À^ZÀ^«À^ÌÀ^ÒÀ_ À_@À_FÀ_—À_ªÀ_°À_ıÀ`PÀ`zÀ`¦À`¬À`ÿÀaLÀaÀa¶ÀaĞÀb4ÀbPÀb–ÀbÅÀb×ÀcÀc=ÀcsÀc›ÀcîÀcïÀdÀduÀdvÀd³ÀeÀe`ÀemÀeÇÀeÍÀeÎÀfÀfEÀf™ÀfšÀfºÀfÏÀgÀgÀgLÀgÀg»ÀgûÀh'Àh`ÀhˆÀhÀhÀhæÀhıÀiÀi#ÀiMÀiNÀiÀiÕÀiìÀjÀj!Àj'ÀjbÀjŸÀj ÀjäÀkEÀksÀk¡ÀkëÀl2ÀlGÀl^Àl“ÀlÏÀmÀm<Àm‹ÀmÃÀmÍÀn%Àn{Àn—Àn¢ÀnûÀo'Ào2Ào…Ào©Ào´ÀpÀp1Àp<ÀpÀp¤Àp¯ÀpûÀqPÀqŸÀqËÀr0Àr:ÀraÀrpÀr¤ÀrêÀròÀrøÀsMÀs£ÀsÆÀtÀtEÀtqÀtyÀtÀt¥ÀtÓÀuÀu>ÀuFÀuLÀuMÀuÀu¦ÀuÅÀv	Àv9ÀvCÀvIÀv¨ÀvìÀw6Àw@ÀwFÀwGÀw•ÀwÙÀxÀxÀx"ÀxbÀx¦ÀxÑÀxÛÀxáÀxåÀxæÀy ÀyOÀy—ÀyÕÀyíÀyõÀzÀz'Àz:Àz>Àz?ÀzlÀz’ÀzÑÀz×ÀzöÀ{1À{rÀ{xÀ{§À{ÃÀ{ñÀ| À|5À|=À|CÀ|VÀ|ZÀ|[À| À|ÊÀ|ĞÀ|üÀ}9À}:À}vÀ}ÄÀ~À~RÀ~ŸÀ~ À~íÀ=À‹ÀÚÀ€À€9À€@À€ˆÀ€×ÀÀ$ÀsÀ´ÀíÀ‚;À‚<À‚uÀ‚¨À‚ßÀƒÀƒWÀƒ©ÀƒÌÀ„À„DÀ„MÀ„ZÀ„ŒÀ„’À„æÀ…À…dÀ…®À† À†OÀ†mÀ†«À†íÀ†şÀ‡À‡)À‡1À‡2À‡jÀ‡·À‡ùÀˆ?ÀˆGÀˆMÀˆvÀˆÃÀˆíÀ‰BÀ‰_À‰hÀ‰~À‰ÏÀŠÀŠ:ÀŠWÀŠcÀŠ‘ÀŠÎÀŠÚÀŠãÀ‹;À‹[À‹¥À‹ğÀŒÀŒ3ÀŒAÀŒqÀŒ°ÀŒÇÀŒÒÀŒÚÀŒàÀŒáÀ4ÀsÀŠÀ¬À­ÀÀ7ÀuÀ¥À¦ÀàÀ/ÀsÀ»ÀÅÀÍÀÓÀÔÀşÀÀÀEÀlÀzÀ€ÀÁÀ×À÷À‘À‘À‘À‘\À‘|À‘ˆÀ‘ÁÀ‘åÀ‘éÀ‘êÀ’8À’aÀ’gÀ’¯À’ÏÀ’ÕÀ“À“eÀ“‹À“¥À“ÁÀ“ÓÀ”À”(À”0À”wÀ”}À”°À”´À”µÀ”õÀ•À•LÀ•ˆÀ•¿À•ÑÀ•ÙÀ–1À–lÀ–¯À–ÎÀ–äÀ–úÀ—À—<À—BÀ—}À—›À—îÀ˜À˜4À˜À˜ËÀ˜÷À™À™NÀ™`À™hÀ™ÀÀ™ûÀš>ÀšqÀš‡Àš¬ÀšµÀšıÀ›À›À›À›LÀ›†À›¢À›ÅÀ›êÀœÀœcÀœ±À	À9ÀIÀQÀWÀmÀ‰ÀÀÀŞÀşÀÀLÀlÀrÀ¾ÀŸ	ÀŸXÀŸ‹ÀŸªÀŸÏÀŸáÀ À  À 5À …À ÔÀ İÀ¡À¡NÀ¡TÀ¡XÀ¡YÀ¡™À¡ŸÀ¡İÀ¡ãÀ¢+À¢EÀ¢„À¢©À¢ĞÀ£À£kÀ£‘À£šÀ£èÀ¤À¤KÀ¤vÀ¤’À¤œÀ¤¤À¤ªÀ¤¼À¤ÚÀ¥À¥IÀ¥OÀ¥bÀ¥cÀ¥°À¥şÀ¦;À¦rÀ¦”À¦ÇÀ¦ñÀ§,À§^À§zÀ§„À§ŒÀ§’À§–À§—À§ÛÀ¨!À¨IÀ¨…À¨¨À¨ºÀ¨ÂÀ¨ïÀ©9À©ƒÀ©µÀ©äÀª*ÀªJÀªtÀª|Àª}Àª¾ÀªëÀªñÀªòÀ«'À«MÀ«pÀ«œÀ«ãÀ¬%À¬iÀ¬–À¬ À¬¦À¬İÀ­1À­>À­À­¤À­¨À­©À­îÀ®À®QÀ®oÀ®xÀ®¼À®èÀ¯À¯À¯7À¯wÀ¯‰À¯À¯À¯·À¯ÉÀ¯êÀ°!À°[À°dÀ°jÀ°³À°·À°¸À°ïÀ±6À±cÀ±~À±¹À±ßÀ²À²CÀ²oÀ²¥À²»À²ÇÀ²şÀ³À³8À³cÀ³šÀ³ĞÀ´À´À´À´LÀ´‚À´ÍÀµ	ÀµÀµfÀµ‰ÀµËÀ¶À¶À¶EÀ¶mÀ¶ŸÀ¶ÈÀ¶ÿÀ·À·À·qÀ·§À·ÉÀ·ÊÀ·÷À¸À¸xÀ¸†À¸²À¸öÀ¹À¹ZÀ¹¬À¹çÀ¹òÀº=ÀºHÀºÀºŠÀºÃÀºâÀ»À»#À»6À»[À»gÀ»qÀ»¹À»ÁÀ»ÇÀ»ìÀ»ğÀ»ñÀ¼4À¼\À¼‘À¼ÈÀ¼ÑÀ¼òÀ½À½^À½˜À½œÀ½À½ÆÀ½ıÀ¾DÀ¾yÀ¾‹À¾ªÀ¾ÅÀ¿À¿:À¿NÀ¿XÀ¿³À¿æÀÀ)ÀÀdÀÀ|ÀÀÀÀ¨ÀÀÜÀÁÀÁOÀÁ`ÀÁ˜ÀÁàÀÂÀÂ.ÀÂ9ÀÂ“ÀÂËÀÃÀÃ(ÀÃWÀÃdÀÃ®ÀÃ¸ÀÃìÀÄ#ÀÄIÀÄtÀÄÀÄÃÀÄÍÀÄÕÀÅÀÅÀÅ#ÀÅ9ÀÅwÀÅ˜ÀÅÎÀÅıÀÆÀÆÀÆÀÆFÀÆaÀÆ±ÀÆ÷ÀÇBÀÇŒÀÇÜÀÈ(ÀÈNÀÈœÀÈÀÈ¹ÀÈâÀÈãÀÉBÀÉjÀÉ·ÀÉİÀÉŞÀÊ-ÀÊ}ÀÊÇÀÊåÀËDÀË¤ÀË³ÀË»ÀËäÀÌÀÌkÀÌ¼ÀÌëÀÍÀÍ=ÀÍEÀÍeÀÍ½ÀÍ¾ÀÍÙÀÎ'ÀÎoÀÎ½ÀÎõÀÎşÀÏPÀÏŸÀÏéÀĞ:ÀĞ^ÀĞƒÀĞãÀĞéÀÑMÀÑ¤ÀÑèÀÒ7ÀÒŒÀÒÜÀÒîÀÓ9ÀÓ†ÀÓŒÀÓÀÓÓÀÓûÀÔ_ÀÔ©ÀÔŞÀÔèÀÔğÀÔöÀÔúÀÔûÀÕ_ÀÕ–ÀÕËÀÖÀÖÀÖVÀÖ„ÀÖ–ÀÖÀÖüÀ×&À×.À×MÀ×€À×ÂÀØÀØJÀØ}ÀØ‡ÀØÀØ•ÀØÆÀØıÀÙÀÙÀÙÀÙQÀÙbÀÙuÀÙ•ÀÙ¬ÀÙÁÀÙäÀÚÀÚ"ÀÚBÀÚYÀÚuÀÚ‘ÀÚ•ÀÚ–ÀÚ¢ÀÚÔÀÚéÀÛDÀÛWÀÛ[ÀÛ\ÀÛiÀÛuÀÛºÀÛåÀÜ2ÀÜ–ÀÜñÀİÀİÀİ3ÀİˆÀİªÀİ³ÀİºÀİôÀŞÀŞ/ÀŞrÀŞÀŞËÀŞÚÀßÀßÀßvÀß|ÀßÀß¤ÀßÂÀßşÀà#Àà,Àà3ÀàGÀà¬Àà³ÀàúÀá_ÀáeÀáiÀákÀálÀá˜ÀáÄÀáúÀâ;ÀâGÀâKÀâLÀâZÀâhÀâºÀâ÷ÀãÀãÀãÀãÀãWÀã€Àã‚ÀãƒÀãËÀãÏÀäÀäUÀä`ÀäÀäÄÀäáÀåÀå'ÀåDÀå\ÀåvÀå|Àå}Àå¬ÀåËÀåæÀæÀæ*Àæ?ÀæQÀæXÀæ\Àæ]ÀæˆÀæ£Àæ¤ÀæİÀæşÀæÿÀç4ÀçQÀçRÀçxÀç‹ÀçŒÀçÊÀçËÀèÀèPÀèeÀèfÀè™ÀèÀÀèèÀéÀé@ÀékÀérÀé«ÀéìÀéíÀê2Àê3ÀêvÀêÇÀêáÀë"Àë0ÀëZÀëµÀë¾ÀëóÀì'Àì-Àì\ÀìšÀì›ÀìÁÀìÂÀìÛÀìøÀí"Àí^Àí¢ÀíâÀî Àî!Àî\Àî“ÀîİÀï Àï	ÀïHÀïxÀïÂÀïåÀïîÀğ<ÀğVÀğ~ÀğÓÀñ
+ÀñÀñÀñEÀñ]Àñ³ÀñüÀñıÀò;ÀòmÀò ÀòÅÀóÀó*ÀóKÀóšÀó¬Àó²Àó³ÀóÖÀôÀôÀôÀô,ÀôwÀô¢ÀôÀÀôáÀõÀõVÀõqÀõ‹Àõ“Àõ™ÀõšÀõ¹ÀõÕÀõùÀö%Àö7ÀöSÀöZÀö^Àö_ÀöÀö¬Àö¼ÀöÕÀ÷À÷À÷1À÷DÀ÷JÀ÷xÀ÷À÷–À÷¹À÷½À÷¾À÷ñÀøÀøÀøÀø=ÀøAÀøCÀøDÀø˜ÀøœÀøóÀùCÀùVÀùšÀùåÀúÀú0ÀúsÀúu   €é/// @docImport 'dart:ui';
+///
+/// @docImport 'package:flutter/widgets.dart';
+///
+/// @docImport 'box.dart';
+/// @docImport 'paragraph.dart';
+/// @docImport 'proxy_box.dart';
+/// @docImport 'view.dart';
+/// @docImport 'viewport.dart';
+™­°ÄÇ  ğ  ‚  ‚B  ‚j  ‚“  ‚½  ‚Ô  ‚é  ‚ÿƒ,„r„t„›„»„½         †ğ†ñ†ı†ş†³†³k‡:/// Called when the RenderObject is removed from the tree.  ‡"‡#‡"‡"*‡5  „æ„æ‚h†¤·/// Base class for data associated with a [RenderObject] by its parent.
+///
+/// Some render objects wish to store data on their children, such as the
+/// children's input parameters to the parent's layout algorithm or the
+/// children's position relative to other children.
+///
+/// See also:
+///
+///  * [RenderObject.setupParentData], which [RenderObject] subclasses may
+///    override to attach specific types of parent data to children.   )    **/   @@E Œ†Œ†€Ğ ~/// Creates a painting context.
+///
+/// Typically only called by [PaintingContext.repaintCompositedChild]
+/// and [pushLayer].  oZ$o  µƒAµ/// An estimate of the bounds within which the painting context's [canvas]
+/// will record painting commands. This can be useful for debugging.
+///
+/// The canvas will allow painting outside these bounds.
+///
+/// The [estimatedBounds] rectangle is in the [canvas] coordinate system. ­Ì­¾­Ì  ­ñ­İ­ñ  ®­ş®    ¬¬‰¬%    ®®„¯€Ş/// The recorder that is being used by this [PaintingContext]
+/// to record interactions with the [Canvas].
+///
+/// It's fragile to hold a reference to the recorder
+/// returned by this getter as it can change at any time.  °w°x¯š¯šr°€Ò/// The canvas on which to paint.
+///
+/// The current canvas can change whenever you paint a child using this
+/// context, which means it's fragile to hold a reference to the canvas
+/// returned by this getter.    ««¸   ÀÀ#Å ŞÉÉ‚•”¨/// Repaint the given render object.
+///
+/// The render object must be attached to a [PipelineOwner], must have a
+/// composited layer, and must be in need of painting. The render object's
+/// layer, if any, is re-used, along with any layers in the subtree that don't
+/// need to be repainted.
+///
+/// See also:
+///
+///  * [RenderObject.isRepaintBoundary], which determines if a [RenderObject]
+///    has a composited layer.   ‘‹‘‹‘˜   ‘¥‘¥#‘ª   ‘Î‘Î‘ß ‘Ã‘b‘b‰.‘n    œ¸œ¸œÅ  š”š”…vœ¢ë/// Update the composited layer of [child] without repainting its children.
+///
+/// The render object must be attached to a [PipelineOwner], must have a
+/// composited layer, and must be in need of a composited layer update but
+/// not in need of painting. The render object's layer is re-used, and none
+/// of its children are repaint or their layers updated.
+///
+/// See also:
+///
+///  * [RenderObject.isRepaintBoundary], which determines if a [RenderObject]
+///    has a composited layer.   ¡™¡™¡¦   ¡³¡³#¡¸   ¡Ü¡Ü&¡õ ¡Ñ  ‚Á¡nC/// In debug mode, repaint the given render object using a custom painting
+/// context that can record the results of the painting operation in addition
+/// to performing the regular paint of the child.
+///
+/// See also:
+///
+///  * [repaintCompositedChild], for repainting a composited child without
+///    instrumentation.   £ú£ú¤   ¤¤¤  ¢Ó¢Óƒ›£ï/// Paint a child [RenderObject].
+///
+/// If the child has its own composited layer, the child will be composited
+/// into the layer subtree associated with this painting context. Otherwise,
+/// the child will be painted into the current PictureLayer for this context.   ¦‡¦‡¦”   ¦›¦›¦¢  ¦r¦rƒ¦w    «´«´«º «–«—ªª‚«¨p/// Adds a layer to the recording requiring that the recording is already
+/// stopped.
+///
+/// Do not call this function directly: call [addLayer] or [pushLayer]
+/// instead. This function is called internally when all layers not
+/// generated from the [canvas] are added.
+///
+/// Subclasses that need to customize how layers are added should override
+/// this method.   ±±±    ´`´`´t  ²-²-‚“´Iö/// Adds a [CompositionCallback] for the current [ContainerLayer] used by this
+/// context.
+///
+/// Composition callbacks are called whenever the layer tree containing the
+/// current layer of this painting context gets composited, or when it gets
+/// detached and will not be rendered again. This happens regardless of
+/// whether the layer is added via retained rendering or not.
+///
+/// {@macro flutter.rendering.Layer.compositionCallbacks}
+///
+/// See also:
+///   *  [Layer.addCompositionCallback].  ¶®¶¯¶»¶¼´Ä´Ä…¶ÑÕ/// Stop recording to a canvas if recording has started.
+///
+/// Do not call this function directly: functions in this class will call
+/// this method as needed. This function is called internally to ensure that
+/// recording is stopped before adding layers or finalizing the results of a
+/// paint.
+///
+/// Subclasses that need to customize how recording to a canvas is performed
+/// should override this method to save the results of the custom canvas
+/// recordings.   ¹É¹É‚¦»î‚	/// Hints that the painting in the current layer is complex and would benefit
+/// from caching.
+///
+/// If this hint is not set, the compositor will apply its own heuristics to
+/// decide whether the current layer is complex enough to benefit from
+/// caching.
+///
+/// Calling this ensures a [Canvas] is available. Only draw calls on the
+/// current canvas will be hinted; the hint is not propagated to new canvases
+/// created after a new layer is added to the painting context (e.g. with
+/// [addLayer] or [pushLayer]).   ¼s¼sƒ¾ø‚i/// Hints that the painting in the current layer is likely to change next frame.
+///
+/// This hint tells the compositor not to cache the current layer because the
+/// cache will not be used in the future. If this hint is not set, the
+/// compositor will apply its own heuristics to decide whether the current
+/// layer is likely to be reused in the future.
+///
+/// Calling this ensures a [Canvas] is available. Only draw calls on the
+/// current canvas will be hinted; the hint is not propagated to new canvases
+/// created after a new layer is added to the painting context (e.g. with
+/// [addLayer] or [pushLayer]).   À BÀ BÀ B  ¿¿‚ÎÀ Aı‚\/// Adds a composited leaf layer to the recording.
+///
+/// After calling this function, the [canvas] property will change to refer to
+/// a new [Canvas] that draws on top of the given layer.
+///
+/// A [RenderObject] that uses this function is very likely to require its
+/// [RenderObject.alwaysNeedsCompositing] property to return true. That informs
+/// ancestor render objects that this render object will include a composited
+/// layer, which, for example, causes them to use composited clips.
+///
+/// See also:
+///
+///  * [pushLayer], for adding a layer and painting further contents within
+///    it.   À HÀ HÀ H   À H#À H#À H;   À HHÀ HHÀ HO   À H]À H]À Hc  À BQÀ BQˆ$À Gõ…h/// Appends the given layer to the recording, and calls the `painter` callback
+/// with that layer, providing the `childPaintBounds` as the estimated paint
+/// bounds of the child. The `childPaintBounds` can be used for debugging but
+/// have no effect on painting.
+///
+/// The given layer must be an unattached orphan. (Providing a newly created
+/// object, rather than reusing an existing layer, satisfies that
+/// requirement.)
+///
+/// {@template flutter.rendering.PaintingContext.pushLayer.offset}
+/// The `offset` is the offset to pass to the `painter`. In particular, it is
+/// not an offset applied to the layer itself. Layers conceptually by default
+/// have no position or size, though they can transform their contents. For
+/// example, an [OffsetLayer] applies an offset to its children.
+/// {@endtemplate}
+///
+/// If the `childPaintBounds` are not specified then the current layer's paint
+/// bounds are used. This is appropriate if the child layer does not apply any
+/// transformation or clipping to its contents. The `childPaintBounds`, if
+/// specified, must be in the coordinate system of the new layer (i.e. as seen
+/// by its children after it applies whatever transform to its contents), and
+/// should not go outside the current layer's paint bounds.
+///
+/// See also:
+///
+///  * [addLayer], for pushing a layer without painting further contents
+///    within it.   À K=À K=À KL   À KXÀ KXÀ K] À KÀ KÀ JyÀ Jy!À K*€/// Creates a painting context configured to paint into [childLayer].
+///
+/// The `bounds` are estimated paint bounds for debugging purposes.   À SzÀ SzÀ S   À S•À S•À Sœ   À S¨À S¨À S­   À S»À S»À SÓ   À SâÀ Sâ!À Sç   À T	À T	À T À SöÀ SúÀ SûÀ KÀ KŠ»À Sh‡p/// Clip further painting using a rectangle.
+///
+/// {@template flutter.rendering.PaintingContext.pushClipRect.needsCompositing}
+/// The `needsCompositing` argument specifies whether the child needs
+/// compositing. Typically this matches the value of
+/// [RenderObject.needsCompositing] for the caller. If false, this method
+/// returns null, indicating that a layer is no longer necessary. If a render
+/// object calling this method stores the `oldLayer` in its
+/// [RenderObject.layer] field, it should set that field to null.
+///
+/// When `needsCompositing` is false, this method will use a more efficient
+/// way to apply the layer effect than actually creating a layer.
+/// {@endtemplate}
+///
+/// {@template flutter.rendering.PaintingContext.pushClipRect.offset}
+/// The `offset` argument is the offset from the origin of the canvas'
+/// coordinate system to the origin of the caller's coordinate system.
+/// {@endtemplate}
+///
+/// The `clipRect` is the rectangle (in the caller's coordinate system) to use
+/// to clip the painting done by [painter]. It should not include the
+/// `offset`.
+///
+/// The `painter` callback will be called while the `clipRect` is applied. It
+/// is called synchronously during the call to [pushClipRect].
+///
+/// The `clipBehavior` argument controls how the rectangle is clipped.
+///
+/// {@template flutter.rendering.PaintingContext.pushClipRect.oldLayer}
+/// For the `oldLayer` argument, specify the layer created in the previous
+/// frame. This gives the engine more information for performance
+/// optimizations. Typically this is the value of [RenderObject.layer] that a
+/// render object creates once, then reuses for all subsequent frames until a
+/// layer is no longer needed (e.g. the render object no longer needs
+/// compositing) or until the render object changes the type of the layer
+/// (e.g. from opacity layer to a clip rect layer).
+/// {@endtemplate}   À YõÀ YõÀ Yú   À ZÀ ZÀ Z   À Z#À Z#À Z(   À Z4À Z4À Z:   À ZIÀ ZIÀ Za   À ZpÀ Zp"À Zu   À Z˜À Z˜À Z¨ À Z„À ZˆÀ Z‰À V]À V]†ÅÀ YâƒN/// Clip further painting using a rounded rectangle.
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.needsCompositing}
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.offset}
+///
+/// The `bounds` argument is used to specify the region of the canvas (in the
+/// caller's coordinate system) into which `painter` will paint.
+///
+/// The `clipRRect` argument specifies the rounded-rectangle (in the caller's
+/// coordinate system) to use to clip the painting done by `painter`. It
+/// should not include the `offset`.
+///
+/// The `painter` callback will be called while the `clipRRect` is applied. It
+/// is called synchronously during the call to [pushClipRRect].
+///
+/// The `clipBehavior` argument controls how the rounded rectangle is clipped.
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.oldLayer}   À aBÀ aBÀ aG   À a]À a]À ad   À apÀ apÀ au   À aÀ aÀ a   À a¦À a¦À a¾   À aÍÀ aÍ"À aÒ   À aõÀ aõ À b À aáÀ aåÀ aæÀ ]&À ]&‡®À a'ƒ¾/// Clip further painting using a rounded superellipse.
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.needsCompositing}
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.offset}
+///
+/// The `bounds` argument is used to specify the region of the canvas (in the
+/// caller's coordinate system) into which `painter` will paint.
+///
+/// The `clipRSuperellipse` argument specifies the rounded-superellipse (in the caller's
+/// coordinate system) to use to clip the painting done by `painter`. It
+/// should not include the `offset`.
+///
+/// The `painter` callback will be called while the `clipRSuperellipse` is applied. It
+/// is called synchronously during the call to [pushClipRSuperellipse].
+///
+/// The `clipBehavior` argument controls how the rounded rectangle is clipped.
+///
+/// Hit tests are performed based on the bounding box of the [RSuperellipse].
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.oldLayer}   À hFÀ hFÀ hK   À haÀ haÀ hh   À htÀ htÀ hy   À h…À h…À hŠ   À h˜À h˜À h°   À h¿À h¿"À hÄ   À hçÀ hçÀ hö À hÓÀ h×À hØÀ dØÀ dØ†À h4ƒ&/// Clip further painting using a path.
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.needsCompositing}
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.offset}
+///
+/// The `bounds` argument is used to specify the region of the canvas (in the
+/// caller's coordinate system) into which `painter` will paint.
+///
+/// The `clipPath` argument specifies the [Path] (in the caller's coordinate
+/// system) to use to clip the painting done by `painter`. It should not
+/// include the `offset`.
+///
+/// The `painter` callback will be called while the `clipPath` is applied. It
+/// is called synchronously during the call to [pushClipPath].
+///
+/// The `clipBehavior` argument controls how the path is clipped.
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.oldLayer}   À n­À n­À n´   À nÀÀ nÀÀ nÌ   À nİÀ nİÀ nõ   À oÀ oÀ o  À kkÀ kk„`À n˜‚û/// Blend further painting with a color filter.
+///
+/// {@macro flutter.rendering.PaintingContext.pushLayer.offset}
+///
+/// The `colorFilter` argument is the [ColorFilter] value to use when blending
+/// the painting done by `painter`.
+///
+/// The `painter` callback will be called while the `colorFilter` is applied.
+/// It is called synchronously during the call to [pushColorFilter].
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.oldLayer}
+///
+/// A [RenderObject] that uses this function is very likely to require its
+/// [RenderObject.alwaysNeedsCompositing] property to return true. That informs
+/// ancestor render objects that this render object will include a composited
+/// layer, which, for example, causes them to use composited clips.   À r·À r·À r¼   À rÒÀ rÒÀ rÙ   À råÀ råÀ rí   À rüÀ rüÀ s   À s#À s#À s3  À oÏÀ oÏ†À r¤‚¦/// Transform further painting using a matrix.
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.needsCompositing}
+///
+/// The `offset` argument is the offset to pass to `painter` and the offset to
+/// the origin used by `transform`.
+///
+/// The `transform` argument is the [Matrix4] with which to transform the
+/// coordinate system while calling `painter`. It should not include `offset`.
+/// It is applied effectively after applying `offset`.
+///
+/// The `painter` callback will be called while the `transform` is applied. It
+/// is called synchronously during the call to [pushTransform].
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.oldLayer}   À y¿À y¿À yÆ   À yÒÀ yÒ	À yÖ   À yáÀ yáÀ yù   À zÀ zÀ z  À uæÀ uæ„öÀ y®ƒ–/// Blend further painting with an alpha value.
+///
+/// The `offset` argument indicates an offset to apply to all the children
+/// (the rendering created by `painter`).
+///
+/// The `alpha` argument is the alpha value to use when blending the painting
+/// done by `painter`. An alpha value of 0 means the painting is fully
+/// transparent and an alpha value of 255 means the painting is fully opaque.
+///
+/// The `painter` callback will be called while the `alpha` is applied. It
+/// is called synchronously during the call to [pushOpacity].
+///
+/// {@macro flutter.rendering.PaintingContext.pushClipRect.oldLayer}
+///
+/// A [RenderObject] that uses this function is very likely to require its
+/// [RenderObject.alwaysNeedsCompositing] property to return true. That informs
+/// ancestor render objects that this render object will include a composited
+/// layer, which, for example, causes them to use composited clips.  À zàÀ záÀ zàÀ zà€›À zó  ‰g‰gÀ rŒ^‚ğ/// A place to paint.
+///
+/// Rather than holding a canvas directly, [RenderObject]s paint using a painting
+/// context. The painting context has a [Canvas], which receives the
+/// individual draw operations, and also has functions for painting child
+/// render objects.
+///
+/// When painting a child render object, the canvas held by the painting context
+/// can change because the draw operations issued before and after painting the
+/// child might be recorded in separate compositing layers. For this reason, do
+/// not hold a reference to the canvas across operations that might paint
+/// child render objects.
+///
+/// New [PaintingContext] objects are created automatically when using
+/// [PaintingContext.repaintCompositedChild] and [pushLayer].  À †% À †0    À …†À …†€­ €”/// Abstract const constructor. This constructor enables subclasses to provide
+/// const constructors so that they can be used in const expressions.     À †7À †7[À †ŠG/// Whether there is exactly one size possible given these constraints.   À †–À †–XÀ †á?/// Whether the constraint is expressed in a consistent manner.    À ‹BÀ ‹B À ‹G   À ‹hÀ ‹h*À ‹~ À ‹]À †òÀ †ò„ßÀ ‹)„/// Asserts that the constraints are valid.
+///
+/// This might involve checks more detailed than [isNormalized].
+///
+/// For example, the [BoxConstraints] subclass verifies that the constraints
+/// are not [double.nan].
+///
+/// If the `isAppliedConstraint` argument is true, then even stricter rules
+/// are enforced. This argument is set to true when checking constraints that
+/// are about to be applied to a [RenderObject] during layout, as opposed to
+/// constraints that may be further affected by other constraints. For
+/// example, the asserts for verifying the validity of
+/// [RenderConstrainedBox.additionalConstraints] do not set this argument, but
+/// the asserts for verifying the argument passed to the [RenderObject.layout]
+/// method do.
+///
+/// The `informationCollector` argument takes an optional callback which is
+/// called when an exception is to be thrown. The collected information is
+/// then included in the message after the error line.
+///
+/// Returns the same as [isNormalized] if asserts are disabled.À …\À …]À {À {TÀ …v‰Ü/// An abstract set of layout constraints.
+///
+/// Concrete layout models (such as box) will create concrete subclasses to
+/// communicate layout constraints between parents and children.
+///
+/// ## Writing a Constraints subclass
+///
+/// When creating a new [RenderObject] subclass with a new layout protocol, one
+/// will usually need to create a new [Constraints] subclass to express the
+/// input to the layout algorithms.
+///
+/// A [Constraints] subclass should be immutable (all fields final). There are
+/// several members to implement, in addition to whatever fields, constructors,
+/// and helper methods one may find useful for a particular layout protocol:
+///
+/// * The [isTight] getter, which should return true if the object represents a
+///   case where the [RenderObject] class has no choice for how to lay itself
+///   out. For example, [BoxConstraints] returns true for [isTight] when both
+///   the minimum and maximum widths and the minimum and maximum heights are
+///   equal.
+///
+/// * The [isNormalized] getter, which should return true if the object
+///   represents its data in its canonical form. Sometimes, it is possible for
+///   fields to be redundant with each other, such that several different
+///   representations have the same implications. For example, a
+///   [BoxConstraints] instance with its minimum width greater than its maximum
+///   width is equivalent to one where the maximum width is set to that minimum
+///   width (`2<w<1` is equivalent to `2<w<2`, since minimum constraints have
+///   priority). This getter is used by the default implementation of
+///   [debugAssertIsValid].
+///
+/// * The [debugAssertIsValid] method, which should assert if there's anything
+///   wrong with the constraints object. (We use this approach rather than
+///   asserting in constructors so that our constructors can be `const` and so
+///   that it is possible to create invalid constraints temporarily while
+///   building valid ones.) See the implementation of
+///   [BoxConstraints.debugAssertIsValid] for an example of the detailed checks
+///   that can be made.
+///
+/// * The [==] operator and the [hashCode] getter, so that constraints can be
+///   compared for equality. If a render object is given constraints that are
+///   equal, then the rendering library will avoid laying the object out again
+///   if it is not dirty.
+///
+/// * The [toString] method, which should describe the constraints so that they
+///   appear in a usefully readable form in the output of [debugDumpRenderTree].  À ±À ÆÀ È    À ÉÀ ÉÀ ×   À ŞÀ ŞÀ ã À öÀ ïÀ øÀ ±À ±€üÀ Ç   À ÅÀ ±À Å  À .À ĞfÀ .G/// The callback that will be notified when the semantics tree updates.    À ;À <À ;À ;€ÑÀ L  À vÀ v‚˜À |   À ›Ú À ›ç    À ›îÀ ›îÀ ›ó   À œÀ œÀ œ   À œ-À œ-À œ2   À œIÀ œIÀ œN  À šôÀ šôÉ €Û/// Creates a pipeline owner.
+///
+/// Typically created by the binding (e.g., [RendererBinding]), but can be
+/// created separately from the binding to drive off-screen render objects
+/// through the rendering pipeline.  À Ÿ<À œÁ‚À Ÿ<‚P/// Called when a render object associated with this pipeline owner wishes to
+/// update its visual appearance.
+///
+/// Typical implementations of this function will schedule a task to flush the
+/// various stages of the pipeline. This function might be called multiple
+/// times in quick succession. Implementations should take care to discard
+/// duplicate calls quickly.
+///
+/// When the [PipelineOwner] is attached to a [PipelineManifold] and
+/// [onNeedVisualUpdate] is provided, the [onNeedVisualUpdate] callback is
+/// invoked instead of calling [PipelineManifold.requestVisualUpdate]. À  À ŸS€ÕÀ  €¡/// Called whenever this pipeline owner creates a semantics object.
+///
+/// Typical implementations will schedule the creation of the initial
+/// semantics tree. À ¡+À  -À ¡+€Ö/// Called whenever this pipeline owner's semantics owner emits a [SemanticsUpdate].
+///
+/// Typical implementations will delegate the [SemanticsUpdate] to a [FlutterView]
+/// that can handle the [SemanticsUpdate]. À ¡äÀ ¡A€»À ¡ä€ˆ/// Called whenever this pipeline owner disposes its semantics owner.
+///
+/// Typical implementations will tear down the semantics tree. À £äÀ £ÖÀ £ä À §èÀ §ÏÀ §Ê#À §Ï À ¨(À ¨)À ¨À ¨'À ¨À ¨À §ñ9À ¨ À ¬À ¬À «üÀ ¬ À ¬<À ¬#À ¬#À ¬# À ·‘À ·kÀ ·f0À ·k À ¹åÀ ¹æÀ ¹×À ¹äÀ ¹ØÀ ¹²À ¹™NÀ ¹² À ½êÀ ½ëÀ ½ÜÀ ½éÀ ½İÀ ½ÇÀ ½´8À ½Ç À ÁzÀ ÁgÀ ÁbÀ Ág  À ÌâÀ ÌÒÀ Ìâ À ÏÀ ÎşÀ Îú$À Îş À ÔìÀ ÔÕÀ ÔĞ!À ÔÕ À ÖVÀ ÖWÀ ÖHÀ ÖUÀ ÖIÀ Ö)À ÔöbÀ Ö)/// Nodes that need semantics update.
+///
+/// When a [_RenderObjectSemantics.markNeedsUpdate] is called, the [_RenderObjectSemantics]'s
+/// closest semantics boundary ancestor is added to this set.
+///
+/// All nodes in this set are guaranteed to be semantics boundaries.À ØOÀ ØPÀ ØAÀ ØNÀ ØBÀ ØÀ Ö]ôÀ Ø–/// Nodes that need semantics geometry update.
+///
+/// Nodes are added when their [_RenderObjectSemantics.markNeedsUpdate]s are called.
+///
+/// This is used to track nodes that need their semantics geometry updated.
+/// Compare to [_nodesNeedingSemanticsUpdate], which tracks semantics boundaries of dirty nodes,
+/// this set only tracks the dirty nodes that need their semantics geometry updated directly.À ÿéÀ ÿêÀ ÿÚÀ ÿèÀ ÿÛÀ ÿÎÀ ÿµ6À ÿÎ  À À ÿïÀ   À À À  	   À £fÀ £fmÀ £½B/// The unique object managed by this pipeline that has no parent.  À ª}À ª~À ªŠÀ ª‹À ¨/À ¨/‚®À ª³‚7/// The [RenderObject]s representing relayout boundaries which need to be laid out
+/// in the next [flushLayout] pass.
+///
+/// Relayout boundaries are added when they are marked for layout.
+/// Subclasses of [PipelineOwner] may use them to invalidate caches or
+/// otherwise make performance optimizations. Since nodes may be marked for
+/// layout at any time, they are best checked during [flushLayout].
+///
+/// Relayout boundaries owned by child [PipelineOwner]s are not included here.
+///
+/// Boundaries appear in an arbitrary order, and may appear multiple times.   À ªáÀ ªáÀ «Ó€Ü/// Whether this pipeline is currently in the layout phase.
+///
+/// Specifically, whether [flushLayout] is currently running.
+///
+/// Only valid when asserts are enabled; in release builds, this
+/// always returns false.  À ¿éÀ ¿êÀ ¿öÀ ¿÷À ½ñÀ ½ñ‚VÀ Àå/// The [RenderObject]s which need to be painted in the next [flushPaint] pass.
+///
+/// [RenderObject]s marked with [RenderObject.isRepaintBoundary] are added
+/// when they are marked needing paint. Subclasses of [PipelineOwner] may use them
+/// to invalidate caches or otherwise make performance optimizations.
+/// Since nodes may be marked for layout at any time, they are best checked during
+/// [flushPaint].
+///
+/// Marked children of child [PipelineOwner]s are not included here.   À ÀKÀ ÀKÀ Á;€Ú/// Whether this pipeline is currently in the paint phase.
+///
+/// Specifically, whether [flushPaint] is currently running.
+///
+/// Only valid when asserts are enabled. In release builds,
+/// this always returns false.   À ÊÀ Ê‚ºÀ Ì­‚k/// The object that is managing semantics for this pipeline owner, if any.
+///
+/// An owner is created by [ensureSemantics] or when the [PipelineManifold] to
+/// which this owner is connected has [PipelineManifold.semanticsEnabled] set
+/// to true. The owner is valid for as long as
+/// [PipelineManifold.semanticsEnabled] remains true or while there are
+/// outstanding [SemanticsHandle]s from calls to [ensureSemantics]. The
+/// [semanticsOwner] field will revert to null once both conditions are no
+/// longer met.
+///
+/// When [semanticsOwner] is null, the [PipelineOwner] skips all steps
+/// relating to semantics.  À ÍéÀ ÍêÀ ÍôÀ ÎªÀ ÍúÀ Î@À ÎqÀ ÌöÀ Ìö‚À Î¶€è/// Deprecated.
+///
+/// Use [SemanticsBinding.debugOutstandingSemanticsHandles] instead. This
+/// API is broken because an outstanding semantics handle on a given pipeline
+/// owner doesn't mean that semantics are actually produced.   À ªÀ ªZÀ µ    ÀöÀözÀÿ    À £şÀ £şÀ ¤  À £ñÀ £ñ€¦À £õ    À ¢À ¢aÀ ¢É€º/// Calls [onNeedVisualUpdate] if [onNeedVisualUpdate] is not null.
+///
+/// Used to notify the pipeline owner that an associated render object wishes
+/// to update its visual appearance.   À ¬FÀ ¬F‰´À ­³Y/// Update the layout information for all dirty render objects.
+///
+/// This function is one of the core stages of the rendering pipeline. Layout
+/// information is cleaned prior to painting so that render objects will
+/// appear on screen in their up-to-date locations.
+///
+/// See [RendererBinding] for an example of how this function is used.   À ·îÀ ·îÀ ·û  À ·ÉÀ ·ÉÌÀ ·Î    À ¹ìÀ ¹ìƒÄÀ º‘€—/// Updates the [RenderObject.needsCompositing] bits.
+///
+/// Called as part of the rendering pipeline after [flushLayout] and before
+/// [flushPaint].   À Á„À Á„ˆÀ Âÿg/// Update the display lists for all render objects.
+///
+/// This function is one of the core stages of the rendering pipeline.
+/// Painting occurs after layout and before the scene is recomposited so that
+/// scene is composited with up-to-date display lists for every render object.
+///
+/// See [RendererBinding] for an example of how this function is used.   À ÑIÀ ÑIÀ ÑW À ĞÀ ĞÀ ĞÀ Ñ$À Ğ À Ğ”À ĞëÀ Ï#À Ï#‚¼À Ñ8€á/// Deprecated.
+///
+/// Call [SemanticsBinding.ensureSemantics] instead and optionally add a
+/// listener to [PipelineOwner.semanticsOwner]. This API is broken as calling
+/// it does not guarantee that semantics are produced.   À ÑãÀ Ñã‚UÀ Ñè    À Ô<À Ô<€À ÔA    À ØVÀ ØV¥­À ÚÀã/// Update the semantics for render objects marked as needing a semantics
+/// update.
+///
+/// Initially, only the root node, as scheduled by
+/// [RenderObject.scheduleInitialSemantics], needs a semantics update.
+///
+/// This function is one of the core stages of the rendering pipeline. The
+/// semantics are compiled after painting and only after
+/// [RenderObject.scheduleInitialSemantics] has been called.
+///
+/// See [RendererBinding] for an example of how this function is used.  À şÀ şÀ şÀ ş€²À ş)    À şâÀ şâ&À şş À ş½À ş¾À ş½À ş½€ŞÀ şÎ    À CÀ CÀ Q   À XÀ XÀ g  À .À .xÀ 3    À$À$À5  ÀÀ‚À/// Mark this [PipelineOwner] as attached to the given [PipelineManifold].
+///
+/// Typically, this is only called directly on the root [PipelineOwner].
+/// Children are automatically attached to their parent's [PipelineManifold]
+/// when [adoptChild] is called.   À)À)‚ À€æ/// Mark this [PipelineOwner] as detached.
+///
+/// Typically, this is only called directly on the root [PipelineOwner].
+/// Children are automatically detached from their parent's [PipelineManifold]
+/// when [dropChild] is called.   À9À9ÀG  ÀtÀt…(À.ƒ/// Adds `child` to this [PipelineOwner].
+///
+/// During the phases of frame production (see [RendererBinding.drawFrame]),
+/// the parent [PipelineOwner] will complete a phase for the nodes it owns
+/// directly before invoking the flush method corresponding to the current
+/// phase on its child [PipelineOwner]s. For example, during layout, the
+/// parent [PipelineOwner] will first lay out its own nodes before calling
+/// [flushLayout] on its children. During paint, it will first paint its own
+/// nodes before calling [flushPaint] on its children. This order also applies
+/// for all the other phases.
+///
+/// No assumptions must be made about the order in which child
+/// [PipelineOwner]s are flushed.
+///
+/// No new children may be added after the [PipelineOwner] has started calling
+/// [flushLayout] on any of its children until the end of the current frame.
+///
+/// To remove a child, call [dropChild].   ÀÀÀ  À À ‚ÀÀûG/// Removes a child [PipelineOwner] previously added via [adoptChild].
+///
+/// This node will cease to call the flush methods on the `child` during frame
+/// production.
+///
+/// No children may be removed after the [PipelineOwner] has started calling
+/// [flushLayout] on any of its children until the end of the current frame.   À)À)À>  ÀdÀdÀ€¥/// Calls `visitor` for each immediate child of this [PipelineOwner].
+///
+/// See also:
+///
+///  * [adoptChild] to add a child.
+///  * [dropChild] to remove a child.   ÀpÀpƒÀåa/// Release any resources held by this pipeline owner.
+///
+/// Prior to calling this method the pipeline owner must be removed from the
+/// pipeline owner tree, i.e. it must have neither a parent nor any children
+/// (see [dropChild]). It also must be [detach]ed from any [PipelineManifold].
+///
+/// The object is no longer usable after calling dispose. À À À ƒiÀ šÅŠ©/// The pipeline owner manages the rendering pipeline.
+///
+/// The pipeline owner provides an interface for driving the rendering pipeline
+/// and stores the state about which render objects have requested to be visited
+/// in each stage of the pipeline. To flush the pipeline, call the following
+/// functions in order:
+///
+/// 1. [flushLayout] updates any render objects that need to compute their
+///    layout. During this phase, the size and position of each render
+///    object is calculated. Render objects might dirty their painting or
+///    compositing state during this phase.
+/// 2. [flushCompositingBits] updates any render objects that have dirty
+///    compositing bits. During this phase, each render object learns whether
+///    any of its children require compositing. This information is used during
+///    the painting phase when selecting how to implement visual effects such as
+///    clipping. If a render object has a composited child, it needs to use a
+///    [Layer] to create the clip in order for the clip to apply to the
+///    composited child (which will be painted into its own [Layer]).
+/// 3. [flushPaint] visits any render objects that need to paint. During this
+///    phase, render objects get a chance to record painting commands into
+///    [PictureLayer]s and construct other composited [Layer]s.
+/// 4. Finally, if semantics are enabled, [flushSemantics] will compile the
+///    semantics for the render objects. This semantic information is used by
+///    assistive technology to improve the accessibility of the render tree.
+///
+/// The [RendererBinding] holds the pipeline owner for the render objects that
+/// are visible on screen. You can create other pipeline owners to manage
+/// off-screen objects, which can flush their pipelines independently of the
+/// on-screen render objects.
+///
+/// [PipelineOwner]s can be organized in a tree to manage multiple render trees,
+/// where each [PipelineOwner] is responsible for one of the render trees. To
+/// build or modify the tree, call [adoptChild] or [dropChild]. During each of
+/// the different flush phases described above, a [PipelineOwner] will first
+/// perform the phase on the nodes it manages in its own render tree before
+/// calling the same flush method on its children. No assumption must be made
+/// about the order in which child [PipelineOwner]s are flushed.
+///
+/// A [PipelineOwner] may also be [attach]ed to a [PipelineManifold], which
+/// gives it access to platform functionality usually exposed by the bindings
+/// without tying it to a specific binding implementation. All [PipelineOwner]s
+/// in a given tree must be attached to the same [PipelineManifold]. This
+/// happens automatically during [adoptChild].      ÀŞÀŞàÀ­±/// Whether [PipelineOwner]s connected to this [PipelineManifold] should
+/// collect semantics information and produce a semantics tree.
+///
+/// The [PipelineManifold] notifies its listeners (managed with [addListener]
+/// and [removeListener]) when this property changes its value.
+///
+/// See also:
+///
+///  * [SemanticsBinding.semanticsEnabled], which [PipelineManifold]
+///    implementations typically use to back this property.    ÀÂÀÂƒqÀƒ3/// Called by a [PipelineOwner] connected to this [PipelineManifold] when a
+/// [RenderObject] associated with that pipeline owner wishes to update its
+/// visual appearance.
+///
+/// Typical implementations of this function will schedule a task to flush the
+/// various stages of the pipeline. This function might be called multiple
+/// times in quick succession. Implementations should take care to discard
+/// duplicate calls quickly.
+///
+/// A [PipelineOwner] connected to this [PipelineManifold] will call
+/// [PipelineOwner.onNeedVisualUpdate] instead of this method if it has been
+/// configured with a non-null [PipelineOwner.onNeedVisualUpdate] callback.
+///
+/// See also:
+///
+///  * [SchedulerBinding.ensureVisualUpdate], which [PipelineManifold]
+///    implementations typically call to implement this method. À1À1‰À³ƒr/// Manages a tree of [PipelineOwner]s.
+///
+/// All [PipelineOwner]s within a tree are attached to the same
+/// [PipelineManifold], which gives them access to shared functionality such
+/// as requesting a visual update (by calling [requestVisualUpdate]). As such,
+/// the [PipelineManifold] gives the [PipelineOwner]s access to functionality
+/// usually provided by the bindings without tying the [PipelineOwner]s to a
+/// particular binding implementation.
+///
+/// The root of the [PipelineOwner] tree is attached to a [PipelineManifold] by
+/// passing the manifold to [PipelineOwner.attach]. Children are attached to the
+/// same [PipelineManifold] as their parent when they are adopted via
+/// [PipelineOwner.adoptChild].
+///
+/// [PipelineOwner]s can register listeners with the [PipelineManifold] to be
+/// informed when certain values provided by the [PipelineManifold] change.  À8 À8    À7ÖÀ7Ö //// Initializes internal fields for subclasses. À=‚À=qÀ=lÀ=q  ÀF-ÀBƒ¨ÀF-ƒs/// Data for use by the parent render object.
+///
+/// The parent data is used by the render object that lays out this object
+/// (typically this object's parent in the render tree) to store information
+/// relevant to itself and to any other nodes who happen to know exactly what
+/// the data means. The parent data is opaque to the child.
+///
+///  * The parent data field must not be directly set, except by calling
+///    [setupParentData] on the parent node.
+///  * The parent data can be set before the child is added to the parent, by
+///    calling [setupParentData] on the future parent node.
+///  * The conventions for using the parent data depend on the layout protocol
+///    used between the parent and child. For example, in box layout, the
+///    parent data is completely opaque but in sector layout the child is
+///    permitted to read some fields of the parent data.ÀKÀK„ÀK€ÀK„  ÀN©ÀN›ÀN©  ÀVnÀU”€æÀVn€Ã/// The object responsible for creating this render object.
+///
+/// Used in debug messages.
+///
+/// See also:
+///
+///  * [DebugCreator], which the [widgets] library uses as values for this field.À[ĞÀ[¸À[³"À[¸ À\ÜÀ\ÄÀ\¿"À\Ä  À]ÙÀ]Ä'À]Ù  ÀbÀaÿÀb Àb=Àb%Àb "Àb%  À{À{rÀ{ À†_À†PÀ†KÀ†P  ÀŒîÀ†h†™ÀŒî†G/// Whether this [RenderObject] is a known relayout boundary.
+///
+/// A relayout boundary is a [RenderObject] whose parent does not rely on the
+/// child [RenderObject]'s size in its own layout algorithm. In other words,
+/// if a [RenderObject]'s [performLayout] implementation does not ask the child
+/// for its size at all, **the child** is a relayout boundary.
+///
+/// The type of "size" is typically defined by the coordinate system a
+/// [RenderObject] subclass uses. For instance, [RenderSliver]s produce
+/// [SliverGeometry] and [RenderBox]es produce [Size]. A parent [RenderObject]
+/// may not read the child's size but still depend on the child's layout (using
+/// a [RenderBox] child's baseline location, for example), this flag does not
+/// reflect such dependencies and the [RenderObject] subclass must handle those
+/// cases in its own implementation. See [RenderBox.markNeedsLayout] for an
+/// example.
+///
+/// Relayout boundaries enable an important layout optimization: the parent not
+/// depending on the size of a child means the child changing size does not
+/// affect the layout of the parent. When a relayout boundary is marked as
+/// needing layout, its parent does not have to be marked as dirty, hence the
+/// name. For details, see [markNeedsLayout].
+///
+/// This flag is typically set in [RenderObject.layout], and consulted by
+/// [markNeedsLayout] in deciding whether to recursively mark the parent as
+/// also needing layout.
+///
+/// The flag is initially set to `null` when [layout] has yet been called, and
+/// reset to `null` when the parent drops this child via [dropChild].ÀÉÀªÀ¥)Àª  ÀgÀZÀg À“ À“À‘‚À“Ò/// When true, a debug method ([debugAssertDoesMeetConstraints], for instance)
+/// is currently executing asserts for verifying the consistent behavior of
+/// intrinsic dimensions methods.
+///
+/// This is typically set by framework debug methods. It is read by tests to
+/// selectively ignore custom layout callbacks. It should not be set outside of
+/// intrinsic-checking debug methods, and should not be checked in release mode
+/// (where it will always be false).ÀÖ’ÀÖ{ÀÖv!ÀÖ{  À×…À×p&À×…  ÀŞ ÀŞ–ÀŞ  ÀìGÀìRÀìaÀìSÀìbÀìcÀì8ÀìNÀì8 ÀîtÀîVÀîQ(ÀîV  ÀôXÀôNÀôX Àÿ>Àÿ0Àÿ+Àÿ0 ÀÂÀ¤ÀŸ(À¤ ÀaêÀb ÀbÀbÀaİÀa»KÀaİ    À<kÀ<k€ıÀ<Şb/// Whether this has been disposed.
+///
+/// If asserts are disabled, this property is always null.   ÀG¿ÀG¿ƒ¾ÀKmƒ…/// The depth of this render object in the render tree.
+///
+/// The depth of nodes in a tree monotonically increases as you traverse down
+/// the tree: a node always has a [depth] greater than its ancestors.
+/// There's no guarantee regarding depth between siblings.
+///
+/// The [depth] of a child can be more than one greater than the [depth] of
+/// the parent, because the [depth] values are never decreased: all that
+/// matters is that it's greater than the parent. Consider a tree with a root
+/// node A, a child B, and a grandchild C. Initially, A will have [depth] 0,
+/// B [depth] 1, and C [depth] 2. If C is moved to be a child of A,
+/// sibling of B, then the numbers won't change. C's [depth] will still be 2.
+///
+/// The depth of a node is used to ensure that nodes are processed in
+/// depth order.  The [depth] is automatically maintained by the [adoptChild]
+/// and [dropChild] methods.   ÀMóÀMó€¥ÀN†z/// The parent of this render object in the render tree.
+///
+/// The [parent] of the root node in the render tree is null.   ÀZÎÀZÎ€âÀ[‚€¢/// Whether [performResize] for this render object is currently running.
+///
+/// Only valid when asserts are enabled. In release builds, always returns
+/// false.   À[ÚÀ[Ú€âÀ\€¢/// Whether [performLayout] for this render object is currently running.
+///
+/// Only valid when asserts are enabled. In release builds, always returns
+/// false.   À\æÀ\æ€ÛÀ]™€‘/// The render object that is actively computing layout.
+///
+/// Only valid when asserts are enabled. In release builds, always returns
+/// null.   À`ÔÀ`Ô(ÀaË€á/// Whether the parent render object is permitted to use this render object's
+/// size.
+///
+/// Determined by the `parentUsesSize` parameter to [layout].
+///
+/// Only valid when asserts are enabled. In release builds, throws.   ÀbGÀbG”öÀcÂc/// Whether tree mutations are currently permitted.
+///
+/// This is only useful during layout. One should also not mutate the tree at
+/// other times (e.g. during paint or while assembling the semantic tree) but
+/// this function does not currently enforce those conventions.
+///
+/// Only valid when asserts are enabled. This will throw in release builds.  ÀyìÀyíÀwAÀwAƒdÀz‚’/// The [RenderObject] that's expected to call [layout] on this [RenderObject]
+/// in its [performLayout] implementation.
+///
+/// This method is used to implement an assert that ensures the render subtree
+/// actively performing layout can not get accidentally mutated. It's only
+/// implemented in debug mode and always returns null in release mode.
+///
+/// The default implementation returns [parent] and overriding is rarely
+/// needed. A [RenderObject] subclass that expects its
+/// [RenderObject.performLayout] to be called from a different [RenderObject]
+/// that's not its [parent] should override this property to return the actual
+/// layout parent.   Àz©Àz©€ÆÀ{_€š/// The owner for this render object (null if unattached).
+///
+/// The entire render tree that this render object belongs to
+/// will have the same owner.   À{ŒÀ{Œ€ùÀ|j€Ê/// Whether the render tree this render object belongs to is attached to a [PipelineOwner].
+///
+/// This becomes true during the call to [attach].
+///
+/// This becomes false during the call to [detach].   À„À„‚5À…¾’/// Whether this render object's layout information is dirty.
+///
+/// This is only set in debug mode. In general, render objects should not need
+/// to condition their runtime behavior on whether they are dirty or not,
+/// since they should only be marked dirty immediately prior to being laid
+/// out and painted. In release builds, this throws.
+///
+/// It is intended to be used by tests and asserts.   ÀÀ€œÀaO/// Whether [invokeLayoutCallback] for this render object is currently running.  ÀƒÀ„ÀÓÀÓƒÀ €§/// The layout constraints most recently supplied by the parent.
+///
+/// If layout has not yet happened, accessing this getter will
+/// throw a [StateError] exception.  ÀÇÀÇ	ÀÃÛÀÃÛƒZÀÇƒ/// Whether the constraints are the only input to the sizing algorithm (in
+/// particular, child nodes have no impact).
+///
+/// Returning false is always correct, but returning true can be more
+/// efficient when computing the size of this render object because we don't
+/// need to recompute the size if the constraints don't change.
+///
+/// Typically, subclasses will always return the same value. If the value can
+/// change, then, when it does change, the subclass should make sure to call
+/// [markNeedsLayoutForSizedByParentChange].
+///
+/// Subclasses that return true must not change the dimensions of this render
+/// object in [performLayout]. Instead, that work should be done by
+/// [performResize] or - for subclasses of [RenderBox] - in
+/// [RenderBox.computeDryLayout].   ÀÕ›ÀÕ›€ØÀÖG€š/// Whether [paint] for this render object is currently running.
+///
+/// Only valid when asserts are enabled. In release builds, always returns
+/// false.   ÀÖœÀÖœ€ÑÀ×G€‰/// The render object that is actively painting.
+///
+/// Only valid when asserts are enabled. In release builds, always returns
+/// null.   À×›À×›ƒ£ÀÛ#ƒ\/// Whether this render object repaints separately from its parent.
+///
+/// Override this in subclasses to indicate that instances of your class ought
+/// to repaint independently. For example, render objects that repaint
+/// frequently might want to repaint themselves without requiring their parent
+/// to repaint.
+///
+/// If this getter returns true, the [paintBounds] are applied to this object
+/// and all descendants. The framework invokes [RenderObject.updateCompositedLayer]
+/// to create an [OffsetLayer] and assigns it to the [layer] field.
+/// Render objects that declare themselves as repaint boundaries must not replace
+/// the layer created by the framework.
+///
+/// If the value of this getter changes, [markNeedsCompositingBitsUpdate] must
+/// be called.
+///
+/// See [RepaintBoundary] for more information about how repaint boundaries function.  ÀŞ\ÀŞ]ÀÜ¯ÀÜ¯ãÀŞrœ/// Whether this render object always needs compositing.
+///
+/// Override this in subclasses to indicate that your paint function always
+/// creates at least one composited layer. For example, videos should return
+/// true if they use hardware decoders.
+///
+/// You must call [markNeedsCompositingBitsUpdate] if the value of this getter
+/// changes. (This is implied when [adoptChild] or [dropChild] are called.)  Àê*Àê+ÀäÀä†×ÀêK…ö/// The compositing layer that this render object uses to repaint.
+///
+/// If this render object is not a repaint boundary, it is the responsibility
+/// of the [paint] method to populate this field. If [needsCompositing] is
+/// true, this field may be populated with the root-most layer used by the
+/// render object implementation. When repainting, instead of creating a new
+/// layer the render object may update the layer stored in this field for better
+/// performance. It is also OK to leave this field as null and create a new
+/// layer on every repaint, but without the performance benefit. If
+/// [needsCompositing] is false, this field must be set to null either by
+/// never populating this field, or by setting it to null when the value of
+/// [needsCompositing] changes from true to false.
+///
+/// If a new layer is created and stored in some other field on the render
+/// object, the render object must use a [LayerHandle] to store it. A layer
+/// handle will prevent the layer from being disposed before the render
+/// object is finished with it, and it will also make sure that the layer
+/// gets appropriately disposed when the render object creates a replacement
+/// or nulls it out. The render object must null out the [LayerHandle.layer]
+/// in its [dispose] method.
+///
+/// If this render object is a repaint boundary, the framework automatically
+/// creates an [OffsetLayer] and populates this field prior to calling the
+/// [paint] method. The [paint] method must not replace the value of this
+/// field.   ÀìiÀìiäÀí¾2/// In debug mode, the compositing layer that this render object uses to repaint.
+///
+/// This getter is intended for debugging purposes only. In release builds, it
+/// always returns null. In debug builds, it returns the layer even if the layer
+/// is dirty.
+///
+/// For production code, consider [layer].   ÀôÀôàÀõİ6/// Whether we or one of our descendants has a compositing layer.
+///
+/// If this node needs compositing as indicated by this bit, then all ancestor
+/// nodes will also need compositing.
+///
+/// Only legal to call after [PipelineOwner.flushLayout] and
+/// [PipelineOwner.flushCompositingBits] have been called.   Àû†Àû†ƒ¡Àş ‚ô/// Whether this render object's paint information is dirty.
+///
+/// This is only set in debug mode. In general, render objects should not need
+/// to condition their runtime behavior on whether they are dirty or not,
+/// since they should only be marked dirty immediately prior to being laid
+/// out and painted. (In release builds, this throws.)
+///
+/// It is intended to be used by tests and asserts.
+///
+/// It is possible (and indeed, quite common) for [debugNeedsPaint] to be
+/// false and [debugNeedsLayout] to be true. The render object will still be
+/// repainted in the next frame when this is the case, because the
+/// [markNeedsPaint] method is implicitly called by the framework after a
+/// render object is laid out, prior to the paint phase.   ÀÿGÀÿG‚TÀ ô“/// Whether this render object's layer information is dirty.
+///
+/// This is only set in debug mode. In general, render objects should not need
+/// to condition their runtime behavior on whether they are dirty or not,
+/// since they should only be marked dirty immediately prior to being laid
+/// out and painted. (In release builds, this throws.)
+///
+/// It is intended to be used by tests and asserts.   À,'À,'À-5€ú/// An estimate of the bounds within which this render object will paint.
+/// Useful for debugging flags such as [debugPaintLayerBordersEnabled].
+///
+/// These are also the bounds used by [showOnScreen] to make a [RenderObject]
+/// visible on screen.   ÀZÀZ€‚ÀZze/// The bounding box, in the local coordinate system, of this
+/// object, for accessibility purposes.   ÀZÀZÀ[|/// Whether the semantics of this render object is dirty and await the update.
+///
+/// Always returns false in release mode.   À[•À[•‚VÀ\ò9/// The semantics of this render object.
+///
+/// Exposed only for testing and debugging. To learn about the semantics of
+/// render objects in production, obtain a [SemanticsHandle] from
+/// [PipelineOwner.ensureSemantics].
+///
+/// Only valid in debug and profile mode. In release builds, always returns
+/// null.   ÀêóÀêóÀë ÀêÜÀêİÀêÜÀêÜ6Àêí 9   À8ÜÀ8Üƒ‹À;—‚—/// Cause the entire subtree rooted at the given [RenderObject] to be marked
+/// dirty for layout, paint, etc, so that the effects of a hot reload can be
+/// seen, or so that the effect of changing a global debug flag (such as
+/// [debugPaintSizeEnabled]) can be applied.
+///
+/// This is called by the [RendererBinding] in response to the
+/// `ext.flutter.reassemble` hook, which is used by development tools when the
+/// application code has changed, to cause the widget tree to pick up any
+/// changed implementations.
+///
+/// This is expensive and should not be called except during development.
+///
+/// See also:
+///
+///  * [BindingBase.reassembleApplication]  À@YÀ@ZÀ=ŒÀ=Œ„òÀ@o‚°/// Release any resources held by this render object.
+///
+/// The object that creates a RenderObject is in charge of disposing it.
+/// If this render object has created any children directly, it must dispose
+/// of those children in this method as well. It must not dispose of any
+/// children that were created by some other object, such as
+/// a [RenderObjectElement]. Those children will be disposed when that
+/// element unmounts, which may be delayed if the element is moved to another
+/// part of the tree.
+///
+/// Implementations of this method must end with a call to the inherited
+/// method, as in `super.dispose()`.
+///
+/// The object is no longer usable after calling dispose.   ÀGÀGÀG0  ÀF<ÀF<ÀG	€¿/// Override to setup parent data correctly for your children.
+///
+/// You can call this function to set up the parent data for child before the
+/// child is added to the parent's child list.   ÀLYÀLYÀLf ÀL:ÀL;ÀK“ÀK“iÀLL€/// Adjust the [depth] of the given [child] to be greater than this node's own
+/// [depth].
+///
+/// Only call this method from overrides of [redepthChildren].  ÀMÉÀMÊÀM ÀM €ïÀMÛ€À/// Adjust the [depth] of this node's children, if any.
+///
+/// Override this method in subclasses with child nodes to call [redepthChild]
+/// for each child. Do not call this method directly.   ÀOÓÀOÓÀOà ÀO¥ÀO¦ÀO¶ÀO·ÀNµÀNµƒÀOÈ€ç/// Called by subclasses when they decide a render object is a child.
+///
+/// Only for use by subclasses when changing their child lists. Calling this
+/// in other cases will lead to an inconsistent tree and probably cause crashes.   ÀRôÀRôÀS ÀRÇÀRÈÀRØÀRÙÀQÍÀQÍ‚óÀRê€ñ/// Called by subclasses when they decide a render object is no longer a child.
+///
+/// Only for use by subclasses when changing their child lists. Calling this
+/// in other cases will lead to an inconsistent tree and probably cause crashes.   ÀUqÀUqÀU…  ÀTÄÀTÄ€ÌÀUc€“/// Calls visitor for each immediate child of this render object.
+///
+/// Override in subclasses with children and call the visitor for each child.   ÀV•ÀV•ÀVœ   ÀV¤ÀV¤ÀV«   ÀV¶ÀV¶ÀVÁ  ÀVÀV„KÀV„ À_oÀ_oÀ_o   À_rÀ_rÀ_ À^ëÀ^ìÀ^òÀ_À^óÀ_
+À_À_À_$À_À_(À_)À_/À_DÀ_0À]ğÀ]ğ‚àÀ_Q€ò/// Set [debugActiveLayout] to null when [inner] callback is called.
+/// This is useful when you have to temporarily clear that variable to
+/// disable some false-positive checks, such as when computing toStringDeep
+/// or using custom trees.   À~-À~-À~; À~À~À|‰À|‰……À~&v/// Mark this render object as attached to the given owner.
+///
+/// Typically called only from the [parent]'s [attach] method, and by the
+/// [owner] to mark the root of a tree as attached.
+///
+/// Subclasses with children should override this method to
+/// [attach] all their children to the same [owner]
+/// after calling the inherited method, as in `super.attach(owner)`.  ÀƒÀƒ€À‚À‚üÀƒ•\/// Mark this render object as detached from its [PipelineOwner].
+///
+/// Typically called only from the [parent]'s [detach], and by the [owner] to
+/// mark the root of a tree as detached.
+///
+/// Subclasses with children should override this method to
+/// [detach] all their children after calling the inherited method,
+/// as in `super.detach()`.  ÀàÀáÀxÀx›Àò]/// Verify that the object's constraints are being met. Override this function
+/// in a subclass to verify that your state matches the constraints object.
+/// This function is only called when asserts are enabled (i.e. in debug mode)
+/// and only when needsLayout is false. If the constraints are not met, it
+/// should assert or throw an exception.   À“*À“*¼À“/    À”êÀ”êŠwÀ‡Å/// Mark this render object's layout information as dirty, and either register
+/// this object with its [PipelineOwner], or defer to the parent, depending on
+/// whether this object is a relayout boundary or not respectively.
+///
+/// ## Background
+///
+/// Rather than eagerly updating layout information in response to writes into
+/// a render object, we instead mark the layout information as dirty, which
+/// schedules a visual update. As part of the visual update, the rendering
+/// pipeline updates the render object's layout information.
+///
+/// This mechanism batches the layout work so that multiple sequential writes
+/// are coalesced, removing redundant computation.
+///
+/// If a render object's parent indicates that it uses the size of one of its
+/// render object children when computing its layout information, this
+/// function, when called for the child, will also mark the parent as needing
+/// layout. In that case, since both the parent and the child need to have
+/// their layout recomputed, the pipeline owner is only notified about the
+/// parent; when the parent is laid out, it will call the child's [layout]
+/// method and thus the child will be laid out as well.
+///
+/// Once [markNeedsLayout] has been called on a render object,
+/// [debugNeedsLayout] returns true for that render object until just after
+/// the pipeline owner has called [layout] on the render object.
+///
+/// ## Special cases
+///
+/// Some subclasses of [RenderObject], notably [RenderBox], have other
+/// situations in which the parent needs to be notified if the child is
+/// dirtied (e.g., if the child's intrinsic dimensions or baseline changes).
+/// Such subclasses override markNeedsLayout and either call
+/// `super.markNeedsLayout()`, in the normal case, or call
+/// [markParentNeedsLayout], in the case where the parent needs to be laid out
+/// as well as the child.
+///
+/// If [sizedByParent] has changed, calls
+/// [markNeedsLayoutForSizedByParentChange] instead of [markNeedsLayout].  À¡À¡ÀŸeÀŸeƒÀ¡'/// Mark this render object's layout information as dirty, and then defer to
+/// the parent.
+///
+/// This function should only be called from [markNeedsLayout] or
+/// [markNeedsLayoutForSizedByParentChange] implementations of subclasses that
+/// introduce more reasons for deferring the handling of dirty layout to the
+/// parent. See [markNeedsLayout] for details.
+///
+/// Only call this if [parent] is not null.   À¢‚À¢‚·À£ØB/// Mark this render object's layout information as dirty (like
+/// [markNeedsLayout]), and additionally also handle any necessary work to
+/// handle the case where [sizedByParent] has changed value.
+///
+/// This should be called whenever [sizedByParent] might have changed.
+///
+/// Only call this if [parent] is not null.   À¤=À¤=‚mÀ¥Q/// Bootstrap the rendering pipeline by scheduling the very first layout.
+///
+/// Requires this render object to be attached and that this render object
+/// is the root of the render tree.
+///
+/// See [RenderView] for an example of how this function is used.  À¦®À¦¯À¦µÀ¦×À¦¶À¦®À¦®„	À¦à    À°ZÀ°ZÀ°f   À°tÀ°tÀ°y À°!À°"À°(À°JÀ°)À°ŠÀª»Àª»—GÀ°S…7/// Compute the layout for this render object.
+///
+/// This method is the main entry point for parents to ask their children to
+/// update their layout information. The parent passes a constraints object,
+/// which informs the child as to which layouts are permissible. The child is
+/// required to obey the given constraints.
+///
+/// If the parent reads information computed during the child's layout, the
+/// parent must pass true for `parentUsesSize`. In that case, the parent will
+/// be marked as needing layout whenever the child is marked as needing layout
+/// because the parent's layout information depends on the child's layout
+/// information. If the parent uses the default value (false) for
+/// `parentUsesSize`, the child can change its layout information (subject to
+/// the given constraints) without informing the parent.
+///
+/// Subclasses should not override [layout] directly. Instead, they should
+/// override [performResize] and/or [performLayout]. The [layout] method
+/// delegates the actual work to [performResize] and [performLayout].
+///
+/// The parent's [performLayout] method should call the [layout] of all its
+/// children unconditionally. It is the [layout] method's responsibility (as
+/// implemented here) to return early if the child does not need to do any
+/// work to update its layout information.  ÀÃ²ÀÃ³ÀÂÀÂÑÀÃÄŸ/// If a subclass has a "size" (the state controlled by `parentUsesSize`,
+/// whatever it is in the subclass, e.g. the actual `size` property of
+/// [RenderBox]), and the subclass verifies that in debug mode this "size"
+/// property isn't used when [debugCanParentUseSize] isn't set, then that
+/// subclass should override [debugResetSize] to reapply the current values of
+/// [debugCanParentUseSize] to that state.  ÀÊ
+ÀÊÀÇ9ÀÇ9‚óÀÊ‚´/// {@template flutter.rendering.RenderObject.performResize}
+/// Updates the render objects size using only the constraints.
+///
+/// Do not call this function directly: call [layout] instead. This function
+/// is called by [layout] when there is actually work to be done by this
+/// render object during layout. The layout constraints provided by your
+/// parent are available via the [constraints] getter.
+///
+/// This function is called only if [sizedByParent] is true.
+/// {@endtemplate}
+///
+/// Subclasses that set [sizedByParent] to true should override this method to
+/// compute their size. Subclasses of [RenderBox] should consider overriding
+/// [RenderBox.computeDryLayout] instead.  ÀĞOÀĞPÀÊ0ÀÊ0†AÀĞa…ê/// Do the work of computing the layout for this render object.
+///
+/// Do not call this function directly: call [layout] instead. This function
+/// is called by [layout] when there is actually work to be done by this
+/// render object during layout. The layout constraints provided by your
+/// parent are available via the [constraints] getter.
+///
+/// If [sizedByParent] is true, then this function should not actually change
+/// the dimensions of this render object. Instead, that work should be done by
+/// [performResize]. If [sizedByParent] is false, then this function should
+/// both change the dimensions of this render object and instruct its children
+/// to layout.
+///
+/// In implementing this function, you must call [layout] on each of your
+/// children, passing true for parentUsesSize if your layout information is
+/// dependent on your child's layout information. Passing true for
+/// parentUsesSize ensures that this render object will undergo layout if the
+/// child undergoes layout. Otherwise, the child can change its layout
+/// information without informing this render object.
+///
+/// Some special [RenderObject] subclasses (such as the one used by
+/// [OverlayPortal.overlayChildLayoutBuilder]) call [applyPaintTransform] in
+/// their [performLayout] implementation. To ensure such [RenderObject]s get
+/// the up-to-date paint transform, [RenderObject] subclasses should typically
+/// update the paint transform (as reported by [applyPaintTransform]) in this
+/// method instead of [paint].ÀÔ
+ÀÔ
+ÀÔ
+   ÀÔ!ÀÔ!ÀÔ3 ÀÓãÀÓäÀĞuÀĞu…ÀÓõƒO/// Allows mutations to be made to this object's child list (and any
+/// descendants) as well as to any other dirty nodes in the render tree owned
+/// by the same [PipelineOwner] as this object. The `callback` argument is
+/// invoked synchronously, and the mutations are allowed only during that
+/// callback's execution.
+///
+/// This exists to allow child lists to be built on-demand during layout (e.g.
+/// based on the object's size), and to enable nodes to be moved around the
+/// tree as this happens (e.g. to handle [GlobalKey] reparenting), while still
+/// ensuring that any particular node is only laid out once per frame.
+///
+/// Calling this function disables a number of assertions that are intended to
+/// catch likely bugs. As such, using this function is generally discouraged.
+///
+/// This function can only be called during layout.   ÀÜhÀÜhÀÜm   ÀÜˆÀÜˆÀÜ ÀÜ~ÀÜÀÛBÀÛBiÀÜ@€î/// Called, in debug mode, if [isRepaintBoundary] is true, when either the
+/// this render object or its parent attempt to paint.
+///
+/// This can be used to record metrics about whether the node should actually
+/// be a repaint boundary.   Àã‘Àã‘Àã¨  ÀŞ¸ÀŞ¸…EÀãqƒá/// Update the composited layer owned by this render object.
+///
+/// This method is called by the framework when [isRepaintBoundary] is true.
+///
+/// If [oldLayer] is `null`, this method must return a new [OffsetLayer]
+/// (or subtype thereof). If [oldLayer] is not `null`, then this method must
+/// reuse the layer instance that is provided - it is an error to create a new
+/// layer in this instance. The layer will be disposed by the framework when
+/// either the render object is disposed or if it is no longer a repaint
+/// boundary.
+///
+/// The [OffsetLayer.offset] property will be managed by the framework and
+/// must not be updated by this method.
+///
+/// If a property of the composited layer needs to be updated, the render object
+/// must call [markNeedsCompositedLayerUpdate] which will schedule this method
+/// to be called without repainting children. If this widget was marked as
+/// needing to paint and needing a composited layer update, this method is only
+/// called once.   Àî¢Àî¢…¨Àñ÷ƒ//// Mark the compositing state for this render object as dirty.
+///
+/// This is called to indicate that the value for [needsCompositing] needs to
+/// be recomputed during the next [PipelineOwner.flushCompositingBits] engine
+/// phase.
+///
+/// When the subtree is mutated, we need to recompute our
+/// [needsCompositing] bit, and some of our ancestors need to do the
+/// same (in case ours changed in a way that will change theirs). To
+/// this end, [adoptChild] and [dropChild] call this method, and, as
+/// necessary, this method calls the parent's, etc, walking up the
+/// tree to mark all the nodes that need updating.
+///
+/// This method does not schedule a rendering frame, because since
+/// it cannot be the case that _only_ the compositing bits changed,
+/// something else will have scheduled a frame for us.   ÀösÀös…Àöx    ÀÌÀÌ‰¾À•ƒ›/// Mark this render object as having changed its visual appearance.
+///
+/// Rather than eagerly updating this render object's display list
+/// in response to writes, we instead mark the render object as needing to
+/// paint, which schedules a visual update. As part of the visual update, the
+/// rendering pipeline will give this render object an opportunity to update
+/// its display list.
+///
+/// This mechanism batches the painting work so that multiple sequential
+/// writes are coalesced, removing redundant computation.
+///
+/// Once [markNeedsPaint] has been called on a render object,
+/// [debugNeedsPaint] returns true for that render object until just after
+/// the pipeline owner has called [paint] on the render object.
+///
+/// See also:
+///
+///  * [RepaintBoundary], to scope a subtree of render objects to their own
+///    layer, thus limiting the number of nodes that [markNeedsPaint] must mark
+///    dirty.   ÀÀ†-Àğƒ:/// Mark this render object as having changed a property on its composited
+/// layer.
+///
+/// Render objects that have a composited layer have [isRepaintBoundary] equal
+/// to true may update the properties of that composited layer without repainting
+/// their children. If this render object is a repaint boundary but does
+/// not yet have a composited layer created for it, this method will instead
+/// mark the nearest repaint boundary parent as needing to be painted.
+///
+/// If this method is called on a render object that is not a repaint boundary
+/// or is a repaint boundary but hasn't been composited yet, it is equivalent
+/// to calling [markNeedsPaint].
+///
+/// See also:
+///
+///  * [RenderOpacity], which uses this method when its opacity is updated to
+///    update the layer opacity without repainting children.   À0À0‚ÖÀ5    À5À5ÀD  À
+À
+‚oÀ /// Bootstrap the rendering pipeline by scheduling the very first paint.
+///
+/// Requires that this render object is attached, is the root of the render
+/// tree, and has a composited layer.
+///
+/// See [RenderView] for an example of how this function is used.   ÀvÀvÀ‚  À}À}‚xÀe€Ø/// Replace the layer. This is only valid for the root of a render
+/// object subtree (whatever object [scheduleInitialPaint] was
+/// called on).
+///
+/// This might be called if, e.g., the device pixel ratio changed.   ÀÀÀ    À)À)À0  ÀùÀù‘*Àş    À-À-À-    À-©À-©À-°  À-EÀ-EuÀ-…8/// Override this method to paint debugging information.   À1’À1’À1¢   À1«À1«À1²  À-¾À-¾ƒşÀ1Œƒ¦/// Paint this render object into the given context at the given offset.
+///
+/// Subclasses should override this method to provide a visual appearance
+/// for themselves. The render object's local coordinate system is
+/// axis-aligned with the coordinate system of the context's canvas and the
+/// render object's local origin (i.e, x=0 and y=0) is placed at the given
+/// offset in the context's canvas.
+///
+/// Do not call this function directly. If you wish to paint yourself, call
+/// [markNeedsPaint] instead to schedule a call to this function. If you wish
+/// to paint one of your children, call [PaintingContext.paintChild] on the
+/// given `context`.
+///
+/// When painting one of your children (via a paint child function on the
+/// given context), the current canvas held by the context might change
+/// because draw operations before and after painting children might need to
+/// be recorded on separate compositing layers.   À4¿À4¿À4Ö   À4İÀ4İÀ4å  À1ÀÀ1ÀƒWÀ4«‚Ë/// Applies the transform that would be applied when painting the given child
+/// to the given matrix.
+///
+/// Used by coordinate conversion functions ([getTransformTo], for example) to
+/// translate coordinates local to one render object into coordinates local to
+/// another render object.
+///
+/// Some RenderObjects will provide a zeroed out matrix in this method,
+/// indicating that the child should not paint anything or respond to hit
+/// tests currently. A parent may supply a non-zero matrix even though it
+/// does not paint its child currently, for example if the parent is a
+/// [RenderOffstage] with `offstage` set to true. In both of these cases,
+/// the parent must return `false` from [paintsChild].   À8"À8"À89  À5À5ƒ]À8‚Û/// Whether the given child would be painted if [paint] were called.
+///
+/// Some RenderObjects skip painting their children if they are configured to
+/// not produce any visible effects. For example, a [RenderOffstage] with
+/// its `offstage` property set to true, or a [RenderOpacity] with its opacity
+/// value set to zero.
+///
+/// In these cases, the parent may still supply a non-zero matrix in
+/// [applyPaintTransform] to inform callers about where it would paint the
+/// child if the child were painted at all. Alternatively, the parent may
+/// supply a zeroed out matrix if it would not otherwise be able to determine
+/// a valid matrix for the child and thus cannot meaningfully determine where
+/// the child would paint.   À=hÀ=hÀ=v  À8|À8|™À=Y„¢/// {@template flutter.rendering.RenderObject.getTransformTo}
+/// Applies the paint transform from this [RenderObject] to the `target`
+/// [RenderObject].
+///
+/// Returns a matrix that maps the local paint coordinate system to the
+/// coordinate system of `target`, or a [Matrix4.zero] if the paint transform
+/// can not be computed.
+///
+/// This method throws an exception when the `target` is not in the same render
+/// tree as this [RenderObject], as the behavior is undefined.
+///
+/// This method ignores [RenderObject.paintsChild]. This means it will still
+/// try to compute the paint transform even if this [RenderObject] or
+/// `target` is currently not visible.
+///
+/// If `target` is null, this method returns a matrix that maps from the
+/// local paint coordinate system to the coordinate system of the
+/// [PipelineOwner.rootNode].
+/// {@endtemplate}
+///
+/// For the render tree owned by the [RendererBinding] (i.e. for the main
+/// render tree displayed on the device) this means that this method maps to
+/// the global coordinate system in logical pixels. To get physical pixels,
+/// use [applyPaintTransform] from the [RenderView] to further transform the
+/// coordinate.   ÀHâÀHâÀHù  ÀFÀF‚ïÀHÅ‚‹/// Returns a rect in this object's coordinate system that describes
+/// the approximate bounding box of the clip rect that would be
+/// applied to the given child during the paint phase, if any.
+///
+/// Returns null if the child would not be clipped.
+///
+/// This is used in the semantics phase to avoid including children
+/// that are not physically visible.
+///
+/// RenderObjects that respect a [Clip] behavior when painting _must_ respect
+/// that same behavior when describing this value. For example, if passing
+/// [Clip.none] to [PaintingContext.pushClipRect] as the `clipBehavior`, then
+/// the implementation of this method must return null.   ÀNËÀNËÀNã  ÀIÀI…æÀNµ…p/// Returns a rect in this object's coordinate system that describes
+/// which [SemanticsNode]s produced by the `child` should be included in the
+/// semantics tree. [SemanticsNode]s from the `child` that are positioned
+/// outside of this rect will be dropped. Child [SemanticsNode]s that are
+/// positioned inside this rect, but outside of [describeApproximatePaintClip]
+/// will be included in the tree marked as hidden. Child [SemanticsNode]s
+/// that are inside of both rect will be included in the tree as regular
+/// nodes.
+///
+/// This method only returns a non-null value if the semantics clip rect
+/// is different from the rect returned by [describeApproximatePaintClip].
+/// If the semantics clip rect and the paint clip rect are the same, this
+/// method returns null.
+///
+/// A viewport would typically implement this method to include semantic nodes
+/// in the semantics tree that are currently hidden just before the leading
+/// or just after the trailing edge. These nodes have to be included in the
+/// semantics tree to implement implicit accessibility scrolling on iOS where
+/// the viewport scrolls implicitly when moving the accessibility focus from
+/// the last visible node in the viewport to the first hidden one.
+///
+/// See also:
+///
+/// * [RenderViewportBase.cacheExtent], used by viewports to extend their
+///   semantics clip beyond their approximate paint clip.   ÀOÀO‚¶ÀP*/// Bootstrap the semantics reporting mechanism by marking this node
+/// as needing a semantics update.
+///
+/// Requires that this render object is attached, and is the root of
+/// the render tree.
+///
+/// See [RendererBinding] for an example of how this function is used.   ÀVÚÀVÚÀVñ ÀV©ÀVªÀQÀÀQÀ…_ÀV»„¤/// Report the semantics of this node, for example for accessibility purposes.
+///
+/// This method should be overridden by subclasses that have interesting
+/// semantic information.
+///
+/// The given [SemanticsConfiguration] object is mutable and should be
+/// annotated in a manner that describes the current state. No reference
+/// should be kept to that object; mutating it outside of the context of the
+/// [describeSemanticsConfiguration] call (for example as a result of
+/// asynchronous computation) will at best have no useful effect and at worse
+/// will cause crashes as the data will be in an inconsistent state.
+///
+/// {@tool snippet}
+///
+/// The following snippet will describe the node as a button that responds to
+/// tap actions.
+///
+/// ```dart
+/// abstract class SemanticButtonRenderObject extends RenderObject {
+///   @override
+///   void describeSemanticsConfiguration(SemanticsConfiguration config) {
+///     super.describeSemanticsConfiguration(config);
+///     config
+///       ..onTap = _handleTap
+///       ..label = 'I am a button'
+///       ..isButton = true;
+///   }
+///
+///   void _handleTap() {
+///     // Do something.
+///   }
+/// }
+/// ```
+/// {@end-tool}   ÀX¯ÀX¯ÀX¾  ÀW#ÀW#‚àÀXœc/// Sends a [SemanticsEvent] associated with this render object's [SemanticsNode].
+///
+/// If this render object has no semantics information, the first parent
+/// render object with a non-null semantic node is used.
+///
+/// If semantics are disabled, no events are dispatched.
+///
+/// See [SemanticsNode.sendEvent] for a full description of the behavior.  À_(À_)À]ïÀ]ïÌÀ_>,/// Removes all semantics from this render object and its descendants.
+///
+/// Should only be called on objects whose [parent] is not a [RenderObject].
+///
+/// Override this method if you instantiate new [SemanticsNode]s in an
+/// overridden [assembleSemanticsNode] method, to dispose of those nodes.   À_¿À_¿øÀ`Ö/// Mark this node as needing an update to its semantics description.
+///
+/// This must be called whenever the semantics configuration of this
+/// [RenderObject] as annotated by [describeSemanticsConfiguration] changes in
+/// any way to update the semantics tree.   Àc—Àc—Àc«  ÀbÀbÊÀc}\/// Called when collecting the semantics of this node.
+///
+/// The implementation has to return the children in paint order skipping all
+/// children that are not semantically relevant (e.g. because they are
+/// invisible).
+///
+/// The default implementation mirrors the behavior of
+/// [visitChildren] (which is supposed to walk all the children).   Àf¹Àf¹ÀfÇ   ÀfÑÀfÑÀfè   ÀfôÀfô Àg  ÀcÙÀcÙ„VÀf‚£/// Assemble the [SemanticsNode] for this [RenderObject].
+///
+/// If [describeSemanticsConfiguration] sets
+/// [SemanticsConfiguration.isSemanticBoundary] to true, this method is called
+/// with the `node` created for this [RenderObject], the `config` to be
+/// applied to that node and the `children` [SemanticsNode]s that descendants
+/// of this RenderObject have generated.
+///
+/// By default, the method will annotate `node` with `config` and add the
+/// `children` to it.
+///
+/// Subclasses can override this method to add additional [SemanticsNode]s
+/// to the tree. If new [SemanticsNode]s are instantiated in this method
+/// they must be disposed in [clearSemantics].   Àh®Àh®Àh»   ÀhÂÀhÂÀhÙ Àh‘Àh’Àh@Àh@€¢Àh¢N/// Override this method to handle pointer events that hit this render object.  ÀlfÀlgÀl;Àl;ƒªÀly(/// Returns a human understandable name.   ÀpÀp/Àp ÀoéÀoêÀp!Àp0Àp1ÀoéÀoébÀoü    Àq!Àq!Àq(   Àq@Àq@ÀqH   ÀqcÀqc0Àqs   Àq™Àq™Àq ÀpûÀpüÀq8Àq[Àq~ÀqÀqÀq©ÀpOÀpO‚NÀq€¥/// Returns a description of the tree rooted at this node.
+/// If the prefix argument is provided, then every line in the output
+/// will be prefixed by that string.   ÀsÅÀsÅÀsÌ   ÀsÛÀsÛ0Àsë Às¡Às¢ÀsÕÀsöÀtÀtÀr¡Àr¡êÀs´€õ/// Returns a one-line detailed description of the render object.
+/// This description is often somewhat long.
+///
+/// This includes the same information for this RenderObject as given by
+/// [toStringDeep], but does not recurse to any children.   ÀtÁÀtÁ&Àtİ ÀtÀtÀtœÀtÀtÀt†DÀt­   Àz×ÀzØÀz×Àz×QÀzù    ÀÀÀ   ÀÀ
+À%   À/À/!À8   ÀVÀVÀ\ ÀCÀKÀLÀdÀjÀkÀ{,À{,„ÖÀ~îƒ”/// Attempt to make (a portion of) this or a descendant [RenderObject] visible
+/// on screen.
+///
+/// If `descendant` is provided, that [RenderObject] is made visible. If
+/// `descendant` is omitted, this [RenderObject] is made visible.
+///
+/// The optional `rect` parameter describes which area of that [RenderObject]
+/// should be shown on screen. If `rect` is null, the entire
+/// [RenderObject] (as defined by its [paintBounds]) will be revealed. The
+/// `rect` parameter is interpreted relative to the coordinate system of
+/// `descendant` if that argument is provided and relative to this
+/// [RenderObject] otherwise.
+///
+/// The `duration` parameter can be set to a non-zero value to bring the
+/// target object on screen in an animation defined by `curve`.
+///
+/// See also:
+///
+/// * [RenderViewportBase.showInViewport], which [RenderViewportBase] and
+///   [SingleChildScrollView] delegate this method to.   À‚	À‚	À‚   À‚À‚9À‚1 À‚9À‚MÀ‚NÀ€À€‚“ÀóÊ/// Adds a debug representation of a [RenderObject] optimized for including in
+/// error messages.
+///
+/// The default [style] of [DiagnosticsTreeStyle.shallow] ensures that all of
+/// the properties of the render object are included in the error output but
+/// none of the children of the object are.
+///
+/// You should always include a RenderObject in an error message if it is the
+/// [RenderObject] causing the failure or contract violation of the error. À7À7ÀedÀ7šH/// An object in the render tree.
+///
+/// The [RenderObject] class hierarchy is the core of the rendering
+/// library's reason for being.
+///
+/// {@youtube 560 315 https://www.youtube.com/watch?v=zmbmrw07qBc}
+///
+/// [RenderObject]s have a [parent], and have a slot called [parentData] in
+/// which the parent [RenderObject] can store child-specific data, for example,
+/// the child position. The [RenderObject] class also implements the basic
+/// layout and paint protocols.
+///
+/// The [RenderObject] class, however, does not define a child model (e.g.
+/// whether a node has zero, one, or more children). It also doesn't define a
+/// coordinate system (e.g. whether children are positioned in Cartesian
+/// coordinates, in polar coordinates, etc) or a specific layout protocol (e.g.
+/// whether the layout is width-in-height-out, or constraint-in-size-out, or
+/// whether the parent sets the size and position of the child before or after
+/// the child lays out, etc; or indeed whether the children are allowed to read
+/// their parent's [parentData] slot).
+///
+/// The [RenderBox] subclass introduces the opinion that the layout
+/// system uses Cartesian coordinates.
+///
+/// ## Lifecycle
+///
+/// A [RenderObject] must [dispose] when it is no longer needed. The creator
+/// of the object is responsible for disposing of it. Typically, the creator is
+/// a [RenderObjectElement], and that element will dispose the object it creates
+/// when it is unmounted.
+///
+/// [RenderObject]s are responsible for cleaning up any expensive resources
+/// they hold when [dispose] is called, such as [Picture] or [Image] objects.
+/// This includes any [Layer]s that the render object has directly created. The
+/// base implementation of dispose will nullify the [layer] property. Subclasses
+/// must also nullify any other layer(s) it directly creates.
+///
+/// ## Writing a RenderObject subclass
+///
+/// In most cases, subclassing [RenderObject] itself is overkill, and
+/// [RenderBox] would be a better starting point. However, if a render object
+/// doesn't want to use a Cartesian coordinate system, then it should indeed
+/// inherit from [RenderObject] directly. This allows it to define its own
+/// layout protocol by using a new subclass of [Constraints] rather than using
+/// [BoxConstraints], and by potentially using an entirely new set of objects
+/// and values to represent the result of the output rather than just a [Size].
+/// This increased flexibility comes at the cost of not being able to rely on
+/// the features of [RenderBox]. For example, [RenderBox] implements an
+/// intrinsic sizing protocol that allows you to measure a child without fully
+/// laying it out, in such a way that if that child changes size, the parent
+/// will be laid out again (to take into account the new dimensions of the
+/// child). This is a subtle and bug-prone feature to get right.
+///
+/// Most aspects of writing a [RenderBox] apply to writing a [RenderObject] as
+/// well, and therefore the discussion at [RenderBox] is recommended background
+/// reading. The main differences are around layout and hit testing, since those
+/// are the aspects that [RenderBox] primarily specializes.
+///
+/// ### Layout
+///
+/// A layout protocol begins with a subclass of [Constraints]. See the
+/// discussion at [Constraints] for more information on how to write a
+/// [Constraints] subclass.
+///
+/// The [performLayout] method should take the [constraints], and apply them.
+/// The output of the layout algorithm is fields set on the object that describe
+/// the geometry of the object for the purposes of the parent's layout. For
+/// example, with [RenderBox] the output is the [RenderBox.size] field. This
+/// output should only be read by the parent if the parent specified
+/// `parentUsesSize` as true when calling [layout] on the child.
+///
+/// Anytime anything changes on a render object that would affect the layout of
+/// that object, it should call [markNeedsLayout].
+///
+/// ### Hit Testing
+///
+/// Hit testing is even more open-ended than layout. There is no method to
+/// override, you are expected to provide one.
+///
+/// The general behavior of your hit-testing method should be similar to the
+/// behavior described for [RenderBox]. The main difference is that the input
+/// need not be an [Offset]. You are also allowed to use a different subclass of
+/// [HitTestEntry] when adding entries to the [HitTestResult]. When the
+/// [handleEvent] method is called, the same object that was added to the
+/// [HitTestResult] will be passed in, so it can be used to track information
+/// like the precise coordinate of the hit, in whatever coordinate system is
+/// used by the new layout protocol.
+///
+/// ### Adapting from one protocol to another
+///
+/// In general, the root of a Flutter render object tree is a [RenderView]. This
+/// object has a single child, which must be a [RenderBox]. Thus, if you want to
+/// have a custom [RenderObject] subclass in the render tree, you have two
+/// choices: you either need to replace the [RenderView] itself, or you need to
+/// have a [RenderBox] that has your class as its child. (The latter is the much
+/// more common case.)
+///
+/// This [RenderBox] subclass converts from the box protocol to the protocol of
+/// your class.
+///
+/// In particular, this means that for hit testing it overrides
+/// [RenderBox.hitTest], and calls whatever method you have in your class for
+/// hit testing.
+///
+/// Similarly, it overrides [performLayout] to create a [Constraints] object
+/// appropriate for your class and passes that to the child's [layout] method.
+///
+/// ### Layout interactions between render objects
+///
+/// In general, the layout of a render object should only depend on the output of
+/// its child's layout, and then only if `parentUsesSize` is set to true in the
+/// [layout] call. Furthermore, if it is set to true, the parent must call the
+/// child's [layout] if the child is to be rendered, because otherwise the
+/// parent will not be notified when the child changes its layout outputs.
+///
+/// It is possible to set up render object protocols that transfer additional
+/// information. For example, in the [RenderBox] protocol you can query your
+/// children's intrinsic dimensions and baseline geometry. However, if this is
+/// done then it is imperative that the child call [markNeedsLayout] on the
+/// parent any time that additional information changes, if the parent used it
+/// in the last layout phase. For an example of how to implement this, see the
+/// [RenderBox.markNeedsLayout] method. It overrides
+/// [RenderObject.markNeedsLayout] so that if a parent has queried the intrinsic
+/// or baseline information, it gets marked dirty whenever the child's geometry
+/// changes.  ÀĞ Àä    ÀëÀëÀù   ÀÀÀ   À3À3 ÀA   ÀYÀYÀg   À|À|ÀŠ   À¡À¡)À¯  ÀÊÀÊ    ÀÀÕ€ØÀ€µ/// Whether [SemanticsNode]s created from this render object semantics subtree
+/// will be merged into parent.
+///
+/// This is imposed by render objects of parent [MergeSemantics]s. À»À²À»€ó/// Whether [SemanticsNode]s created from this render object semantics subtree
+/// ignores user action such as [SemanticsAction.tap] and its friends.
+///
+/// This is imposed by render objects of parent [IgnorePointer]s or
+/// [AbsorbPointer]s. ÀsÀÑ½Àsp/// The **Accessibility Focus Block Type** controls how accessibility focus is blocked.
+///
+/// * **none**: Accessibility focus is **not blocked**.
+/// * **blockSubtree**: Blocks accessibility focus for the entire subtree.
+/// * **blockNode**: Blocks accessibility focus for the **current node only**.
+///
+/// Only `blockSubtree` from a parent will be propagated down. À–À“À–€í/// Any immediate render object semantics that
+/// [_RenderObjectSemantics.contributesToSemanticsTree] should forms a node
+///
+/// This is imposed by parent render objects that set
+/// [SemanticsConfiguration.explicitChildNodes] to true. À<À­€À<q/// Tags for immediate render object semantics that
+/// [_RenderObjectSemantics.shouldFormSemanticsNode] is true. À^ÀPÀ^   À ûÀ üÀ ûÀ û€îÀ!     À‘À‘À˜ ÀtÀuÀtÀtƒÀ ÀšÀ›ÀSÀS‰˜À±F/// Properties of _RenderObjectSemantics that are imposed from parent.  À%+ À%J    À%KÀ%KÀ%P  À%+À%+4    À%©À%cSÀ%©0/// The owning rendering object for this object.À%İÀ%ÀÀ%»'À%À  À%şÀ%æ.À%ş  À&0À&/À&0    À&LÀ&LUÀ&U    À&¥À&¥€§À'J/// The latest config that reflect any change done through [updateConfig].   À'PÀ'Pƒ~À(ÁI/// The original config without any change through [updateConfig].
+///
+/// This is typically use to recalculate certain properties when mutating
+/// [effective] since [effective] may contain stale data from previous update.
+/// An example is [SemanticsConfiguration.isBlockingUserActions]. Otherwise,
+/// use [effective] instead.    À+\À+\,À+€  À*ÒÀ*ÒlÀ+Oo/// Mutates the config
+///
+/// This does not change the [original], and the change reflects in
+/// [effective].   À,À,(À,¢  À,BÀ,B€ÏÀ,w-/// Absorb a list of config into [effective].   À-À-€À-H+/// Reset any post mutation to [effective].   À-©À-©<À.i€²/// Remove every cache in this wrapper.
+///
+/// This cause the [RenderObject.describeSemanticsConfiguration] to be
+/// re-evaluated next time [effective] or [original] is called. À!íÀ!íŒúÀ%ƒ/// A wrapper class that handles the life cycle of the [SemanticsConfiguration]
+/// of a [RenderObject].
+///
+/// Typically, this class calls [RenderObject.describeSemanticsConfiguration] to
+/// update the config and owner of this object does not directly mutate the
+/// the config.
+///
+/// In some cases during [PipelineOwner.flushSemantics], the config has to be
+/// mutated due to [_SemanticsParentData] update to propagate updated property
+/// to semantics node. One should use [updateConfig] to update the config in this
+/// case.
+///
+/// To access the config stored in this wrapper, uses
+/// [_SemanticsConfigurationProvider.effective] to access the latest config.
+/// Uses [_SemanticsConfigurationProvider.original] if one wants to access the
+/// raw config without post mutations.  À1#À1À1À1    À0·À0·,À0Ó    À0çÀ0ç!À1     À1SÀ1SÀ1X  À1-À1-5À12  À.éÀ.é‚{À0 §/// A convenient abstract interface used for constructing the
+/// [_RenderObjectSemantics] tree.
+///
+/// The _SemanticsFragment can be an [_IncompleteSemanticsFragment] or a
+/// [_RenderObjectSemantics]. This interface is used so that
+/// [_RenderObjectSemantics] can handle semantics configuration merging without
+/// knowing whether the child fragment is backed by a render object or an
+/// incomplete semantics fragment.  À37 À3S    À3TÀ3TÀ3Y   À3jÀ3j
+À3o  À37À37?   À3zÀ3{À3£À3z8À3£ À3·À3¸À3àÀ3·.À3à      À4À4À4! À3êÀ3ëÀ3êÀ3ê]À3û  À1fÀ1f‚ãÀ2û/// A fragment that is generated from
+/// [SemanticsConfiguration.childConfigurationsDelegate]
+///
+/// A render object can choose to add additional semantics config to be merged
+/// upward besides itself. These configs can be added through
+/// [SemanticsConfiguration.childConfigurationsDelegate] and will form
+/// `_IncompleteSemanticsFragment`s
+///
+/// See [RenderParagraph] for an example usage.  À=ñ À>    À>À>À> À>0À>!À>2À>QÀ>^À>RÀ=ñÀ=ño    À>«À>dSÀ>«1/// The owning rendering object for this wrapper.À>×À>ÁÀ>¼ À>Á  À>æÀ>àÀ>æ À@rÀ@TÀ@O(À@T ÀAyÀAqÀAlÀAq  ÀCQÀAƒáÀCQ¨/// The cached node created directly by this Object.
+///
+/// This cache is filled after the this object is compiled (usually by
+/// calling [ensureSemanticsNode] on this object or ancestors) and forms a
+/// semantics node.
+///
+/// Caching the semantics node ensures the id is consistent in the life time
+/// of this object.
+///
+/// `_RenderSemanticsObject` only forms semantics node if
+/// `shouldFormSemanticsNode` is true.ÀEHÀEIÀE9ÀEGÀE:ÀE(ÀCiáÀE(”/// The semantics nodes produced by this render object.
+///
+/// This is filled after [ensureSemanticsNode] is called on this object or
+/// ancestors when [shouldFormSemanticsNode] is true. In most cases, this only
+/// contains one semantics node equals to [cachedSemanticsNode].
+///
+/// If there are [siblingMergeGroups], the nodes produced from the sibling
+/// merge groups are also stored in this list.ÀEÕÀEÖÀEÁÀEÔÀEÂÀE·ÀEO€ˆÀE·F/// Fragments that will merge up to parent rendering object semantics.ÀF‰ÀFŠÀFqÀFˆÀFrÀFeÀEÜ€¯ÀFea/// A list to store immediate child [_RenderObjectSemantics]s that will form
+/// semantics nodes.ÀG ÀG!ÀGÀGÀGÀGÀGÀGÀFñÀF€’ÀFñ9/// Merge groups that will form additional sibling nodes.	ÀG©ÀGªÀG€ÀG¨ÀGÀGÀG”ÀG§ÀG•ÀGYÀG&€…ÀGY  ÀGÆÀG° ÀGÆ  ÀGèÀGÔÀGè  ÀHÀGõ4ÀH  ÀHÀHg-ÀH ÀJÙÀJßÀJåÀJæÀJÀÀIİ
+ÀJÀ€Ó/// Validates the [firstAncestorNodeWithCleanGeometry] cache.
+///
+/// Updated by [computeAncestorInfo] during [PipelineOwner.flushSemantics] to
+/// prevent redundant ancestor lookups within a single flush cycle. ÀKÀJì€ÔÀK€“/// The nearest semantics-forming ancestor node with clean geometry.
+///
+/// Cached by [computeAncestorInfo] during [PipelineOwner.flushSemantics].	  ÀH.ÀH/ÀH.ÀH.5ÀHU    ÀH½ÀH½FÀHÙ    ÀIÀIiÀI    ÀItÀIteÀI}   ÀR¶ÀR·ÀR)ÀR)ÀRŞ€ˆ/// If this forms a semantics node, all of the properties in config are
+/// used in creating the node. There is nothing to be merged up.   ÀS5ÀS5€ÏÀS>    ÀTÀT"ÀT    ÀT.ÀT.òÀT7    ÀWñÀWñƒ›ÀY
+/// Whether this render object semantics will block other render object
+/// semantics behind it in render object order from parent.
+///
+/// The [BlockSemantics] widget will cause this property to be true and hide
+/// any sibling widget behind it from semantics.    ÀM«ÀM«ÀM²  ÀKÅÀKÅ†`ÀM—º/// Finds and caches the nearest semantics-forming ancestor with up-to-date geometry.
+///
+/// The [treeShapeToken] parameter prevents redundant calculation by verifying
+/// whether the tree shape changed since the previous lookup.
+///
+/// This method requires all dirty nodes in [PipelineOwner._nodesNeedingSemanticsUpdate]
+/// to have completed their [updateChildren] calls.
+///
+/// See phase 2 in the [_RenderObjectSemantics] documentation.   ÀVHÀVHÀVU  ÀV$ÀV$:ÀV0    ÀW‚ÀW‚ÀW™  ÀWbÀWb€‹ÀWn    À[§À[§À[µ  À[À[?À[œ    À[ÓÀ[Ó‚=À[Ø    À^À^šĞÀa½ƒ}/// Updates the [parentData] for the [_RenderObjectSemantics]s in the
+/// rendering subtree and forms a [_RenderObjectSemantics] tree where children
+/// are stored in [_children].
+///
+/// This method does the the phase 1 and 2 of the four phases documented on
+/// [_RenderObjectSemantics].
+///
+/// Gather all the merge up _RenderObjectSemantics(s) by walking the rendering
+/// object tree.
+///
+/// They are stored in [mergeUp] and [siblingMergeGroups] and should mimic
+/// rendering object tree closely but only contain [_RenderObjectSemantics] that
+/// contributes to semantics tree. i.e.
+/// [contributesToSemanticsTree] is true.
+///
+/// Merge all fragments from [mergeUp] and decide which [_RenderObjectSemantics]
+/// should form a node. i.e. [shouldFormSemanticsNode] is true. Stores the
+/// [_RenderObjectSemantics] that should form a node with elevation adjustments
+/// into [_children].   ÀxèÀxèUÀy    ÀzAÀzA‚ÀzT    À|¤À|¤$À|¹  À|]À|]“¤À|{    ÀÀ"À4  ÀÀÀ
+    À‘°À‘°À‘µ À‘~À‘À‘À‘€ÔÀ‘e/// Makes whether this fragment has a sibling fragment with conflicting
+/// [SemanticsConfiguration].   À‘ìÀ‘ì‚ÇÀ“’/// Updates the [geometry] for this [_RenderObjectSemantics]s and the dirty
+/// children's subtree in [_children].
+///
+/// This method does the the phase 3 of the four phases documented on
+/// [_RenderObjectSemantics].
+///
+/// This method is short-circuited if the subtree geometry won't
+/// be affect after the update. (e.g. the size doesn't change, or new clip
+/// rect doesn't clip the content).   À”ÒÀ”ÒÀ”× À”ëÀ”·À”·†OÀ”¼    À› À› 'À›<  À›
+À›
+‚‚À›    ÀÀƒÇÀŸ’è/// Ensures the semantics nodes from this render object semantics subtree are
+/// generated and up to date.
+///
+/// This method does the the phase 4 of the four phases documented on
+/// [_RenderObjectSemantics].
+///
+/// This can only be called if the owning rendering object is a semantics
+/// boundary. For non boundary rendering objects, they require semantics
+/// information from both their parent and child rendering objects to update
+/// its cache, so it can't update by themselves.   À¢]À¢]"À¢o  À¡[À¡[†:À¢L€ß/// Builds the semantics node and its semantics node subtree.
+///
+/// This method will in turn call [_buildSemanticsSubtree].
+///
+/// This method will short-circuit itself if [cachedSemanticsNode] is
+/// already up-to-date.   À§úÀ§ú"À¨  À§™À§™†À§âA/// Builds the semantics subtree under the [cachedSemanticsNode].   À­ÇÀ­Ç"À­Ù  À­«À­«áÀ­°    À¯À¯&À¯    À°ÒÀ°ÒÀ°Û  À°ºÀ°º‹5À°¿    À»óÀ»ó¨À¼;@/// Updates the semantics geometry of the cached semantics node.   À½ŸÀ½ŸˆgÀ½¤    ÀÆ
+ÀÆ
+ïÀÆM;/// The [renderObject]'s semantics information has changed.   ÀÕÀÕ#ÀÕ7   ÀÕDÀÕDÀÕI ÀÕUÀÔıÀÔı„	ÀÕ    ÀÙ
+ÀÙ
+ŠÀÙXF/// Removes any cache stored in this object as if it is newly created.  ÀÚ˜ÀÚ™ÀÚ˜ÀÚ˜€ÂÀÚº    ÀÛÀÛ&ÀÛ¬ ÀÛ^ÀÛ_ÀÛkÀÛlÀÛ^ÀÛ^†
+ÀÛ|  À4ÒÀ4ÒÀ ¬˜À=ˆÅ/// A wrapper class for a [RenderObject] that provides semantics related
+/// properties and compilations.
+///
+/// ## A high level summary
+///
+/// The [PipelineOwner.flushSemantics] calls the [updateChildren] to
+/// build/update a tree of [_RenderObjectSemantics] by querying dirty
+/// RenderObjects about their [SemanticsConfiguration] and updating the
+/// _RenderObjectSemantics of the render objects according to these information.
+/// While doing that, [updateChildren] also decide what
+/// _RenderObjectSemantics will have their own SemanticsNode later on.
+/// After that, [PipelineOwner.flushSemantics] calls [ensureGeometry] to
+/// calculate the geometries for these _RenderObjectSemantics. Finally,
+/// [ensureSemanticsNode] compiles these _RenderObjectSemantics into the actual
+/// SemanticsNodes that form the semantics tree.
+///
+/// ## Steps Breakdown
+///
+/// The _RenderObjectSemantics tree is compiled in four phases. Phase 1 and 2
+/// are done in [updateChildren], Phase 3 is done in [ensureGeometry], and phase
+/// 4 is done in [ensureSemanticsNode].
+///
+/// ### Phase 1
+///
+/// Gather all the merge up _RenderObjectSemantics(s) by walking the rendering
+/// object tree.
+///
+/// They are stored in [mergeUp] and [siblingMergeGroups] and should mimic
+/// rendering object tree closely but only contain [_RenderObjectSemantics] that
+/// contributes to semantics tree. i.e. where [contributesToSemanticsTree] is
+/// true.
+///
+/// ### Phase 2
+///
+/// Merge all fragments from [mergeUp] and decide which [_RenderObjectSemantics]
+/// should form a node, i.e. [shouldFormSemanticsNode] is true. Stores the
+/// [_RenderObjectSemantics] that should form a node into [_children].
+///
+/// At this point, walking the [_children] forms a tree
+/// that exactly resemble the resulting semantics node tree.
+///
+/// ### Phase 3
+///
+/// Walks the [_children] and calculate their
+/// [_SemanticsGeometry] based on renderObject relationship.
+///
+/// ### Phase 4
+///
+/// Walks the [_children] and produce semantics node for
+/// each [_RenderObjectSemantics] plus the sibling nodes.
+///
+/// Phase 2, 3, 4 each depends on previous step to finished updating the the
+/// entire _RenderObjectSemantics tree. All three of them require separate tree
+/// walk.  ÀäÌ ÀäŞ    ÀäåÀäåÀäó   ÀåÀåÀå   Àå+Àå+Àå9   ÀåHÀåHÀåV   Àå`Àå`Àån  ÀäƒÀäƒ€ø @/// The `paintClipRect` may be null if no clip is to be applied. ÀåÀå‡Àå™Àå    ÀåŸÀåŸ	Àå¤  ÀåÀå€ÜÀåš   Àæ˜Àæ_BÀæ˜(/// Value for [SemanticsNode.transform]. ÀæëÀæ¦VÀæë6/// Value for [SemanticsNode.parentSemanticsClipRect]. ÀçBÀçNÀçB2/// Value for [SemanticsNode.parentPaintClipRect]. Àç…ÀçT5Àç…#/// Value for [SemanticsNode.rect]. Àè]ÀçÍ€–Àè]€€/// Whether the semantics node is completely clipped from ui, i.e. by
+/// paintClipRect, but is still present in semantics tree.   ÀçÀç;Àç—     ÀèÀè!Àè¯   ÀèÄÀèÄ"ÀèÓ   ÀèìÀèì&Àèû   ÀéÀé&Àé8   ÀéDÀéD%Àéd  ÀèhÀèhõÀè‚    Àö°Àö°
+Àö¶   ÀöÀÀöÀÀöÈ   ÀöÙÀöÙ7Àöè ÀöğÀöûÀöüÀöaÀöa[Àöœ+/// From parent to child coordinate system.   À÷İÀ÷İÀ÷ã   À÷æÀ÷æÀ÷ì  À÷ÀÀ÷À€€À÷Í ÀäUÀäVÀãƒÀãƒ”¿Àäl€Ñ/// Helper class that keeps track of the geometry of a [SemanticsNode].
+///
+/// It is used to annotate a [SemanticsNode] with the current information for
+/// [SemanticsNode.rect] and [SemanticsNode.transform].  Àú
+ Àú!    Àú"Àú"Àú) 
+Àú6Àú;ÀúpÀú<ÀúLÀúXÀúSÀúZÀúiÀújÀùœÀùœ€Ö i/// Create a [DiagnosticsProperty] with its [value] initialized to input
+/// [RenderObject.debugCreator].      ÀøDÀøD‚0Àù\/// A class that creates [DiagnosticsNode] by wrapping [RenderObject.debugCreator].
+///
+/// Attach a [DiagnosticsDebugCreator] into [FlutterErrorDetails.informationCollector]
+/// when a [RenderObject.debugCreator] is available. This will lead to improved
+/// error message.     ÀƒëÀƒëÀƒë  À‰çÀ‰ÜÀ‰ç    À‰òÀ‰òGÀŠ)%/// The render object's unique child.   ÀŠFÀŠFÀŠQ  ÀŠ<ÀŠ<€ªÀŠ@    À…À…À…  À„À„…¹À„ğ€¿/// Checks whether the given render object has the correct [runtimeType] to be
+/// a child of this render object.
+///
+/// Does nothing if assertions are disabled.
+///
+/// Always returns true.   À‹À‹À‹ ÀŠêÀŠëÀŠêÀŠêfÀŠû   À‹TÀ‹UÀ‹TÀ‹TIÀ‹e   À‹¡À‹¢À‹¡À‹¡eÀ‹²    ÀŒ)ÀŒ)ÀŒ= ÀŒ
+ÀŒÀŒ
+ÀŒ
+yÀŒ   ÀŒ‡ÀŒˆÀŒ‡ÀŒ‡€¼ÀŒ©  À‚À‚Š¨ÀƒĞ,/// Generic mixin for render objects with one child.
+///
+/// Provides a child model for a render object subclass that has
+/// a unique child, which is accessible via the [child] getter.
+///
+/// This mixin is typically used to implement render objects created
+/// in a [SingleChildRenderObjectWidget].  À“éÀ“ÙÀ“ÔÀ“Ù     À”ûÀ”üÀ“òÀ“ò7À•€ş/// The layout callback to be invoked during [performLayout].
+///
+/// This method should not be invoked directly. Instead, call
+/// [runLayoutCallback] in the [performLayout] implementation. This callback
+/// will be invoked using [invokeLayoutCallback].  À–À– À•-À•-‘À–5€ç/// Invokes [layoutCallback] with [invokeLayoutCallback].
+///
+/// This method must be called in [performLayout], typically as early as
+/// possible before any layout work is done, to avoid re-dirtying any child
+/// [RenderObject]s.  À—±À—²À–ÂÀ–ÂƒtÀ—Ç€è/// Informs the framework that the layout callback has been updated and must be
+/// invoked again when this [RenderObject] is ready for layout, even when an
+/// ancestor [RenderObject] chooses to skip laying out this render subtree. ÀGÀGŒñÀ’¯…a/// A mixin for managing [RenderObject] with a [layoutCallback], which will be
+/// invoked during this [RenderObject]'s layout process if scheduled using
+/// [scheduleLayoutCallback].
+///
+/// A layout callback is typically a callback that mutates the [RenderObject]'s
+/// render subtree during the [RenderObject]'s layout process. When an ancestor
+/// [RenderObject] chooses to skip laying out this [RenderObject] in its
+/// [performLayout] implementation (for example, for performance reasons, an
+/// [Overlay] may skip laying out an offstage [OverlayEntry] while keeping it in
+/// the tree), normally the [layoutCallback] will not be invoked because the
+/// [layout] method will not be called. This can be undesirable when the
+/// [layoutCallback] involves rebuilding dirty widgets (most notably, the
+/// [LayoutBuilder] widget). Unlike render subtrees, typically all dirty widgets
+/// (even off-screen ones) in a widget tree must be rebuilt. This mixin makes
+/// sure once scheduled, the [layoutCallback] method will be invoked even if it's
+/// skipped by an ancestor [RenderObject], unless this [RenderObject] has never
+/// been laid out.
+///
+/// Subclasses must not invoke the layout callback directly. Instead, call
+/// [runLayoutCallback] in the [performLayout] implementation.
+///
+/// See also:
+///
+///  * [LayoutBuilder] and [SliverLayoutBuilder], which use the mixin. À›À›À›  ÀœÀ›ÁQÀœ4/// The previous sibling in the parent's child list. ÀœUÀœIÀœU0/// The next sibling in the parent's child list.    Àœ‡ÀœˆÀœeÀœe6Àœ˜/// Clear the sibling pointers. Àš:Àš:ƒcÀ›v5/// Parent data to support a doubly-linked list of children.
+///
+/// The children can be traversed using [nextSibling] or [previousSibling],
+/// which can be called on the parent data of the render objects
+/// obtained via [ContainerRenderObjectMixin.firstChild] or
+/// [ContainerRenderObjectMixin.lastChild]. À¡ŸÀ¡ŸÀ¡Ÿ À¡ÁÀ¡Á:À¡Á À¥8À¥*À¥&À¥*  À«JÀ«?À«J  À«dÀ«YÀ«d    À¥>À¥>@À¥d/// The number of children.   ÀÆWÀÆWRÀÆ&/// The first child in the child list.   ÀÆ­ÀÆ­OÀÆä%/// The last child in the child list.    À¢;À¢;À¢E   À¢MÀ¢MÀ¢X  À¢À¢ŒÀ¢    À£ÇÀ£ÇÀ£Ñ   À£ÙÀ£ÙÀ£ä  À£¦À£¦|À£«    À¦fÀ¦fÀ¦s  À¥‚À¥‚…¹À¦S€¿/// Checks whether the given render object has the correct [runtimeType] to be
+/// a child of this render object.
+///
+/// Does nothing if assertions are disabled.
+///
+/// Always returns true.   À«ŒÀ«ŒÀ«–   À«À«À«©  À«rÀ«r‡—À«w    À³ğÀ³ğÀ³ú   À´À´À´  À³À³„À³é€Î/// Insert child into this render object's child list after the given child.
+///
+/// If `after` is null, then this inserts the child at the start of the list,
+/// and the child becomes the new [firstChild].   À·gÀ·gÀ·q  À·À·€‡À·c?/// Append child to the end of this render object's child list.   À·ıÀ·ıÀ¸  À·§À·§€’À·öG/// Add all the children to the end of this render object's child list.   À¸WÀ¸WÀ¸a  À¸=À¸=„:À¸B    À¼ôÀ¼ôÀ¼ş  À¼{À¼{€ÆÀ¼íf/// Remove this child from the child list.
+///
+/// Requires the child to be present in the child list.   À½EÀ½E‚$À½Ì{/// Remove all their children from this render object's child list.
+///
+/// More efficient than removing them individually.   ÀÀœÀÀœÀÀ¦   ÀÀ®ÀÀ®ÀÀ¹  À¿mÀ¿m‚½ÀÀ—/// Move the given `child` in the child list to be after another child.
+///
+/// More efficient than removing and re-adding the child. Requires the child
+/// to already be in the child list at some position. Pass null for `after` to
+/// move the child to the start of the child list.   ÀÂFÀÂFÀÂT ÀÂ.ÀÂ/ÀÂ.ÀÂ.ÀÂ?   ÀÃLÀÃMÀÃLÀÃL€ıÀÃ]   ÀÄMÀÄNÀÄMÀÄM€÷ÀÄ^    ÀÅgÀÅgÀÅ{ ÀÅHÀÅIÀÅHÀÅHÀÅY    ÀÇZÀÇZÀÇd  ÀÇ ÀÇ €ÿÀÇN@/// The previous child before the given child in the child list.   ÀÈWÀÈWÀÈa  ÀÈÀÈ€õÀÈL;/// The next child after the given child in the child list.  ÀÈüÀÈıÀÈüÀÈü‚ÀÉ  ÀŸÀŸ­aÀ¡ƒÛ/// Generic mixin for render objects with a list of children.
+///
+/// Provides a child model for a render object subclass that has a doubly-linked
+/// list of children.
+///
+/// The [ChildType] specifies the type of the children (extending [RenderObject]),
+/// e.g. [RenderBox].
+///
+/// [ParentDataType] stores parent container data on its child render objects.
+/// It must extend [ContainerParentDataMixin], which provides the interface
+/// for visiting children. This data is populated by
+/// [RenderObject.setupParentData] implemented by the class using this mixin.
+///
+/// When using [RenderBox] as the child type, you will usually want to make use of
+/// [RenderBoxContainerDefaultsMixin] and extend [ContainerBoxParentData] for the
+/// parent data.
+///
+/// Moreover, this is a required mixin for render objects returned to [MultiChildRenderObjectWidget].
+///
+/// See also:
+///
+///  * [SlottedContainerRenderObjectMixin], which organizes its children
+///    in different named slots.  ÀÏ@ÀÏÀÏ4ÀÏ     ÀÎ·ÀÎ¸ÀÎÄÀÎÅÀÌmÀÌm‚ ÀÎÚ‚1/// A callback that is called when system fonts have changed.
+///
+/// The framework defers the invocation of the callback to the
+/// [SchedulerPhase.transientCallbacks] phase to ensure that the
+/// [RenderObject]'s text layout is still valid when user interactions are in
+/// progress (which usually take place during the [SchedulerPhase.idle] phase).
+///
+/// By default, [markNeedsLayout] is called on the [RenderObject]
+/// implementing this mixin.
+///
+/// Subclass should override this method to clear any extra cache that depend
+/// on font-related metrics.   ÀÏIÀÏIƒOÀÏN    ÀÒ´ÀÒ´ÀÒÂ ÀÒœÀÒÀÒœÀÒœ¾ÀÒ­   ÀÔ^ÀÔ_ÀÔ^ÀÔ^€¾ÀÔo  ÀËÀËŠÀÌ6-/// Mixin for [RenderObject] that will call [systemFontsDidChange] whenever the
+/// system fonts change.
+///
+/// System fonts can change when the OS installs or removes a font. Use this
+/// mixin if the [RenderObject] uses [TextPainter] or [Paragraph] to correctly
+/// update the text when it happens.   ÀÙpÀÙW$ÀÙp  ÀÛøÀÛîÀÛø  ÀßÀß†Àß  ÀáÛÀáÑÀáÛ  Àã½Àã³Àã½  Àå3Àå+Àå3  ÀëXÀëF"ÀëX  Àë~Àël"Àë~  Àë¤Àë’+Àë¤  ÀëÓÀëÁ+ÀëÓ  ÀìÀëğ!Àì  ÀíÙÀíÊÀíÙ    ÀØÕÀØÕÀÙ:J/// All of the [SemanticsProperties] for this [SemanticsAnnotationsMixin].   ÀÚIÀÚI¢ÀÛÓr/// If 'container' is true, this [RenderObject] will introduce a new
+/// node in the semantics tree. Otherwise, the semantics will be
+/// merged with the semantics of any ancestors.
+///
+/// Whether descendants of this [RenderObject] can add their semantic information
+/// to the [SemanticsNode] introduced by this configuration is controlled by
+/// [explicitChildNodes].   ÀÜ“ÀÜ“‚ğÀßY‚¢/// Whether descendants of this [RenderObject] are allowed to add semantic
+/// information to the [SemanticsNode] annotated by this widget.
+///
+/// When set to false descendants are allowed to annotate [SemanticsNode]s of
+/// their parent with the semantic information they want to contribute to the
+/// semantic tree.
+/// When set to true the only way for descendants to contribute semantic
+/// information to the semantic tree is to introduce new explicit
+/// [SemanticsNode]s to the tree.
+///
+/// This setting is often used in combination with
+/// [SemanticsConfiguration.isSemanticBoundary] to create semantic boundaries
+/// that are either writable or not for children.   ÀàPÀàP~Àá¨B/// Whether descendants of this [RenderObject] should have their semantic
+/// information ignored.
+///
+/// When this flag is set to true, all child semantics nodes are ignored.
+/// This can be used as a convenience for cases where a child is wrapped in
+/// an [ExcludeSemantics] widget and then another [Semantics] widget.   Àâ“Àâ“ÀãŠ€ã/// Whether to block user interactions for the semantics subtree.
+///
+/// Setting this true prevents user from activating pointer related
+/// [SemanticsAction]s, such as [SemanticsAction.tap] or
+/// [SemanticsAction.longPress].   ÀäuÀäu€³Àåz/// The [Locale] for the semantics subtree.
+///
+/// Setting this to null will inherit locale from ancestor semantics node.   ÀìÀì±Àí§m/// If non-null, sets the [SemanticsNode.textDirection] semantic to the given
+/// value.
+///
+/// This must not be null if [SemanticsProperties.attributedLabel],
+/// [SemanticsProperties.attributedHint],
+/// [SemanticsProperties.attributedValue],
+/// [SemanticsProperties.attributedIncreasedValue], or
+/// [SemanticsProperties.attributedDecreasedValue] are not null.   ÀÙÀÙÀÙ¢  ÀÙÀÙ€ÆÀÙƒ    ÀÜÀÜ
+ÀÜ  ÀÜÀÜ€‰ÀÜ
+    Àß¾Àß¾
+ÀßÃ  Àß§Àß§€¥Àß«    ÀâÀâ
+Àâ
+  ÀáğÀáğ€ŸÀáô    ÀãçÀãç
+Àãì  ÀãÒÀãÒ€ŸÀãÖ    Àå]Àå]Àåe  ÀåHÀåH€¢ÀåL    ÀíıÀíıÀî  ÀíëÀíë€ŸÀíï     ÀÖÀÖ'ÀÖª   ÀÖºÀÖºÀÖÈ   ÀÖ×ÀÖ× ÀÖå   ÀÖıÀÖıÀ×   À×!À×!À×/   À×EÀ×E!À×V   À×lÀ×l%À×„  ÀÕµÀÕµƒÀÖn9/// Initializes the semantics annotations for this mixin.   ÀæÀæÀæ  ÀåîÀåî|Àåó    ÀçšÀçšÀç®  ÀçnÀçn€¯Àç€    ÀèMÀèMÀèa  Àè!Àè!€¯Àè3    Àé	Àé	Àé  ÀèÔÀèÔ€ÛÀèæ    ÀéèÀéèÀéü  Àé³Àé³€àÀéÅ    ÀêÂÀêÂÀêÖ  Àê—Àê—€«Àê©    Àî¹Àî¹ÀîÍ ÀîÀîÀîÀî€«ÀîŸ    ÀïmÀïmÀï„ Àï=Àï>Àï=Àï=¡hÀïN    À©À©7À®    ÀäÀäCÀé    À+À+?À0    ÀnÀnEÀs    À·À·GÀ¼    ÀÀAÀ    ÀGÀGEÀL    ÀÀAÀ•    ÀÕÀÕAÀÚ    ÀÀ9À    ÀWÀW7À\    À’À’;À—    ÀûÀûÀ   ÀÑÀÑ€ŒÀÖ    ÀŒÀŒÀ‘  ÀaÀa€Àf    ÀÀÀ  ÀóÀó€‚Àø    ÀŸÀŸÀ¤  ÀyÀy€„À~    ÀÀÀ)  ÀÀiÀ    ÀƒÀƒÀŠ  ÀnÀnNÀs    ÀÀÀÀcÀÅ    À'À'cÀ,    ÀÀ;À“    ÀÍÀÍ=ÀÒ    ÀÀAÀ  ÀÕ ÀÕ À C1ÀÕ‡`/// A mixin for [RenderObject]s that want to annotate the [SemanticsNode]
+/// for their subtree.   ÀálÀál¥Àá+/// Dumps the render object semantics tree.   ÀãBÀãBÀãO  ÀãÀãnÀã      ‡P‡Phˆh/// Signature for painting into a [PaintingContext].
+///
+/// The `offset` argument is the offset from the origin of the coordinate system
+/// of the [PaintingContext.canvas] to the coordinate system of the callee.
+///
+/// Used by many of the methods of [PaintingContext].  ˆºˆº€«‰(e/// Signature for transforming the given [Rect] to a different [Rect] with a
+/// [Matrix4] transform.  À ‹ÕÀ ‹Õ€àÀ Œ}€Ÿ/// Signature for a function that is called for each [RenderObject].
+///
+/// Used by [RenderObject.visitChildren] and [RenderObject.visitChildrenForSemantics].À >À >À >  À Œ·À Œ·€½À /o/// Signature for a function that is called during layout.
+///
+/// Used by [RenderObject.invokeLayoutCallback].  À{À{€´Àõq/// Signature for the callback to [PipelineOwner.visitChildren].
+///
+/// The argument is the child being visited.  À4KÀ4K€…À4S    €®  dart:ui  €Ì  package:flutter/widgets.dart  €ÿ  box.dart    paragraph.dart  ;  proxy_box.dart  \  	view.dart  x  viewport.dart šv <€†€¤€¥€¿€Ã€ò€ö2So˜™ÆÇğ‚‚B‚j‚“‚¼‚½‚Ô‚é‚ş‚ÿƒ(ƒ1ƒVƒoƒŒƒ¤ƒºƒÔƒçƒı„„)„G„\„t„½„å„æ….…2…|…Ä…ø…ü†
+††Y††±†î†û‡‡‡ ‡,‡M‡O‡P‡…‡‰‡Úˆ&ˆ*ˆ`ˆ¹ˆº‰‰ ‰f‰g‰}‰‰ÓŠŠbŠvŠzŠË‹‹k‹µ‹Ï‹ÓŒŒXŒ„Œ¦Œ¬ŒôWX€ÎV\¨ÆÇîô?Œİùÿe†è‘‘[‘_‘`‘‡‘¡‘Ê‘í‘ô’’)’`’’¿’Ü’å’ø““A“_“…“µ“¶””N”™”À••B•O•Œ•ª•¼•é•ş–
+–0–Š–˜–Å——|—Ç—Ğ˜˜˜:˜;˜x˜­˜½™™™$™%™j™¢™£™òš&šcšš‘š’šàšæ›1›~›Ìœœœœ#œsœ”œÎ0^_ ¼Ìö	kw¢ôŸUŸŸ¥ŸØ    Y © İ ã ó ù¡F¡`¡•¡¯¡Ø¢¢¢¢:¢I¢¢¦¢¯¢Â¢Ì¢Ğ¢Ñ¢õ¢û£I£˜£è¤¤/¤W¤j¤t¤u¤˜¤·¤İ¥+¥t¥ ¥×¥ş¦+¦8¦e¦k¦o¦p¦¬¦Ç¦ì§)§*§l§§§ê§÷¨&¨L¨T¨f¨Ÿ¨Ò© ©5©A©G©|©Ã©éªªªª]ªlªrª»««.«4««”«¡«Ã«Ş«ò¬¬¬¬4¬[¬k¬‚¬©¬Ì¬í¬ü­#­F­g­o­‚­Œ­¢­¦­§­¼­Û­ü®®®P®€®†®½®ù¯¯:¯S¯Y¯|¯“¯—¯˜¯¼¯Â°°V°u°°—°²°Ë°Ñ°ô±	±±±)±D±w±¹±ú²&²*²+²|²‹²‘²ß³-³w³·³½³ù³ÿ´´:´€´½´Á´Â´ıµµOµµíµú¶ ¶O¶š¶¬¶¹¶Ê¶ë····(·P·n·—·µ·í¸+¸3¸^¸|¸¥¸Ã¸ğ¹!¹)¹<¹F¹~¹˜¹®¹Â¹Æ¹Çºº+º1º€ºÉºØºŞ»)»y»Å»ç¼¼$¼=¼C¼l¼p¼q¼Ä¼Ê½½c½°½â½è¾3¾ƒ¾Ï¾ñ¿¿/¿H¿N¿x¿|¿}¿²¿¸À @	À @DÀ @JÀ @—À @éÀ A9À AÀ A…À A•À A›À AéÀ AöÀ BÀ B2À BJÀ BNÀ BOÀ B À BïÀ C?À CaÀ CgÀ C¶À CúÀ DÀ DÀ DYÀ D©À DùÀ EGÀ EŠÀ EŸÀ E¥À EöÀ FGÀ F”À FåÀ G5À GsÀ GyÀ G‰À GÀ GÚÀ GîÀ H À HÀ HDÀ HYÀ HuÀ H|À HÊÀ IÀ I=À IcÀ IiÀ I†À I£À IàÀ IòÀ JÀ J$À J%À JHÀ JrÀ JvÀ JwÀ J¿À JÅÀ KÀ KÀ KgÀ K—À K›À KœÀ KËÀ KÑÀ L#À LkÀ L¢À LîÀ M>À M|À MÀÀ MÆÀ NÀ NXÀ NmÀ NsÀ N»À OÀ OMÀ ObÀ OhÀ O¹À PÀ PÀ PÀ PgÀ P¨À P®À P÷À PıÀ QGÀ Q”À QØÀ R(À RxÀ RÀÀ SÀ SBÀ SWÀ SvÀ S‘À S¤À S·À SŞÀ TÀ T"À T)À TNÀ TkÀ T~À T„À T¼À TØÀ UÀ U#À UGÀ UnÀ U¹À UÍÀ UÚÀ V=À VPÀ VVÀ VZÀ V[À V’À V˜À VçÀ VíÀ W2À W8À WˆÀ WËÀ WÑÀ X!À XlÀ X“À X™À XêÀ Y,À Y2À YƒÀ Y‰À YĞÀ YñÀ ZÀ ZÀ Z0À ZEÀ ZlÀ Z”À Z²À Z¹À ZŞÀ ZûÀ [À [À [HÀ [ƒÀ [ŸÀ [àÀ [ìÀ \À \9À \‚À \–À \£À ]À ]À ]À ]#À ]$À ]^À ]dÀ ]³À ]¹À ]şÀ ^À ^TÀ ^—À ^À ^øÀ _CÀ _jÀ _pÀ _ÉÀ `À `À `jÀ `pÀ `ÀÀ `ÆÀ aÀ a>À aYÀ alÀ a}À a¢À aÉÀ añÀ bÀ bÀ bCÀ b`À bsÀ byÀ b­À bôÀ cÀ caÀ cmÀ c—À c¾À dÀ dÀ d(À dIÀ d^À dtÀ dŠÀ d¯À d¸À dËÀ dÑÀ dÕÀ dÖÀ e À eÀ eUÀ e[À e À e¦À eöÀ f9À f?À fÀ fÙÀ fõÀ fûÀ gKÀ gŒÀ g’À gÖÀ gÜÀ h#À hBÀ h]À hpÀ hÀ h”À h»À hãÀ i À iÀ i,À iIÀ i\À ibÀ i–À iÎÀ iêÀ j)À j5À jYÀ j€À jÉÀ jİÀ jêÀ kKÀ k^À kdÀ khÀ kiÀ k›À k¡À kãÀ kéÀ l:À l`À lfÀ l¶À lıÀ mÀ mJÀ mPÀ mÀ mïÀ n?À n…À n©À n¼À nÙÀ o À o À o'À ojÀ oÀ o¶À oÈÀ oÌÀ oÍÀ oşÀ pÀ pSÀ pYÀ pªÀ pĞÀ pÖÀ q"À qsÀ q¬À q²À rÀ rEÀ rKÀ r’À r³À rÎÀ ráÀ røÀ sÀ s=À sDÀ s˜À s´À síÀ t	À tJÀ tvÀ t‡À t–À t§À t·À uÀ u!À u5À uBÀ uOÀ u`À u‘À u®À uÆÀ uÙÀ ußÀ uãÀ uäÀ vÀ vÀ viÀ v•À v›À vëÀ w4À w„À wŠÀ w×À xÀ xÀ xdÀ xjÀ x·À y	À yYÀ yŸÀ y»À yÎÀ yİÀ zÀ z À z'À zbÀ zlÀ z‚À z›À zÇÀ zÙÀ zİÀ zŞÀ zêÀ {À {|À {~À {À {ªÀ {®À {úÀ |;À |?À |eÀ |iÀ |¹À }À })À }-À }|À }ÌÀ ~À ~À ~mÀ ~»À 	À VÀ cÀ gÀ ¯À şÀ €HÀ €‰À €ÙÀ )À wÀ ½À ÙÀ İÀ ‚,À ‚wÀ ‚ÆÀ ƒÀ ƒFÀ ƒ–À ƒ®À ƒ²À „ À „NÀ „À „·À „»À …À …\À …gÀ …„À …ÕÀ †À †4À †5À †À †“À †”À †ÖÀ †ïÀ †ğÀ ‡À ‡$À ‡gÀ ‡mÀ ‡¼À ‡ØÀ ‡ŞÀ ˆ,À ˆ|À ˆËÀ ‰À ‰MÀ ‰À ‰ïÀ Š À ŠÀ ŠTÀ Š¡À ŠÚÀ ŠàÀ ‹"À ‹>À ‹dÀ ‹”À ‹›À ‹µÀ ‹ÎÀ ‹ÒÀ ‹ÔÀ ‹ÕÀ ŒÀ ŒÀ ŒuÀ Œ¶À Œ·À ŒòÀ ŒöÀ 'À uÀ vÀ ¯À  À SÀ oÀ ¤À ªÀ ®À ¯À ÍÀ ÎÀ À 8À 9À EÀ XÀ †À ¢À ÚÀ àÀ 	À À À À GÀ KÀ ›À ìÀ ‘9À ‘QÀ ‘UÀ ‘ À ‘çÀ ’1À ’]À ’¦À ’ôÀ “DÀ “•À “ãÀ ”+À ”qÀ ”¿À •
+À •JÀ •–À •äÀ –1À –5À –„À –ÎÀ —À —9À —=À —À —ÜÀ ˜+À ˜xÀ ˜ÄÀ ™À ™SÀ ™WÀ ™£À ™ñÀ šAÀ š‹À šºÀ šòÀ ›À ›À ›eÀ ›²À ›ØÀ ›êÀ œÀ œ)À œEÀ œhÀ œoÀ œºÀ œ¾À œ¿À À 3À 9À ŠÀ ×À $À CÀ IÀ À İÀ Ÿ&À ŸPÀ ŸQÀ Ÿ—À ŸÀ ŸåÀ ŸûÀ  *À  +À  ‚À  ˆÀ  İÀ ¡
+À ¡>À ¡?À ¡‡À ¡À ¡ÎÀ ¡şÀ ¡ÿÀ ¢EÀ ¢KÀ ¢›À ¢ÂÀ ¢áÀ £À £$À £1À £YÀ £_À £cÀ £dÀ £©À £ÔÀ £ïÀ ¤À ¤3À ¤AÀ ¤GÀ ¤`À ¤wÀ ¤”À ¤˜À ¤™À ¤åÀ ¥0À ¥mÀ ¥rÀ ¥»À ¦À ¦PÀ ¦ˆÀ ¦À ¦ÉÀ §À §gÀ §³À §ÈÀ §ïÀ ¨,À ¨-À ¨‚À ¨¨À ¨®À ¨óÀ ©<À ©ŠÀ ©ĞÀ ©ÖÀ ª'À ª-À ª{À ªˆÀ ª–À ªŞÀ ªßÀ «À «#À «cÀ «iÀ «¬À «ÈÀ «úÀ ¬À ¬CÀ ¬DÀ ¬†À ¬ŒÀ ¬ÜÀ ­'À ­]À ­cÀ ­¬À ­ÃÀ ­ÜÀ ®À ®!À ®TÀ ®‰À ®ÅÀ ®÷À ¯À ¯À ¯#À ¯/À ¯PÀ ¯ˆÀ ¯³À ¯¼À ¯ÂÀ ¯ÒÀ ¯òÀ °À °À °À °HÀ °qÀ °´À °äÀ ±4À ±jÀ ±’À ±¾À ±ğÀ ²EÀ ²ZÀ ²hÀ ²tÀ ²§À ²àÀ ³	À ³À ³À ³jÀ ³À ³µÀ ³½À ³¾À ³ĞÀ ³÷À ´À ´À ´MÀ ´jÀ ´rÀ ´€À ´¥À ´ëÀ ´ôÀ µÀ µ*À µ<À µ_À µ‡À µœÀ µ¨À µÃÀ µéÀ µñÀ µ÷À µûÀ µüÀ ¶JÀ ¶›À ¶èÀ ·7À ·dÀ ·˜À ·™À ·ÇÀ ¸À ¸&À ¸:À ¸JÀ ¸€À ¸²À ¸ÅÀ ¸ÏÀ ¸ÙÀ ¸ëÀ ¸ûÀ ¹ À ¹2À ¹kÀ ¹€À ¹ŒÀ ¹’À ¹–À ¹—À ¹éÀ ¹êÀ º"À º(À ºvÀ ºŠÀ ºªÀ ºÃÀ »'À »-À »‘À »ÛÀ ¼À ¼FÀ ¼NÀ ¼TÀ ¼„À ¼·À ¼ÛÀ ¼áÀ ¼íÀ ½À ½cÀ ½jÀ ½ƒÀ ½§À ½­À ½±À ½²À ½îÀ ½ïÀ ¾AÀ ¾GÀ ¾”À ¾éÀ ¿1À ¿†À ¿šÀ ¿ À ¿çÀ ¿ôÀ ÀÀ ÀHÀ ÀIÀ À†À ÀŒÀ ÀËÀ ÀÑÀ ÁÀ Á0À Á`À ÁÀ Á‚À Á¹À Á¿À ÂÀ ÂXÀ Â©À Â¯À ÂøÀ ÃÀ Ã'À ÃZÀ ÃlÀ ÃÀ ÃÓÀ ÄÀ Ä?À ÄLÀ ÄVÀ ÄkÀ ÄwÀ Ä˜À ÄÏÀ ÄúÀ ÅÀ Å	À ÅÀ Å%À ÅFÀ Å[À ÅgÀ Å§À ÅÔÀ ÅÕÀ ÆÀ ÆyÀ ÆªÀ ÇÀ Ç9À ÇeÀ Ç‰À ÇÅÀ ÇÚÀ ÈÀ È#À È6À ÈbÀ ÈnÀ ÈxÀ È€À ÈµÀ ÈÑÀ ÈÙÀ ÈçÀ ÉÀ ÉQÀ ÉZÀ ÉjÀ É|À ÉÀ É³À É¿À ÉÚÀ Ê À ÊÀ ÊÀ ÊÀ ÊÀ Ê`À ÊfÀ Ê·À ËÀ Ë8À Ë‚À ËÌÀ ÌÀ Ì+À Ì1À ÌzÀ Ì—À ÌĞÀ ÌóÀ ÌôÀ ÍÀ ÍÀ ÍXÀ Í¨À ÍçÀ ÍöÀ Î<À ÎmÀ Î¨À Î¬À ÎøÀ Ï À Ï!À Ï3À Ï9À Ï„À ÏÔÀ ĞÀ ĞÀ ĞÀ ĞçÀ Ñ"À Ñ&À ÑdÀ Ñ‹À Ñ¨À ÑÜÀ ÑàÀ ÑáÀ ÒÀ ÒXÀ Ò}À ÒÀ Ò²À ÓÀ ÓÀ ÓlÀ Ó•À ÓÀ ÓÇÀ ÓéÀ ÔÀ Ô/À Ô5À Ô9À Ô:À Ô`À Ô…À Ô¬À ÔÉÀ ÔÍÀ ÔÎÀ ÔóÀ ÔôÀ ÕÀ Õ"À Õ‚À ÕÂÀ ÕÈÀ ÖÀ ÖZÀ Ö[À ÖŒÀ Ö’À ÖéÀ ÖïÀ ×=À × À Ø À ØSÀ ØTÀ Ø À Ø®À Ø´À ØéÀ Ù2À Ù8À Ù…À ÙÀÀ ÙÿÀ ÚÀ ÚNÀ ÚÀ Ú¹À ÚÓÀ ÚöÀ ÛÀ Û
+À Û#À ÛwÀ Û}À Û¢À Û²À ÛÕÀ ÛèÀ ÛòÀ ÛüÀ ÜPÀ Ü‚À Ü²À ÜÙÀ İ5À İMÀ İ˜À İÄÀ İßÀ ŞÀ Ş&À ŞZÀ Ş…À Ş´À ŞêÀ ß@À ß’À ßáÀ àÀ àÀ à`À à²À àÓÀ àçÀ àñÀ áÀ á#À á>À ádÀ álÀ ámÀ áÀ á»À áÛÀ âÀ â)À â>À âJÀ âKÀ âfÀ â¥À â­À âüÀ ãDÀ ã`À ã½À ãÏÀ ãôÀ äXÀ ädÀ äyÀ ä­À ä®À åÀ å@À åIÀ å¨À æÀ æ
+À æcÀ æÃÀ æêÀ çÀ çuÀ ç§À ç»À çÅÀ çÆÀ è$À è‚À èÂÀ èíÀ éÀ éÀ éÀ éGÀ éÀ éäÀ êÀ êfÀ ê—À ê¼À êÑÀ ë!À ëyÀ ë¶À ì
+À ìIÀ ìxÀ ìˆÀ ì–À ì¢À ì¶À ìÀÀ íÀ íkÀ íÂÀ íÚÀ î*À îKÀ îUÀ î]À î^À îÁÀ îÊÀ ïÀ ïkÀ ïœÀ ï¥À ïìÀ ğÀ ğÀ ğSÀ ğ†À ğÇÀ ñÀ ñNÀ ñ§À ñ±À ñ¹À ñºÀ ñçÀ òÀ ò]À òšÀ ò©À òÈÀ òĞÀ òÑÀ òìÀ óÀ óÀ óÀ ó6À ózÀ ó‚À óÃÀ ô À ô4À ôaÀ ô­À ôûÀ õÀ õÀ õjÀ õ·À öÀ ö:À ö‹À öÍÀ ÷À ÷5À ÷oÀ ÷£À ÷ºÀ øÀ ø[À øºÀ øüÀ ù?À ùQÀ ùaÀ ùoÀ ù{À ù£À ù­À ù®À ùÖÀ ùşÀ úEÀ ú[À úgÀ úÀ ú™À ú¡À ú¢À ú´À úÔÀ ûÀ û)À û>À ûJÀ ûKÀ ûfÀ ûŒÀ û”À û•À ûÃÀ ûøÀ üÀ ü À ü.À ü\À ü¢À ü«À ü¹À üïÀ ı?À ıHÀ ıXÀ ıjÀ ıÀ ı¥À ı±À ıÌÀ ıòÀ ıúÀ ş À şÀ şÀ şÀ şCÀ şaÀ ş¯À ş¶À şºÀ ş»À şÇÀ ÿÀ ÿ7À ÿ˜À ÿœÀ ÿÀ ÿ²À ÿ³À ÿíÀ À À ,À qÀ ’À £À §À ¨ÀÀÀSÀYÀ¤ÀóÀÀAÀ`ÀzÀ­ÀÊÀËÀşÀÀ"À&À'ÀTÀZÀ¥ÀöÀÀ*ÀIÀÀ•ÀäÀ5ÀvÀwÀªÀÀÀÆÀÊÀËÀÀWÀ¥ÀôÀ$ÀqÀrÀÀ¤ÀóÀ@ÀÀØÀ	%À	tÀ	ÅÀ	åÀ	ëÀ
+,À
+PÀ
+VÀ
+§À
+öÀ
+üÀ'ÀPÀxÀ ÀùÀÀ,ÀPÀVÀsÀ“À™ÀÀÀçÀíÀ>ÀPÀVÀ¥ÀôÀÀDÀkÀÄÀáÀúÀÀ$ÀAÀWÀ]ÀaÀbÀªÀ°ÀÀÀÆÀìÀÀIÀiÀmÀnÀ§À­ÀüÀKÀœÀ¢ÀŞÀñÀÀ.ÀMÀoÀÀ½ÀÙÀúÀ*ÀJÀtÀxÀzÀ{À¼ÀÀÀíÀ0À1ÀYÀ]ÀÀêÀ9À‡ÀÔÀûÀÿÀOÀ ÀæÀÀ
+ÀXÀ¤ÀÜÀ'ÀiÀoÀ¿ÀÀÀÀÀdÀ¢À¿ÀÀÀÀ\ÀuÀ{ÀÌÀÀfÀ…À‹ÀÒÀ!ÀoÀuÀ…À‹ÀÔÀÀ4À6À7ÀYÀ]À¡ÀÁÀÅÀÀÀXÀ¨ÀóÀÀÀbÀ°ÀùÀ IÀ –À åÀ!5À!\À!`À!¤À!ËÀ!ÏÀ!àÀ!äÀ"1À"À"ÒÀ"ìÀ"ğÀ#<À#ŠÀ#ÚÀ$+À$iÀ$mÀ$”À$˜À$ŞÀ%,À%yÀ%ÄÀ&À&aÀ&±À&ÿÀ'GÀ'–À'ãÀ(.À(oÀ(sÀ(ÂÀ)À)cÀ)ŸÀ)£À)²À)¶À)ıÀ*DÀ*`À*dÀ*²À+À+OÀ+œÀ+áÀ,"À,&À,vÀ,©À,­À,ÁÀ,ÅÀ-À-?À-CÀ-À-ŞÀ./À.wÀ.ÁÀ/À/\À/À/…À/³À/·À0À0YÀ0¤À0ôÀ1EÀ1\À1`À1°À1ÀÀ1ÄÀ2À2RÀ2cÀ2gÀ2´À3À3À3:À3>À3À3àÀ4/À4zÀ4ÅÀ4ÉÀ5À5dÀ5³À5ÿÀ6NÀ6À6ÒÀ7#À7sÀ7€À7ÔÀ8À8À8cÀ8¨À8ÕÀ8ÙÀ8ÚÀ9)À9xÀ9ÃÀ9òÀ9øÀ:9À:ŠÀ:ÖÀ:õÀ:ûÀ;GÀ;MÀ;]À;cÀ;À;¦À;½À;ãÀ;ùÀ<À<BÀ<\À<dÀ<hÀ<iÀ<À<•À<ÒÀ<îÀ=À=À=3À=FÀ=PÀ=eÀ=iÀ=jÀ=‰À=ŠÀ=ÂÀ=ÈÀ>À>bÀ>­À>ìÀ?5À?…À?À?£À?îÀ@À@À@WÀ@hÀ@{À@˜À@ÆÀ@åÀ@õÀABÀATÀA‚ÀA•ÀA¸ÀB&ÀB4ÀBAÀB^ÀBqÀB{ÀBÀB€ÀBŒÀBÀB½ÀBÃÀCÀC_ÀC¯ÀCíÀCóÀD>ÀDmÀD½ÀDûÀELÀE˜ÀEäÀFÀF9ÀF:ÀF{ÀFÀFÑÀGÀG9ÀG`ÀG‹ÀG²ÀG¸ÀG¼ÀG½ÀG÷ÀGıÀHMÀH•ÀHÒÀHØÀI&ÀIqÀIÁÀJÀJVÀJ¦ÀJ¬ÀJôÀKDÀKcÀK~ÀKÀK‘ÀKâÀKñÀK÷ÀL8ÀLEÀLoÀL‘ÀL³ÀLÔÀLóÀLùÀLıÀLşÀM8ÀM>ÀMÀMÇÀMÔÀMğÀMñÀN,ÀN2ÀNrÀN™ÀN²ÀN³ÀNûÀOÀOPÀO£ÀO´ÀOÁÀOéÀPÀPÀP3ÀPWÀPtÀP|ÀPÅÀPØÀPâÀPãÀPÿÀQÀQ<ÀQ\ÀQvÀQŠÀQ§ÀQ­ÀQÆÀQÊÀQËÀRÀR#ÀRrÀRÅÀRÖÀRãÀS
+ÀS-ÀSUÀS{ÀS«ÀSÓÀSÙÀSùÀTÀT0ÀTDÀTZÀT`ÀTwÀTÀT½ÀTÁÀTÂÀUÀUÀU\ÀU‘ÀU’ÀUĞÀUÖÀUôÀUúÀV
+ÀVÀVdÀV|ÀV}ÀVÊÀVèÀWÀW!ÀW7ÀW]ÀW”ÀWËÀXÀXJÀX¤ÀXÀÀYÀY(ÀYyÀYÊÀZÀZRÀZ¬ÀZ·ÀZÀÀZÇÀZËÀZÌÀ[À[À[jÀ[wÀ[±À[×À[ØÀ\#À\)À\vÀ\ƒÀ\½À\ãÀ\äÀ]À]%À]rÀ]~À]ÂÀ]íÀ]îÀ^5À^~À^ÌÀ^éÀ_À_&À_FÀ_ˆÀ_µÀ_ÅÀ_ûÀ`À`/À`9À`WÀ`gÀ`À`°À`ºÀ`ÍÀ`ÑÀ`ÒÀa"Àa.Àa4ÀatÀazÀaÀÀaıÀbÀbÀbDÀbEÀb{ÀbÀbÑÀc!ÀccÀciÀc·ÀcŞÀcôÀdÀd ÀdXÀd˜ÀdÅÀdòÀeÀe;ÀeHÀeTÀe\Àe]ÀeŒÀeÚÀf+ÀfCÀfyÀfÀf¥Àf­Àf®ÀfÛÀgÀg9Àg‹ÀgçÀhÀhpÀh½ÀiÀi4Ài[Ài«ÀiÄÀiÛÀiåÀiæÀjÀj^ÀjoÀj”Àj¥Àj¯Àj·Àj¸ÀkÀkMÀkiÀk†ÀkáÀk÷ÀkøÀlÀlVÀl§ÀlÃÀm)Àm6ÀmcÀm•Àm§ÀmŞÀmëÀnÀndÀnƒÀnºÀnÇÀnÓÀnÛÀnÜÀoÀo:ÀoÀpÀp.Àp`ÀprÀp©Àp¶ÀpËÀq1Àq>ÀqJÀqRÀqSÀq°ÀqùÀr'Àr†ÀréÀsÀsÀsUÀsfÀsÀs¸ÀsèÀsøÀt-Àt8ÀtcÀtÖÀtóÀu(Àu3ÀuUÀu‚Àu«ÀuÉÀv ÀvÀv Àv¤ÀwÀwÀwÀw'Àw:Àw>Àw?ÀwÀw½ÀwÃÀxÀxaÀxªÀx°ÀxûÀy4Ày„ÀyÕÀyêÀy÷ÀzÀz?ÀzOÀzlÀzÀz‰Àz¢Àz¦Àz§ÀzäÀzêÀ{*À{JÀ{pÀ{‰À{ŠÀ{èÀ{îÀ|#À|)À|_À|†À|‡À|ÅÀ|ËÀ}À}MÀ}SÀ}‘À}ÇÀ~À~À~DÀ~aÀ~}À~‘À~ßÀ&À]ÀÀÍÀéÀ€À€À€/À€ZÀ€‚À€ˆÀ€½À€üÀ+ÀFÀ^ÀdÀ¦ÀãÀ‚À‚À‚À‚À‚TÀ‚ZÀ‚ªÀ‚ÕÀ‚ÛÀƒÀƒ_Àƒ}ÀƒÀƒ Àƒ¼ÀƒÏÀ„À„À„À„PÀ„VÀ„§À„óÀ…@À…wÀ…}À…³À…ÑÀ…çÀ…÷À†À†'À†1À†DÀ†HÀ†IÀ†eÀ†fÀ†¦À†¬À†üÀ‡KÀ‡À‡ŞÀ‡äÀˆ-ÀˆwÀˆÈÀ‰À‰jÀ‰¼ÀŠ
+ÀŠÀŠÀŠqÀŠ¿À‹À‹\À‹ŒÀ‹’À‹ŞÀŒ,ÀŒGÀŒMÀŒÀŒæÀÀÀVÀ£ÀĞÀÑÀÀÀ[ÀÀÀ®ÀÎÀ3À9ÀSÀWÀXÀuÀvÀÇÀÀfÀ³ÀŞÀëÀ‘À‘À‘fÀ‘´À‘ØÀ‘ŞÀ’-À’À’ÑÀ’øÀ“'À“(À“bÀ“lÀ“À“ÅÀ“ŞÀ“æÀ”CÀ”jÀ”€À”ˆÀ”¯À”ÄÀ”ÌÀ”ÒÀ”ãÀ”çÀ”èÀ•9À•ŠÀ•ĞÀ•ÖÀ•êÀ•ğÀ–AÀ–À–ÜÀ—À—!À—qÀ—¦À—¬À—üÀ˜EÀ˜•À˜âÀ™/À™|À™¶À™¼À™ıÀšKÀšÀš”Àš«Àš±ÀšúÀ›DÀ›“À›ÒÀœÀœ`Àœ|Àœ‚Àœ®ÀœúÀÀ<ÀTÀ”À¢À¨ÀÁÀÀ(ÀWÀŸÀ©À¾ÀÊÀõÀŸÀŸ9ÀŸXÀŸ^ÀŸbÀŸcÀŸ²ÀŸÄÀŸÊÀ À _À ®À ßÀ åÀ¡À¡ À¡AÀ¡hÀ¡À¡¢À¡ĞÀ¡ùÀ¢À¢&À¢RÀ¢XÀ¢{À¢À¢€À¢ÂÀ£À£NÀ£TÀ£À££À£ÑÀ¤À¤À¤6À¤:À¤;À¤‡À¤À¤ÚÀ¥ À¥À¥JÀ¥kÀ¥ˆÀ¥À¥ºÀ¥áÀ¦
+À¦*À¦:À¦`À¦sÀ¦}À¦§À¦«À¦¬À¦ÙÀ¦ùÀ§À§nÀ§›À§¿À§êÀ¨À¨&À¨JÀ¨nÀ¨¤À¨ÅÀ¨äÀ©À©%À©8À©BÀ©LÀ©cÀ©…À©À©ÑÀ©×À©çÀªÀªBÀªgÀªzÀª„ÀªÀª´Àª¸Àª¹ÀªêÀªğÀ«?À«À«ŞÀ¬À¬À¬`À¬°À­À­MÀ­‘À­áÀ®À®"À®oÀ®ºÀ¯À¯À¯VÀ¯¥À¯òÀ°À°LÀ°”À°±À°èÀ±À±-À±`À±®À±¸À±ÍÀ±ÙÀ²-À²3À²?À²eÀ²ˆÀ²«À²ûÀ³À³yÀ³¯À³õÀ´À´FÀ´[À´iÀ´uÀ´¸ÀµÀµeÀµ‘ÀµßÀ¶À¶8À¶^À¶~À¶ÔÀ·'À·\À·‚À·“À·¢À·®À·ÔÀ·ßÀ·èÀ·ïÀ¸À¸7À¸GÀ¸vÀ¸‰À¸“À¸”À¸ùÀ¹1À¹CÀ¹‘À¹ÒÀºÀº1Àº}Àº ÀººÀºòÀ»À»@À»UÀ»aÀ»šÀ»ÀÀ»ÈÀ»ÖÀ»ÜÀ»üÀ»ıÀ¼!À¼LÀ¼\À¼€À¼ŸÀ¼³À½À½ À½(À½;À½EÀ½^À½pÀ½–À½«À½·À½ÃÀ½ÜÀ½ğÀ¾À¾3À¾AÀ¾\À¾‘À¾™À¾«À¾ÒÀ¾çÀ¾óÀ¾ùÀ¿&À¿6À¿ZÀ¿À¿±À¿ÄÀ¿ÎÀ¿ØÀ¿ïÀÀÀÀ#ÀÀMÀÀbÀÀnÀÀ‡ÀÀºÀÀÀÀÀĞÀÁÀÁ+ÀÁPÀÁcÀÁmÀÁ‡ÀÁÀÁÀÁÕÀÁùÀÁÿÀÂÀÂÀÂPÀÂ™ÀÂæÀÃ2ÀÃƒÀÃ°ÀÃ½ÀÃØÀÃÙÀÄ&ÀÄUÀÄ[ÀÄ£ÀÄòÀÅ4ÀÅ:ÀÅŠÀÅÙÀÆÀÆÀÆ^ÀÆ¤ÀÆâÀÇÀÇÀÇ6ÀÇ7ÀÇvÀÇ¸ÀÇ¾ÀÈÀÈXÀÈ£ÀÈÜÀÈâÀÉ!ÀÉ6ÀÉ<ÀÉÀÉÜÀÊÀÊÀÊ-ÀÊ.ÀÊpÀÊvÀÊÅÀËÀË[ÀË”ÀËšÀËêÀÌ;ÀÌ‰ÀÌÚÀÌëÀÌñÀÍ=ÀÍ‹ÀÍĞÀÎ ÀÎiÀÎ¡ÀÎ§ÀÎíÀÏ<ÀÏ‹ÀÏÜÀĞ,ÀĞMÀĞZÀĞrÀĞsÀĞºÀÑ
+ÀÑWÀÑ£ÀÑ¿ÀÑÅÀÒÀÒdÀÒµÀÒşÀÓÀÓUÀÓ¥ÀÓ«ÀÓáÀÓîÀÔ?ÀÔbÀÔ…ÀÔ°ÀÔÙÀÔãÀÕÀÕ9ÀÕCÀÕSÀÕÀÕ…ÀÕ‰ÀÕŠÀÕ˜ÀÕ™ÀÕÜÀÕâÀÖ/ÀÖ<ÀÖtÀÖ™ÀÖšÀÖÍÀÖÓÀ× À×,À×nÀ×˜À×™À×ßÀ×åÀØ6ÀØÀØĞÀØâÀØèÀÙ8ÀÙÀÙÔÀÚ(ÀÚRÀÚXÀÚ©ÀÚºÀÚÀÀÛÀÛ?ÀÛ@ÀÛÀÛÆÀÛÌÀÜÀÜ9ÀÜdÀÜ„ÀÜ¤ÀÜ¬ÀÜ­ÀÜèÀÜîÀİ<Àİ‹ÀİµÀİ»ÀŞÀŞZÀŞgÀŞ“ÀŞ”ÀŞµÀŞ¶ÀŞõÀŞûÀßJÀßPÀß›ÀßêÀà;ÀàŠÀàÕÀàåÀàëÀá8ÀábÀáhÀá»ÀâÀâYÀâ«Àâ¾ÀãÀãcÀãµÀãÔÀãúÀãşÀãÿÀäDÀäJÀäšÀäçÀå4ÀåƒÀåÖÀæ$ÀæjÀæ¶ÀçÀç9Àç?ÀçŒÀçÚÀè$ÀèpÀè¿ÀéÀé-Àé3Àé‚ÀéÏÀêÀê(Àê5ÀêSÀê¶ÀêÕÀêÙÀêÚÀêçÀëÀëÀë5Àë}ÀëÄÀëåÀëìÀìÀìÀìÀìfÀìgÀì»ÀìÁÀíÀíeÀíuÀí{Àí¨ÀíËÀíçÀí÷ÀîÀî-Àî7ÀîJÀîNÀîOÀî ÀîâÀîèÀï8ÀïˆÀï•Àï›Àï×ÀğÀğeÀğ¬ÀğñÀñ&Àñ,ÀñqÀñ·ÀñğÀòÀò7Àò^ÀòlÀòrÀòšÀòÈÀòâÀóÀó"Àó*Àó+Àó‚Àó³ÀóÃÀóËÀóÑÀôÀôGÀôKÀôLÀôÀôÑÀô×Àõ(ÀõPÀõVÀõ•ÀõÒÀõğÀöNÀölÀöpÀöqÀö“Àö»ÀöÉÀöÏÀ÷À÷&À÷OÀ÷uÀ÷™À÷»À÷ÃÀ÷ËÀøÀø"Àø(ÀøwÀøÂÀùÀùeÀù°ÀùåÀú Àú+Àú€Àú«ÀúÃÀúşÀû)ÀûAÀûNÀûyÀûÀûƒÀû„ÀûÃÀûÉÀüÀüfÀü³ÀüìÀüòÀı(Àı.ÀızÀıÉÀşÀşZÀş•Àş²ÀşÈÀşØÀşôÀÿÀÿÀÿ$Àÿ(Àÿ)ÀÿDÀÿEÀÿ„ÀÿŠÀÿÛÀ 'À tÀ ­À ³À éÀÀ,À<ÀhÀ{À…À˜ÀœÀÀÉÀÊÀÀÀ\À©ÀùÀHÀ`ÀfÀ±ÀíÀóÀ3À€ÀÂÀÈÀØÀŞÀ,À~ÀÀ¨ÀÅÀûÀÀ À&À>À„À¦ÀÚÀìÀÀaÀkÀ€ÀŒÀÏÀÀ6ÀQÀ~À¤À¬ÀÍÀíÀúÀ	À	:À	—À	¡À	¶À	ÂÀ
+À
+VÀ
+šÀ
+ØÀ
+áÀÀ]ÀÀ‡À‹ÀŒÀÙÀæÀìÀ=À‘ÀÜÀ+ÀtÀzÀËÀÀ>ÀDÀTÀZÀªÀéÀÀ0ÀfÀœÀªÀ°ÀØÀÀ@ÀtÀ·ÀíÀÀ2À_À…ÀÀšÀ²À¸À¼À½ÀÀ[À¬ÀõÀ.ÀQÀgÀ†À¾ÀæÀÀ2ÀMÀqÀ À÷ÀÀÀCÀŸÀ°ÀºÀÛÀãÀıÀÀÀÀSÀYÀ§ÀÏÀÕÀÀQÀqÀ‡À£ÀÉÀèÀÀ4ÀMÀvÀzÀ{ÀÀÀÀÀÀ^ÀÀ¬ÀÌÀâÀşÀ$ÀCÀ–À¸ÀÜÀòÀöÀ÷À:ÀWÀgÀ‰ÀÁÀÀ#ÀsÀÀÀ¹ÀÀÀ,À8À@ÀSÀ]À©À÷ÀEÀ”ÀàÀ-ÀvÀÀœÀ¢ÀØÀ À À OÀ À §À ¼À ÈÀ!À!"À!2À![À!À!«À!ÒÀ"À")À"OÀ"]À"kÀ"À"ÉÀ"åÀ#5À#VÀ#gÀ# À#æÀ$À$WÀ$«À$ïÀ% À%]À%mÀ%yÀ%ƒÀ%»À%ÓÀ&!À&9À&FÀ&bÀ&³À&çÀ&ôÀ'À'^À'«À'ëÀ'øÀ(QÀ(]À(eÀ(xÀ(‚À(ªÀ(ºÀ(İÀ)À)-À)mÀ)€À)ŠÀ)£À)ÌÀ)ùÀ*À*!À*zÀ*ÒÀ*ëÀ+À+À+,À+OÀ+À+£À+¶À+ÀÀ+öÀ,À, À,$À,%À,qÀ,»À,ÁÀ-À-*À-BÀ-CÀ-~À-»À-¼À.À.À.YÀ.À.ìÀ/9À/_À/eÀ/³À0À0QÀ0hÀ0nÀ0ºÀ1À1SÀ1…À1½À1¾À2À2)À2/À2€À2ÑÀ2îÀ2ôÀ3>À3ŠÀ3ÖÀ4À4kÀ4¤À4òÀ5À5À5À5`À5fÀ5¶À6À6SÀ6lÀ6rÀ6¹À7À7RÀ7¢À7òÀ8À8BÀ8dÀ8uÀ8yÀ8zÀ8ºÀ9À9À9!À9kÀ9»À9ÖÀ9ÜÀ:.À:oÀ:uÀ:ÄÀ;À;5À;;À;†À;ÊÀ;êÀ;ÿÀ<À<QÀ< À<îÀ==À=OÀ=€À=–À=æÀ>À>&À>wÀ>ˆÀ>ªÀ>øÀ?À?0À?1À?FÀ?xÀ?yÀ?œÀ?ÄÀ?èÀ?éÀ@À@3À@NÀ@¦À@ãÀ@şÀAÀA(ÀANÀA³ÀAÃÀAİÀB-ÀB8ÀBtÀB‹ÀB“ÀB™ÀBšÀB¶ÀBÒÀBõÀCÀCwÀC²ÀDÀDÀDÀD+ÀD]ÀDcÀDdÀDƒÀD¯ÀDğÀE9ÀE?ÀEdÀE¬ÀEÉÀEÏÀFÀFÀFÀF^ÀF ÀFáÀFçÀGÀG#ÀGiÀGÀG–ÀGæÀH3ÀHƒÀH½ÀI	ÀI
+ÀIQÀI ÀIìÀJ8ÀJ‰ÀJÕÀK ÀK-ÀK3ÀK~ÀKËÀLÀL2ÀL8ÀL‰ÀL×ÀM%ÀMuÀMÄÀN	ÀNÀNÀN%ÀNqÀN­ÀNóÀNôÀOÀOÀOKÀOpÀOvÀO½ÀOÔÀOÚÀP#ÀPGÀPdÀPzÀP–ÀPÀÀPıÀQ)ÀQ\ÀQ—ÀQ¹ÀQ½ÀQ¾ÀRÀRÀR`ÀR|ÀR‚ÀRËÀSÀSeÀS­ÀSıÀTDÀTJÀT`ÀTfÀT¶ÀTÉÀTÏÀTİÀU$ÀU6ÀUƒÀU»ÀUÌÀUíÀVÀV2ÀV<ÀVBÀV^ÀVyÀVƒÀV‹ÀV•ÀV§ÀV´ÀVûÀWÀW ÀW!ÀWvÀW|ÀWÇÀXÀXÀXCÀXIÀX•ÀXĞÀXùÀYÀYÀYMÀYÀY§ÀYÈÀYúÀZ ÀZÀZÀZEÀZoÀZŠÀZ‹ÀZÜÀZâÀ[À[5À[MÀ[aÀ[gÀ[À[’À[“À[¾À[ÄÀ\À\VÀ\}À\ƒÀ\ÑÀ\İÀ]À]RÀ]wÀ]¤À]ÑÀ]×À]èÀ]ìÀ]íÀ^6À^<À^‹À^‘À^ÚÀ_&À_7À_QÀ_iÀ_’À_°À_¸À_¼À_½À`À`À`RÀ`£À`ÏÀ`óÀaÀaGÀa~ÀaŒÀa’Àa´Àa¸Àa¹ÀbÀb	ÀbBÀbHÀb˜ÀbáÀbóÀbùÀc2ÀcvÀc¶ÀcÒÀcÖÀc×ÀdÀdÀdHÀd™ÀdãÀe3Àe^ÀedÀe°ÀeÈÀeÎÀfÀffÀf—ÀfµÀfÍÀfğÀgÀgÀgPÀgÉÀh,Àh0Àh1Àh=Àh>ÀhÀh›ÀhãÀhäÀhõÀhöÀiDÀiŒÀi¤Ài©ÀiñÀj=ÀjRÀj¢ÀjñÀk?ÀklÀk§Àk®Àk³ÀlÀl8Àl9ÀldÀlpÀl‹Àl·ÀlĞÀlìÀmÀm"Àm*Àm+Àm@ÀmLÀmoÀm­ÀmÈÀmÒÀnÀnÀn)Àn3ÀnGÀnOÀnfÀn–ÀnÀn¸ÀnÛÀnãÀnüÀoÀo&ÀoOÀoƒÀo‹Ào¢ÀoÁÀoÉÀoÏÀoâÀoæÀoçÀoóÀpLÀpMÀpŠÀpÒÀpùÀqÀqÀq<Àq_Àq•Àq­Àq´ÀqŞÀqşÀr$ÀrPÀrlÀrŠÀr“ÀršÀrÀrŸÀrãÀsÀsÀscÀsŸÀs«ÀtÀt:ÀtÀtˆÀtŒÀtÀtšÀt¦ÀtëÀuÀu*Àu‰ÀuÀu¤ÀuÈÀuÛÀuñÀvÀv3Àv<ÀvCÀvWÀv~Àv”Àv¨ÀvôÀwÀwÀw!Àw5ÀwÀw–ÀwõÀx	ÀxeÀxlÀx€ÀxàÀxçÀxûÀyÀyFÀy¦ÀyşÀzÀzÀz"Àz6ÀzTÀz›ÀzÀÀzÉÀzĞÀzÔÀzÕÀzáÀ{)À{*À{{À{ŒÀ{’À{İÀ|!À|'À|wÀ|¶À}À}NÀ}“À}³À}¹À~À~FÀ~LÀ~\À~bÀ~®À~çÀ~ıÀÀ+ÀRÀqÀxÀ’À¸ÀÊÀäÀøÀÿÀ€À€À€UÀ€kÀ€qÀ€ÁÀÀ>ÀDÀ”ÀáÀ‚À‚À‚WÀ‚^À‚–À‚šÀ‚œÀ‚À‚ÒÀ‚ÖÀƒÀƒWÀƒ[Àƒ ÀƒÊÀ„À„nÀ„“À„™À„ÈÀ„ÎÀ„éÀ…À…)À…JÀ…‚À…šÀ…ëÀ†À†+À†GÀ†“À†ŞÀ‡0À‡À‡À‡§À‡ÏÀˆÀˆ9ÀˆpÀˆ}Àˆ–Àˆ¾À‰À‰/À‰OÀ‰†À‰“À‰ŸÀ‰§À‰ºÀ‰ÄÀ‰ÕÀ‰ÙÀ‰ÚÀ‰ïÀ‰ğÀŠÀŠ:ÀŠZÀŠtÀŠÀŠ”ÀŠ¨ÀŠÂÀŠİÀŠãÀŠçÀŠèÀŠôÀ‹À‹2À‹MÀ‹QÀ‹RÀ‹^À‹pÀ‹„À‹šÀ‹À‹ŸÀ‹«À‹ÆÀ‹àÀ‹ıÀŒÀŒÀŒÀŒÀŒHÀŒbÀŒzÀŒ€ÀŒ„ÀŒ…ÀŒ‘ÀŒÃÀŒÜÀ!À@ÀDÀFÀGÀ–ÀáÀÿÀÀSÀ£ÀìÀ9ÀŠÀ×À ÀjÀ»À‘	À‘[À‘«À‘¾À‘ÂÀ’À’LÀ’PÀ’^À’bÀ’©À’åÀ“3À“ƒÀ“ÒÀ“ïÀ“ğÀ”0À”6À”vÀ”ÅÀ”ùÀ•À•*À•+À•gÀ•mÀ•¸À–À–À–.À–KÀ–mÀ– À–»À–¿À–ÀÀ—À—aÀ—¯À—ÀÀ—âÀ—ûÀ˜À˜)À˜/À˜IÀ˜–À˜éÀ™9À™sÀ™À™ïÀšÀš3Àš7Àš9Àš:ÀšwÀš{ÀšÇÀ›À›DÀ›pÀ›¿À›öÀœÀœÀœHÀœbÀœcÀœ…Àœ‘Àœ£Àœ¯ÀœÎÀÀÀ„À˜ÀœÀÀŸÀİÀáÀ2ÀHÀLÀŸÀµÀ¹ÀŸÀŸTÀŸ‰ÀŸ×ÀŸÛÀ .À €À ‘À •À ûÀ ÿÀ¡À¡À¡ZÀ¡{À¡À¡¿À¡üÀ¡şÀ¢À¢cÀ¢¢À¢ØÀ£À£@À£}À£ƒÀ£ŸÀ££À£¤À£ïÀ¤.À¤`À¤”À¤ÀÀ¤ıÀ¥À¥À¥#À¥$À¥;À¥<À¥ZÀ¥À¥€À¥ÑÀ¥öÀ¥üÀ¦+À¦1À¦LÀ¦|À¦ŒÀ¦­À¦åÀ¦ıÀ§NÀ§À§À§ªÀ§öÀ¨AÀ¨“À¨äÀ¨ñÀ©
+À©2À©‚À©œÀ©ÓÀ©àÀ©ùÀª!ÀªtÀª’Àª²ÀªéÀªöÀ«À«
+À«À«'À«8À«<À«=À«WÀ«pÀ«³À«ôÀ¬%À¬ZÀ¬pÀ¬À¬¦À¬ÑÀ­À­#À­tÀ­ªÀ­²À­ÍÀ­éÀ­öÀ®À®;À®†À®ÌÀ¯À¯@À¯’À¯·À¯èÀ°À°1À°@À°ŠÀ°¹À°üÀ±-À±\À±‹À±×À²À²JÀ²†À²ÂÀ²øÀ³ À³À³
+À³À³ZÀ³`À³°À³âÀ´À´dÀ´pÀ´…À´ïÀ´öÀµEÀµgÀµˆÀµŸÀµ«ÀµÕÀ¶.À¶‰À¶ßÀ¶æÀ·À·À·À·\À·zÀ· À·¤À·¥À·ïÀ¸À¸6À¸:À¸;À¸jÀ¸«À¸ôÀ¹8À¹VÀ¹‰À¹­À¹ŞÀ¹ëÀºÀºbÀº²Àº¸ÀºçÀ»
+À»>À»KÀ»°À¼À¼
+À¼6À¼^À¼tÀ¼xÀ¼yÀ¼¦À¼¬À¼æÀ½À½(À½>À½BÀ½CÀ½‰À½À½ÅÀ½ÚÀ½şÀ¾À¾]À¾˜À¾ÆÀ¾ğÀ¿À¿À¿"À¿:À¿QÀ¿fÀ¿jÀ¿kÀ¿µÀ¿»ÀÀ
+ÀÀ[ÀÀÀÀÃÀÀŞÀÀùÀÁÀÁ7ÀÁxÀÁ¬ÀÁºÀÁÀÀÁáÀÂÀÂ'ÀÂ+ÀÂ,ÀÂ8ÀÂ]ÀÂvÀÂšÀÂ¶ÀÂÑÀÃÀÃ?ÀÃEÀÃIÀÃJÀÃVÀÃhÀÃ|ÀÃ ÀÃ¼ÀÃÒÀÄÀÄ@ÀÄFÀÄJÀÄKÀÄWÀÄrÀÄ–ÀÄ²ÀÄÍÀÅÀÅ;ÀÅAÀÅEÀÅFÀÅRÀÅ†ÀÅªÀÅÆÀÅÜÀÆÀÆJÀÆPÀÆTÀÆUÀÆ~ÀÆªÀÆ«ÀÆÓÀÆıÀÆşÀÇAÀÇmÀÇÀÇĞÀÇüÀÈ ÀÈÀÈ?ÀÈjÀÈŒÀÈÍÀÈõÀÈùÀÈúÀÉÀÉ8ÀÉbÀÉ€ÀÉ¥ÀÉºÀÉÏÀÊÀÊ6ÀÊGÀÊQÀÊeÀÊªÀÊØÀÊàÀÊæÀÊûÀÊÿÀËÀËÀËRÀËkÀËoÀË¼ÀÌÀÌ0ÀÌkÀÌ«ÀÌ±ÀÌòÀÍ5ÀÍ…ÀÍ×ÀÍİÀÎ!ÀÎ@ÀÎFÀÎ–ÀÎµÀÎÂÀÎÓÀÎóÀÏ
+ÀÏÀÏÀÏGÀÏmÀÏyÀÏÀÀĞ'ÀĞkÀĞrÀĞ¥ÀĞ³ÀĞ¹ÀĞíÀÑ8ÀÑoÀÑ¦ÀÑ´ÀÑáÀÒFÀÒOÀÒeÀÒ…ÀÒÀÒ•ÀÒ™ÀÒšÀÒ¦ÀÒËÀÒäÀÓ1ÀÓÀÓÏÀÔÀÔWÀÔ[ÀÔ\ÀÔhÀÔzÀÔ°ÀÕÀÕÀÕÀÕÀÕ ÀÕjÀÕÀÕ³ÀÕïÀÖ;ÀÖgÀÖ‰ÀÖ¶ÀÖÓÀÖùÀ×À×AÀ×hÀ×“À×šÀ×¸À×ÔÀØÀØ,ÀØVÀØ€ÀØ¤ÀØÎÀØÒÀØÓÀÙ ÀÙUÀÙ}ÀÙ«ÀÙËÀÙÙÀÙßÀÙøÀÚ"ÀÚBÀÚFÀÚGÀÚÀÚÑÀÛÀÛ	ÀÛ]ÀÛ¬ÀÛÈÀÛìÀÜÀÜ"ÀÜ@ÀÜNÀÜTÀÜlÀÜŒÀÜÀÜ‘ÀÜŞÀİ!Àİ'ÀİwÀİÇÀİÜÀŞ'ÀŞkÀŞÀŞ•ÀŞÊÀßÀßNÀß„Àß¥ÀßÌÀßôÀàÀàÀà)ÀàIÀàMÀàNÀàšÀàµÀà»ÀáÀáUÀáÀáÏÀáîÀâÀâ9ÀâGÀâMÀâlÀâŒÀâÀâ‘ÀâÕÀâÛÀã!Àã\ÀãÀã±ÀãĞÀãõÀäÀä)Àä/ÀäNÀänÀärÀäsÀä¡Àä§ÀäôÀå)ÀåFÀånÀå”Àå¢Àå¨ÀåÇÀåçÀåëÀåìÀæ(ÀæaÀæšÀæåÀç0ÀçgÀçkÀçlÀç·ÀèÀèÀèÀèjÀèÍÀèÑÀèÒÀé&ÀéSÀé¬Àé°Àé±ÀêÀê7ÀêÀê”Àê•ÀêßÀë?ÀëCÀëDÀëjÀëÀë¿ÀëîÀìÀìÀìdÀìqÀìwÀì½ÀìéÀíÀíOÀí’ÀíÈÀíéÀîÀî7ÀîEÀîKÀîgÀî‡Àî‹ÀîŒÀî˜ÀîØÀîôÀïÀïÀï6Àï:Àï;ÀïGÀïÀïÀÀğÀğCÀğxÀğœÀğÎÀğÔÀğàÀñ$ÀñSÀñ›Àñ¢Àñ®ÀñùÀòBÀòIÀòJÀòqÀòŸÀò¥ÀòÌÀòúÀó Àó%ÀóYÀó_Àó†Àó´ÀóºÀóâÀôÀôÀô?ÀôlÀôrÀôšÀôÊÀôĞÀôôÀõÀõ#ÀõJÀõvÀõ|Àõ¢ÀõÏÀõÕÀö Àö7Àö=ÀöcÀöÀö–ÀöÂÀöùÀöÿÀ÷(À÷[À÷aÀ÷‰À÷ºÀ÷ÀÀ÷éÀøÀø"ÀøIÀøwÀø}Àø¸ÀùÀùÀùKÀùœÀù¢ÀùÊÀùûÀúÀú*Àú]ÀúcÀú‰Àú¶Àú¼ÀúáÀûÀûÀû<ÀûnÀûtÀûÀûÑÀû×ÀüÀü`ÀüfÀüÀüìÀüòÀıÀıHÀıNÀırÀı¤ÀıªÀı×ÀşÀş!ÀşNÀş’Àş˜Àş»ÀşëÀşñÀÿÀÿEÀÿKÀÿ¡ÀÿÙÀÿßÀ 
+À ?À EÀ oÀ ¢À ¨À ÒÀÀÀ9ÀsÀyÀ«ÀíÀóÀÀ@ÀFÀmÀ™ÀŸÀÍÀ
+ÀÀ3ÀZÀ`ÀÀÅÀËÀÀLÀRÀSÀ‚À¿ÀÅÀÆÀïÀ À&ÀNÀ|À‚ÀªÀØÀŞÀßÀ,À{À½ÀâÀÀ
+À5ÀcÀiÀ’À¼ÀÂÀîÀÀ$ÀQÀƒÀ‰À³ÀßÀåÀ	À	AÀ	GÀ	qÀ	À	£À	ÍÀ	ùÀ	ÿÀ
+%À
+IÀ
+OÀ
+tÀ
+–À
+œÀ
+ÃÀ
+éÀ
+ïÀ-ÀÀ‡ÀÆÀÀ"À[À¥À«ÀåÀ1À7ÀeÀ™ÀŸÀÈÀòÀøÀ3ÀÀ‡ÀÂÀÀÀ=ÀcÀiÀ‘À¹À¿ÀéÀÀÀQÀœÀ¢À¦À§À¾ÀİÀáÀâÀÿÀ$À(À)ÀDÀgÀkÀlÀŠÀ°À´ÀµÀÔÀûÀÿÀ ÀÀ@ÀDÀEÀcÀ‰ÀÀÀªÀÎÀÒÀÓÀïÀÀÀÀ0ÀPÀTÀUÀlÀ‹ÀÀÀ©ÀÊÀÎÀÏÀÀZÀ^À_À¤ÀìÀğÀñÀ0ÀrÀvÀwÀ·ÀúÀşÀÿÀ6ÀgÀkÀlÀ’À¹À½À¾ÀëÀ À$À%ÀRÀ‡À‹ÀŒÀ¥ÀÆÀÊÀËÀåÀÀÀÀ(ÀLÀPÀRÀSÀšÀ¥ÀÈÀçÀ
+À/ÀUÀxÀÀÌÀÒÀÓÀ$ÀFÀLÀ‘À¯À°ÀÀJÀPÀ–À®ÀÎÀÏÀ)À/ÀiÀ¶ÀÀÀNÀÀ‘ÀÂÀÀÀNÀ‰ÀªÀ«ÀáÀ!ÀMÀNÀqÀrÀ~À¡ÀÍÀ À 9À sÀ «À ôÀ øÀ ùÀ!À!À!2À!IÀ!bÀ!|À!•À!ßÀ!æÀ!êÀ!ìÀ!íÀ"=À"VÀ"ZÀ"«À"÷À#À#À#YÀ#¨À#úÀ$À$À$>À$‹À$ÚÀ%À%)À%`À%aÀ%”À%¸À%¹À%äÀ&À&IÀ&JÀ&¢À&£À&ğÀ'À'IÀ'MÀ'NÀ'“À'™À'åÀ(6À(…À(¤À(ÌÀ(öÀ)IÀ)–À)¤À)ÛÀ*$À*˜À*¡À*§À*ËÀ*ÏÀ*ĞÀ*éÀ*ïÀ+5À+HÀ+ŒÀ+³À+äÀ,À,À,;À,?À,@À,pÀ,­À,àÀ-À-À-À-À-AÀ-RÀ-zÀ-¢À-¦À-§À-ÑÀ-×À. À.bÀ.sÀ.›À.¿À.âÀ.æÀ.èÀ.éÀ/'À/JÀ/NÀ/—À/ÔÀ0$À0nÀ0‘À0µÀ0äÀ0åÀ1	À1
+À1*À1+À1cÀ1eÀ1fÀ1ŒÀ1ÅÀ1ÉÀ2À2VÀ2À2ÁÀ2ÅÀ2õÀ35À3wÀ3xÀ3„À3´À3µÀ3ÁÀ3çÀ3èÀ3ôÀ4-À4DÀ4HÀ4JÀ4KÀ4uÀ4™À4ÎÀ4ÑÀ4ÒÀ5À5<À5@À5\À5`À5¥À5ëÀ63À6„À6¼À7À7LÀ7”À7äÀ8À8À80À84À8‚À8ÓÀ8ûÀ8ÿÀ9À9À9bÀ9sÀ9wÀ9ÂÀ:À:aÀ:kÀ:oÀ:À:ƒÀ:ÔÀ;À;fÀ;jÀ;¢À;ßÀ;ãÀ;óÀ;÷À<%À<bÀ<fÀ<vÀ<zÀ<³À<íÀ<ñÀ=>À=À=˜À=ïÀ>À>aÀ>bÀ>–À>¹À>ºÀ>ŞÀ>şÀ>ÿÀ?NÀ?mÀ?rÀ?ÀÀ@À@MÀ@yÀ@zÀ@ÉÀ@ÎÀAÀAjÀA€ÀAÀA¸ÀA¾ÀBÀBTÀBjÀBpÀB¿ÀBÕÀBÛÀCÀC@ÀCfÀCgÀC¡ÀC§ÀCôÀDEÀDˆÀDÀDÛÀEÀELÀEMÀE–ÀEÙÀEÚÀF)ÀF@ÀFÀFÀFÊÀG$ÀGzÀG­ÀG®ÀGÒÀGòÀGóÀH+ÀH,ÀH8ÀHdÀHeÀH–ÀH—ÀH»ÀIÀIÀI"ÀI4ÀIHÀINÀImÀIqÀIrÀIÀIŸÀI³ÀI¹ÀIÖÀIÚÀIÛÀJÀJ!ÀJqÀJ·ÀJéÀJêÀK1ÀK7ÀK„ÀKÂÀKÃÀLÀL!ÀLrÀL²ÀL¸ÀMÀMIÀMOÀMÀMÄÀMøÀNÀNÀN9ÀNKÀN|ÀNŠÀNÀN¿ÀNÚÀNèÀNîÀOÀO3ÀOOÀO‚ÀOŠÀO®ÀO»ÀOÎÀPÀP2ÀPzÀPÃÀQÀQ&ÀQ.ÀQ4ÀQ5ÀQMÀQ[ÀQaÀQbÀQ˜ÀQÈÀRÀR"ÀR&ÀR'ÀRqÀR´ÀRÀÀRñÀS2ÀS3ÀS[ÀS“ÀSºÀSñÀTÀTÀTÀT+ÀT,ÀTQÀTˆÀT›ÀT¡ÀT³ÀTÆÀTÌÀTóÀUÀUÀUÀUÀU4ÀUƒÀUÔÀUÛÀVÀV!ÀV"ÀV]ÀV§ÀVÑÀW!ÀW'ÀW(ÀW[ÀW_ÀW`ÀW¡ÀW¹ÀWêÀWîÀWïÀX9ÀXwÀX}ÀXÌÀXÿÀY&ÀYPÀYvÀY|ÀY}ÀYàÀYáÀZÀZÀZÀZÀZUÀZiÀZoÀZpÀZ²ÀZøÀ[.À[UÀ[]À[eÀ[‰À[À[À[ĞÀ[ÑÀ[ëÀ[şÀ\6À\DÀ\JÀ\‘À\óÀ]À]0À]:À]lÀ]¼À]ÏÀ]õÀ]ÿÀ^À^À^À^À^ZÀ^«À^ÌÀ^ÒÀ_ À_@À_FÀ_—À_ªÀ_°À_ıÀ`PÀ`zÀ`¦À`¬À`ÿÀaLÀaÀa¶ÀaĞÀb4ÀbPÀb–ÀbÅÀb×ÀcÀc=ÀcsÀc›ÀcîÀcïÀdÀduÀdvÀd³ÀeÀe`ÀemÀeÇÀeÍÀeÎÀfÀfEÀf™ÀfšÀfºÀfÏÀgÀgÀgLÀgÀg»ÀgûÀh'Àh`ÀhˆÀhÀhÀhæÀhıÀiÀi#ÀiMÀiNÀiÀiÕÀiìÀjÀj!Àj'ÀjbÀjŸÀj ÀjäÀkEÀksÀk¡ÀkëÀl2ÀlGÀl^Àl“ÀlÏÀmÀm<Àm‹ÀmÃÀmÍÀn%Àn{Àn—Àn¢ÀnûÀo'Ào2Ào…Ào©Ào´ÀpÀp1Àp<ÀpÀp¤Àp¯ÀpûÀqPÀqŸÀqËÀr0Àr:ÀraÀrpÀr¤ÀrêÀròÀrøÀsMÀs£ÀsÆÀtÀtEÀtqÀtyÀtÀt¥ÀtÓÀuÀu>ÀuFÀuLÀuMÀuÀu¦ÀuÅÀv	Àv9ÀvCÀvIÀv¨ÀvìÀw6Àw@ÀwFÀwGÀw•ÀwÙÀxÀxÀx"ÀxbÀx¦ÀxÑÀxÛÀxáÀxåÀxæÀy ÀyOÀy—ÀyÕÀyíÀyõÀzÀz'Àz:Àz>Àz?ÀzlÀz’ÀzÑÀz×ÀzöÀ{1À{rÀ{xÀ{§À{ÃÀ{ñÀ| À|5À|=À|CÀ|VÀ|ZÀ|[À| À|ÊÀ|ĞÀ|üÀ}9À}:À}vÀ}ÄÀ~À~RÀ~ŸÀ~ À~íÀ=À‹ÀÚÀ€À€9À€@À€ˆÀ€×ÀÀ$ÀsÀ´ÀíÀ‚;À‚<À‚uÀ‚¨À‚ßÀƒÀƒWÀƒ©ÀƒÌÀ„À„DÀ„MÀ„ZÀ„ŒÀ„’À„æÀ…À…dÀ…®À† À†OÀ†mÀ†«À†íÀ†şÀ‡À‡)À‡1À‡2À‡jÀ‡·À‡ùÀˆ?ÀˆGÀˆMÀˆvÀˆÃÀˆíÀ‰BÀ‰_À‰hÀ‰~À‰ÏÀŠÀŠ:ÀŠWÀŠcÀŠ‘ÀŠÎÀŠÚÀŠãÀ‹;À‹[À‹¥À‹ğÀŒÀŒ3ÀŒAÀŒqÀŒ°ÀŒÇÀŒÒÀŒÚÀŒàÀŒáÀ4ÀsÀŠÀ¬À­ÀÀ7ÀuÀ¥À¦ÀàÀ/ÀsÀ»ÀÅÀÍÀÓÀÔÀşÀÀÀEÀlÀzÀ€ÀÁÀ×À÷À‘À‘À‘À‘\À‘|À‘ˆÀ‘ÁÀ‘åÀ‘éÀ‘êÀ’8À’aÀ’gÀ’¯À’ÏÀ’ÕÀ“À“eÀ“‹À“¥À“ÁÀ“ÓÀ”À”(À”0À”wÀ”}À”°À”´À”µÀ”õÀ•À•LÀ•ˆÀ•¿À•ÑÀ•ÙÀ–1À–lÀ–¯À–ÎÀ–äÀ–úÀ—À—<À—BÀ—}À—›À—îÀ˜À˜4À˜À˜ËÀ˜÷À™À™NÀ™`À™hÀ™ÀÀ™ûÀš>ÀšqÀš‡Àš¬ÀšµÀšıÀ›À›À›À›LÀ›†À›¢À›ÅÀ›êÀœÀœcÀœ±À	À9ÀIÀQÀWÀmÀ‰ÀÀÀŞÀşÀÀLÀlÀrÀ¾ÀŸ	ÀŸXÀŸ‹ÀŸªÀŸÏÀŸáÀ À  À 5À …À ÔÀ İÀ¡À¡NÀ¡TÀ¡XÀ¡YÀ¡™À¡ŸÀ¡İÀ¡ãÀ¢+À¢EÀ¢„À¢©À¢ĞÀ£À£kÀ£‘À£šÀ£èÀ¤À¤KÀ¤vÀ¤’À¤œÀ¤¤À¤ªÀ¤¼À¤ÚÀ¥À¥IÀ¥OÀ¥bÀ¥cÀ¥°À¥şÀ¦;À¦rÀ¦”À¦ÇÀ¦ñÀ§,À§^À§zÀ§„À§ŒÀ§’À§–À§—À§ÛÀ¨!À¨IÀ¨…À¨¨À¨ºÀ¨ÂÀ¨ïÀ©9À©ƒÀ©µÀ©äÀª*ÀªJÀªtÀª|Àª}Àª¾ÀªëÀªñÀªòÀ«'À«MÀ«pÀ«œÀ«ãÀ¬%À¬iÀ¬–À¬ À¬¦À¬İÀ­1À­>À­À­¤À­¨À­©À­îÀ®À®QÀ®oÀ®xÀ®¼À®èÀ¯À¯À¯7À¯wÀ¯‰À¯À¯À¯·À¯ÉÀ¯êÀ°!À°[À°dÀ°jÀ°³À°·À°¸À°ïÀ±6À±cÀ±~À±¹À±ßÀ²À²CÀ²oÀ²¥À²»À²ÇÀ²şÀ³À³8À³cÀ³šÀ³ĞÀ´À´À´À´LÀ´‚À´ÍÀµ	ÀµÀµfÀµ‰ÀµËÀ¶À¶À¶EÀ¶mÀ¶ŸÀ¶ÈÀ¶ÿÀ·À·À·qÀ·§À·ÉÀ·ÊÀ·÷À¸À¸xÀ¸†À¸²À¸öÀ¹À¹ZÀ¹¬À¹çÀ¹òÀº=ÀºHÀºÀºŠÀºÃÀºâÀ»À»#À»6À»[À»gÀ»qÀ»¹À»ÁÀ»ÇÀ»ìÀ»ğÀ»ñÀ¼4À¼\À¼‘À¼ÈÀ¼ÑÀ¼òÀ½À½^À½˜À½œÀ½À½ÆÀ½ıÀ¾DÀ¾yÀ¾‹À¾ªÀ¾ÅÀ¿À¿:À¿NÀ¿XÀ¿³À¿æÀÀ)ÀÀdÀÀ|ÀÀÀÀ¨ÀÀÜÀÁÀÁOÀÁ`ÀÁ˜ÀÁàÀÂÀÂ.ÀÂ9ÀÂ“ÀÂËÀÃÀÃ(ÀÃWÀÃdÀÃ®ÀÃ¸ÀÃìÀÄ#ÀÄIÀÄtÀÄÀÄÃÀÄÍÀÄÕÀÅÀÅÀÅ#ÀÅ9ÀÅwÀÅ˜ÀÅÎÀÅıÀÆÀÆÀÆÀÆFÀÆaÀÆ±ÀÆ÷ÀÇBÀÇŒÀÇÜÀÈ(ÀÈNÀÈœÀÈÀÈ¹ÀÈâÀÈãÀÉBÀÉjÀÉ·ÀÉİÀÉŞÀÊ-ÀÊ}ÀÊÇÀÊåÀËDÀË¤ÀË³ÀË»ÀËäÀÌÀÌkÀÌ¼ÀÌëÀÍÀÍ=ÀÍEÀÍeÀÍ½ÀÍ¾ÀÍÙÀÎ'ÀÎoÀÎ½ÀÎõÀÎşÀÏPÀÏŸÀÏéÀĞ:ÀĞ^ÀĞƒÀĞãÀĞéÀÑMÀÑ¤ÀÑèÀÒ7ÀÒŒÀÒÜÀÒîÀÓ9ÀÓ†ÀÓŒÀÓÀÓÓÀÓûÀÔ_ÀÔ©ÀÔŞÀÔèÀÔğÀÔöÀÔúÀÔûÀÕ_ÀÕ–ÀÕËÀÖÀÖÀÖVÀÖ„ÀÖ–ÀÖÀÖüÀ×&À×.À×MÀ×€À×ÂÀØÀØJÀØ}ÀØ‡ÀØÀØ•ÀØÆÀØıÀÙÀÙÀÙÀÙQÀÙbÀÙuÀÙ•ÀÙ¬ÀÙÁÀÙäÀÚÀÚ"ÀÚBÀÚYÀÚuÀÚ‘ÀÚ•ÀÚ–ÀÚ¢ÀÚÔÀÚéÀÛDÀÛWÀÛ[ÀÛ\ÀÛiÀÛuÀÛºÀÛåÀÜ2ÀÜ–ÀÜñÀİÀİÀİ3ÀİˆÀİªÀİ³ÀİºÀİôÀŞÀŞ/ÀŞrÀŞÀŞËÀŞÚÀßÀßÀßvÀß|ÀßÀß¤ÀßÂÀßşÀà#Àà,Àà3ÀàGÀà¬Àà³ÀàúÀá_ÀáeÀáiÀákÀálÀá˜ÀáÄÀáúÀâ;ÀâGÀâKÀâLÀâZÀâhÀâºÀâ÷ÀãÀãÀãÀãÀãWÀã€Àã‚ÀãƒÀãËÀãÏÀäÀäUÀä`ÀäÀäÄÀäáÀåÀå'ÀåDÀå\ÀåvÀå|Àå}Àå¬ÀåËÀåæÀæÀæ*Àæ?ÀæQÀæXÀæ\Àæ]ÀæˆÀæ£Àæ¤ÀæİÀæşÀæÿÀç4ÀçQÀçRÀçxÀç‹ÀçŒÀçÊÀçËÀèÀèPÀèeÀèfÀè™ÀèÀÀèèÀéÀé@ÀékÀérÀé«ÀéìÀéíÀê2Àê3ÀêvÀêÇÀêáÀë"Àë0ÀëZÀëµÀë¾ÀëóÀì'Àì-Àì\ÀìšÀì›ÀìÁÀìÂÀìÛÀìøÀí"Àí^Àí¢ÀíâÀî Àî!Àî\Àî“ÀîİÀï Àï	ÀïHÀïxÀïÂÀïåÀïîÀğ<ÀğVÀğ~ÀğÓÀñ
+ÀñÀñÀñEÀñ]Àñ³ÀñüÀñıÀò;ÀòmÀò ÀòÅÀóÀó*ÀóKÀóšÀó¬Àó²Àó³ÀóÖÀôÀôÀôÀô,ÀôwÀô¢ÀôÀÀôáÀõÀõVÀõqÀõ‹Àõ“Àõ™ÀõšÀõ¹ÀõÕÀõùÀö%Àö7ÀöSÀöZÀö^Àö_ÀöÀö¬Àö¼ÀöÕÀ÷À÷À÷1À÷DÀ÷JÀ÷xÀ÷À÷–À÷¹À÷½À÷¾À÷ñÀøÀøÀøÀø=ÀøAÀøCÀøDÀø˜ÀøœÀøóÀùCÀùVÀùšÀùåÀúÀú0ÀúsÀúu   
+ParentDataPaintingContextConstraints_LocalSemanticsHandlePipelineOwnerPipelineManifoldRenderObjectRenderObjectWithChildMixin#RenderObjectWithLayoutCallbackMixinContainerParentDataMixinContainerRenderObjectMixin"RelayoutWhenSystemFontsChangeMixinSemanticsAnnotationsMixin_SemanticsParentData_SemanticsConfigurationProvider_SemanticsFragment_IncompleteSemanticsFragment_RenderObjectSemantics"debugDumpRenderObjectSemanticsTree'_debugCollectRenderObjectSemanticsTrees_SemanticsGeometryDiagnosticsDebugCreator2flutter.rendering.PaintingContext.pushLayer.offsetThe `offset` is the offset to pass to the `painter`. In particular, it is
+not an offset applied to the layer itself. Layers conceptually by default
+have no position or size, though they can transform their contents. For
+example, an [OffsetLayer] applies an offset to its children.?flutter.rendering.PaintingContext.pushClipRect.needsCompositingÿThe `needsCompositing` argument specifies whether the child needs
+compositing. Typically this matches the value of
+[RenderObject.needsCompositing] for the caller. If false, this method
+returns null, indicating that a layer is no longer necessary. If a render
+object calling this method stores the `oldLayer` in its
+[RenderObject.layer] field, it should set that field to null.
+
+When `needsCompositing` is false, this method will use a more efficient
+way to apply the layer effect than actually creating a layer.5flutter.rendering.PaintingContext.pushClipRect.offset€…The `offset` argument is the offset from the origin of the canvas'
+coordinate system to the origin of the caller's coordinate system.7flutter.rendering.PaintingContext.pushClipRect.oldLayerĞFor the `oldLayer` argument, specify the layer created in the previous
+frame. This gives the engine more information for performance
+optimizations. Typically this is the value of [RenderObject.layer] that a
+render object creates once, then reuses for all subsequent frames until a
+layer is no longer needed (e.g. the render object no longer needs
+compositing) or until the render object changes the type of the layer
+(e.g. from opacity layer to a clip rect layer).,flutter.rendering.RenderObject.performResize|Updates the render objects size using only the constraints.
+
+Do not call this function directly: call [layout] instead. This function
+is called by [layout] when there is actually work to be done by this
+render object during layout. The layout constraints provided by your
+parent are available via the [constraints] getter.
+
+This function is called only if [sizedByParent] is true.-flutter.rendering.RenderObject.getTransformTo‚ÍApplies the paint transform from this [RenderObject] to the `target`
+[RenderObject].
+
+Returns a matrix that maps the local paint coordinate system to the
+coordinate system of `target`, or a [Matrix4.zero] if the paint transform
+can not be computed.
+
+This method throws an exception when the `target` is not in the same render
+tree as this [RenderObject], as the behavior is undefined.
+
+This method ignores [RenderObject.paintsChild]. This means it will still
+try to compute the paint transform even if this [RenderObject] or
+`target` is currently not visible.
+
+If `target` is null, this method returns a matrix that maps from the
+local paint coordinate system to the coordinate system of the
+[PipelineOwner.rootNode]. Lé

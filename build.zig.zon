@@ -1,0 +1,17 @@
+.{
+    .name = .hiide,
+    .fingerprint = 0x5201b8c307e8d497,
+    .version = "0.1.0",
+    // build.zig uses b.addLibrary which was introduced in Zig 0.14.0.
+    // The project currently targets the 0.14/0.15 nightly API surface.
+    .minimum_zig_version = "0.14.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "examples",
+        "README.md",
+        "ENTERPRISE_IDE_SPEC.md",
+    },
+}

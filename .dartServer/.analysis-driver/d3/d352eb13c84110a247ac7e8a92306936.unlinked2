@@ -1,0 +1,702 @@
+€ÁmagnifierConfiguration	focusNodechildcontextMenuBuilderselectionControlsonSelectionChangedgetSelectableButtonItemscreateState_actions_gestureRecognizers_selectionOverlay_startHandleLayerLink_endHandleLayerLink_toolbarLayerLink_selectionDelegate_selectable_hasSelectionOverlayGeometry_lastOrientation_lastSelectedContent_webContextMenuEnabledselectionOverlay_processTextService_processTextActions_localFocusNode
+_focusNode_selectionStatusNotifier	initState_initProcessTextActionsdidChangeDependenciesdidUpdateWidget_makeOverridable_handleFocusChanged_updateSelectionStatus_isShiftPressed_lastSecondaryTapDownPosition_lastPointerDeviceKind_isPrecisePointerDevice_finalizeSelectableRegionStatus _getEffectiveConsecutiveTapCount_initMouseGestureRecognizer_onTapTrackStart_onTapTrackReset_initTouchGestureRecognizer_doubleTapOffset_startNewMouseSelectionGesture_handleMouseDragStart_handleMouseDragUpdate_handleMouseDragEnd_handleMouseTapUp_updateSelectedContentIfNeeded_handleTouchLongPressStart_handleTouchLongPressMoveUpdate_handleTouchLongPressEnd_positionIsOnActiveSelection_handleRightClickDown_selectionEndPosition_userDraggingSelectionEnd _scheduledSelectionEndEdgeUpdate_triggerSelectionEndEdgeUpdate_onAnyDragEnd_stopSelectionEndEdgeUpdate_selectionStartPosition_userDraggingSelectionStart"_scheduledSelectionStartEdgeUpdate _triggerSelectionStartEdgeUpdate_stopSelectionStartEdgeUpdate!_selectionStartHandleDragPosition_selectionEndHandleDragPosition$_handleSelectionStartHandleDragStart%_handleSelectionStartHandleDragUpdate"_handleSelectionEndHandleDragStart#_handleSelectionEndHandleDragUpdate_buildInfoForMagnifier_createSelectionOverlay_updateSelectionOverlay_showHandles_showToolbar_selectEndTo_selectStartTo_collapseSelectionAt_selectWordAt_selectParagraphAt_finalizeSelectionclearSelection_copy_sharecontextMenuAnchors_adjustingSelectionEnd!_determineIsAdjustingSelectionEnd_granularlyExtendSelection_directionalHorizontalBaseline_directionallyExtendSelectioncontextMenuButtonItems _textProcessingActionButtonItemsstartGlyphHeightendGlyphHeightselectionEndpoints
+cutEnabledpasteEnabledhideToolbar	selectAllcopySelectiontextEditingValuebringIntoViewcutSelectionuserUpdateTextEditingValue	pasteTextaddremovedisposebuildinvokeActioninvokestategranularity_hasReceivedStartEvent_hasReceivedEndEvent"_lastStartEdgeUpdateGlobalPosition _lastEndEdgeUpdateGlobalPositiondidReceiveSelectionEventFor!didReceiveSelectionBoundaryEventsupdateLastSelectionEdgeLocation/_updateLastSelectionEdgeLocationsFromGeometriesclearInternalSelectionState(clearInternalSelectionStateForSelectablehandleSelectAllhandleSelectWordhandleSelectParagraphhandleClearSelectionhandleSelectionEdgeUpdatedispatchSelectionEventToChildensureChildUpdateddidChangeSelectablesselectables$_kSelectionHandleDrawableAreaPaddingcurrentSelectionEndIndexcurrentSelectionStartIndex_startHandleLayer_startHandleLayerOwner_endHandleLayer_endHandleLayerOwner_isHandlingSelectionEvent_scheduledSelectableUpdate_selectionInProgress
+_additions_extendSelectionInProgresslayoutDidChange_scheduleSelectableUpdate_updateSelectables_flushAdditions_removeSelectablevalue_selectionGeometry_updateSelectionGeometry_getBoundingBoxcompareOrder_compareScreenOrder_compareVertically_compareHorizontally_handleSelectableGeometryChangegetSelectionGeometry-_adjustSelectionIndexBasedOnSelectionGeometrypushHandleLayers_updateHandleLayersAndOwnersgetSelectedContentcontentLength_calculateLocalRangegetSelection_flushInactiveSelections_handleSelectBoundaryhandleGranularlyExtendSelection"handleDirectionallyExtendSelectiondispatchSelectionEvent_initSelection_adjustSelectionchanging	finalized _selectableRegionSelectionStatusselectionStatusNotifiermaybeOfupdateShouldNotifyselectionNotifier_initialSelectionGeometry_selectionNotifier_setNotifiernotifyListenersrangestatus	selection
+registered"_registerSelectionListenerDelegate$_unregisterSelectionListenerDelegateaddListener_kLongPressSelectionDevices&_kSelectableVerticalComparingThresholdSelectableRegionSelectableRegionState_NonOverrideAction_SelectAllAction_CopySelectionAction _GranularlyExtendSelectionAction%_GranularlyExtendCaretSelectionAction(_DirectionallyExtendCaretSelectionAction StaticSelectionContainerDelegate)MultiSelectableSelectionContainerDelegate_SelectionInfo"SelectableRegionContextMenuBuilderSelectableRegionSelectionStatus(_SelectableRegionSelectionStatusNotifier$SelectableRegionSelectionStatusScopeSelectionListener_SelectionListenerState_SelectionListenerDelegateSelectionDetailsSelectionListenerNotifier¾SetPointerDeviceKindtouchstylusinvertedStylusdoubleTextSelectionAreamaterial
+SelectableSelectionContainerSelectionEventSelectionRegistrarScopedelegateSelectionRegistrarmaybeOfSelectionRegistrantdisabledchanging	finalizedValueListenableaddListenerStatedidChangeDependenciesdisposeremoveListenerWidgetTesterdragFrom	GlobalKeySelectableTextSelectionHandlerStatefulWidgetTextMagnifierConfiguration	FocusNodeWidgetemptyTextSelectionControlsTextSelectionControlsValueChangedSelectedContentContextMenuButtonItemcontextMenuButtonItemsEditableTextgetEditableButtonItemsAdaptiveTextSelectionToolbarbuttonItemsgetAdaptiveButtonsListSelectionGeometryVoidCallbackselectionGeometrystatusSelectionStatusuncollapsedbool
+hasContentkIsWebdefaultTargetPlatformTargetPlatformandroidmacOSfuchsialinuxwindowsiOSonShare	onPressedonCopytypeContextMenuButtonTypecopyshareonSelectAll	selectAlloverrideTextSelectionDelegateMapTypeActionIntentSelectAllTextIntentCopySelectionTextIntent6ExtendSelectionToNextWordBoundaryOrCaretLocationIntentgranularityTextGranularityword'ExpandSelectionToDocumentBoundaryIntentdocument ExpandSelectionToLineBreakIntentline ExtendSelectionByCharacterIntent	character'ExtendSelectionToNextWordBoundaryIntent ExtendSelectionToLineBreakIntent-ExtendSelectionVerticallyToAdjacentLineIntent'ExtendSelectionToDocumentBoundaryIntentGestureRecognizerFactorySelectionOverlay	LayerLinkvaluestartSelectionPointendSelectionPointOrientationBrowserContextMenuenabledvisibleForTestingProcessTextServiceDefaultProcessTextServiceProcessTextActionwidget	focusNode
+debugLabel_	protectedvoid	initStateTapGestureRecognizer$GestureRecognizerFactoryWithHandlers
+debugOwnerinstanceonSecondaryTapDownFutureclearaddAllqueryTextActions
+MediaQueryorientationOfcontextdidUpdateWidgethasFocusoverridabledefaultAction#PlatformSelectableRegionContextMenudetachSchedulerBindinglifecycleStateAppLifecycleStateresumedattachTextSelection	collapsed
+baseOffsetextentOffsetnoneoffsetTextEditingValuetext	selectionPointerDownEventBaseTapAndDragGestureRecognizerOffsetmousetrackpadunknownintminTapAndPanGestureRecognizersupportedDevicesonTapTrackStartonTapTrackReset	onTapDownonTapUponDragStartonDragUpdate	onDragEndonCanceldragStartBehaviorDragStartBehaviordownHardwareKeyboardlogicalKeysPressedintersectionLogicalKeyboardKey	shiftLeft
+shiftRight
+isNotEmpty%TapAndHorizontalDragGestureRecognizervalueswheredevicetoSeteagerVictoryOnDragLongPressGestureRecognizeronLongPressStartonLongPressMoveUpdateonLongPressEndTapDragDownDetailskindconsecutiveTapCountrequestFocusisShiftPressedValidglobalPositionTapDragStartDetailsTapDragUpdateDetails
+continuoustextGranularity	paragraphTapDragEndDetailsTapDragUpDetailstoolbarIsVisibleisPointerPreciseonSelectionChangedgetSelectedContent	plainTextcallLongPressStartDetailsHapticFeedbackselectionClickLongPressMoveUpdateDetailsLongPressEndDetailsRectselectionRectsMatrix4getTransformToMatrixUtilstransformRectselectionRectcontainsTapDownDetails0lastSecondaryTapDownPositionWasOnActiveSelectionlocationSelectionEdgeUpdateEventSelectionResultpendingdispatchSelectionEventforEndaddPostFrameCallbackDurationDragEndDetailsisDraggingStartHandleisDraggingEndHandlehideMagnifierforStartDragStartDetailslocalPositiontransformPointshowMagnifierDragUpdateDetailsdelta
+lineHeightupdateMagnifierMagnifierInfoSelectionPointVector3getTranslationxyfromLTWHdxdyglobalGesturePosition	caretRectfieldBoundssizecurrentLineBoundariesdebugRequiredForstartHandleType
+handleTypeTextSelectionHandleTypelineHeightAtStartonStartHandleDragStartonStartHandleDragUpdateonStartHandleDragEndendHandleTypelineHeightAtEndonEndHandleDragStartonEndHandleDragUpdateonEndHandleDragEndselectionEndpointsselectionControlsselectionDelegateclipboardStatusstartHandleLayerLinkendHandleLayerLinktoolbarLayerLinkmagnifierConfigurationleftrightshowHandlesOverlaytoolbarLocationTextSelectionHandleControlsshowToolbarhideToolbarcontextMenuBuilderBuildContextSelectWordSelectionEventSelectParagraphSelectionEventClearSelectionEvent	ClipboardsetDataClipboardDataSystemChannelsplatforminvokeMethodTextSelectionToolbarAnchorsprimaryAnchorfindRenderObject	RenderBoxfromSelection	renderBoxstartGlyphHeightendGlyphHeighthasSelectionGranularlyExtendSelectionEventforwardisEnd!DirectionallyExtendSelectionEvent	directionSelectionExtendDirectionnextLinepreviousLinegetSelectableButtonItemsEditableTextStateSelectionChangedCausetoolbaraddlabelactionStringprocessTextActionidTextSelectionPointTextDirectionltr
+DeprecatedhideHandlesSelectAllSelectionEventcauseTextPositionpushHandleLayersdebugCheckHasOverlayselectionStatusNotifierchild	registrar	TapRegiongroupIdonTapOutsideunfocusCompositedTransformTargetlinkRawGestureDetectorgesturesbehaviorHitTestBehaviortranslucentexcludeFromSemanticsActionsactionsFocuswithExternalFocusNodeincludeSemanticsContextActionObjectcallingActioninvokekeyboard_copyDirectionalTextEditingIntent_granularlyExtendSelectionDirectionalCaretMovementIntentcollapseSelection_directionallyExtendSelectionSelectionContainerDelegate
+selectablecurrentSelectionStartIndexcurrentSelectionEndIndexmaxindexselectablesglobalSelectionEdgeLocationforEachremovehandleSelectAllhandleSelectWordhandleSelectParagraphhandleClearSelectionSelectionEventTypeendEdgeUpdatehandleSelectionEdgeUpdatestartEdgeUpdate
+selectWordselectParagraphgranularlyExtendSelectiondirectionallyExtendSelectiondispatchSelectionEventToChildremoveWheredidChangeSelectablesChangeNotifier kFlutterMemoryAllocationsEnabledmaybeDispatchObjectCreationschedulerPhaseSchedulerPhasepostFrameCallbacksscheduleMicrotasktoListsortlengthindexOfremoveAtmustCallSupernotifyListenersboundingBoxesfirstexpandToInclude
+ComparatortopbottomabsprecisionErrorToleranceisEmptygetTransformFromisFinitehasSizecontainerSizewidthheightmap	intersectinflatedataStringBufferwritetoStringcontentLengthfoldsumSelectedContentRangegetSelection	endOffsetstartOffsetrangetargetrectnextpreviousendbackwardcopyWithEditableTextContextMenuBuilderInheritedWidget"dependOnInheritedWidgetOfExactTypeselectionNotifier_setNotifier"_registerSelectionListenerDelegate$_unregisterSelectionListenerDelegate	ExceptionStatefulWidgetStateTextSelectionDelegateSelectionRegistrarContextAction_NonOverrideAction)MultiSelectableSelectionContainerDelegateSelectionContainerDelegateChangeNotifierValueListenableInheritedWidget StaticSelectionContainerDelegateSelectionDetails’gY =¡j	›e*;<‰u    ^   
+dart:async  s   	dart:math  ˆ   package:flutter/foundation.dart  ²   package:flutter/gestures.dart  Ú   package:flutter/rendering.dart  ‚   package:flutter/scheduler.dart  ‚,   package:flutter/services.dart  ‚T   'package:vector_math/vector_math_64.dart  ‚‡   actions.dart  ‚   
+basic.dart  ‚³   context_menu_button_item.dart  ‚Û   
+debug.dart  ‚ğ   focus_manager.dart  ƒ   focus_scope.dart  ƒ(   framework.dart  ƒA   gesture_detector.dart  ƒa   magnifier.dart  ƒz   media_query.dart  ƒ•   overlay.dart  ƒ¬   ,platform_selectable_region_context_menu.dart  ƒã   selection_container.dart  „   tap_region.dart  „    text_editing_intents.dart  „D   text_selection.dart  „b   #text_selection_toolbar_anchors.dartÀ á À:bM <€†€¤€¥€Õ7S\]r†‡±Ù‚‚+‚S‚…‚†‚‚²‚Ú‚ïƒƒ'ƒ@ƒ`ƒyƒ”ƒ«ƒâ„„„C„a„„„¨„¿„À……+…G…k…n…o…½††L†‡†ˆ†Â†Æ‡‡c‡³‡ÿˆFˆ–ˆ¼ˆÀ‰‰9‰=‰…‰ÑŠŠlŠpŠœŠ Šñ‹'‹+‹|‹¿‹ä‹èŒ)ŒsŒÂb°Üà1Å37‚¶ú	;?SWct’Ìå‘)‘C‘i‘©‘é‘ø’’’’’'’7’;’?’d’‰’ª’Ì’ï““8“^““º“å””>”s”©”­”±”Ó”×•'•i••…•Ï––S–W–¦–ñ—<—[—_—s—¿—Ü—à˜;˜K˜O˜e˜i˜¸™™C™G™[™§™í™ñšPš`šdšµšı› ›$›8›†›Š›òœœœPœ£œò@D\`¸hÄŸŸŸQŸ…Ÿ‰ŸÜ / J N ¡¡\¡ª¡ø¢¢"¢/¢3¢„¢Õ££££v£~£‚££”£Ô¤¤K¤¤¹¥	¥W¥p¥¾¦¦Y¦¦±¦ß¦å§3§U§p§§œ§°§÷¨¨9¨R¨X¨Y¨¨¨®¨ÿ©J©|©‚©±©ì©íªª:ª;ªrªxª©ª¿ªÀªÿ«?«@«‰«˜««è¬'¬X¬Y¬‰¬Å¬Æ­­;­A­‘­­­³­Ã­É®®S®¤®Ş¯/¯d¯˜¯ë°4°t°¬°Ô±±+±2±±»±ğ²²%²N²«²Í²ñ³³>³³æ´´Y´€´‹´Ê´Ëµµfµgµ¸µş¶¶5¶”¶Ä··2··Á¸¸¸"¸#¸/¸q¸s¸t¸˜¸Ô¸ó¹¹a¹¤¹ïº=ºº«ºÖºßºæ»%»v»„»³»¼»Ã»û¼E¼S¼~¼‡¼¼Æ½½#½S½\½c½¢½ø¾¾1¾:¾A¾y¾È¾Ö¿¿
+¿¿V¿»¿ÂÀ @À @WÀ @eÀ @”À @À @¤À @©À @ªÀ @ìÀ AÀ A=À AtÀ A©À AÜÀ B>À BÀ B©À BªÀ BÕÀ CÀ CMÀ CNÀ CoÀ C˜À C™À CÓÀ DÀ DXÀ DjÀ DÀ DŸÀ DÃÀ DüÀ E/À E0À EvÀ E|À E¹À EÎÀ FÀ FÀ FeÀ F³À F´À FıÀ GJÀ GKÀ G‡À G¥À GÃÀ HÀ HÀ HyÀ HÅÀ HùÀ HúÀ IÀ IÀ I(À I?À IpÀ I“À I¶À IËÀ IûÀ J?À JwÀ J£À JäÀ JñÀ JüÀ KÀ KÀ K À KqÀ K–À KÇÀ KèÀ L6À L:À L;À LHÀ LTÀ LuÀ L˜À L½À LàÀ LÿÀ MÀ M1À MRÀ MsÀ M–À M¦À M¬À M­À MøÀ N?À NcÀ N‰À N—À NÀ NÈÀ NîÀ O2À O8À O<À O=À OJÀ OVÀ O‹À O±À OäÀ P)À PgÀ P‹À P«À P÷À Q9À QAÀ QtÀ Q¶À QÕÀ QİÀ QãÀ QçÀ QèÀ R2À R„À RˆÀ R‰À R¨À RÈÀ RìÀ S4À S<À SÀ SŞÀ T*À T{À TÆÀ UÀ UhÀ UŒÀ U¦À UùÀ V$À V,À V2À VTÀ VšÀ V À V¤À V¥À VÇÀ WÀ WGÀ WlÀ WÄÀ XÀ XÀ X^À X†À X§À X´À XØÀ XøÀ XşÀ YÀ YÀ YÀ YÀ YcÀ YŸÀ Y¿À YÀÀ ZÀ ZÀ ZFÀ ZGÀ Z–À Z­À ZÚÀ ZÛÀ [(À [IÀ [mÀ [‚À [©À [ÎÀ [ûÀ \À \EÀ \[À \aÀ \eÀ \fÀ \‘À \çÀ ]4À ]BÀ ]HÀ ]˜À ]œÀ ]À ]íÀ ^@À ^À ^ÕÀ ^ÚÀ _,À _@À _wÀ _–À _»À _ŞÀ `À `dÀ `²À `şÀ a4À aUÀ a_À a¬À bÀ bKÀ b–À bèÀ c1À c^À cuÀ c¦À cÌÀ cÿÀ d À dmÀ dÂÀ eÀ e^À e°À eùÀ f&À f=À fnÀ f”À fÇÀ fæÀ gÀ g*À gwÀ gÌÀ hÀ hDÀ huÀ h{À hÀ h€À h§À hİÀ i'À iSÀ iqÀ i½À iÊÀ iüÀ jÀ jDÀ jwÀ j²À jŞÀ kÀ kHÀ kxÀ k¢À kŞÀ këÀ köÀ kúÀ kûÀ lÀ lhÀ lÁÀ lÓÀ l×À lØÀ lôÀ mÀ mÀ mÀ m=À m•À míÀ nLÀ nÀ nâÀ oÀ o7À o‘À oÉÀ oáÀ oîÀ p+À p@À pƒÀ pĞÀ qÀ qSÀ q–À qØÀ rÀ r^À r À rŞÀ sÀ s`À s„À sÕÀ tÀ t<À tpÀ t¦À tÖÀ u À u<À uIÀ uTÀ uŠÀ uÔÀ v À vÀ vYÀ vfÀ v˜À v­À vëÀ w3À wnÀ w{À w†À wŠÀ w‹À w§À wëÀ xÀ xcÀ xqÀ x”À x½À xäÀ yÀ y.À y~À y’À y¥À yÊÀ yïÀ zÀ z1À zÀ zÏÀ {À {EÀ {rÀ {ËÀ {òÀ |.À |‡À |œÀ |ªÀ |ÈÀ }
+À }aÀ }kÀ }yÀ }¢À }ÅÀ ~"À ~{À ~´À ~ÉÀ ~×À À iÀ ¼À ÚÀ èÀ €À €6À €[À €€À €§À €âÀ 9À CÀ QÀ zÀ ¡À ÈÀ ëÀ ‚=À ‚„À ‚¿À ƒÀ ƒZÀ ƒhÀ ƒÀ ƒ²À ƒÙÀ „À „pÀ „zÀ „€À „¦À „ªÀ „«À „çÀ …4À …BÀ …‘À …ÜÀ …îÀ …øÀ †0À †ƒÀ †‰À †¯À †³À †´À †òÀ ‡?À ‡MÀ ‡œÀ ‡çÀ ‡ùÀ ˆÀ ˆKÀ ˆÀ ˆ¬À ˆÕÀ ˆüÀ ‰#À ‰vÀ ‰¬À Š	À Š%À ŠUÀ ŠwÀ Š®À Š¿À ‹À ‹&À ‹IÀ ‹cÀ ‹‹À ‹ÆÀ ‹òÀ ŒEÀ ŒpÀ Œ¨À ŒÏÀ ŒİÀ Œ÷À %À EÀ zÀ ‰À àÀ 3À QÀ _À „À ©À ĞÀ êÀ À 8À mÀ |À ÓÀ İÀ ëÀ À ;À bÀ …À ÕÀ şÀ ‘PÀ ‘lÀ ‘œÀ ‘¾À ‘úÀ ’À ’dÀ ’rÀ ’—À ’¼À ’ãÀ ’ıÀ “+À “KÀ “…À “”À “ëÀ “õÀ “ûÀ ”!À ”%À ”&À ”^À ”ŠÀ ”ŞÀ •-À •À •ĞÀ •ğÀ –7À –\À –À –¢À –ÔÀ –îÀ —À —À —1À —cÀ —}À —‡À —¨À —ÉÀ —ìÀ ˜=À ˜LÀ ˜RÀ ˜lÀ ˜’À ˜¹À ˜½À ˜¾À ˜óÀ ™*À ™zÀ ™ÄÀ šÀ šWÀ šuÀ š‘À š À š¸À šÀÀ šÎÀ šÔÀ ›!À ›/À ›XÀ ›À ›¦À ›ÉÀ ›äÀ œ&À œ}À œ¢À œÇÀ œîÀ 2À <À JÀ —À ÀÀ çÀ À 3À ˆÀ ÛÀ ùÀ ŸÀ Ÿ%À ŸHÀ ŸmÀ Ÿ‰À ŸéÀ   À  À  aÀ  ´À  ÒÀ  àÀ ¡À ¡*À ¡QÀ ¡˜À ¡ºÀ ¡ÍÀ ¡×À ¡İÀ ¢À ¢*À ¢.À ¢/À ¢YÀ ¢†À ¢”À ¢šÀ ¢âÀ £#À £IÀ £†À £ŒÀ £À £‘À £ÔÀ £ùÀ ¤À ¤KÀ ¤šÀ ¤åÀ ¥7À ¥†À ¥ÁÀ ¥×À ¥İÀ ¦À ¦À ¦À ¦UÀ ¦®À ¦ıÀ §#À §'À §(À §gÀ §À §§À §ÎÀ §âÀ ¨À ¨3À ¨9À ¨=À ¨>À ¨†À ¨ÖÀ ©À ©lÀ ©À ©²À ©ºÀ ©ÀÀ ©ÒÀ ©ÖÀ ©×À ªÀ ªbÀ ª²À ªîÀ «À «2À «UÀ «xÀ «›À «ìÀ ¬,À ¬À ¬ÂÀ ¬ÍÀ ­À ­bÀ ­ŒÀ ­ÎÀ ­èÀ ®)À ®UÀ ®gÀ ®qÀ ®·À ®ÖÀ ¯À ¯6À ¯›À ¯´À ¯ÆÀ ¯ĞÀ °À °0À °PÀ °iÀ °{À °…À °ÖÀ ±À ±zÀ ±¬À ±·À ±øÀ ²@À ²JÀ ²PÀ ²ŸÀ ²ÆÀ ³À ³9À ³uÀ ³‰À ³ÄÀ ³êÀ ³îÀ ³ïÀ ´À ´À ´7À ´~À ´¯À ´°À ´öÀ ´üÀ µMÀ µÀ µĞÀ ¶À ¶hÀ ¶³À ·À ·JÀ ·”À ·¢À ·¨À ·ÕÀ ¸ À ¸4À ¸^À ¸kÀ ¸xÀ ¸›À ¸ÊÀ ¹À ¹GÀ ¹YÀ ¹cÀ ¹•À ¹ßÀ ºÀ º%À º+À º/À º0À º_À º€À º¥À »À »À »IÀ »_À »eÀ »À »¥À »ÌÀ »ĞÀ »ÑÀ »øÀ ¼&À ¼HÀ ¼LÀ ¼MÀ ¼pÀ ¼»À ¼îÀ ¼ïÀ ½7À ½=À ½À ½ßÀ ¾À ¾_À ¾«À ¾öÀ ¿EÀ ¿À ¿ÛÀ ¿éÀ ¿ïÀ ÀÀ ÀIÀ ÀÀ À©À À¶À ÀÃÀ ÀæÀ ÁÀ ÁcÀ Á–À Á¨À Á²À ÁæÀ Â2À ÂlÀ ÂzÀ Â€À Â„À Â…À Â®À ÂŞÀ Ã À ÃÀ ÃÀ Ã+À Ã,À Ã]À ÃŒÀ ÃÀ ÃÕÀ ÄÀ ÄÀ ÄvÀ Ä½À Å!À Å"À ÅHÀ Å­À Å´À ÅÚÀ ÅŞÀ ÅßÀ Æ)À Æ„À ÆÎÀ ÇÀ Ç5À ÇaÀ Ç²À ÇÚÀ ÇÛÀ ÈÀ ÈhÀ ÈoÀ È•À ÈäÀ ÈèÀ ÈéÀ É/À ÉoÀ ÉËÀ ÊÀ ÊtÀ ÊuÀ Ê›À ÊşÀ ËÀ Ë+À Ë/À Ë0À ËxÀ ËÏÀ ÌÀ ÌbÀ Ì~À Ì¨À Ì÷À ÍÀ ÍÀ ÍFÀ Í©À Í°À ÍÖÀ Î%À Î)À Î*À ÎRÀ ÎtÀ Î—À ÎÀ ÎõÀ ÏGÀ ÏwÀ Ï·À ÏÜÀ ĞÀ ĞFÀ ĞOÀ ĞpÀ ĞwÀ ĞxÀ Ğ’À ĞÆÀ ĞâÀ Ñ"À ÑlÀ ÑsÀ ÑwÀ ÑxÀ Ñ›À ÑÅÀ ÑêÀ ÑøÀ ÑşÀ ÒNÀ ÒšÀ ÒÄÀ ÒÜÀ ÒüÀ ÓKÀ ÓŠÀ ÓÎÀ ÔÀ Ô?À ÔŠÀ ÔÇÀ ÕÀ ÕIÀ ÕrÀ Õ À ÕÓÀ ÕòÀ ÖÀ ÖBÀ ÖqÀ ÖœÀ ÖÙÀ ÖàÀ ÖäÀ ÖåÀ ×À ×-À ×;À ×AÀ ×kÀ ×»À ØÀ ØÀ ØjÀ Ø«À ØôÀ Ù3À ÙdÀ ÙhÀ ÙiÀ ÙŒÀ Ù’À ÙİÀ ÙêÀ ÚÀ Ú'À ÚOÀ ÚbÀ ÚhÀ ÚiÀ Ú’À Ú¦À Ú¬À Ú­À ÚÌÀ ÚòÀ ÛÀ ÛÀ ÛÀ Û0À Û6À ÛÀ ÛÑÀ ÜÀ Ü/À Ü5À Ü†À Ü°À ÜöÀ İ
+À İÀ İÀ İbÀ İ²À ŞÀ ŞMÀ ŞÀ Ş°À ŞÄÀ ŞÊÀ ŞËÀ ŞğÀ ßÀ ßÀ ßÀ ßKÀ ß—À ßåÀ à3À àwÀ àŸÀ à²À à¸À à¹À àßÀ ààÀ áÀ áÀ áOÀ á‰À á’À á™À áªÀ á®À á¯À áòÀ áøÀ âFÀ â˜À âàÀ âæÀ ã*À ãhÀ ãnÀ ã¸À äÀ äOÀ äuÀ ä{À ä®À ä´À äáÀ äçÀ å;À åƒÀ å¹À å¿À åÏÀ æÀ æ[À æšÀ æàÀ ç2À ç‚À çºÀ çĞÀ çìÀ è	À è/À è6À èMÀ èxÀ è×À èàÀ èîÀ èôÀ éÀ éEÀ éÀ é“À é—À é˜À éİÀ éãÀ ê1À êƒÀ êËÀ êÑÀ ëÀ ëUÀ ë[À ë¥À ëôÀ ì<À ìbÀ ìhÀ ì›À ì¡À ìÎÀ ìÔÀ í(À ípÀ í¦À í¬À í¼À íÿÀ îDÀ îƒÀ îÉÀ ïÀ ïkÀ ï£À ï»À ï×À ïôÀ ğÀ ğ!À ğ8À ğcÀ ğÄÀ ğÍÀ ğÛÀ ğáÀ ñÀ ñ6À ñ€À ñ†À ñŠÀ ñ‹À ñÉÀ ñÏÀ ñüÀ òÀ òÀ òYÀ òœÀ òáÀ ó À ófÀ ó¸À óğÀ ô(À ôUÀ ôoÀ ô“À ôµÀ ô¹À ôºÀ ôïÀ ôõÀ õ"À õ(À õuÀ õÀÀ öÀ öÀ ödÀ ö‹À ö‘À ö¡À öèÀ ÷+À ÷pÀ ÷¯À ÷ÿÀ øQÀ ø‰À øºÀ øçÀ ùÀ ù\À ù`À ùaÀ ùÀ ù¤À ùÑÀ ù×À ú#À únÀ ú¿À úÅÀ ûÀ û>À ûDÀ ûTÀ û›À ûŞÀ ü#À üaÀ ü§À üßÀ ıÀ ıBÀ ı\À ı¼À ıÀÀ ıÁÀ ıìÀ ıòÀ ş?À ş‚À şˆÀ şÖÀ ÿ&À ÿoÀ ÿ€À ÿÀ ÿÁÀ ÿæÀ ÿêÀ ÿëÀ ,À FÀ `À ‹À ®À ôÀÀÀÀ>ÀƒÀ›À©À¯ÀñÀõÀöÀÀ[ÀsÀÀ‡À×ÀÛÀÜÀÀÀ)À/À~À­ÀäÀÀwÀÌÀ#ÀOÀeÀkÀ«ÀáÀıÀ'ÀMÀ{À‚À†À‡À§ÀàÀ
+À0À6ÀQÀ¡ÀíÀ&À?ÀÀ™À¦ÀèÀîÀ	8À	sÀ	wÀ	xÀ	ÇÀ	òÀ
+$À
+2À
+8À
+aÀ
+‡À
+¡À
+ÜÀ
+şÀÀÀ4ÀƒÀªÀ®À¯ÀÙÀÚÀÀAÀOÀUÀ«ÀíÀ#À\À£ÀíÀ%ÀWÀ^À‡À°ÀØÀóÀ#ÀXÀƒÀŒÀ“À¹ÀÀ/À3À4À\À]À©ÀÒÀØÀèÀîÀBÀÀáÀ(ÀwÀÀŞÀÀGÀ“ÀãÀÀTÀ‡ÀšÀ«À¬ÀãÀÀ3ÀZÀxÀÏÀşÀ!ÀAÀfÀ‹À²ÀÍÀ×ÀàÀøÀ!ÀHÀkÀ’ÀÈÀíÀÀ9ÀRÀmÀwÀ€À”À¦À§ÀàÀ	À0ÀWÀuÀÌÀûÀÀ>ÀcÀˆÀ¯ÀÊÀÔÀİÀÀÀÀXÀ‹ÀĞÀèÀÀÀ	ÀKÀbÀÀ ÀÀÀøÀ#À}ÀšÀ¨ÀµÀÀÀÉÀÏÀçÀëÀìÀ)ÀIÀÀ’À“ÀÎÀìÀ/À3À4ÀƒÀ·À À SÀ }À ÏÀ!À!VÀ!{À!¼À!ÿÀ"À"À":À"}À"¾À"ÇÀ"ÍÀ"àÀ"äÀ"åÀ#À#OÀ#{À#±À#²À#ÁÀ#êÀ$#À$'À$3À$SÀ$TÀ$cÀ$ŒÀ$ÅÀ$ÉÀ$ÕÀ$÷À$øÀ%À%4À%ZÀ%qÀ%™À%ŸÀ%£À%¤À%°À%ãÀ%ùÀ&CÀ&uÀ&‹À&¡À&§À&ÍÀ'À'CÀ'GÀ'HÀ'WÀ'€À'¹À'½À'ÉÀ'ıÀ(
+À( À(oÀ(–À(šÀ(›À(ªÀ(ÓÀ)À)À)À)eÀ)fÀ)uÀ)À)×À)ÛÀ)çÀ*À*OÀ*SÀ*TÀ*cÀ*ŒÀ*ÅÀ*ÉÀ*ÕÀ+À+À+À+ À+/À+XÀ+‘À+•À+¡À+úÀ,-À,1À,2À,AÀ,jÀ,£À,§À,³À,ñÀ-À-À-	À--À-.À-:À-^À-À-À-ÓÀ."À.&À.'À.3À.ZÀ.À.ºÀ.éÀ/À/À/À/À/À/2À/kÀ/šÀ/¼À/äÀ02À0lÀ0”À0¶À0ÔÀ1À1IÀ1iÀ1~À1‚À1ƒÀ1À1œÀ1ÃÀ1îÀ2*À2cÀ2ÈÀ2ÏÀ2ñÀ34À3:À3PÀ3qÀ3 À3çÀ40À4IÀ4TÀ4–À4ÂÀ4ØÀ4øÀ5À5À53À5TÀ5wÀ5 À5ÑÀ5÷À6À60À6`À6‡À6¬À6ÉÀ6ØÀ6åÀ6ğÀ6ùÀ7 À7À7À7À7UÀ7YÀ7§À7øÀ8À8[À8–À8—À8£À8ÙÀ8úÀ9&À9,À9VÀ9ZÀ9\À9]À9¦À9ÆÀ9ÇÀ9ìÀ9íÀ9ùÀ:DÀ:yÀ:}À:À:€À:ÑÀ:õÀ:öÀ;À;À;(À;wÀ;ŠÀ;À;À;‘À;àÀ<À<QÀ<RÀ<wÀ<œÀ<À<©À<âÀ=%À=)À=+À=,À=‚À=¦À=øÀ=ùÀ>À>CÀ>DÀ>PÀ>‰À>­À>ãÀ>ñÀ>÷À?:À?>À?@À?AÀ?šÀ?¾À?öÀ?÷À@À@À@)À@bÀ@†À@¼À@ÊÀ@ĞÀA	ÀAÀAÀAÀA^ÀA™ÀAÀAëÀB8ÀBÀB…ÀBÕÀC#ÀCtÀCÉÀCïÀCóÀDKÀD¦ÀDÿÀEfÀEjÀExÀE|ÀEÌÀFÀFrÀF²ÀFóÀFôÀG2ÀGqÀGrÀGµÀGãÀGäÀH%ÀHQÀHRÀH¬ÀH²ÀIÀIXÀImÀIsÀIÌÀIèÀIîÀJIÀJaÀJgÀJÅÀKÀK+ÀK€ÀK–ÀK§ÀKÕÀKçÀLÀL(ÀLXÀL†ÀLŒÀLÀL‘ÀLÚÀMÀM^ÀMdÀM®ÀNÀNPÀNmÀNsÀNÑÀO*ÀO7ÀOdÀO²ÀOÀÀOÆÀPÀPfÀPÀPáÀPçÀQÀQ"ÀQ#ÀQtÀQ©ÀQ¶ÀQßÀRÀR*ÀR1ÀRCÀR‰ÀR–ÀRŞÀRäÀRèÀRéÀS9ÀSiÀS¤ÀSĞÀTÀT^ÀT‚ÀT½ÀUÀU+ÀUlÀU’ÀU¬ÀU·ÀUÎÀU×ÀUİÀVÀVKÀVÀV±ÀVèÀW+ÀWRÀW“ÀW·ÀWÏÀWÚÀWğÀWùÀWÿÀXÀXÀX/ÀX5ÀXyÀX¿ÀXşÀYÀY2ÀYuÀY¤ÀYÑÀYÕÀYÖÀZÀZ ÀZhÀZ˜ÀZÀZâÀ[/À[<À[…À[´À[áÀ[åÀ[æÀ[òÀ\À\SÀ\qÀ\uÀ\vÀ\‚À\ÅÀ]À]/À]BÀ]FÀ]GÀ]SÀ]˜À]ÚÀ^À^À^À^À^'À^vÀ^½À^æÀ^ùÀ^ıÀ^şÀ_
+À_NÀ_”À_·À_ÊÀ_ÎÀ_ÏÀ_ÛÀ`)À`NÀ`‡À`ÅÀ`ÌÀ`ÿÀaÀaÀaÀa#ÀaFÀa[Àa_Àa`ÀalÀaËÀaåÀbÀb`ÀbˆÀbµÀc Àc(ÀcMÀc‹Àc´ÀcŞÀdÀdÀdUÀd‘ÀdÎÀdöÀdüÀe?ÀeCÀeDÀeœÀe¢ÀeÄÀfÀf?ÀflÀf¾ÀfùÀgAÀgbÀgnÀg¡ÀgıÀh=ÀhxÀhÀh­ÀhâÀhêÀi%Ài+Ài‹ÀiÍÀj
+ÀjÀjAÀjvÀj~Àj¹Àj¿ÀjÃÀjÄÀjĞÀjğÀk$ÀkEÀk¡ÀkªÀk°ÀkæÀlÀlgÀlpÀlvÀlµÀlÛÀm!Àm(ÀmPÀm–ÀmÀm¿ÀmÃÀmÅÀmÆÀnÀnÀn!ÀnrÀnÀÀo Ào\ÀovÀoÀÀoğÀpÀpTÀpZÀp^Àp_ÀpŸÀpĞÀpÑÀqÀq*Àq0Àq~ÀqÎÀqéÀqïÀr5ÀrnÀrtÀr¹ÀrûÀrüÀsAÀsNÀssÀstÀs»ÀsÈÀsïÀsğÀtÀt6ÀtTÀtxÀtyÀt£ÀtÎÀtóÀu"Àu#ÀuNÀuOÀu[ÀuÀu®ÀuÎÀuïÀuóÀuôÀv Àv'ÀvPÀv˜ÀvÄÀvÍÀwÀw(Àw.ÀwQÀwrÀwvÀwwÀw¾ÀwÙÀwùÀwıÀwşÀx#ÀxJÀxsÀx§ÀxÒÀxäÀxîÀyÀy8Ày@ÀyAÀyœÀyíÀz9Àz…Àz¿ÀzìÀzûÀ{3À{OÀ{ŒÀ{—À{ŸÀ{¥À{©À{ªÀ{ÈÀ{ìÀ|À|&À|,À|HÀ|LÀ|MÀ|hÀ|ÁÀ|ÿÀ}!À};À}VÀ}À}ÆÀ}åÀ~JÀ~À~ºÀÀ5ÀpÀ¤À®ÀçÀ€À€#À€`À€|À€À€–À€—À€èÀÀSÀªÀ‚À‚0À‚8À‚~À‚¨À‚ÁÀ‚ÇÀ‚ÓÀƒÀƒ?Àƒ}Àƒ„Àƒ×À„&À„tÀ„ÃÀ…À…@À…vÀ…—À…›À…œÀ…ÎÀ†(À†_À†€À†­À†ÒÀ†ØÀ‡À‡.À‡4À‡tÀ‡xÀ‡yÀ‡¾À‡ËÀ‡ÜÀ‡üÀˆÀˆ Àˆ!Àˆ-ÀˆbÀˆ¤Àˆ»ÀˆİÀˆâÀˆãÀ‰0À‰TÀ‰“À‰½À‰âÀ‰ûÀŠÀŠ%ÀŠ)ÀŠ*ÀŠaÀŠ“ÀŠâÀ‹*À‹0À‹CÀ‹GÀ‹HÀ‹”À‹´À‹ºÀ‹ÚÀ‹çÀŒ)ÀŒ*ÀŒiÀŒÇÀ%À^ÀuÀŠÀÀ¿ÀÃÀÄÀÀ À&ÀpÀ²ÀäÀ%ÀhÀ¶ÀùÀGÀWÀ]À§ÀÌÀÒÀûÀÿÀ‘ À‘PÀ‘˜À‘À‘İÀ’À’&À’‹À’œÀ’¢À’·À“À“,À“2À“oÀ“–À“œÀ“ÃÀ“ÇÀ“ÈÀ“óÀ”DÀ”’À”ÜÀ•À•À•À•5À•9À•:À•À•ŒÀ•¹À–À–DÀ–¦À–¬À–­À–ÔÀ—&À—JÀ—lÀ—uÀ—ÅÀ—çÀ˜À˜À˜À˜À˜SÀ˜¨À™À™9À™tÀ™©À™ŞÀšÀšÀš Àš@ÀšuÀšËÀ›À›À›TÀ›]À›•À›±À›ÖÀ›öÀœ;Àœ€Àœ‹Àœ“Àœ™ÀœšÀœĞÀ!ÀTÀ¸ÀëÀ"À(ÀFÀwÀÉÀşÀŸÀŸJÀŸSÀŸ‹ÀŸ¥ÀŸÈÀŸæÀ 'À hÀ sÀ {À À ‚À ËÀ¡À¡3À¡ZÀ¡£À¡³À¢À¢qÀ¢ÈÀ¢îÀ£:À£’À£ÖÀ£ãÀ¤À¤PÀ¤]À¤rÀ¤±À¤·À¤¸À¤ÖÀ¤ıÀ¥ À¥FÀ¥§À¥ÚÀ¥òÀ¥ùÀ¥ıÀ¥şÀ¦IÀ¦–À¦äÀ§1À§€À§À§¢À§òÀ¨KÀ¨€À¨ªÀ¨ûÀ©#À©)À©BÀ©FÀ©GÀ©SÀ©›À©çÀ©õÀ©ûÀª ÀªAÀªeÀªiÀªjÀª»ÀªÁÀ«À«UÀ«¤À«¾À«æÀ¬À¬TÀ¬šÀ¬ÃÀ¬ŞÀ¬ïÀ­ À­#À­GÀ­ƒÀ­•À­¸À­çÀ®	À®UÀ®vÀ®£À®ÅÀ¯À¯XÀ¯›À¯¡À¯ïÀ°À°8À°vÀ°À°¥À°ÏÀ±À±0À±8À±FÀ±LÀ±MÀ±šÀ±ÖÀ±ÜÀ²%À²_À²eÀ²fÀ²¬À²­À²ïÀ³#À³XÀ³²À³ÀÀ³ÆÀ³ÇÀ´À´SÀ´™À´À´À´×À´ãÀµÀµ7ÀµnÀµÁÀµÈÀµæÀµùÀµÿÀ¶"À¶LÀ¶uÀ¶{À¶µÀ¶¹À¶ºÀ·	À·À·dÀ·„À·À·«À¸À¸À¸^À¸³À¸ÿÀ¹PÀ¹mÀ¹½ÀºÀºÀº$Àº=ÀºTÀºpÀºÄÀ»À»xÀ»èÀ¼(À¼kÀ¼„À¼âÀ¼èÀ½&À½`À½…À½ŸÀ½ÆÀ¾À¾NÀ¾[À¾eÀ¾•À¾¶À¾ÈÀ¾ĞÀ¿ À¿&À¿JÀ¿SÀ¿À¿§À¿ËÀ¿ÔÀ¿íÀÀÀÀ{ÀÀ–ÀÀ¥ÀÀõÀÀıÀÁÀÁÀÁ!ÀÁÄÀÁËÀÁìÀÂ+ÀÂhÀÂoÀÂsÀÂtÀÂÂÀÃÀÃÀÃRÀÃxÀÃ„ÀÃ­ÀÃÖÀÄÀÄbÀÄiÀÄ–ÀÄšÀÄ›ÀÄÜÀÅÀÅÀÅoÀÅ¡ÀÅ¦ÀÅêÀÆÀÆ\ÀÆjÀÆpÀÆ¾ÀÆûÀÇ ÀÇHÀÇZÀÇ¤ÀÇ¸ÀÇÛÀÈ/ÀÈ<ÀÈJÀÈPÀÈ¥ÀÈøÀÉ:ÀÉnÀÉ€ÀÉˆÀÉŞÀÉäÀÉèÀÉéÀÊÀÊ'ÀÊjÀÊ¡ÀÊÙÀÊßÀËÀË:ÀË[ÀË_ÀË`ÀË ÀË¬ÀËÿÀÌWÀÌ^ÀÌÀÌÄÀÍÀÍ[ÀÍ´ÀÍºÀÍäÀÎ&ÀÎTÀÎÀÎÑÀÏÀÏCÀÏUÀÏbÀÏ ÀÏÏÀÏâÀÏîÀÏøÀĞ ÀĞ(ÀĞuÀĞÍÀÑ+ÀÑRÀÑ\ÀÑ—ÀÑ«ÀÑµÀÒÀÒ-ÀÒ7ÀÒsÀÒÃÀÓ
+ÀÓ ÀÓjÀÓ‚ÀÓ©ÀÔÀÔÀÔ[ÀÔeÀÔ‰ÀÔ˜ÀÔÓÀÕ ÀÕFÀÕPÀÕXÀÕ^ÀÕ‡ÀÕ§ÀÕ«ÀÕ¬ÀÕãÀÖÀÖ!ÀÖfÀÖÀÖ“ÀÖ”ÀÖĞÀ×À×À×bÀ×‹À×À×À×ØÀ×åÀØ)ÀØ`ÀØ˜ÀØÀØÁÀØæÀÙÀÙÀÙÀÙKÀÙXÀÙ²ÀÚÀÚ2ÀÚMÀÚÀÚŸÀÚ÷ÀÚÿÀÛÀÛ`ÀÛ½ÀÛÖÀÜÀÜ_ÀÜyÀÜÊÀÜşÀİÀİÀİAÀİ‡Àİ¡ÀİòÀŞ"ÀŞ*ÀŞ0ÀŞGÀŞuÀŞ‚ÀŞ²ÀŞ¸ÀŞËÀŞÏÀŞĞÀßÀßÀß|ÀßĞÀßüÀàUÀà†ÀàËÀáÀá(Àá.Àá‰ÀáæÀâÀâ7ÀâŒÀâ¾ÀâßÀâıÀã1ÀãYÀã¥Àã´ÀãçÀãóÀãıÀä+Àä|ÀäªÀäàÀäşÀå2ÀåZÀå¥Àå´ÀåçÀåóÀåıÀæ*ÀæXÀæ‡ÀæÀæ¤ÀæÒÀæßÀçÀçÀç(Àç,Àç-ÀçPÀç]Àç«ÀçåÀèÀè@ÀèrÀèxÀè¤ÀèÒÀéÀéÀéÀéÀéUÀéšÀéØÀêÀê9Àê?ÀêuÀê›Àê¼ÀêÖÀëÀë2Àë^Àë­ÀëÒÀëşÀìCÀìlÀì˜ÀìÜÀíÀí2ÀíxÀí§ÀíÓÀî#Àî\Àî‡ÀîâÀïÀïIÀïªÀï°Àï×Àï÷Àğ
+ÀğÀğÀğÀğ.ÀğeÀğ§Àğ­ÀğÕÀğıÀñÀñÀñÀñeÀñkÀñ¹ÀñúÀò ÀòPÀòdÀòqÀò£Àò¤ÀòãÀòéÀó8ÀópÀó}ÀóÜÀôÀôÀôÀôRÀôXÀô©ÀôöÀõHÀõ‘ÀõÉÀõÏÀöÀöoÀö|ÀöÖÀöâÀ÷CÀ÷JÀ÷aÀ÷„À÷¡À÷ùÀø,ÀøƒÀø ÀøÃÀøæÀùÀù$Àù@ÀùhÀùŒÀù³Àù×ÀùóÀúÀú<ÀúHÀúrÀú˜Àú´ÀúàÀûÀûÀûÀûÀû-ÀûPÀûsÀûyÀûŠÀûµÀûÂÀûïÀûõÀüÀüaÀü±ÀüÿÀı*Àı.Àı/Àı}ÀıÃÀıÉÀşÀşaÀş¡ÀşıÀÿÀÿ Àÿ€Àÿ•ÀÿÀÿÿÀ À À >À ‹À ÛÀÀfÀ‚ÀÏÀşÀÀYÀÀ­ÀäÀÀMÀ†À¾ÀÀUÀŒÀÅÀæÀÀYÀ‘À³ÀºÀÍÀÿÀOÀsÀÅÀëÀAÀÀ†ÀÏÀóÀúÀÀSÀ“ÀĞÀ	$À	À	ªÀ	ÌÀ	òÀ
+À
+FÀ
+iÀ
+‹À
+¦À
+ÕÀÀCÀVÀrÀÀ™ÀÀÀâÀıÀ,ÀRÀ…À˜ÀµÀĞÀÜÀäÀêÀûÀ&À3À`ÀfÀ†ÀŸÀ£À¥À¦ÀğÀşÀKÀLÀ˜ÀµÀ¹ÀÇÀËÀÀ,ÀYÀ±À²ÀîÀòÀ3ÀgÀkÀ«ÀëÀÀ.ÀyÀÀÂÀÀPÀ“ÀÜÀèÀéÀ5À;ÀƒÀÊÀÀ]À©ÀèÀõÀ÷ÀøÀHÀtÀxÀÙÀÀgÀ©ÀÙÀÚÀÀPÀQÀ¬ÀÉÀÏÀÀÀkÀlÀ½ÀÕÀÛÀÀ'À`ÀlÀ¬ÀïÀ0À|ÀƒÀµÀÌÀĞÀÒÀÓÀÀRÀVÀ¶ÀÀVÀkÀ¶ÀçÀÀ,À2À3ÀÀ™ÀŸÀûÀUÀ§À¨ÀòÀøÀRÀbÀhÀªÀúÀ UÀ hÀ ¼À ßÀ ãÀ äÀ ğÀ!<À!…À!‰À!‹À!ŒÀ!áÀ"8À"SÀ"WÀ"©À#À#À#UÀ#¨À#öÀ$DÀ$zÀ$~À$’À$éÀ%À% À%uÀ%…À%‰À%À%âÀ&À&À&fÀ&vÀ&zÀ&ˆÀ&ŒÀ&ÜÀ'À'<À'šÀ'›À'ÔÀ(	À(
+À(EÀ(KÀ(|À(’À(“À(ŸÀ(æÀ(èÀ(éÀ)*À)ƒÀ)´À)¹À)ºÀ)ÆÀ)üÀ*"À*eÀ*¦À*¬À*°À*±À*½À*ĞÀ*òÀ+À+À+À+À+?À+‘À+•À+—À+˜À+èÀ,
+À,_À,À,ÏÀ,ÓÀ,ÔÀ-À-À-5À-rÀ-±À-×À.À.À.À.)À.DÀ.aÀ.À.áÀ/
+À/À/À/HÀ/LÀ/MÀ/YÀ/lÀ/«À/ÑÀ/æÀ/êÀ/ëÀ/÷À0,À0-À09À0gÀ0iÀ0jÀ0ÊÀ0ÎÀ1À1kÀ1»À1ÙÀ1İÀ2.À2À2¸À3À3À3@À3cÀ3dÀ3ÉÀ3çÀ3éÀ3êÀ49À4FÀ4JÀ4ŠÀ4ÉÀ4ûÀ4üÀ5VÀ5\À5¹À6À69À6UÀ6¬À6­À7
+À7?À7@À7šÀ7¦À7¹À8DÀ8KÀ8wÀ8{À8|À8¬À8ËÀ8ÏÀ8ĞÀ8êÀ8öÀ9	À95À9JÀ9NÀ9OÀ9ªÀ9ÇÀ9ÍÀ:À:À:;À:\À:`À:b   €­/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter_test/flutter_test.dart';
+///
+/// @docImport 'editable_text.dart';
+/// @docImport 'text.dart';]  r  ‡  ±  Ù  ‚  ‚+  ‚S  ‚†  ‚  ‚²  ‚Ú  ‚ï  ƒ  ƒ'  ƒ@  ƒ`  ƒy  ƒ”  ƒ«  ƒâ  „  „  „C  „a      §] §m    §t§t	§z   §ƒ§ƒ§ˆ   § § §¥   §´§´A§¹   §û§û¨    ¨¨¨&   ¨=¨=¨K §Ò§ì§í¦³¦³¤ €›/// Create a new [SelectableRegion] widget.
+///
+/// The [selectionControls] are used for building the selection handles and
+/// toolbar for mobile devices.  ©Ô¨[©ÔI/// The configuration for the magnifier used with selections in this region.
+///
+/// By default, [SelectableRegion]'s [TextMagnifierConfiguration] is disabled.
+/// For a version of [SelectableRegion] that adapts automatically to the
+/// current platform, consider [SelectionArea].
+///
+/// {@macro flutter.widgets.magnifier.intro} ª/©ïIª/,/// {@macro flutter.widgets.Focus.focusNode} ª¸ª=€€ª¸g/// The child widget this selection area applies to.
+///
+/// {@macro flutter.widgets.ProxyWidget.child} «+ªÂ{«+</// {@macro flutter.widgets.EditableText.contextMenuBuilder} ¬E«B¬E€Ü/// The delegate to build the selection handles and toolbar for mobile
+/// devices.
+///
+/// The [emptyTextSelectionControls] global variable provides a default
+/// [TextSelectionControls] implementation with no controls. ¬±¬[h¬±-/// Called when the selected content changes.     °x°x2°™   °°°°"°Ì   °Ø°Ø'°ô   ±±$±"  ¬È¬È‹Y°YƒK/// Returns the [ContextMenuButtonItem]s representing the buttons in this
+/// platform's default selection menu.
+///
+/// For example, [SelectableRegion] uses this to generate the default buttons
+/// for its context menu.
+///
+/// See also:
+///
+/// * [SelectableRegionState.contextMenuButtonItems], which gives the
+///   [ContextMenuButtonItem]s for a specific SelectableRegion.
+/// * [EditableText.getEditableButtonItems], which performs a similar role but
+///   for content that is both selectable and editable.
+/// * [AdaptiveTextSelectionToolbar], which builds the toolbar itself, and can
+///   take a list of [ContextMenuButtonItem]s with
+///   [AdaptiveTextSelectionToolbar.buttonItems].
+/// * [AdaptiveTextSelectionToolbar.getAdaptiveButtons], which builds the button
+///   Widgets for the current platform given [ContextMenuButtonItem]s.  ¸%¸&¸%¸%K¸G  †ˆ†ˆ±ê¦‡Ÿø/// A widget that introduces an area for user selections.
+///
+/// Flutter widgets are not selectable by default. Wrapping a widget subtree
+/// with a [SelectableRegion] widget enables selection within that subtree (for
+/// example, [Text] widgets automatically look for selectable regions to enable
+/// selection). The wrapped subtree can be selected by users using mouse or
+/// touch gestures, e.g. users can select widgets by holding the mouse
+/// left-click and dragging across widgets, or they can use long press gestures
+/// to select words on touch devices.
+///
+/// A [SelectableRegion] widget requires configuration; in particular specific
+/// [selectionControls] must be provided.
+///
+/// The [SelectionArea] widget from the [material] library configures a
+/// [SelectableRegion] in a platform-specific manner (e.g. using a Material
+/// toolbar on Android, a Cupertino toolbar on iOS), and it may therefore be
+/// simpler to use that widget rather than using [SelectableRegion] directly.
+///
+/// ## An overview of the selection system.
+///
+/// Every [Selectable] under the [SelectableRegion] can be selected. They form a
+/// selection tree structure to handle the selection.
+///
+/// The [SelectableRegion] is a wrapper over [SelectionContainer]. It listens to
+/// user gestures and sends corresponding [SelectionEvent]s to the
+/// [SelectionContainer] it creates.
+///
+/// A [SelectionContainer] is a single [Selectable] that handles
+/// [SelectionEvent]s on behalf of child [Selectable]s in the subtree. It
+/// creates a [SelectionRegistrarScope] with its [SelectionContainer.delegate]
+/// to collect child [Selectable]s and sends the [SelectionEvent]s it receives
+/// from the parent [SelectionRegistrar] to the appropriate child [Selectable]s.
+/// It creates an abstraction for the parent [SelectionRegistrar] as if it is
+/// interacting with a single [Selectable].
+///
+/// The [SelectionContainer] created by [SelectableRegion] is the root node of a
+/// selection tree. Each non-leaf node in the tree is a [SelectionContainer],
+/// and the leaf node is a leaf widget whose render object implements
+/// [Selectable]. They are connected through [SelectionRegistrarScope]s created
+/// by [SelectionContainer]s.
+///
+/// Both [SelectionContainer]s and the leaf [Selectable]s need to register
+/// themselves to the [SelectionRegistrar] from the
+/// [SelectionContainer.maybeOf] if they want to participate in the
+/// selection.
+///
+/// An example selection tree will look like:
+///
+/// {@tool snippet}
+///
+/// ```dart
+/// MaterialApp(
+///   home: SelectableRegion(
+///     selectionControls: materialTextSelectionControls,
+///     child: Scaffold(
+///       appBar: AppBar(title: const Text('Flutter Code Sample')),
+///       body: ListView(
+///         children: const <Widget>[
+///           Text('Item 0', style: TextStyle(fontSize: 50.0)),
+///           Text('Item 1', style: TextStyle(fontSize: 50.0)),
+///         ],
+///       ),
+///     ),
+///   ),
+/// )
+/// ```
+/// {@end-tool}
+///
+///
+///               SelectionContainer
+///               (SelectableRegion)
+///                  /         \
+///                 /           \
+///                /             \
+///           Selectable          \
+///      ("Flutter Code Sample")   \
+///                                 \
+///                          SelectionContainer
+///                              (ListView)
+///                              /       \
+///                             /         \
+///                            /           \
+///                     Selectable        Selectable
+///                     ("Item 0")         ("Item 1")
+///
+///
+/// ## Making a widget selectable
+///
+/// Some leaf widgets, such as [Text], have all of the selection logic wired up
+/// automatically and can be selected as long as they are under a
+/// [SelectableRegion].
+///
+/// To make a custom selectable widget, its render object needs to mix in
+/// [Selectable] and implement the required APIs to handle [SelectionEvent]s
+/// as well as paint appropriate selection highlights.
+///
+/// The render object also needs to register itself to a [SelectionRegistrar].
+/// For the most cases, one can use [SelectionRegistrant] to auto-register
+/// itself with the register returned from [SelectionContainer.maybeOf] as
+/// seen in the example below.
+///
+/// {@tool dartpad}
+/// This sample demonstrates how to create an adapter widget that makes any
+/// child widget selectable.
+///
+/// ** See code in examples/api/lib/material/selectable_region/selectable_region.0.dart **
+/// {@end-tool}
+///
+/// ## Complex layout
+///
+/// By default, the screen order is used as the selection order. If a group of
+/// [Selectable]s needs to select differently, consider wrapping them with a
+/// [SelectionContainer] to customize its selection behavior.
+///
+/// {@tool dartpad}
+/// This sample demonstrates how to create a [SelectionContainer] that only
+/// allows selecting everything or nothing with no partial selection.
+///
+/// ** See code in examples/api/lib/material/selection_container/selection_container.0.dart **
+/// {@end-tool}
+///
+/// In the case where a group of widgets should be excluded from selection under
+/// a [SelectableRegion], consider wrapping that group of widgets using
+/// [SelectionContainer.disabled].
+///
+/// {@tool dartpad}
+/// This sample demonstrates how to disable selection for a Text in a Column.
+///
+/// ** See code in examples/api/lib/material/selection_container/selection_container_disabled.0.dart **
+/// {@end-tool}
+///
+/// To create a separate selection system from its parent selection area,
+/// wrap part of the subtree with another [SelectableRegion]. The selection of the
+/// child selection area can not extend past its subtree, and the selection of
+/// the parent selection area can not extend inside the child selection area.
+///
+/// ## Selection status
+///
+/// A [SelectableRegion]s [SelectableRegionSelectionStatus] is used to indicate whether
+/// the [SelectableRegion] is actively changing the selection, or has finalized it. For
+/// example, during a mouse click + drag, the [SelectableRegionSelectionStatus] will be
+/// set to [SelectableRegionSelectionStatus.changing], and when the mouse click is released
+/// the status will be set to [SelectableRegionSelectionStatus.finalized].
+///
+/// The default value of [SelectableRegion]s selection status
+/// is [SelectableRegionSelectionStatus.finalized].
+///
+/// To access the [SelectableRegionSelectionStatus] of a parent [SelectableRegion]
+/// use [SelectableRegionSelectionStatusScope.maybeOf] and retrieve the value from
+/// the [ValueListenable].
+///
+/// One can also listen for changes to the [SelectableRegionSelectionStatus] by
+/// adding a listener to the [ValueListenable] retrieved from [SelectableRegionSelectionStatusScope.maybeOf]
+/// through [ValueListenable.addListener]. In Stateful widgets this is typically
+/// done in [State.didChangeDependencies]. Remove the listener when no longer
+/// needed, typically in your Stateful widgets [State.dispose] method through
+/// [ValueListenable.removeListener].
+///
+/// ## Tests
+///
+/// In a test, a region can be selected either by faking drag events (e.g. using
+/// [WidgetTester.dragFrom]) or by sending intents to a widget inside the region
+/// that has been given a [GlobalKey], e.g.:
+///
+/// ```dart
+/// Actions.invoke(key.currentContext!, const SelectAllTextIntent(SelectionChangedCause.keyboard));
+/// ```
+///
+/// See also:
+///
+///  * [SelectionArea], which creates a [SelectableRegion] with
+///    platform-adaptive selection controls.
+///  * [SelectableText], which enables selection on a single run of text.
+///  * [SelectionHandler], which contains APIs to handle selection events from the
+///    [SelectableRegion].
+///  * [Selectable], which provides API to participate in the selection system.
+///  * [SelectionRegistrar], which [Selectable] needs to subscribe to receive
+///    selection events.
+///  * [SelectionContainer], which collects selectable widgets in the subtree
+///    and provides api to dispatch selection event to the collected widget.
+///  * [SelectionListener], which enables accessing the [SelectionDetails] of
+///    the selectable subtree it wraps.  €¹_À @¦¹I¹^¹J¹P¹V¹]¹W¹x¹e¹z¹Š¹¡¹‹¹›¹ ¹œ¹¿¹¨¹Á¹Ñ¹ì¹Ò¹æ¹ë¹çº)¹óº+º;ºãºCºcºšºdº›ºÜº¥º¾º³ºÀºÏºĞ»ºê»»#»À»+»K»s»L»t»¹»~»—»Œ»™»¨»©»ç»Ç»é»ù¼‹¼¼!¼B¼"¼C¼„¼M¼f¼[¼h¼w¼x¼²¼’¼´¼Ä½`¼Ì¼ñ½¼ò½½Y½½6½+½8½G½H½½g½½ ¾>½¨½Í½õ½Î½ö¾7¾ ¾¾¾¾*¾+¾e¾E¾g¾w¿¾¾¤¾Å¾¥¾Æ¿¾Ğ¾é¾Ş¾ë¾ú¾û¿B¿¿D¿T¿¿¿\¿„¿²¿…¿³¿¸¿´¿í¿Æ¿ï¿ÿÀ @¡À @À @,À @TÀ @-À @UÀ @šÀ @_À @xÀ @mÀ @zÀ @‰À @Š¹>¹‡¹> À AÀ AÀ @òÀ AÀ @óÀ @ùÀ @ÖÀ @¬hÀ @Ö  À A*À A#À A* À AgÀ ApÀ AqÀ AOÀ A?3À AO À AœÀ A¥À A¦À A†À Av1À A† À AÏÀ AØÀ AÙÀ A»À A«/À A» À BÀ B:À B;À BÀ AŞ^À B  À BœÀ BÀ Bœ  À C]À CPÀ C]  À C‚À Cq%À C‚ À F–À F¯À F°À F€À F€¡À F€T/// The text processing service used to retrieve the native text processing actions.À GFÀ GGÀ G3À GEÀ G4À GÀ F¶€’À GF/// The list of native text processing actions provided by the engine. À G”À G‰À G” À HËÀ HóÀ HôÀ HõÀ HöÀ HªÀ H!€ÖÀ HªW/// Notifies its listeners when the selection state in this [SelectableRegion] changes.À Y¸À Y¦À Y€¨À Y¦€‡/// Whether the Shift key was pressed when the most recent [PointerDownEvent]
+/// was tracked by the [BaseTapAndDragGestureRecognizer]. À Z'À Z%À Z'  À ZÂÀ Z¯)À ZÂ  À w•À wÀ w•  À ´ À ´À ´  À ´¨À ´…À ´€-À ´…  À ¼WÀ ¼OÀ ¼W À ¼çÀ ¼ÂÀ ¼½/À ¼Â  À Ã:À Ã.-À Ã:  À ÃkÀ Ã_+À Ãk  ÀÀ‰À  À¹À±&À¹ À(À(À(¨À)À(®À(×À)À)À)BÀ)HÀ)XÀ)bÀ)]À)YÀ)_À)/À(€ÆÀ)/    À B¬À B¬€ À Bµ    À C›À C›“À Du7/// Whether the native browser context menu is enabled.  À E»À E¼À E2À E2€ÚÀ Eæ€‚/// The [SelectionOverlay] that is currently visible on the screen.
+///
+/// Can be null if there is no visible [SelectionOverlay].   À G§À G§vÀ Gµ    À ´9À ´9DÀ ´B    À ¼rÀ ¼rHÀ ¼{    ÀŞÀŞƒ§ÀÏ€Ä/// {@macro flutter.widgets.EditableText.getAnchors}
+///
+/// See also:
+///
+///  * [contextMenuButtonItems], which provides the [ContextMenuButtonItem]s
+///    for the default context menu buttons.   À_À_Š²Àƒe/// Returns the [ContextMenuButtonItem]s representing the buttons in this
+/// platform's default selection menu.
+///
+/// See also:
+///
+/// * [SelectableRegion.getSelectableButtonItems], which performs a similar role,
+///   but for any selectable text, not just specifically SelectableRegion.
+/// * [EditableTextState.contextMenuButtonItems], which performs a similar role
+///   but for content that is not just selectable but also editable.
+/// * [contextMenuAnchors], which provides the anchor points for the default
+///   context menu.
+/// * [AdaptiveTextSelectionToolbar], which builds the toolbar itself, and can
+///   take a list of [ContextMenuButtonItem]s with
+///   [AdaptiveTextSelectionToolbar.buttonItems].
+/// * [AdaptiveTextSelectionToolbar.getAdaptiveButtons], which builds the
+///   button Widgets for the current platform given [ContextMenuButtonItem]s.   ÀÀ‚ÕÀ5    ÀîÀî€£À6:/// The line height at the start of the current selection.   À•À•€ÀÛ8/// The line height at the end of the current selection.   À6À6ƒ­À¢L/// Returns the local coordinates of the endpoints of the current selection.  À#´À#µÀ#¿À$%À#ÅÀ#îÀ$)À$*À#´À#´€À$>   À$VÀ$WÀ$aÀ$ÇÀ$gÀ$À$ËÀ$ÌÀ$VÀ$V€ À$à  >  À HüÀ HıÀ I	À I
+À HüÀ Hü‚"À I    À K"À K"À K¥q/// Query the engine to initialize the list of text processing actions to show
+/// in the text selection toolbar.  À L=À L>À LJÀ LKÀ L=À L=‚şÀ L[    À OmÀ OmÀ O~ À O?À O@À OLÀ OMÀ O?À O?‚§À O] À RÀ RÀ R   À RÀ RÀ R!  À QêÀ Qê€À Qô    À R‹À R‹„À R    À V§À V§‚ZÀ V¬    À [À [#À [  À ZİÀ Zİ‡À Zé    À \hÀ \h3À \m    À _gÀ _gÀ _k  À _BÀ _B‰<À _F    À h‚À h‚ƒwÀ h‡    À kıÀ kı€ÙÀ l    À lÚÀ lÚ:À lß    À mÀ mŠqÀ m    À wÍÀ wÍÀ wà  À w©À w© À w®    À „ÈÀ „ÈÀ „Ü  À „­À „­‚À „²    À †ÒÀ †ÒÀ †ç  À †¶À †¶nÀ †»    À ”AÀ ”AÀ ”S  À ”(À ”(„”À ”-    À ˜×À ˜×À ˜è  À ˜ÀÀ ˜À‰mÀ ˜Å    À ¢1À ¢1^À ¢6    À £³À £³À £É  À £“À £“‚sÀ £˜    À ¦/À ¦/"À ¦J  À ¦
+À ¦
+À ¦    À §HÀ §HÀ §\  À §*À §*À §/    À ¨cÀ ¨cÀ ¨s  À ¨@À ¨@•À ¨E    À ©ôÀ ©ôÀ ª  À ©ÙÀ ©ÙŠÀ ©Ş    À µ÷À µ÷ À ¶  À ´²À ´²…|À µ×/// Sends end [SelectionEdgeUpdateEvent] to the selectable subtree.
+///
+/// If the selectable subtree returns a [SelectionResult.pending], this method
+/// continues to send [SelectionEdgeUpdateEvent]s every frame until the result
+/// is not pending or users end their gestures.   À ºEÀ ºEÀ ºT  À º2À º2À º7    À »ÓÀ »ÓxÀ »Ø    À ¾:À ¾: À ¾K  À ¼ñÀ ¼ñ…’À ¾/// Sends start [SelectionEdgeUpdateEvent] to the selectable subtree.
+///
+/// If the selectable subtree returns a [SelectionResult.pending], this method
+/// continues to send [SelectionEdgeUpdateEvent]s every frame until the result
+/// is not pending or users end their gestures.   À Â‡À Â‡|À ÂŒ    À Ã¹À Ã¹À ÃÊ  À ÃÀ Ã‚NÀ Ã”    À ÆÀ ÆÀ Æ  À ÅáÀ ÅáƒÀ Åæ    À ÉÀ ÉÀ É$  À ÈëÀ Èë‚CÀ Èğ    À Ë[À Ë[À Ëm  À Ë2À Ë2‚öÀ Ë7    À ÎVÀ ÎVÀ Î]   À ÎxÀ ÎxÀ Î‡  À Î,À Î,ƒJÀ Î:    À ÑzÀ Ñz…iÀ Ñ    À ÖçÀ Öç‚€À Öì    À ÙkÀ Ùk›À Ùñx/// Shows the selection handles.
+///
+/// Returns true if the handles are shown, false if the handles can't be
+/// shown.   À Ü›À Ü›À Ü£  À Û
+À Û
+†£À Üm/// Shows the text selection toolbar.
+///
+/// If the parameter `location` is set, the toolbar will be shown at the
+/// location. Otherwise, the toolbar location will be calculated based on the
+/// handles' locations. The `location` is in the coordinates system of the
+/// [Overlay].
+///
+/// Returns true if the toolbar is shown, false if the toolbar can't be shown.   À çÔÀ çÔÀ çä   À çğÀ çğÀ çõ   À èÀ è À è À èÀ á±À á±‡åÀ çÁ…Î/// Sets or updates selection end edge to the `offset` location.
+///
+/// A selection always contains a select start edge and selection end edge.
+/// They can be created by calling both [_selectStartTo] and [_selectEndTo], or
+/// use other selection APIs, such as [_selectWordAt] or [selectAll].
+///
+/// This method sets or updates the selection end edge by sending
+/// [SelectionEdgeUpdateEvent]s to the child [Selectable]s.
+///
+/// If `continuous` is set to true and the update causes scrolling, the
+/// method will continue sending the same [SelectionEdgeUpdateEvent]s to the
+/// child [Selectable]s every frame until the scrolling finishes or a
+/// [_finalizeSelection] is called.
+///
+/// The `continuous` argument defaults to false.
+///
+/// The `offset` is in global coordinates.
+///
+/// Provide the `textGranularity` if the selection should not move by the default
+/// [TextGranularity.character]. Only [TextGranularity.character] and
+/// [TextGranularity.word] are currently supported.
+///
+/// See also:
+///  * [_selectStartTo], which sets or updates selection start edge.
+///  * [_finalizeSelection], which stops the `continuous` updates.
+///  * [clearSelection], which clears the ongoing selection.
+///  * [_selectWordAt], which selects a whole word at the location.
+///  * [_selectParagraphAt], which selects an entire paragraph at the location.
+///  * [_collapseSelectionAt], which collapses the selection at the location.
+///  * [selectAll], which selects the entire content.   À ï¿À ï¿À ïÏ   À ïÛÀ ïÛÀ ïà   À ïøÀ ïø À ğ	 À ïíÀ éšÀ éš‡ïÀ ïª…Î/// Sets or updates selection start edge to the `offset` location.
+///
+/// A selection always contains a select start edge and selection end edge.
+/// They can be created by calling both [_selectStartTo] and [_selectEndTo], or
+/// use other selection APIs, such as [_selectWordAt] or [selectAll].
+///
+/// This method sets or updates the selection start edge by sending
+/// [SelectionEdgeUpdateEvent]s to the child [Selectable]s.
+///
+/// If `continuous` is set to true and the update causes scrolling, the
+/// method will continue sending the same [SelectionEdgeUpdateEvent]s to the
+/// child [Selectable]s every frame until the scrolling finishes or a
+/// [_finalizeSelection] is called.
+///
+/// The `continuous` argument defaults to false.
+///
+/// The `offset` is in global coordinates.
+///
+/// Provide the `textGranularity` if the selection should not move by the default
+/// [TextGranularity.character]. Only [TextGranularity.character] and
+/// [TextGranularity.word] are currently supported.
+///
+/// See also:
+///  * [_selectEndTo], which sets or updates selection end edge.
+///  * [_finalizeSelection], which stops the `continuous` updates.
+///  * [clearSelection], which clears the ongoing selection.
+///  * [_selectWordAt], which selects a whole word at the location.
+///  * [_selectParagraphAt], which selects an entire paragraph at the location.
+///  * [_collapseSelectionAt], which collapses the selection at the location.
+///  * [selectAll], which selects the entire content.   À ôÀ ôÀ ô  À ñÀ ñƒ+À ó÷‚L/// Collapses the selection at the given `offset` location.
+///
+/// The `offset` is in global coordinates.
+///
+/// See also:
+///  * [_selectStartTo], which sets or updates selection start edge.
+///  * [_selectEndTo], which sets or updates selection end edge.
+///  * [_finalizeSelection], which stops the `continuous` updates.
+///  * [clearSelection], which clears the ongoing selection.
+///  * [_selectWordAt], which selects a whole word at the location.
+///  * [_selectParagraphAt], which selects an entire paragraph at the location.
+///  * [selectAll], which selects the entire content.   À øŸÀ øŸÀ ø¯  À ô¼À ô¼„£À øƒ¨/// Selects a whole word at the `offset` location.
+///
+/// The `offset` is in global coordinates.
+///
+/// If the whole word is already in the current selection, selection won't
+/// change. One call [clearSelection] first if the selection needs to be
+/// updated even if the word is already covered by the current selection.
+///
+/// One can also use [_selectEndTo] or [_selectStartTo] to adjust the selection
+/// edges after calling this method.
+///
+/// See also:
+///  * [_selectStartTo], which sets or updates selection start edge.
+///  * [_selectEndTo], which sets or updates selection end edge.
+///  * [_finalizeSelection], which stops the `continuous` updates.
+///  * [clearSelection], which clears the ongoing selection.
+///  * [_collapseSelectionAt], which collapses the selection at the location.
+///  * [_selectParagraphAt], which selects an entire paragraph at the location.
+///  * [selectAll], which selects the entire content.   À üúÀ üúÀ ı
+  À ùcÀ ùc„\À üæƒY/// Selects the entire paragraph at the `offset` location.
+///
+/// The `offset` is in global coordinates.
+///
+/// If the paragraph is already in the current selection, selection won't
+/// change. One call [clearSelection] first if the selection needs to be
+/// updated even if the paragraph is already covered by the current selection.
+///
+/// One can also use [_selectEndTo] or [_selectStartTo] to adjust the selection
+/// edges after calling this method.
+///
+/// See also:
+///  * [_selectStartTo], which sets or updates selection start edge.
+///  * [_selectEndTo], which sets or updates selection end edge.
+///  * [_finalizeSelection], which stops the `continuous` updates.
+///  * [clearSelection], which clear the ongoing selection.
+///  * [_selectWordAt], which selects a whole word at the location.
+///  * [selectAll], which selects the entire content.   À ıÃÀ ıÃ‚&À ÿ‡¬/// Stops any ongoing selection updates.
+///
+/// This method is different from [clearSelection] that it does not remove
+/// the current selection. It only stops the continuous updates.
+///
+/// A continuous update can happen as result of calling [_selectStartTo] or
+/// [_selectEndTo] with `continuous` sets to true which causes a [Selectable]
+/// to scroll. Calling this method will stop the update as well as the
+/// scrolling.   À ÿíÀ ÿí0À 3>/// Removes the ongoing selection for this [SelectableRegion].   À!À!€ÓÀ.    ÀøÀø€âÀ    ÀĞÀĞÀÕ  À©À©‚ÍÀ®    À	šÀ	šÀ	ª   À	·À	·À	¼  À	zÀ	z‚3À	    ÀÿÀÿÀ  ÀÜÀÜ„VÀá    À%À%À% À$úÀ$ûÀ%+À$úÀ$ú€¨À%    À%ÂÀ%ÂÀ%Ù À%¦À%§À%¦À%¦ À%·    À'ŞÀ'ŞÀ'ô À'JÀ'KÀ'UÀ'»À'[À'„À'¿À'ÀÀ'JÀ'JOÀ'Ğ    À)üÀ)üÀ*	 À)hÀ)iÀ)sÀ)ÙÀ)yÀ)¢À)İÀ)ŞÀ)hÀ)h€êÀ)î    À*éÀ*éÀ*ÿ À*VÀ*WÀ*aÀ*ÇÀ*gÀ*À*ËÀ*ÌÀ*VÀ*V€ÈÀ*Ü    À+ÃÀ+ÃÀ+Ô   À+ÛÀ+ÛÀ+ñ À+"À+#À+-À+“À+3À+\À+—À+˜À+"À+"À+¨    À,ÌÀ,ÌÀ,â À,4À,5À,?À,¥À,EÀ,nÀ,©À,ªÀ,4À,4€ÓÀ,Â    À-EÀ-EÀ-P À-0À-1À-0À-0€õÀ-A    À.AÀ.AÀ.L À.)À.*À.)À.)€ÛÀ.:   À/À/	À/À/À/À/‚yÀ/&    À1«À1«À1¸ À1…À1†À1’À1“À1…À1……~À1¥  ¸t¸tÀ ş‘¸#/// State for a [SelectableRegion]. À8.À8.À8.       À8rÀ8rÀ8t   À8}À8}À8‹  À8]À8]8À8e    À8´À8´À8¶   À8¿À8¿À8Í À8™À8šÀ8™À8™€ÀÀ8­  À7À7‚TÀ8/// An action that does not override any [Action.overridable] in the subtree.
+///
+/// If this action is invoked by an [Action.overridable], it will immediately
+/// invoke the [Action.overridable] and do nothing else. Otherwise, it will call
+/// [invokeAction].  À9¨ À9¸    À9¹À9¹
+À9¾  À9¨À9¨    À9åÀ9É!À9å      À:À:À:!   À:*À:*À:8 À9ïÀ9ğÀ9ïÀ9ï€À:   À9]À9]!À9c   À:Ó À:ç    À:èÀ:è
+À:í  À:ÓÀ:Ó!    À;À:ø!À;      À;<À;<À;T   À;]À;]À;k À;À;À;À;oÀ;/  À:€À:€À:†   À< À<&    À<'À<'
+À<,   À<4À<4À<B  À<À<J  À;¸À;¸&À;¸  À<pÀ<T!À<p  À<À<y!À<      À<½À<½À<¿   À<ÈÀ<ÈÀ<Ö À<ŸÀ< À<ŸÀ<Ÿ€‰À<°  À;‘À;‘™À;—   À=¨ À=Í    À=ÎÀ=Î
+À=Ó   À=ÛÀ=ÛÀ=é  À=¨À=¨O  À=XÀ=X(À=X  À>À=û!À>  À>6À> !À>6      À>dÀ>dÀ>f   À>oÀ>oÀ>} À>FÀ>GÀ>FÀ>F€÷À>W  À=,À=,‚À=2   À?À À?è    À?éÀ?é
+À?î  À?ÀÀ?À5  À?pÀ?p(À?p  À@À?ù!À@      À@=À@=À@?   À@HÀ@HÀ@V À@À@ À@À@€íÀ@0  À?AÀ?AÍÀ?G   ÀFïÀFğÀFãÀFîÀFäÀFÊÀFt}ÀFÊ=/// The set of [Selectable]s that have received start events.ÀGmÀGnÀGaÀGlÀGbÀGJÀFöyÀGJ;/// The set of [Selectable]s that have received end events. ÀG¿ÀGtmÀG¿@/// The global position of the last selection start edge update. ÀH/ÀGæiÀH/>/// The global position of the last selection end edge update.     ÀKOÀKOÀKc   ÀKoÀKoÀKu ÀK ÀK!ÀHTÀHT„;ÀK2‚¯/// Tracks whether a selection edge update event for a given [Selectable] was received.
+///
+/// When `forEnd` is true, the [Selectable] will be registered as having received
+/// an end event. When false, the [Selectable] is registered as having received
+/// a start event.
+///
+/// When `forEnd` is null, the [Selectable] will be registered as having received both
+/// start and end events.
+///
+/// Call this method when a [SelectionEvent] is dispatched to a child selectable managed
+/// by this delegate.
+///
+/// Subclasses should call [clearInternalSelectionStateForSelectable] to clean up any state
+/// added by this method, for example when removing a [Selectable] from this delegate.  ÀO,ÀO-ÀL“ÀL“„ÀO>‚‚/// Updates the internal selection state after a [SelectionEvent] that
+/// selects a boundary such as: [SelectWordSelectionEvent],
+/// [SelectParagraphSelectionEvent], and [SelectAllSelectionEvent].
+///
+/// Call this method after determining the new selection as a result of
+/// a [SelectionEvent] that selects a boundary. The [currentSelectionStartIndex]
+/// and [currentSelectionEndIndex] should be set to valid values at the time
+/// this method is called.
+///
+/// Subclasses should call [clearInternalSelectionStateForSelectable] to clean up any state
+/// added by this method, for example when removing a [Selectable] from this delegate.   ÀQãÀQã+ÀQó   ÀRÀRÀR" ÀQ«ÀQ¬ÀQ%ÀQ%ÂÀQ½€/// Updates the last selection edge location of the edge specified by `forEnd`
+/// to the provided `globalSelectionEdgeLocation`.   ÀRëÀRë…ÀSp{/// Updates the last selection edge locations of both start and end selection
+/// edges based on their [SelectionGeometry].  ÀY ÀYÀXÀXÎÀY€ï/// Clears the internal selection state.
+///
+/// This indicates that no [Selectable] child under this delegate
+/// has received start or end events, and resets any tracked global
+/// locations for start and end [SelectionEdgeUpdateEvent]s.   À[lÀ[lÀ[w À[1À[2ÀYØÀYØ‚À[CJ/// Clears the internal selection state for a given [Selectable].
+///
+/// This indicates that the given `selectable` has neither received a
+/// start or end [SelectionEdgeUpdateEvent]s.
+///
+/// Subclasses should call this method to clean up state added in
+/// [didReceiveSelectionEventFor] and [didReceiveSelectionBoundaryEvents].   À\ À\ À\ À[èÀ[éÀ[èÀ[è€ŒÀ[ù    À\¤À\¤À\¼ À\xÀ\yÀ\xÀ\x€ÍÀ\”    À]vÀ]vÀ] À]IÀ]JÀ]IÀ]I€ĞÀ]e    À^OÀ^O#À^m À^À^À^À^€ßÀ^9    À_1À_1À_E À_ À_À_ À_ €ÍÀ_    À`À`À`  À_ÑÀ_ÒÀ_ÑÀ_Ñ1À_í   ÀaÀaÀaÀaXÀa    ÀaœÀaœÀa§   Àa³Àa³ÀaÂ ÀabÀacÀabÀabƒàÀa~    ÀgˆÀgˆÀg“ ÀgdÀgeÀeFÀeF…|Àgu‚	/// Ensures the `selectable` child has received the most up to date selection events.
+///
+/// This method is called when:
+///   1. A new [Selectable] is added to the delegate, and its screen location
+///   falls into the previous selection.
+///   2. Before a [SelectionEvent] of type
+///   [SelectionEventType.startEdgeUpdate], [SelectionEventType.endEdgeUpdate],
+///   [SelectionEventType.granularlyExtendSelection], or
+///   [SelectionEventType.directionallyExtendSelection] is dispatched
+///   to a [Selectable] child.  ÀjÆÀjÇÀjÆÀjÆ‚üÀj×  ÀAÀA¬´ÀF…/// A delegate that manages updating multiple [Selectable] children where the
+/// [Selectable]s do not change or move around frequently.
+///
+/// This delegate keeps track of the [Selectable]s that received start or end
+/// [SelectionEvent]s and the global locations of those events to accurately
+/// synthesize [SelectionEvent]s for children [Selectable]s when needed.
+///
+/// When a new [SelectionEdgeUpdateEvent] is dispatched to a [Selectable], this
+/// delegate checks whether the [Selectable] has already received a selection
+/// update for each edge that currently exists, and synthesizes an event for the
+/// edges that have not yet received an update. This synthesized event is dispatched
+/// before dispatching the new event.
+///
+/// For example, if we have an existing start edge for this delegate and a [Selectable]
+/// child receives an end [SelectionEdgeUpdateEvent] and the child hasn't received a start
+/// [SelectionEdgeUpdateEvent], we synthesize a start [SelectionEdgeUpdateEvent] for the
+/// child [Selectable] and dispatch it before dispatching the original end [SelectionEdgeUpdateEvent].
+///
+/// See also:
+///
+///  * [MultiSelectableSelectionContainerDelegate], for the class that provides
+///  the main implementation details of this [SelectionContainerDelegate].  ÀoÂ Àoë    ÀoxÀox€å G/// Creates an instance of [MultiSelectableSelectionContainerDelegate]. ÀpÌÀpÍÀpÀÀpËÀpÁÀp²ÀpamÀp²=/// Gets the list of [Selectable]s this delegate is managing.ÀröÀrÏÀpÓ‚&ÀrÏÑ/// The number of additional pixels added to the selection handle drawable
+/// area.
+///
+/// Selection handles that are outside of the drawable area will be hidden.
+/// That logic prevents handles that get scrolled off the viewport from being
+/// drawn on the screen.
+///
+/// The drawable area = current rectangle of [SelectionContainer] +
+/// _kSelectionHandleDrawableAreaPadding on each side.
+///
+/// This was an eyeballed value to create smooth user experiences.ÀsCÀsDÀsoÀspÀsTÀrşsÀsTB/// The current [Selectable] that contains the selection end edge.Às½Às¾ÀsëÀsìÀsÎÀsvwÀsÎD/// The current [Selectable] that contains the selection start edge. ÀsıÀsòÀsı  ÀtÀt"Àt  ÀtCÀt8ÀtC  ÀtbÀtV Àtb ÀtœÀt€Àt{&Àt€ ÀtÇÀtªÀt¥'Àtª ÀtìÀtÕÀtĞ!ÀtÕ ÀuÀuÀuÀuÀuÀuÀtõ+Àu ÀuGÀu*Àu%'Àu* Àˆ‹Àˆ‘Àˆ¢ÀˆßÀˆ²Àˆ¨Àˆ´ÀˆÅÀˆ¿ÀˆÇÀˆÖÀˆ×ÀˆvÀˆd|Àˆv   Àˆ#Àˆ$Àˆ#Àˆ#>ÀˆE   À‹ÜÀ‹İÀ‹JÀ‹J€ŞÀŒ€‰/// The compare function this delegate used for determining the selection
+/// order of the selectables.
+///
+/// Defaults to screen order.  À·†À·‡À¶¼À¶¼RÀ·š€Á/// The total length of the content under this [SelectionContainerDelegate].
+///
+/// This value is derived from the [Selectable.contentLength] of each [Selectable]
+/// managed by this delegate. $   ÀufÀufÀuq ÀuQÀuRÀuQÀuQ€¡Àub    ÀvÀvÀv ÀuöÀu÷ÀuöÀuöÀv    ÀwyÀwy€ƒÀwÅD/// Notifies this delegate that layout of the container has changed.   Àx Àx ƒ¨Àx    À{¬À{¬€ŸÀ{±    À|OÀ|O‰KÀ|T    À…µÀ…µÀ…À  À…À…ÙÀ…£   À‡ÀÀ‡ÁÀ‡ÍÀ‡ÎÀ‡{À‡{€¤À‡ãB/// Called when this delegate finishes updating the [Selectable]s.   ÀˆåÀˆåCÀ‰7J/// Updates the [value] in this class and notifies listeners if necessary.   ÀŠHÀŠHÀŠS  ÀŠ,ÀŠ,ÀŠ8    ÀŒKÀŒKÀŒV   ÀŒYÀŒYÀŒd  ÀŒ,ÀŒ,–ÀŒ7    ÀÒÀÒÀ×   ÀÚÀÚÀß  ÀÆÀÆƒ8À¿€ã/// Compares two rectangles in the screen order solely by their vertical
+/// positions.
+///
+/// Returns positive if a is lower, negative if a is higher, 0 if their
+/// order can't be determine solely by their vertical position.   À‘ÿÀ‘ÿÀ’   À’À’À’  À‘À‘‚ÄÀ‘ê€Ô/// Compares two rectangles in the screen order by their horizontal positions
+/// assuming one of the rectangles enclose the other rect vertically.
+///
+/// Returns positive if a is lower, negative if a is higher.   À“ÊÀ“ÊnÀ“Ï   À•À•‚À•<À•<ÀÀ• B/// Gets the combined [SelectionGeometry] for child [Selectable]s.   À¨&À¨&À¨*   À¨8À¨8À¨<  À§ôÀ§ôQÀ§ø    À©kÀ©kÀ©v   À©ƒÀ©ƒÀ© À©IÀ©JÀ©IÀ©IÀ©Z    ÀªlÀªlŠ0À«ÅG/// Pushes both handle layers to the selectables that contain selection edges.
+///
+/// This method needs to be called every time the selectables that contain the
+/// selection edges change, i.e. [currentSelectionStartIndex] or
+/// [currentSelectionEndIndex] changes. Otherwise, the handle may be painted
+/// in the wrong place.  À´ÙÀ´ÚÀ´ À´ ‚À´ö6/// Copies the selected contents of all [Selectable]s.   À¹šÀ¹šÀ¹¯  À¸À¸Š`À¹…R/// This method calculates a local [SelectedContentRange] based on the list
+/// of [selections] that are accumulated from the [Selectable] children under this
+/// delegate. This calculation takes into account the accumulated content
+/// length before the active selection, and returns null when either selection
+/// edge has not been set.  ÀÃzÀÃ{ÀÂvÀÂv‚#ÀÃœ€ù/// Returns a [SelectedContentRange] considering the [SelectedContentRange]
+/// from each [Selectable] child managed under this delegate.
+///
+/// When nothing is selected or either selection edge has not been set,
+/// this method will return `null`.   ÀÅìÀÅìƒûÀÅñ    ÀÊIÀÊIÀÊa ÀÊÀÊÀÉëÀÉësÀÊ9./// Selects all contents of all [Selectable]s.   ÀËˆÀËˆÀË—  ÀËbÀËbŠHÀËr    ÀÖDÀÖDÀÖ] ÀÖÀÖÀÕ®ÀÕ®€äÀÖ3c/// Selects a word in a [Selectable] at the location
+/// [SelectWordSelectionEvent.globalPosition].   À×;À×;#À×Y À×À×	ÀÖ–ÀÖ–€øÀ×%m/// Selects a paragraph in a [Selectable] at the location
+/// [SelectParagraphSelectionEvent.globalPosition].   ÀØÀØÀØ  À×ÚÀ×ÛÀ×’À×’xÀ×÷E/// Removes the selection of all [Selectable]s this delegate manages.   ÀÙŠÀÙŠ$ÀÙ© ÀÙMÀÙNÀÙÀÙ…ÀÀÙj</// Extend current selection in a certain [TextGranularity].   ÀßQÀßQ'Àßs ÀßÀßÀŞÒÀŞÒˆYÀß.</// Extend current selection in a certain [TextGranularity].   Àç‰Àç‰Àç¢ ÀçRÀçSÀç/Àç/×Àço /// Updates the selection edges.   Àé=Àé=ÀéL Àé
+ÀéÀé
+Àé
+‡Àé&   ÀğÀğÀğÀğÀğ"    Àò‹Àò‹Àò– ÀòfÀògÀñÀñ‰Àòx>/// Ensures the [Selectable] child has received up to date selection event.
+///
+/// This method is called when a new [Selectable] is added to the delegate,
+/// and its screen location falls into the previous selection.
+///
+/// Subclasses are responsible for updating the selection of this newly added
+/// [Selectable].   Àó­Àó­Àó¸   ÀóÄÀóÄÀóÓ ÀórÀósÀò¦Àò¦nÀó€Ã/// Dispatches a selection event to a specific [Selectable].
+///
+/// Override this method if subclasses need to generate additional events or
+/// treatments prior to sending the [SelectionEvent].   ÀöÀöÀö¶   Àö¾Àö¾ÀöÌ  ÀôÀô‰Àö‚O/// Initializes the selection of the selectable children.
+///
+/// The goal is to find the selectable child that contains the selection edge.
+/// Returns [SelectionResult.end] if the selection edge ends on any of the
+/// children. Otherwise, it returns [SelectionResult.previous] if the selection
+/// does not reach any of its children. Returns [SelectionResult.next]
+/// if the selection reaches the end of its children.
+///
+/// Ideally, this method should only be called twice at the beginning of the
+/// drag selection, once for start edge update event, once for end edge update
+/// event.   ÀşÄÀşÄÀşİ   ÀşåÀşåÀşó  Àı1Àı1qÀş³e/// Adjusts the selection based on the drag selection update event if there
+/// is already a selectable child that contains the selection edge.
+///
+/// This method starts by sending the selection event to the current
+/// selectable that contains the selection edge, and finds forward or backward
+/// if that selectable no longer contains the selection edge. ÀmÆÀmÆÀ ŸŞÀo9/// A delegate that handles events and updates for multiple [Selectable]
+/// children.
+///
+/// Updates are optimized by tracking which [Selectable]s reside on the edges of
+/// a selection. Subclasses should implement [ensureChildUpdated] to describe
+/// how a [Selectable] should behave when added to a selection.  À«ÀÓÀÕ    À«À«-ÀÔ  À%ÀDÀEÀüÀÜrÀü   ÀÀÀSÀSÀ@€´/// The current value of the [SelectableRegionSelectionStatus] of the [SelectableRegion]
+/// that owns this object.
+///
+/// Defaults to [SelectableRegionSelectionStatus.finalized].   À3À3)ÀS ÀÀÀnÀn‚aÀ-€¥/// Sets the [SelectableRegionSelectionStatus] for the [SelectableRegion] that
+/// owns this object.
+///
+/// Listeners are notified even if the value did not change.  ÀøÀø…ÙÀ'"/// Notifies its listeners when the [SelectableRegion] that created this object
+/// is changing or finalizes its selection.
+///
+/// To access the [_SelectableRegionSelectionStatusNotifier] from the nearest [SelectableRegion]
+/// ancestor, use [SelectableRegionSelectionStatusScope.maybeOf].  À¾ÀâÀä    ÀëÀë%Àù   ÀÀÀ%  À¸À¸yÀã   ÀÀ5pÀ/// Tracks updates to the [SelectableRegionSelectionStatus] of the owning
+/// [SelectableRegion].
+///
+/// Listeners will be called even when the value of the [SelectableRegionSelectionStatus]
+/// does not change. The selection under the [SelectableRegion] still may have changed.     À =À =À J  ÀªÀª‚8À 5C/// The closest instance of this class that encloses the given context.
+///
+/// If there is no enclosing [SelectableRegion] or [SelectionArea] widget, then null is
+/// returned.
+///
+/// Calling this method will create a dependency on the closest
+/// [SelectableRegionSelectionStatusScope] in the [context], if there is one.   À!
+À!
+.À!/ À æÀ çÀ æÀ æ€¢À ÷  ÀÓÀÓ†·Àw—/// Notifies its listeners when the selection under a [SelectableRegion] or
+/// [SelectionArea] is being changed or finalized.
+///
+/// Use [SelectableRegionSelectionStatusScope.maybeOf], to access the [ValueListenable] of type
+/// [SelectableRegionSelectionStatus] under a [SelectableRegion]. Its listeners
+/// will be called even when the value of the [SelectableRegionSelectionStatus]
+/// does not change.  À'D À'U    À'WÀ'W	À']   À'bÀ'bÀ'p   À'ƒÀ'ƒÀ'‘  À'À'€Š ,/// Create a new [SelectionListener] widget.  À'öÀ'jÀ'ö6/// Notifies listeners when the selection has changed. À(‹À(€„À(‹k/// The child widget this selection listener applies to.
+///
+/// {@macro flutter.widgets.ProxyWidget.child}    À(•À(–À(•À(•PÀ(º  À!ŒÀ!Œ‡[À&â…O/// A [SelectionContainer] that allows the user to access the [SelectionDetails] and
+/// listen to selection changes for the child subtree it wraps under a [SelectionArea]
+/// or [SelectableRegion].
+///
+/// The selection updates are provided through the [selectionNotifier], to listen
+/// to these updates attach a listener through [SelectionListenerNotifier.addListener].
+///
+/// This widget does not listen to selection changes of nested [SelectionArea]s
+/// or [SelectableRegion]s in its subtree because those widgets are self-contained
+/// and do not bubble up their selection. To listen to selection changes of a
+/// [SelectionArea] or [SelectableRegion] under this [SelectionListener], add
+/// an additional [SelectionListener] under each one.
+///
+/// {@tool dartpad}
+/// This example shows how to use [SelectionListener] to access the [SelectionDetails]
+/// under a [SelectionArea] or [SelectableRegion].
+///
+/// ** See code in examples/api/lib/material/selection_area/selection_area.1.dart **
+/// {@end-tool}
+///
+/// {@tool dartpad}
+/// This example shows how to color the active selection red under a
+/// [SelectionArea] or [SelectableRegion].
+///
+/// ** See code in examples/api/lib/material/selection_area/selection_area.2.dart **
+/// {@end-tool}
+///
+/// See also:
+///
+///   * [SelectableRegion], which provides an overview of the selection system.  À)gÀ)À)¶À)˜À)‡À)šÀ) À)¡À)RÀ),€‹À)R      À)İÀ)İÀ)ï À)¼À)½À)¼À)¼€óÀ)Í   À*³À*´À*³À*³WÀ*Ä    À+'À+'À+4 À+À+À+À+€†À+!  À(éÀ(é‚­À(ï   À, À,&    À,(À,(4À,K À,xÀ,eÀ,zÀ,À,€Æ    À,éÀ,Ö,À,é  À-!À-,À-!   À/íÀ/îÀ/íÀ/í>À0   À0/À00À0/À0/7À0O     À-IÀ-I%À-c  À-7À-7€äÀ-<   À.À. À.À.,À.0   À/OÀ/PÀ/OÀ/O€šÀ/`  À+˜À+˜„ĞÀ+¤       À2ºÀ2º€¨À3\€/// The computed selection range of the owning [SelectionListener]s subtree.
+///
+/// Returns `null` if there is nothing selected.   À3fÀ3f€€À3ßb/// The status that indicates whether there is a selection and whether the selection is collapsed.   À0jÀ0jƒ~À2¥‚%/// A read-only interface for accessing the details of a selection under a [SelectionListener].
+///
+/// This includes information such as the status of the selection indicating
+/// if it is collapsed or uncollapsed, the [SelectedContentRange] that includes
+/// the start and end offsets of the selection local to the [SelectionListener]
+/// that reports this object.
+///
+/// This object is typically accessed by providing a [SelectionListenerNotifier]
+/// to a [SelectionListener] and retrieving the value from [SelectionListenerNotifier.selection].   À4çÀ4Ë.À4ç    À4şÀ4ş­À6,/// The details of the selection under the [SelectionListener] that owns this notifier.
+///
+/// Throws an exception if this notifier has not been registered to a [SelectionListener].
+/// To check if a notifier has been registered to a [SelectionListener] use [registered].   À6¯À6¯€À7Z/// Whether this [SelectionListenerNotifier] has been registered to a [SelectionListener].    À7jÀ7j,À7…  À7BÀ7B8À7G    À8~À8~PÀ8ƒ   À8ìÀ8íÀ8ìÀ8ìaÀ8ı    À:"À:"À:/ À:À:À9QÀ9QÀ:€«/// Calls the listener every time the [SelectionGeometry] of the selection changes under
+/// a [SelectionListener].
+///
+/// Listeners can be removed with [removeListener]. À3êÀ3ê†wÀ4–€Ÿ/// Notifies listeners when the selection under a [SelectionListener] has been
+/// changed.
+///
+/// This object is typically provided to a [SelectionListener].    À0À0¶ÀŞŸ/// Indicates that the selection under a [SelectableRegion] is changing.
+///
+/// A [SelectableRegion]s selection is changing when it is being
+/// updated by user through selection gestures and keyboard shortcuts.
+/// For example, during a text selection drag with a click + drag,
+/// a [SelectableRegion]s selection is considered changing until
+/// the user releases the click, then it will be considered finalized. ÀëÀë‚Àêî/// Indicates that the selection under a [SelectableRegion] is finalized.
+///
+/// A [SelectableRegion]s selection is finalized when it is no longer
+/// being updated by the user through selection gestures or keyboard
+/// shortcuts. For example, the selection will be finalized on a mouse
+/// drag end, touch long press drag end, a single click to collapse the
+/// selection, a double click/tap to select a word, ctrl + A / cmd + A to
+/// select all, or a triple click/tap to select a paragraph.    À²À²…DÀT/// The status of the selection under a [SelectableRegion].
+///
+/// This value can be accessed for a [SelectableRegion] by using
+/// [SelectableRegionSelectionStatusScope.maybeOf].
+///
+/// This value under a [SelectableRegion] is updated frequently
+/// during selection gestures such as clicks and taps to select
+/// and keyboard shortcuts.      ……k„û…„ü……#…$…-…>…?…I…Z…[„İ„À€¬„İ †‚†Y†L9†Y   À¦À¦€¤ÀW/// The length of the content that can be selected, and the range that is
+/// selected.  ÀLÀLdÀ4€ß/// Signature for a widget builder that builds a context menu for the given
+/// [SelectableRegionState].
+///
+/// See also:
+///
+///  * [EditableTextContextMenuBuilder], which performs the same role for
+///    [EditableText].   €®  package:flutter/material.dart  €Ş  &package:flutter_test/flutter_test.dart    editable_text.dart  @  	text.dart M <€†€¤€¥€Õ7S\]r†‡±Ù‚‚+‚S‚…‚†‚‚²‚Ú‚ïƒƒ'ƒ@ƒ`ƒyƒ”ƒ«ƒâ„„„C„a„„„¨„¿„À……+…G…k…n…o…½††L†‡†ˆ†Â†Æ‡‡c‡³‡ÿˆFˆ–ˆ¼ˆÀ‰‰9‰=‰…‰ÑŠŠlŠpŠœŠ Šñ‹'‹+‹|‹¿‹ä‹èŒ)ŒsŒÂb°Üà1Å37‚¶ú	;?SWct’Ìå‘)‘C‘i‘©‘é‘ø’’’’’'’7’;’?’d’‰’ª’Ì’ï““8“^““º“å””>”s”©”­”±”Ó”×•'•i••…•Ï––S–W–¦–ñ—<—[—_—s—¿—Ü—à˜;˜K˜O˜e˜i˜¸™™C™G™[™§™í™ñšPš`šdšµšı› ›$›8›†›Š›òœœœPœ£œò@D\`¸hÄŸŸŸQŸ…Ÿ‰ŸÜ / J N ¡¡\¡ª¡ø¢¢"¢/¢3¢„¢Õ££££v£~£‚££”£Ô¤¤K¤¤¹¥	¥W¥p¥¾¦¦Y¦¦±¦ß¦å§3§U§p§§œ§°§÷¨¨9¨R¨X¨Y¨¨¨®¨ÿ©J©|©‚©±©ì©íªª:ª;ªrªxª©ª¿ªÀªÿ«?«@«‰«˜««è¬'¬X¬Y¬‰¬Å¬Æ­­;­A­‘­­­³­Ã­É®®S®¤®Ş¯/¯d¯˜¯ë°4°t°¬°Ô±±+±2±±»±ğ²²%²N²«²Í²ñ³³>³³æ´´Y´€´‹´Ê´Ëµµfµgµ¸µş¶¶5¶”¶Ä··2··Á¸¸¸"¸#¸/¸q¸s¸t¸˜¸Ô¸ó¹¹a¹¤¹ïº=ºº«ºÖºßºæ»%»v»„»³»¼»Ã»û¼E¼S¼~¼‡¼¼Æ½½#½S½\½c½¢½ø¾¾1¾:¾A¾y¾È¾Ö¿¿
+¿¿V¿»¿ÂÀ @À @WÀ @eÀ @”À @À @¤À @©À @ªÀ @ìÀ AÀ A=À AtÀ A©À AÜÀ B>À BÀ B©À BªÀ BÕÀ CÀ CMÀ CNÀ CoÀ C˜À C™À CÓÀ DÀ DXÀ DjÀ DÀ DŸÀ DÃÀ DüÀ E/À E0À EvÀ E|À E¹À EÎÀ FÀ FÀ FeÀ F³À F´À FıÀ GJÀ GKÀ G‡À G¥À GÃÀ HÀ HÀ HyÀ HÅÀ HùÀ HúÀ IÀ IÀ I(À I?À IpÀ I“À I¶À IËÀ IûÀ J?À JwÀ J£À JäÀ JñÀ JüÀ KÀ KÀ K À KqÀ K–À KÇÀ KèÀ L6À L:À L;À LHÀ LTÀ LuÀ L˜À L½À LàÀ LÿÀ MÀ M1À MRÀ MsÀ M–À M¦À M¬À M­À MøÀ N?À NcÀ N‰À N—À NÀ NÈÀ NîÀ O2À O8À O<À O=À OJÀ OVÀ O‹À O±À OäÀ P)À PgÀ P‹À P«À P÷À Q9À QAÀ QtÀ Q¶À QÕÀ QİÀ QãÀ QçÀ QèÀ R2À R„À RˆÀ R‰À R¨À RÈÀ RìÀ S4À S<À SÀ SŞÀ T*À T{À TÆÀ UÀ UhÀ UŒÀ U¦À UùÀ V$À V,À V2À VTÀ VšÀ V À V¤À V¥À VÇÀ WÀ WGÀ WlÀ WÄÀ XÀ XÀ X^À X†À X§À X´À XØÀ XøÀ XşÀ YÀ YÀ YÀ YÀ YcÀ YŸÀ Y¿À YÀÀ ZÀ ZÀ ZFÀ ZGÀ Z–À Z­À ZÚÀ ZÛÀ [(À [IÀ [mÀ [‚À [©À [ÎÀ [ûÀ \À \EÀ \[À \aÀ \eÀ \fÀ \‘À \çÀ ]4À ]BÀ ]HÀ ]˜À ]œÀ ]À ]íÀ ^@À ^À ^ÕÀ ^ÚÀ _,À _@À _wÀ _–À _»À _ŞÀ `À `dÀ `²À `şÀ a4À aUÀ a_À a¬À bÀ bKÀ b–À bèÀ c1À c^À cuÀ c¦À cÌÀ cÿÀ d À dmÀ dÂÀ eÀ e^À e°À eùÀ f&À f=À fnÀ f”À fÇÀ fæÀ gÀ g*À gwÀ gÌÀ hÀ hDÀ huÀ h{À hÀ h€À h§À hİÀ i'À iSÀ iqÀ i½À iÊÀ iüÀ jÀ jDÀ jwÀ j²À jŞÀ kÀ kHÀ kxÀ k¢À kŞÀ këÀ köÀ kúÀ kûÀ lÀ lhÀ lÁÀ lÓÀ l×À lØÀ lôÀ mÀ mÀ mÀ m=À m•À míÀ nLÀ nÀ nâÀ oÀ o7À o‘À oÉÀ oáÀ oîÀ p+À p@À pƒÀ pĞÀ qÀ qSÀ q–À qØÀ rÀ r^À r À rŞÀ sÀ s`À s„À sÕÀ tÀ t<À tpÀ t¦À tÖÀ u À u<À uIÀ uTÀ uŠÀ uÔÀ v À vÀ vYÀ vfÀ v˜À v­À vëÀ w3À wnÀ w{À w†À wŠÀ w‹À w§À wëÀ xÀ xcÀ xqÀ x”À x½À xäÀ yÀ y.À y~À y’À y¥À yÊÀ yïÀ zÀ z1À zÀ zÏÀ {À {EÀ {rÀ {ËÀ {òÀ |.À |‡À |œÀ |ªÀ |ÈÀ }
+À }aÀ }kÀ }yÀ }¢À }ÅÀ ~"À ~{À ~´À ~ÉÀ ~×À À iÀ ¼À ÚÀ èÀ €À €6À €[À €€À €§À €âÀ 9À CÀ QÀ zÀ ¡À ÈÀ ëÀ ‚=À ‚„À ‚¿À ƒÀ ƒZÀ ƒhÀ ƒÀ ƒ²À ƒÙÀ „À „pÀ „zÀ „€À „¦À „ªÀ „«À „çÀ …4À …BÀ …‘À …ÜÀ …îÀ …øÀ †0À †ƒÀ †‰À †¯À †³À †´À †òÀ ‡?À ‡MÀ ‡œÀ ‡çÀ ‡ùÀ ˆÀ ˆKÀ ˆÀ ˆ¬À ˆÕÀ ˆüÀ ‰#À ‰vÀ ‰¬À Š	À Š%À ŠUÀ ŠwÀ Š®À Š¿À ‹À ‹&À ‹IÀ ‹cÀ ‹‹À ‹ÆÀ ‹òÀ ŒEÀ ŒpÀ Œ¨À ŒÏÀ ŒİÀ Œ÷À %À EÀ zÀ ‰À àÀ 3À QÀ _À „À ©À ĞÀ êÀ À 8À mÀ |À ÓÀ İÀ ëÀ À ;À bÀ …À ÕÀ şÀ ‘PÀ ‘lÀ ‘œÀ ‘¾À ‘úÀ ’À ’dÀ ’rÀ ’—À ’¼À ’ãÀ ’ıÀ “+À “KÀ “…À “”À “ëÀ “õÀ “ûÀ ”!À ”%À ”&À ”^À ”ŠÀ ”ŞÀ •-À •À •ĞÀ •ğÀ –7À –\À –À –¢À –ÔÀ –îÀ —À —À —1À —cÀ —}À —‡À —¨À —ÉÀ —ìÀ ˜=À ˜LÀ ˜RÀ ˜lÀ ˜’À ˜¹À ˜½À ˜¾À ˜óÀ ™*À ™zÀ ™ÄÀ šÀ šWÀ šuÀ š‘À š À š¸À šÀÀ šÎÀ šÔÀ ›!À ›/À ›XÀ ›À ›¦À ›ÉÀ ›äÀ œ&À œ}À œ¢À œÇÀ œîÀ 2À <À JÀ —À ÀÀ çÀ À 3À ˆÀ ÛÀ ùÀ ŸÀ Ÿ%À ŸHÀ ŸmÀ Ÿ‰À ŸéÀ   À  À  aÀ  ´À  ÒÀ  àÀ ¡À ¡*À ¡QÀ ¡˜À ¡ºÀ ¡ÍÀ ¡×À ¡İÀ ¢À ¢*À ¢.À ¢/À ¢YÀ ¢†À ¢”À ¢šÀ ¢âÀ £#À £IÀ £†À £ŒÀ £À £‘À £ÔÀ £ùÀ ¤À ¤KÀ ¤šÀ ¤åÀ ¥7À ¥†À ¥ÁÀ ¥×À ¥İÀ ¦À ¦À ¦À ¦UÀ ¦®À ¦ıÀ §#À §'À §(À §gÀ §À §§À §ÎÀ §âÀ ¨À ¨3À ¨9À ¨=À ¨>À ¨†À ¨ÖÀ ©À ©lÀ ©À ©²À ©ºÀ ©ÀÀ ©ÒÀ ©ÖÀ ©×À ªÀ ªbÀ ª²À ªîÀ «À «2À «UÀ «xÀ «›À «ìÀ ¬,À ¬À ¬ÂÀ ¬ÍÀ ­À ­bÀ ­ŒÀ ­ÎÀ ­èÀ ®)À ®UÀ ®gÀ ®qÀ ®·À ®ÖÀ ¯À ¯6À ¯›À ¯´À ¯ÆÀ ¯ĞÀ °À °0À °PÀ °iÀ °{À °…À °ÖÀ ±À ±zÀ ±¬À ±·À ±øÀ ²@À ²JÀ ²PÀ ²ŸÀ ²ÆÀ ³À ³9À ³uÀ ³‰À ³ÄÀ ³êÀ ³îÀ ³ïÀ ´À ´À ´7À ´~À ´¯À ´°À ´öÀ ´üÀ µMÀ µÀ µĞÀ ¶À ¶hÀ ¶³À ·À ·JÀ ·”À ·¢À ·¨À ·ÕÀ ¸ À ¸4À ¸^À ¸kÀ ¸xÀ ¸›À ¸ÊÀ ¹À ¹GÀ ¹YÀ ¹cÀ ¹•À ¹ßÀ ºÀ º%À º+À º/À º0À º_À º€À º¥À »À »À »IÀ »_À »eÀ »À »¥À »ÌÀ »ĞÀ »ÑÀ »øÀ ¼&À ¼HÀ ¼LÀ ¼MÀ ¼pÀ ¼»À ¼îÀ ¼ïÀ ½7À ½=À ½À ½ßÀ ¾À ¾_À ¾«À ¾öÀ ¿EÀ ¿À ¿ÛÀ ¿éÀ ¿ïÀ ÀÀ ÀIÀ ÀÀ À©À À¶À ÀÃÀ ÀæÀ ÁÀ ÁcÀ Á–À Á¨À Á²À ÁæÀ Â2À ÂlÀ ÂzÀ Â€À Â„À Â…À Â®À ÂŞÀ Ã À ÃÀ ÃÀ Ã+À Ã,À Ã]À ÃŒÀ ÃÀ ÃÕÀ ÄÀ ÄÀ ÄvÀ Ä½À Å!À Å"À ÅHÀ Å­À Å´À ÅÚÀ ÅŞÀ ÅßÀ Æ)À Æ„À ÆÎÀ ÇÀ Ç5À ÇaÀ Ç²À ÇÚÀ ÇÛÀ ÈÀ ÈhÀ ÈoÀ È•À ÈäÀ ÈèÀ ÈéÀ É/À ÉoÀ ÉËÀ ÊÀ ÊtÀ ÊuÀ Ê›À ÊşÀ ËÀ Ë+À Ë/À Ë0À ËxÀ ËÏÀ ÌÀ ÌbÀ Ì~À Ì¨À Ì÷À ÍÀ ÍÀ ÍFÀ Í©À Í°À ÍÖÀ Î%À Î)À Î*À ÎRÀ ÎtÀ Î—À ÎÀ ÎõÀ ÏGÀ ÏwÀ Ï·À ÏÜÀ ĞÀ ĞFÀ ĞOÀ ĞpÀ ĞwÀ ĞxÀ Ğ’À ĞÆÀ ĞâÀ Ñ"À ÑlÀ ÑsÀ ÑwÀ ÑxÀ Ñ›À ÑÅÀ ÑêÀ ÑøÀ ÑşÀ ÒNÀ ÒšÀ ÒÄÀ ÒÜÀ ÒüÀ ÓKÀ ÓŠÀ ÓÎÀ ÔÀ Ô?À ÔŠÀ ÔÇÀ ÕÀ ÕIÀ ÕrÀ Õ À ÕÓÀ ÕòÀ ÖÀ ÖBÀ ÖqÀ ÖœÀ ÖÙÀ ÖàÀ ÖäÀ ÖåÀ ×À ×-À ×;À ×AÀ ×kÀ ×»À ØÀ ØÀ ØjÀ Ø«À ØôÀ Ù3À ÙdÀ ÙhÀ ÙiÀ ÙŒÀ Ù’À ÙİÀ ÙêÀ ÚÀ Ú'À ÚOÀ ÚbÀ ÚhÀ ÚiÀ Ú’À Ú¦À Ú¬À Ú­À ÚÌÀ ÚòÀ ÛÀ ÛÀ ÛÀ Û0À Û6À ÛÀ ÛÑÀ ÜÀ Ü/À Ü5À Ü†À Ü°À ÜöÀ İ
+À İÀ İÀ İbÀ İ²À ŞÀ ŞMÀ ŞÀ Ş°À ŞÄÀ ŞÊÀ ŞËÀ ŞğÀ ßÀ ßÀ ßÀ ßKÀ ß—À ßåÀ à3À àwÀ àŸÀ à²À à¸À à¹À àßÀ ààÀ áÀ áÀ áOÀ á‰À á’À á™À áªÀ á®À á¯À áòÀ áøÀ âFÀ â˜À âàÀ âæÀ ã*À ãhÀ ãnÀ ã¸À äÀ äOÀ äuÀ ä{À ä®À ä´À äáÀ äçÀ å;À åƒÀ å¹À å¿À åÏÀ æÀ æ[À æšÀ æàÀ ç2À ç‚À çºÀ çĞÀ çìÀ è	À è/À è6À èMÀ èxÀ è×À èàÀ èîÀ èôÀ éÀ éEÀ éÀ é“À é—À é˜À éİÀ éãÀ ê1À êƒÀ êËÀ êÑÀ ëÀ ëUÀ ë[À ë¥À ëôÀ ì<À ìbÀ ìhÀ ì›À ì¡À ìÎÀ ìÔÀ í(À ípÀ í¦À í¬À í¼À íÿÀ îDÀ îƒÀ îÉÀ ïÀ ïkÀ ï£À ï»À ï×À ïôÀ ğÀ ğ!À ğ8À ğcÀ ğÄÀ ğÍÀ ğÛÀ ğáÀ ñÀ ñ6À ñ€À ñ†À ñŠÀ ñ‹À ñÉÀ ñÏÀ ñüÀ òÀ òÀ òYÀ òœÀ òáÀ ó À ófÀ ó¸À óğÀ ô(À ôUÀ ôoÀ ô“À ôµÀ ô¹À ôºÀ ôïÀ ôõÀ õ"À õ(À õuÀ õÀÀ öÀ öÀ ödÀ ö‹À ö‘À ö¡À öèÀ ÷+À ÷pÀ ÷¯À ÷ÿÀ øQÀ ø‰À øºÀ øçÀ ùÀ ù\À ù`À ùaÀ ùÀ ù¤À ùÑÀ ù×À ú#À únÀ ú¿À úÅÀ ûÀ û>À ûDÀ ûTÀ û›À ûŞÀ ü#À üaÀ ü§À üßÀ ıÀ ıBÀ ı\À ı¼À ıÀÀ ıÁÀ ıìÀ ıòÀ ş?À ş‚À şˆÀ şÖÀ ÿ&À ÿoÀ ÿ€À ÿÀ ÿÁÀ ÿæÀ ÿêÀ ÿëÀ ,À FÀ `À ‹À ®À ôÀÀÀÀ>ÀƒÀ›À©À¯ÀñÀõÀöÀÀ[ÀsÀÀ‡À×ÀÛÀÜÀÀÀ)À/À~À­ÀäÀÀwÀÌÀ#ÀOÀeÀkÀ«ÀáÀıÀ'ÀMÀ{À‚À†À‡À§ÀàÀ
+À0À6ÀQÀ¡ÀíÀ&À?ÀÀ™À¦ÀèÀîÀ	8À	sÀ	wÀ	xÀ	ÇÀ	òÀ
+$À
+2À
+8À
+aÀ
+‡À
+¡À
+ÜÀ
+şÀÀÀ4ÀƒÀªÀ®À¯ÀÙÀÚÀÀAÀOÀUÀ«ÀíÀ#À\À£ÀíÀ%ÀWÀ^À‡À°ÀØÀóÀ#ÀXÀƒÀŒÀ“À¹ÀÀ/À3À4À\À]À©ÀÒÀØÀèÀîÀBÀÀáÀ(ÀwÀÀŞÀÀGÀ“ÀãÀÀTÀ‡ÀšÀ«À¬ÀãÀÀ3ÀZÀxÀÏÀşÀ!ÀAÀfÀ‹À²ÀÍÀ×ÀàÀøÀ!ÀHÀkÀ’ÀÈÀíÀÀ9ÀRÀmÀwÀ€À”À¦À§ÀàÀ	À0ÀWÀuÀÌÀûÀÀ>ÀcÀˆÀ¯ÀÊÀÔÀİÀÀÀÀXÀ‹ÀĞÀèÀÀÀ	ÀKÀbÀÀ ÀÀÀøÀ#À}ÀšÀ¨ÀµÀÀÀÉÀÏÀçÀëÀìÀ)ÀIÀÀ’À“ÀÎÀìÀ/À3À4ÀƒÀ·À À SÀ }À ÏÀ!À!VÀ!{À!¼À!ÿÀ"À"À":À"}À"¾À"ÇÀ"ÍÀ"àÀ"äÀ"åÀ#À#OÀ#{À#±À#²À#ÁÀ#êÀ$#À$'À$3À$SÀ$TÀ$cÀ$ŒÀ$ÅÀ$ÉÀ$ÕÀ$÷À$øÀ%À%4À%ZÀ%qÀ%™À%ŸÀ%£À%¤À%°À%ãÀ%ùÀ&CÀ&uÀ&‹À&¡À&§À&ÍÀ'À'CÀ'GÀ'HÀ'WÀ'€À'¹À'½À'ÉÀ'ıÀ(
+À( À(oÀ(–À(šÀ(›À(ªÀ(ÓÀ)À)À)À)eÀ)fÀ)uÀ)À)×À)ÛÀ)çÀ*À*OÀ*SÀ*TÀ*cÀ*ŒÀ*ÅÀ*ÉÀ*ÕÀ+À+À+À+ À+/À+XÀ+‘À+•À+¡À+úÀ,-À,1À,2À,AÀ,jÀ,£À,§À,³À,ñÀ-À-À-	À--À-.À-:À-^À-À-À-ÓÀ."À.&À.'À.3À.ZÀ.À.ºÀ.éÀ/À/À/À/À/À/2À/kÀ/šÀ/¼À/äÀ02À0lÀ0”À0¶À0ÔÀ1À1IÀ1iÀ1~À1‚À1ƒÀ1À1œÀ1ÃÀ1îÀ2*À2cÀ2ÈÀ2ÏÀ2ñÀ34À3:À3PÀ3qÀ3 À3çÀ40À4IÀ4TÀ4–À4ÂÀ4ØÀ4øÀ5À5À53À5TÀ5wÀ5 À5ÑÀ5÷À6À60À6`À6‡À6¬À6ÉÀ6ØÀ6åÀ6ğÀ6ùÀ7 À7À7À7À7UÀ7YÀ7§À7øÀ8À8[À8–À8—À8£À8ÙÀ8úÀ9&À9,À9VÀ9ZÀ9\À9]À9¦À9ÆÀ9ÇÀ9ìÀ9íÀ9ùÀ:DÀ:yÀ:}À:À:€À:ÑÀ:õÀ:öÀ;À;À;(À;wÀ;ŠÀ;À;À;‘À;àÀ<À<QÀ<RÀ<wÀ<œÀ<À<©À<âÀ=%À=)À=+À=,À=‚À=¦À=øÀ=ùÀ>À>CÀ>DÀ>PÀ>‰À>­À>ãÀ>ñÀ>÷À?:À?>À?@À?AÀ?šÀ?¾À?öÀ?÷À@À@À@)À@bÀ@†À@¼À@ÊÀ@ĞÀA	ÀAÀAÀAÀA^ÀA™ÀAÀAëÀB8ÀBÀB…ÀBÕÀC#ÀCtÀCÉÀCïÀCóÀDKÀD¦ÀDÿÀEfÀEjÀExÀE|ÀEÌÀFÀFrÀF²ÀFóÀFôÀG2ÀGqÀGrÀGµÀGãÀGäÀH%ÀHQÀHRÀH¬ÀH²ÀIÀIXÀImÀIsÀIÌÀIèÀIîÀJIÀJaÀJgÀJÅÀKÀK+ÀK€ÀK–ÀK§ÀKÕÀKçÀLÀL(ÀLXÀL†ÀLŒÀLÀL‘ÀLÚÀMÀM^ÀMdÀM®ÀNÀNPÀNmÀNsÀNÑÀO*ÀO7ÀOdÀO²ÀOÀÀOÆÀPÀPfÀPÀPáÀPçÀQÀQ"ÀQ#ÀQtÀQ©ÀQ¶ÀQßÀRÀR*ÀR1ÀRCÀR‰ÀR–ÀRŞÀRäÀRèÀRéÀS9ÀSiÀS¤ÀSĞÀTÀT^ÀT‚ÀT½ÀUÀU+ÀUlÀU’ÀU¬ÀU·ÀUÎÀU×ÀUİÀVÀVKÀVÀV±ÀVèÀW+ÀWRÀW“ÀW·ÀWÏÀWÚÀWğÀWùÀWÿÀXÀXÀX/ÀX5ÀXyÀX¿ÀXşÀYÀY2ÀYuÀY¤ÀYÑÀYÕÀYÖÀZÀZ ÀZhÀZ˜ÀZÀZâÀ[/À[<À[…À[´À[áÀ[åÀ[æÀ[òÀ\À\SÀ\qÀ\uÀ\vÀ\‚À\ÅÀ]À]/À]BÀ]FÀ]GÀ]SÀ]˜À]ÚÀ^À^À^À^À^'À^vÀ^½À^æÀ^ùÀ^ıÀ^şÀ_
+À_NÀ_”À_·À_ÊÀ_ÎÀ_ÏÀ_ÛÀ`)À`NÀ`‡À`ÅÀ`ÌÀ`ÿÀaÀaÀaÀa#ÀaFÀa[Àa_Àa`ÀalÀaËÀaåÀbÀb`ÀbˆÀbµÀc Àc(ÀcMÀc‹Àc´ÀcŞÀdÀdÀdUÀd‘ÀdÎÀdöÀdüÀe?ÀeCÀeDÀeœÀe¢ÀeÄÀfÀf?ÀflÀf¾ÀfùÀgAÀgbÀgnÀg¡ÀgıÀh=ÀhxÀhÀh­ÀhâÀhêÀi%Ài+Ài‹ÀiÍÀj
+ÀjÀjAÀjvÀj~Àj¹Àj¿ÀjÃÀjÄÀjĞÀjğÀk$ÀkEÀk¡ÀkªÀk°ÀkæÀlÀlgÀlpÀlvÀlµÀlÛÀm!Àm(ÀmPÀm–ÀmÀm¿ÀmÃÀmÅÀmÆÀnÀnÀn!ÀnrÀnÀÀo Ào\ÀovÀoÀÀoğÀpÀpTÀpZÀp^Àp_ÀpŸÀpĞÀpÑÀqÀq*Àq0Àq~ÀqÎÀqéÀqïÀr5ÀrnÀrtÀr¹ÀrûÀrüÀsAÀsNÀssÀstÀs»ÀsÈÀsïÀsğÀtÀt6ÀtTÀtxÀtyÀt£ÀtÎÀtóÀu"Àu#ÀuNÀuOÀu[ÀuÀu®ÀuÎÀuïÀuóÀuôÀv Àv'ÀvPÀv˜ÀvÄÀvÍÀwÀw(Àw.ÀwQÀwrÀwvÀwwÀw¾ÀwÙÀwùÀwıÀwşÀx#ÀxJÀxsÀx§ÀxÒÀxäÀxîÀyÀy8Ày@ÀyAÀyœÀyíÀz9Àz…Àz¿ÀzìÀzûÀ{3À{OÀ{ŒÀ{—À{ŸÀ{¥À{©À{ªÀ{ÈÀ{ìÀ|À|&À|,À|HÀ|LÀ|MÀ|hÀ|ÁÀ|ÿÀ}!À};À}VÀ}À}ÆÀ}åÀ~JÀ~À~ºÀÀ5ÀpÀ¤À®ÀçÀ€À€#À€`À€|À€À€–À€—À€èÀÀSÀªÀ‚À‚0À‚8À‚~À‚¨À‚ÁÀ‚ÇÀ‚ÓÀƒÀƒ?Àƒ}Àƒ„Àƒ×À„&À„tÀ„ÃÀ…À…@À…vÀ…—À…›À…œÀ…ÎÀ†(À†_À†€À†­À†ÒÀ†ØÀ‡À‡.À‡4À‡tÀ‡xÀ‡yÀ‡¾À‡ËÀ‡ÜÀ‡üÀˆÀˆ Àˆ!Àˆ-ÀˆbÀˆ¤Àˆ»ÀˆİÀˆâÀˆãÀ‰0À‰TÀ‰“À‰½À‰âÀ‰ûÀŠÀŠ%ÀŠ)ÀŠ*ÀŠaÀŠ“ÀŠâÀ‹*À‹0À‹CÀ‹GÀ‹HÀ‹”À‹´À‹ºÀ‹ÚÀ‹çÀŒ)ÀŒ*ÀŒiÀŒÇÀ%À^ÀuÀŠÀÀ¿ÀÃÀÄÀÀ À&ÀpÀ²ÀäÀ%ÀhÀ¶ÀùÀGÀWÀ]À§ÀÌÀÒÀûÀÿÀ‘ À‘PÀ‘˜À‘À‘İÀ’À’&À’‹À’œÀ’¢À’·À“À“,À“2À“oÀ“–À“œÀ“ÃÀ“ÇÀ“ÈÀ“óÀ”DÀ”’À”ÜÀ•À•À•À•5À•9À•:À•À•ŒÀ•¹À–À–DÀ–¦À–¬À–­À–ÔÀ—&À—JÀ—lÀ—uÀ—ÅÀ—çÀ˜À˜À˜À˜À˜SÀ˜¨À™À™9À™tÀ™©À™ŞÀšÀšÀš Àš@ÀšuÀšËÀ›À›À›TÀ›]À›•À›±À›ÖÀ›öÀœ;Àœ€Àœ‹Àœ“Àœ™ÀœšÀœĞÀ!ÀTÀ¸ÀëÀ"À(ÀFÀwÀÉÀşÀŸÀŸJÀŸSÀŸ‹ÀŸ¥ÀŸÈÀŸæÀ 'À hÀ sÀ {À À ‚À ËÀ¡À¡3À¡ZÀ¡£À¡³À¢À¢qÀ¢ÈÀ¢îÀ£:À£’À£ÖÀ£ãÀ¤À¤PÀ¤]À¤rÀ¤±À¤·À¤¸À¤ÖÀ¤ıÀ¥ À¥FÀ¥§À¥ÚÀ¥òÀ¥ùÀ¥ıÀ¥şÀ¦IÀ¦–À¦äÀ§1À§€À§À§¢À§òÀ¨KÀ¨€À¨ªÀ¨ûÀ©#À©)À©BÀ©FÀ©GÀ©SÀ©›À©çÀ©õÀ©ûÀª ÀªAÀªeÀªiÀªjÀª»ÀªÁÀ«À«UÀ«¤À«¾À«æÀ¬À¬TÀ¬šÀ¬ÃÀ¬ŞÀ¬ïÀ­ À­#À­GÀ­ƒÀ­•À­¸À­çÀ®	À®UÀ®vÀ®£À®ÅÀ¯À¯XÀ¯›À¯¡À¯ïÀ°À°8À°vÀ°À°¥À°ÏÀ±À±0À±8À±FÀ±LÀ±MÀ±šÀ±ÖÀ±ÜÀ²%À²_À²eÀ²fÀ²¬À²­À²ïÀ³#À³XÀ³²À³ÀÀ³ÆÀ³ÇÀ´À´SÀ´™À´À´À´×À´ãÀµÀµ7ÀµnÀµÁÀµÈÀµæÀµùÀµÿÀ¶"À¶LÀ¶uÀ¶{À¶µÀ¶¹À¶ºÀ·	À·À·dÀ·„À·À·«À¸À¸À¸^À¸³À¸ÿÀ¹PÀ¹mÀ¹½ÀºÀºÀº$Àº=ÀºTÀºpÀºÄÀ»À»xÀ»èÀ¼(À¼kÀ¼„À¼âÀ¼èÀ½&À½`À½…À½ŸÀ½ÆÀ¾À¾NÀ¾[À¾eÀ¾•À¾¶À¾ÈÀ¾ĞÀ¿ À¿&À¿JÀ¿SÀ¿À¿§À¿ËÀ¿ÔÀ¿íÀÀÀÀ{ÀÀ–ÀÀ¥ÀÀõÀÀıÀÁÀÁÀÁ!ÀÁÄÀÁËÀÁìÀÂ+ÀÂhÀÂoÀÂsÀÂtÀÂÂÀÃÀÃÀÃRÀÃxÀÃ„ÀÃ­ÀÃÖÀÄÀÄbÀÄiÀÄ–ÀÄšÀÄ›ÀÄÜÀÅÀÅÀÅoÀÅ¡ÀÅ¦ÀÅêÀÆÀÆ\ÀÆjÀÆpÀÆ¾ÀÆûÀÇ ÀÇHÀÇZÀÇ¤ÀÇ¸ÀÇÛÀÈ/ÀÈ<ÀÈJÀÈPÀÈ¥ÀÈøÀÉ:ÀÉnÀÉ€ÀÉˆÀÉŞÀÉäÀÉèÀÉéÀÊÀÊ'ÀÊjÀÊ¡ÀÊÙÀÊßÀËÀË:ÀË[ÀË_ÀË`ÀË ÀË¬ÀËÿÀÌWÀÌ^ÀÌÀÌÄÀÍÀÍ[ÀÍ´ÀÍºÀÍäÀÎ&ÀÎTÀÎÀÎÑÀÏÀÏCÀÏUÀÏbÀÏ ÀÏÏÀÏâÀÏîÀÏøÀĞ ÀĞ(ÀĞuÀĞÍÀÑ+ÀÑRÀÑ\ÀÑ—ÀÑ«ÀÑµÀÒÀÒ-ÀÒ7ÀÒsÀÒÃÀÓ
+ÀÓ ÀÓjÀÓ‚ÀÓ©ÀÔÀÔÀÔ[ÀÔeÀÔ‰ÀÔ˜ÀÔÓÀÕ ÀÕFÀÕPÀÕXÀÕ^ÀÕ‡ÀÕ§ÀÕ«ÀÕ¬ÀÕãÀÖÀÖ!ÀÖfÀÖÀÖ“ÀÖ”ÀÖĞÀ×À×À×bÀ×‹À×À×À×ØÀ×åÀØ)ÀØ`ÀØ˜ÀØÀØÁÀØæÀÙÀÙÀÙÀÙKÀÙXÀÙ²ÀÚÀÚ2ÀÚMÀÚÀÚŸÀÚ÷ÀÚÿÀÛÀÛ`ÀÛ½ÀÛÖÀÜÀÜ_ÀÜyÀÜÊÀÜşÀİÀİÀİAÀİ‡Àİ¡ÀİòÀŞ"ÀŞ*ÀŞ0ÀŞGÀŞuÀŞ‚ÀŞ²ÀŞ¸ÀŞËÀŞÏÀŞĞÀßÀßÀß|ÀßĞÀßüÀàUÀà†ÀàËÀáÀá(Àá.Àá‰ÀáæÀâÀâ7ÀâŒÀâ¾ÀâßÀâıÀã1ÀãYÀã¥Àã´ÀãçÀãóÀãıÀä+Àä|ÀäªÀäàÀäşÀå2ÀåZÀå¥Àå´ÀåçÀåóÀåıÀæ*ÀæXÀæ‡ÀæÀæ¤ÀæÒÀæßÀçÀçÀç(Àç,Àç-ÀçPÀç]Àç«ÀçåÀèÀè@ÀèrÀèxÀè¤ÀèÒÀéÀéÀéÀéÀéUÀéšÀéØÀêÀê9Àê?ÀêuÀê›Àê¼ÀêÖÀëÀë2Àë^Àë­ÀëÒÀëşÀìCÀìlÀì˜ÀìÜÀíÀí2ÀíxÀí§ÀíÓÀî#Àî\Àî‡ÀîâÀïÀïIÀïªÀï°Àï×Àï÷Àğ
+ÀğÀğÀğÀğ.ÀğeÀğ§Àğ­ÀğÕÀğıÀñÀñÀñÀñeÀñkÀñ¹ÀñúÀò ÀòPÀòdÀòqÀò£Àò¤ÀòãÀòéÀó8ÀópÀó}ÀóÜÀôÀôÀôÀôRÀôXÀô©ÀôöÀõHÀõ‘ÀõÉÀõÏÀöÀöoÀö|ÀöÖÀöâÀ÷CÀ÷JÀ÷aÀ÷„À÷¡À÷ùÀø,ÀøƒÀø ÀøÃÀøæÀùÀù$Àù@ÀùhÀùŒÀù³Àù×ÀùóÀúÀú<ÀúHÀúrÀú˜Àú´ÀúàÀûÀûÀûÀûÀû-ÀûPÀûsÀûyÀûŠÀûµÀûÂÀûïÀûõÀüÀüaÀü±ÀüÿÀı*Àı.Àı/Àı}ÀıÃÀıÉÀşÀşaÀş¡ÀşıÀÿÀÿ Àÿ€Àÿ•ÀÿÀÿÿÀ À À >À ‹À ÛÀÀfÀ‚ÀÏÀşÀÀYÀÀ­ÀäÀÀMÀ†À¾ÀÀUÀŒÀÅÀæÀÀYÀ‘À³ÀºÀÍÀÿÀOÀsÀÅÀëÀAÀÀ†ÀÏÀóÀúÀÀSÀ“ÀĞÀ	$À	À	ªÀ	ÌÀ	òÀ
+À
+FÀ
+iÀ
+‹À
+¦À
+ÕÀÀCÀVÀrÀÀ™ÀÀÀâÀıÀ,ÀRÀ…À˜ÀµÀĞÀÜÀäÀêÀûÀ&À3À`ÀfÀ†ÀŸÀ£À¥À¦ÀğÀşÀKÀLÀ˜ÀµÀ¹ÀÇÀËÀÀ,ÀYÀ±À²ÀîÀòÀ3ÀgÀkÀ«ÀëÀÀ.ÀyÀÀÂÀÀPÀ“ÀÜÀèÀéÀ5À;ÀƒÀÊÀÀ]À©ÀèÀõÀ÷ÀøÀHÀtÀxÀÙÀÀgÀ©ÀÙÀÚÀÀPÀQÀ¬ÀÉÀÏÀÀÀkÀlÀ½ÀÕÀÛÀÀ'À`ÀlÀ¬ÀïÀ0À|ÀƒÀµÀÌÀĞÀÒÀÓÀÀRÀVÀ¶ÀÀVÀkÀ¶ÀçÀÀ,À2À3ÀÀ™ÀŸÀûÀUÀ§À¨ÀòÀøÀRÀbÀhÀªÀúÀ UÀ hÀ ¼À ßÀ ãÀ äÀ ğÀ!<À!…À!‰À!‹À!ŒÀ!áÀ"8À"SÀ"WÀ"©À#À#À#UÀ#¨À#öÀ$DÀ$zÀ$~À$’À$éÀ%À% À%uÀ%…À%‰À%À%âÀ&À&À&fÀ&vÀ&zÀ&ˆÀ&ŒÀ&ÜÀ'À'<À'šÀ'›À'ÔÀ(	À(
+À(EÀ(KÀ(|À(’À(“À(ŸÀ(æÀ(èÀ(éÀ)*À)ƒÀ)´À)¹À)ºÀ)ÆÀ)üÀ*"À*eÀ*¦À*¬À*°À*±À*½À*ĞÀ*òÀ+À+À+À+À+?À+‘À+•À+—À+˜À+èÀ,
+À,_À,À,ÏÀ,ÓÀ,ÔÀ-À-À-5À-rÀ-±À-×À.À.À.À.)À.DÀ.aÀ.À.áÀ/
+À/À/À/HÀ/LÀ/MÀ/YÀ/lÀ/«À/ÑÀ/æÀ/êÀ/ëÀ/÷À0,À0-À09À0gÀ0iÀ0jÀ0ÊÀ0ÎÀ1À1kÀ1»À1ÙÀ1İÀ2.À2À2¸À3À3À3@À3cÀ3dÀ3ÉÀ3çÀ3éÀ3êÀ49À4FÀ4JÀ4ŠÀ4ÉÀ4ûÀ4üÀ5VÀ5\À5¹À6À69À6UÀ6¬À6­À7
+À7?À7@À7šÀ7¦À7¹À8DÀ8KÀ8wÀ8{À8|À8¬À8ËÀ8ÏÀ8ĞÀ8êÀ8öÀ9	À95À9JÀ9NÀ9OÀ9ªÀ9ÇÀ9ÍÀ:À:À:;À:\À:`À:b   _kLongPressSelectionDevices&_kSelectableVerticalComparingThresholdSelectableRegionSelectableRegionState_NonOverrideAction_SelectAllAction_CopySelectionAction _GranularlyExtendSelectionAction%_GranularlyExtendCaretSelectionAction(_DirectionallyExtendCaretSelectionAction StaticSelectionContainerDelegate)MultiSelectableSelectionContainerDelegateSelectableRegionSelectionStatus(_SelectableRegionSelectionStatusNotifier$SelectableRegionSelectionStatusScopeSelectionListener_SelectionListenerState_SelectionListenerDelegateSelectionDetailsSelectionListenerNotifier  €

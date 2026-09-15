@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Exec(npm run)",
+      "Exec(rm)",
+      "Write",
+      "Exec(zig build)",
+      "Exec(python3)",
+      "Exec(cat)"
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+/// CLI: zig build groq-chat -- [model] "your question"
+/// Fast smoke-test harness for the Groq provider.
+const std = @import("std");
+const hiide = @import("hiide");
+
+pub fn main() !void {
+    var gpa = std.heap.DebugAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    var args = try std.process.argsWithAllocator(allocator);
+    defer args.deinit();
+    _ = args.skip(); // exe
+
+    var model: []const u8 = hiide.provider.groq.default_model;
+    var prompt: []const u8 = "Reply with exactly: hiide-ok";
+
+    if (args.next()) |a1| {
+        if (args.next()) |a2| {
+            model = a1;
+            prompt = a2;
+        } else if (hiide.provider.groq.findModel(a1) != null) {
+            model = a1;
+        } else {
+            prompt = a1;
+        }
+    }
+
+    var client = try hiide.provider.groq.Client.init(allocator);
+    defer client.deinit();
+
+    const t0 = std.time.nanoTimestamp();
+    var resp = try client.complete(.{
+        .model = model,
+        .messages = &[_]hiide.provider.groq.Message{
+            .{ .role = .system, .content = hiide.provider.groq.system_prompt },
+            .{ .role = .user, .content = prompt },
+        },
+        .temperature = 0.3,
+        .max_tokens = 512,
+    });
+    defer resp.deinit();
+    const t1 = std.time.nanoTimestamp();
+    const ms = @divTrunc(t1 - t0, std.time.ns_per_ms);
+
+    const out = std.io.getStdOut().writer();
+    try out.print("model={s} tokens={d} latency_ms={d}\n", .{ resp.model, resp.total_tokens, ms });
+    try out.print("{s}\n", .{resp.content});
+}

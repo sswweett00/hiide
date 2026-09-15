@@ -1,0 +1,19 @@
+zig-out/
+.zig-cache/
+.zig-global-cache/
+node_modules/
+dist/
+target/
+
+# stray build artifacts in repo root
+*.a
+*.a.o
+*.so
+*.dylib
+*.dll
+
+# secrets
+groq-api-key
+.env
+.freebuff/
+.freebuff/

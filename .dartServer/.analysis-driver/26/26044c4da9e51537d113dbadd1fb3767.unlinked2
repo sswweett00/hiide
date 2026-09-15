@@ -1,0 +1,1369 @@
+€Ödisabledenabledindexsigneddecimaltext	multilinenumberphonedatetimeemailAddressurlvisiblePasswordnamestreetAddressnone	webSearchtwittervalues_names_nametoJsontoString==hashCodeunspecifieddonegosearchsendnextpreviouscontinueActionjoinrouteemergencyCallnewlinewords	sentences
+charactersviewId	inputTypereadOnlyobscureTextautocorrectautofillConfigurationsmartDashesTypesmartQuotesTypeenableSuggestionsenableInteractiveSelectionactionLabelinputActiontextCapitalizationkeyboardAppearanceenableIMEPersonalizedLearningallowedMimeTypeshintLocalesenableInlinePredictioncopyWithenableDeltaModelStartUpdateEndoffsetstartLocationstate	selection	composingemptyisComposingRangeValidreplacedtoJSON_textRangeIsValidtap	doubleTap	longPress
+forcePresskeyboardtoolbardragstylusHandwritingscribbletextEditingValueuserUpdateTextEditingValuehideToolbarbringIntoView
+cutEnabledcopyEnabledpasteEnabledselectAllEnabledlookUpEnabledsearchWebEnabledshareEnabledliveTextInputEnabledcutSelection	pasteText	selectAllcopySelectioncurrentTextEditingValuecurrentAutofillScopeupdateEditingValueperformActioninsertContentperformPrivateCommandupdateFloatingCursorshowAutocorrectionPromptRectonFocusReceivedconnectionCloseddidChangeInputControlshowToolbarinsertTextPlaceholderremoveTextPlaceholderperformSelectorelementIdentifieronScribbleFocusisInScribbleRectboundsposition	directionupdateEditingValueWithDeltas
+fontFamilyfontSize
+fontWeighttextDirection	textAlignletterSpacingwordSpacing
+lineHeightdebugFillProperties_cachedSize_cachedTransform_cachedRect_cachedCaretRect_cachedSelectionRects_nextId_iddebugResetId_clientattachedscribbleInProgressshowrequestAutofillupdateConfigsetEditingStatesetEditableSizeAndTransformsetComposingRectsetCaretRectsetSelectionRectssetStyleupdateStylecloseconnectionClosedReceived
+setChannel	_instance_addInputControl_removeInputControlsetInputControlrestorePlatformInputControl_currentControl_inputControls_androidSupportedInputActions_iOSSupportedInputActionsensureInitializedattach_attach&_debugEnsureInputActionWorksOnPlatform_channel_currentConnection_currentConfiguration_lastConnection_scribbleClients_scribbleInProgressscribbleClients _loudlyHandleTextInputInvocation_handleTextInputInvocation_hidePending_scheduleHide
+_setClient_clearClient_updateConfig_setEditingState_show_hide_setEditableSizeAndTransform_setComposingTextRect_setCaretRect_setSelectionRects_updateStyle_requestAutofill_updateEditingValuefinishAutofillContextregisterScribbleElementunregisterScribbleElementdetachhideinstance_configurationToJsononSystemHide
+_lastShown_customActionCallbacks_lastTargetRect
+_lastItems_hiddenBySystem	isVisible_isDisposedhandleSystemHidehandleCustomContextMenuActionshowWithItemsdisposetitle	_jsonType_json	onPressed
+callbackId$SmartDashesTypeSmartQuotesTypeTextInputTypeTextInputActionTextCapitalizationTextInputConfiguration_toTextAffinityFloatingCursorDragStateRawFloatingCursorPointTextEditingValueSelectionChangedCauseTextSelectionDelegateTextInputClientScribbleClientSelectionRectDeltaTextInputClientTextInputStyleTextInputConnection_toTextInputAction_toTextCursorAction_toTextPoint_reportError	TextInputTextInputControl_PlatformTextInputControlSystemContextMenuControllerIOSSystemContextMenuItemData IOSSystemContextMenuItemDataCopyIOSSystemContextMenuItemDataCut!IOSSystemContextMenuItemDataPaste%IOSSystemContextMenuItemDataSelectAll"IOSSystemContextMenuItemDataLookUp%IOSSystemContextMenuItemDataSearchWeb!IOSSystemContextMenuItemDataShare$IOSSystemContextMenuItemDataLiveText"IOSSystemContextMenuItemDataCustomFPlatformFlutterView
+FontWeightLocaleOffsetRectSize	TextAlignTextDirectionMatrix4	Clipboard
+BrightnessTextPosition	TextRangeAutofillConfigurationAutofillScopeTextSelection	TextFieldsmartDashesTypeCupertinoTextFieldEditableTextsmartQuotesType	immutableintbool_numberWithOptionsListStringMapdynamicoverrideobjectRuntimeTypeObjectindexsigneddecimalhash
+FocusScopecontinueActionnewlineattachtextdonelightnonedisabledenabledViewviewId	inputTypereadOnlyobscureTextautocorrectenableSuggestionsenableInteractiveSelectionactionLabelinputActiontextCapitalizationkeyboardAppearanceenableIMEPersonalizedLearningallowedMimeTypesautofillConfigurationenableDeltaModelhintLocalesenableInlinePredictionTextEditingDeltaupdateEditingValueWithDeltasupdateEditingValuetoJsontoStringmaplocaletoLanguageTagtoList	identicalruntimeType
+listEqualshashAlljoinTextAffinity
+downstreamupstreambackgroundCursorColorUpdate	collapsedoffsetempty
+baseOffsetextentOffsetaffinityisDirectionalstartend	selection	composingisValidisNormalizedlengthreplaceRangeclamphashCode
+DeprecatedstylusHandwritingEditableTextStateuserUpdateTextEditingValuevoidLiveTextLiveTextInputStatusNotifiertoolbarFuturebringIntoViewAutofillGroupKeyboardInsertedContenthideshowScribeltrRenderEditablepositionbounds	directionupdateStyleDiagnosticabledouble
+fontFamilyfontSize
+fontWeighttextDirection	textAlignletterSpacingwordSpacing
+lineHeightDiagnosticPropertiesBuilderdebugFillPropertiesaddStringPropertydefaultValueDoublePropertyDiagnosticsPropertyEnumPropertyvisibleForTestingto	_instance_currentConnectionscribbleInProgress_show_requestAutofill_updateConfig_setEditingStatePipelineOwnerrootNode_setEditableSizeAndTransformisFinitezero_setComposingTextRect_setCaretRect_setSelectionRects_updateStyle_clearClientunspecifiedgosearchsendnextpreviousrouteemergencyCallFlutterError	fromPartsDiagnosticsNodeErrorSummaryStartEndnumtoDoublestate
+StackTraceInformationCollectorreportErrorFlutterErrorDetails	exceptionstacklibrarycontextErrorDescriptioninformationCollectorsetEditingStateTextInputFormatterSystemChannels	textInputsetMethodCallHandlerMethodChannel_channel _loudlyHandleTextInputInvocationinstance_inputControlsremoverestorePlatformInputControl_currentControl_clientdidChangeInputControlsetInputControlSetclose_attachkIsWebisIOScontains	isAndroid_scribbleClients
+MethodCallmethodstyleDiagnosticsTreeStyleerrorProperty	argumentsonScribbleFocuscastvaluekeyswherefromLTWHelementIdentifierisInScribbleRecthasNaN
+isInfinitelefttopwidthheight_idclientIdonFocusReceivedcurrentTextEditingValuecurrentAutofillScopefromJSONtagAutofillClientgetAutofillClienttextInputConfigurationautofill_updateEditingValueexcludeencodedencodedDeltadeltasfromJsoninsertContentperformAction	selectorsforEachperformSelectorperformPrivateCommandfirstArgupdateFloatingCursorconnectionClosedshowAutocorrectionPromptRectshowToolbarinsertTextPlaceholderremoveTextPlaceholderMissingPluginExceptionscheduleMicrotaskcontroldetachupdateConfigsetEditableSizeAndTransformsetComposingRectsetCaretRectsetSelectionRectsrequestAutofillFormonDisposeActionfinishAutofillContextautofillHints
+shouldSave	multilineinvokeMethodthenonErrorerrortoJSONstoragerectContextMenuControllerSystemContextMenu
+MediaQuery%maybeSupportsShowingSystemContextMenuSystemContextMenuClientServicesBindingsystemContextMenuClientVoidCallbackplatformIOSSystemContextMenuItemclearcall supportsShowingSystemContextMenu	isVisible_lastTargetRectgetDefaultItems
+isNotEmpty
+_lastItemsitemcontainsKey
+callbackId	onPressed_jsonFlagPropertyifTrueifFalseshowNameContextMenuButtonItemtitleIOSSystemContextMenuItemCopyIOSSystemContextMenuItemCutIOSSystemContextMenuItemPaste!IOSSystemContextMenuItemSelectAllWidgetsLocalizationslookUpButtonLabelIOSSystemContextMenuItemLookUpsearchWebButtonLabel!IOSSystemContextMenuItemSearchWebshareButtonLabelIOSSystemContextMenuItemShare IOSSystemContextMenuItemLiveTextIOSSystemContextMenuItemCustomTextInputClientDiagnosticableTextInputControlSystemContextMenuClientIOSSystemContextMenuItemDataÎŸeKP:‰"úc\¾bkƒß„‰	
+Brightness
+FontWeightOffsetRectSize	TextAlignTextDirectionTextPosition	TextRange ƒÊdart:ui„½„ÉMatrix4 „Œ'package:vector_math/vector_math_64.dart„ã…AutofillConfigurationAutofillScope „Ìautofill.dart…)…;TextSelection …text_editing.dart   «   
+dart:asyncĞİPlatform À   dart:ioğ‚BFlutterView
+FontWeightLocaleOffsetRectSize	TextAlignTextDirection à   dart:ui  ‚F   package:flutter/foundation.dart‚ ‚¬Matrix4 ‚p   'package:vector_math/vector_math_64.dart  ‚°   autofill.dart  ‚È   binding.dart‚öƒ	Clipboard ‚ß   clipboard.dart  ƒ   keyboard_inserted_content.dart  ƒ0   message_codec.dart  ƒM   platform_channel.dart  ƒm   system_channels.dart  ƒŒ   text_editing.dart  ƒ¨   text_editing_delta.dartÀZx Àí…X <€†€¤€¥€Ö7;\z ©ª¿ß‚D‚E‚o‚®‚¯‚Ç‚Şƒƒ/ƒLƒlƒ‹ƒ§ƒÉƒÊƒÛƒäƒø„„„*„8„K„b„x„‹„Œ„Ë„Ì……=…>…´…ï…ğ†A†E†S†W†z†¦†Ì†å‡0‡G‡g‡m‡‹ˆˆˆˆ.ˆ4ˆRˆËˆÖˆØˆÙ‰*‰.‰<‰@‰c‰‰µŠ ŠŠ7Š=Š[ŠÒŠŞŠßŠş‹‹"‹›‹¦‹¨‹©‹ó‹÷Œ>ŒBŒŒŒÖ!,B‡ˆ²¸ô.‘Íàá06‚Ïåæ39…Óêë‘‘‘G‘‘€‘²‘¸’’S’a’’Ÿ’ê’ğ“8““È”””8”>”Œ”Å”Æ”ô”ú•'•-•y••É•Ê•î•ô–9–y–z–“–™–Ş———Q—W— —ã—ä˜	˜˜*˜›˜î™™ ™T™İšššDšJšwš}š±›@››‚›Ä›ı›şœ œ&œ|œ‚œİ
+g¥¦ÈÎsyßŸŸŸ<ŸyŸƒŸ’ŸŸ©Ÿ·ŸÉŸÒŸçŸñ    * / 0 i ˜ ¤ µ Ã Ğ à ô ÿ¡¡"¡1¡=¡N¡]¡b¡c¡­¡å¡æ¢&¢H¢›¢Ÿ¢ ¢¬¢Â¢ü££1£O£S£T£`£ƒ£¨£È£ê¤¤¤¤¤X¤Z¤[¤£¤§¤ò¥A¥ˆ¥Œ¥Ò¦¦h¦·¦ğ¦ô§C§“§ä§ú§ş¨J¨X¨\¨§¨ø©F©©áª0ª|ª¶ªºªÈªÌ««b«e«È«å«ü¬K¬l¬r¬À­­­S­­¥­¦­ñ­÷®H®“®±®·¯¯)¯8¯9¯†¯Õ¯Û°(°k°q°¿°Ş°æ°ç±/±±É±Ï²²g²˜²²ê³³³³=³C³’³Ú³à´0´Q´[´\´¨´Ç´ÍµµfµlµºµÙµáµâ¶2¶Q¶W¶¢¶¨¶õ·E·K·™·¸·À·Á¸¸L¸R¸¡¸§¸ø¹H¹N¹—¹á¹í¹îº7º…ºÓ»#»Z»`»±¼¼¼T¼¢¼¨¼ú½H½N½˜½æ½ø½ù¾C¾R¾X¾ ¾î¾ô¿B¿a¿i¿j¿»¿ÁÀ @
+À @XÀ @^À @­À @ÍÀ @ÖÀ @×À AÀ AÀ AlÀ AºÀ AÀÀ BÀ B@À BQÀ BRÀ BŸÀ B¸À B¾À CÀ CTÀ CZÀ C«À CÌÀ CÒÀ D À DmÀ D·À EÀ ESÀ E¦À E±À E³À E´À EùÀ FÀ FÀ F]À FÀ FªÀ FõÀ FûÀ GEÀ GwÀ G€À GÀ GĞÀ GÖÀ H$À HZÀ HgÀ HhÀ H¤À HªÀ HùÀ I3À IAÀ IBÀ IjÀ IrÀ ItÀ IuÀ I³À I·À JÀ JIÀ J”À JİÀ K*À KxÀ KÃÀ LÀ L4À L8À LFÀ LJÀ LdÀ L}À LˆÀ L§À LéÀ LïÀ M3À MTÀ MuÀ M†À M¯À MÊÀ MèÀ NÀ N+À NQÀ NtÀ N À N¶À NãÀ OÀ OJÀ O‹À OºÀ OèÀ PÀ P4À PUÀ PnÀ PĞÀ PéÀ QKÀ QLÀ Q…À Q‹À Q›À Q¡À QáÀ RÀ R4À R5À RÀ R¢À R£À RÖÀ RÜÀ RõÀ SÀ SÀ SPÀ SVÀ SoÀ S‰À SŠÀ S²À S¸À SĞÀ SêÀ SëÀ TÀ TÀ TmÀ T¹À UÀ UXÀ UÀ UÀ UØÀ VÀ V"À VbÀ V×À WÀ W“À W³À XCÀ XIÀ XšÀ XçÀ YÀ YÀ Y]À Y¬À Y¾À YÄÀ YÔÀ YÚÀ YõÀ ZBÀ ZWÀ Z€À ZÀ ZËÀ [À [À [?À [´À [ŞÀ \pÀ \À ] À ]&À ]nÀ ]½À ]èÀ ]îÀ ^?À ^À ^ À ^¦À ^¶À ^¼À ^×À _$À _9À _bÀ _cÀ _¯À _êÀ _ğÀ `?À `À `İÀ `ãÀ `ûÀ aÀ aÀ aÀ a„À a™À a¹À aºÀ aéÀ aïÀ b>À b‹À b¢À b¨À bÀÀ béÀ bêÀ c0À cMÀ cNÀ c•À cºÀ c»À d
+À dÀ dÀ dIÀ dOÀ d_À deÀ d·À dæÀ dçÀ eÀ eÀ eFÀ eLÀ erÀ e™À ešÀ eòÀ f?À fgÀ fmÀ f¸À f¾À fÖÀ fÜÀ fìÀ fòÀ gkÀ g€À g¬À g­À gûÀ h"À h#À hiÀ h§À h­À hóÀ iHÀ iNÀ i¨À i®À iúÀ j À jPÀ jVÀ jfÀ jlÀ jÏÀ jäÀ kÀ kÀ kYÀ k‰À kÀ kİÀ kîÀ kôÀ l>À lˆÀ lÓÀ lèÀ mÀ mÀ m[À m{À mŸÀ m°À mÎÀ mâÀ mùÀ nÀ n6À n\À nyÀ nŸÀ n¸À nÚÀ nşÀ o*À oSÀ owÀ o©À oÅÀ oäÀ pÀ pÀ p0À pUÀ pƒÀ p®À pâÀ qÀ qVÀ q–À qÜÀ r=À rqÀ r¥À rîÀ s7À s\À s«À sîÀ t@À tƒÀ t·À uÀ uÀ uÀ uÀ u`À u¦À u¬À uşÀ v#À v)À vEÀ v•À v×À wÀ wLÀ w™À wòÀ xÀ xÀ x/À xvÀ x¯À xëÀ y5À y|À y‚À y›À yºÀ y»À yûÀ zÀ zhÀ z†À zÀ zÅÀ záÀ {À {%À {`À {›À {ÉÀ |	À |+À |XÀ |“À |ÎÀ }À }FÀ }cÀ }À }êÀ ~"À ~)À ~-À ~.À ~:À ~]À ~À ~’À ~˜À ~ÄÀ ~ØÀ ~ŞÀ À .À VÀ |À ¨À ÔÀ €À €<À €tÀ €¾À €êÀ À PÀ ŠÀ ÊÀ ‚À ‚ZÀ ‚À ‚¼À ‚üÀ ƒ À ƒÀ ƒÀ ƒ"À ƒ:À ƒHÀ ƒYÀ ƒiÀ ƒ|À ƒÀ ƒ¦À ƒ½À ƒÖÀ ƒøÀ „À „À „8À „RÀ „oÀ „”À „¼À „ÔÀ „çÀ …À …À …À …À …À …3À …UÀ …‚À …¡À …¾À …áÀ †À †/À †ZÀ †‰À †ÊÀ ‡À ‡)À ‡ZÀ ‡‹À ‡ÂÀ ˆ	À ˆ6À ˆcÀ ˆŸÀ ˆüÀ ‰À ‰CÀ ‰GÀ ‰IÀ ‰JÀ ‰|À ‰™À ‰ÓÀ Š	À ŠÀ ŠÀ ŠÀ Š À ŠcÀ ŠgÀ Š³À ŠşÀ ‹NÀ ‹À ‹ëÀ Œ6À Œ}À ŒÊÀ À À hÀ µÀ À RÀ ˜À œÀ æÀ úÀ şÀ À À _À ¥À ÄÀ À À 'À (À TÀ ^À _À ªÀ ¸À ¿À ÁÀ ÂÀ ıÀ ‘À ‘À ‘À ‘cÀ ‘rÀ ‘‘À ‘ÜÀ ‘êÀ ‘ğÀ ’=À ’eÀ ’¶À ’ÿÀ “ À “LÀ “dÀ “eÀ “¾À ”,À ”kÀ ”šÀ ”›À ”ÃÀ ”êÀ ”ìÀ ”íÀ •=À •HÀ •aÀ •–À •œÀ •éÀ –2À –8À –‰À –ÁÀ –ÜÀ –ğÀ —0À —VÀ —\À —]À —™À —İÀ ˜	À ˜.À ˜hÀ ˜¦À ™À ™UÀ ™\À ™}À ™²À ™çÀ ™îÀ šÀ šNÀ š£À š§À š¨À šÍÀ šâÀ šãÀ ›À ›À ›hÀ ›·À ›ÍÀ ›ÓÀ œ#À œtÀ œ¿À 
+À +À ,À bÀ hÀ ¹À À QÀ šÀ ´À ºÀ Ÿ
+À ŸRÀ Ÿ£À ŸóÀ  BÀ  À  ¹À  ¿À ¡ À ¡BÀ ¡qÀ ¡wÀ ¡ÆÀ ¡ïÀ ¡õÀ ¢DÀ ¢pÀ ¢À ¢À ¢ëÀ £'À £(À £ƒÀ £áÀ £şÀ ¤À ¤KÀ ¤yÀ ¤€À ¤„À ¤…À ¤ÉÀ ¤ÏÀ ¥ À ¥jÀ ¥À ¥‡À ¥ØÀ ¦)À ¦BÀ ¦fÀ ¦¹À ¦ºÀ §À §HÀ §NÀ §À §ÉÀ §ÏÀ ¨À ¨;À ¨AÀ ¨“À ¨ãÀ ©-À ©~À ©ËÀ ©ûÀ ªÀ ªGÀ ªbÀ ª¶À ªÛÀ ªîÀ ªôÀ «"À «@À «\À «uÀ «|À «}À «ÒÀ «øÀ «şÀ «ÿÀ ¬(À ¬cÀ ¬„À ¬ŞÀ ¬ìÀ ­À ­PÀ ­pÀ ­¾À ­àÀ ®À ®#À ®$À ®QÀ ®†À ®¿À ®ÆÀ ®ïÀ ¯À ¯AÀ ¯HÀ ¯ƒÀ ¯¾À ¯ÛÀ ¯ğÀ °À °8À °?À °CÀ °DÀ °„À °¦À °ÖÀ ±À ±$À ±8À ±eÀ ±–À ±ĞÀ ²	À ²1À ²YÀ ²`À ²dÀ ²eÀ ²qÀ ²ˆÀ ³À ³À ³À ³7À ³YÀ ³lÀ ³rÀ ³šÀ ³¸À ³àÀ ´À ´
+À ´À ´À ´qÀ ´rÀ ´§À ´¬À ´íÀ µ4À µ|À µÈÀ µïÀ ¶/À ¶_À ¶rÀ ¶xÀ ¶„À ¶ºÀ ·À ·À ·À ·KÀ ·“À ·šÀ ·«À ·¯À ·±À ·²À ¸À ¸À ¸8À ¸‰À ¸©À ¸°À ¸±À ¸ıÀ ¹<À ¹IÀ ¹JÀ ¹•À ¹¾À ¹ËÀ ¹ÌÀ ºÀ ºAÀ ºOÀ ºPÀ º À º®À º´À »À »<À »HÀ »IÀ »’À »°À »¶À »üÀ ¼À ¼À ¼WÀ ¼fÀ ¼nÀ ¼oÀ ¼¯À ¼µÀ ½À ½9À ½NÀ ½OÀ ½À ½•À ½åÀ ¾À ¾(À ¾NÀ ¾ˆÀ ¾ŒÀ ¾ÏÀ ¾ÑÀ ¾ÒÀ ¿À ¿)À ¿GÀ ¿jÀ ¿“À ¿”À ¿äÀ ÀÀ ÀÀ À^À ÀpÀ ÀvÀ À†À ÀŒÀ ÀÛÀ Á&À ÁOÀ Á§À Á¨À ÁĞÀ ÁÖÀ Â&À ÂuÀ Â˜À ÂÇÀ ÂÈÀ ÃÀ Ã À ÃMÀ ÃNÀ ÃlÀ Ã‹À ÃŒÀ Ã«À ÃËÀ ÃÌÀ ÃìÀ ÄÀ ÄÀ Ä3À ÄXÀ ÄYÀ Ä{À ÄÀ ÄÀ ÄÃÀ ÄèÀ ÄéÀ Å	À Å*À Å+À ÅUÀ Å[À ÅkÀ Å»À ÆÀ Æ?À Æ@À ÆlÀ ÆrÀ Æ¿À Ç
+À Ç<À Ç=À Ç`À ÇfÀ Ç¤À ÇªÀ Ç÷À ÈBÀ ÈyÀ ÈzÀ È¼À ÈÂÀ ÉÀ É3À ÉbÀ ÉcÀ ÉÀ É–À ÉÛÀ ÊÀ ÊRÀ ÊTÀ ÊUÀ ÊÀ Ê“À ÊÔÀ ËÀ ËÀ Ë,À Ë0À ËJÀ Ë…À ËĞÀ ÌÀ Ì$À ÌkÀ ÌœÀ ÌÀ ÌâÀ ÌèÀ Í5À ÍƒÀ ÍµÀ Í»À ÍËÀ ÍÑÀ ÎÀ ÎOÀ ÎzÀ Î{À ÎÈÀ ÎÎÀ ÏÀ Ï-À Ï`À ÏaÀ Ï›À ÏÉÀ ÏÊÀ ĞÀ ĞJÀ ĞKÀ ĞšÀ Ğ©À Ğ¯À ĞşÀ Ñ5À Ñ;À ÑKÀ ÑÿÀ ÒOÀ ÒÀ ÓÀ Ó]À Ó‹À ÓÓÀ ÓÔÀ Ô
+À ÔÀ Ô À Ô&À ÔuÀ Ô‰À ÔÄÀ ÔÅÀ ÕÀ ÕpÀ ÕvÀ Õ¤À ÕİÀ ÕŞÀ Ö*À Ö0À Ö’À ÖÁÀ ÖÇÀ ×	À ×,À ×-À ×eÀ ×kÀ ×·À ×ÒÀ ×ÓÀ Ø#À Ø7À Ø=À ØŒÀ Ø½À ØÃÀ ØÓÀ ØÙÀ Ù#À ÙmÀ ÙÉÀ ÙÊÀ ÚÀ ÚbÀ ÚrÀ ÚŠÀ Ú‹À ÚÙÀ ÚìÀ ÚòÀ Û8À ÛÀ ÛÃÀ ÛîÀ ÛïÀ Ü+À ÜMÀ ÜNÀ ÜŒÀ Ü×À ÜüÀ İ+À İ-À İ.À İiÀ İmÀ İ{À İÀ İÂÀ Ş9À ŞaÀ ŞÀ Ş­À ŞÍÀ ŞÎÀ ßÀ ßÀ ßpÀ ß—À ß˜À ßæÀ à
+À àÀ à=À àPÀ àRÀ àSÀ à¢À à¦À àóÀ á(À á3À áIÀ á•À á¥À á½À áÙÀ áóÀ âÀ â!À â"À âdÀ âzÀ â{À âÉÀ ãÀ ãÀ ãÀ ãWÀ ãxÀ ãyÀ ã…À ã¨À ãÊÀ ãİÀ ããÀ äÀ ä#À ä)À äNÀ ätÀ ä–À ä¼À äÀÀ äÁÀ äÍÀ åÀ åÀ åÀ åKÀ åMÀ åNÀ å‘À å•À å£À å§À åÁÀ æÀ æiÀ æyÀ æ±À çÀ ç!À ç'À çzÀ çÈÀ èÀ èÀ è*À èzÀ è€À èÀ è¿À èæÀ èìÀ èşÀ éTÀ éyÀ éÀ é™À éÍÀ êÀ ê?À êKÀ êmÀ êwÀ ê}À êŒÀ ê”À êÀ ê°À êÿÀ ëÀ ëÀ ë=À ëAÀ ëOÀ ëSÀ ë¡À ëÅÀ ìÀ ì8À ìCÀ ìtÀ ì¹À ìÒÀ ìçÀ ìúÀ íÀ í0À íMÀ íeÀ í{À íÀ í–À í—À íàÀ íüÀ íıÀ îHÀ îbÀ îcÀ î¬À îÌÀ îÍÀ îóÀ ïÀ ïÀ ïLÀ ïiÀ ïjÀ ï´À ïÓÀ ïÔÀ ğÀ ğIÀ ğfÀ ğgÀ ğÀ ğ¬À ğ­À ğ¹À ğÜÀ ğşÀ ñÀ ñÀ ñCÀ ñWÀ ñ]À ñƒÀ ñ­À ñÓÀ ñıÀ ò-À òUÀ ò…À ò±À òÙÀ òİÀ òŞÀ òêÀ òÿÀ óÀ ó)À ó9À óKÀ ó`À óqÀ ó†À ó™À ó«À ó²À ó¶À ó·À ó÷À ôÀ ô7À ôWÀ ôsÀ ôŸÀ ôÈÀ ôùÀ õÀ õAÀ õaÀ õhÀ õlÀ õmÀ õyÀ õ¾À õéÀ ö;À ö‰À öìÀ ÷=À ÷‚À ÷ÚÀ ø.À ø€À ø„À ø†À ø‡À øÃÀ øÇÀ øÕÀ øÙÀ ù'À ùgÀ ù¶À ùôÀ úÀ úIÀ úJÀ ú_À ú|À ú‘À ú«À úìÀ úíÀ ûÀ ûÀ ûÀ ûTÀ ûZÀ û£À ûìÀ üÀ ü,À ü<À üPÀ ücÀ ümÀ üqÀ ürÀ ü“À ü”À üèÀ ı/À ı0À ıuÀ ı{À ıÊÀ ııÀ şFÀ şGÀ ş‚À ş’À ş¨À şÉÀ şÍÀ şÎÀ şÿÀ ÿÀ ÿSÀ ÿbÀ ÿhÀ ÿxÀ ÿ~À ÿĞÀ ÿëÀ À -À 1À 2À €À  À ÜÀ òÀ(À,À-À{À’ÀÃÀÙÀ
+ÀÀÀQÀWÀ¥ÀèÀîÀ+À1À|À³ÀÀLÀqÀ•ÀéÀïÀóÀôÀEÀ[ÀaÀ²ÀÜÀâÀ1ÀAÀfÀ…À“À™À±ÀÀ?ÀCÀDÀ•À¶À×ÀûÀ	ÀÀ,À€À²À¶À·À	À	-À	3À	|À	»À	ùÀ
+'À
+eÀ
+kÀ
+oÀ
+pÀ
+•À
+›À
+èÀ7ÀkÀzÀšÀÔÀØÀêÀÀ*ÀOÀyÀ›À¢À³ÀÉÀéÀÀ%ÀKÀiÀrÀyÀ}À~À£À©ÀöÀEÀyÀ¤ÀºÀçÀëÀìÀ À&ÀtÀ³ÀÄÀØÀÀÀÀ#À$ÀkÀqÀµÀÙÀÀ#À'À)À*À^ÀyÀ­ÀïÀÀWÀ‹À¿ÀûÀCÀwÀ­ÀóÀ'ÀaÀšÀÔÀÜÀáÀãÀäÀ À:À€ÀÈÀ
+ÀCÀ}À…ÀŠÀŒÀÀğÀúÀÀhÀmÀwÀ‘ÀãÀèÀ(À{ÀÀÏÀÑÀÒÀåÀùÀÀ!ÀOÀTÀpÀ‰À¥À¹ÀÜÀÀ8À?ÀDÀFÀGÀ†ÀŠÀÚÀ(ÀlÀ¯ÀşÀ)À-À{ÀÈÀÀdÀ¯ÀÊÀÎÀÀiÀ·ÀàÀäÀ2ÀrÀvÀ¿À À À ^À ¤À ôÀ!,À!0À!€À!ÍÀ"À"iÀ"­À"±À"ûÀ#LÀ#™À#éÀ$À$À$\À$¬À$ÑÀ$ÕÀ$ãÀ$çÀ%&À%vÀ%©À%»À%ÍÀ%öÀ&;À&?À&@À&À&À&¤À&ïÀ'=À'MÀ'bÀ'—À'§À'ÍÀ(À(,À(6À(:À(;À(oÀ(pÀ(«À(äÀ)À)À)À)À)ZÀ)“À)ÃÀ)ÉÀ)ÍÀ)ÎÀ)ùÀ)ÿÀ*QÀ*¢À*¼À*ÂÀ+À+&À+,À+<À+BÀ+’À+äÀ,
+À,HÀ,ŒÀ,°À,¾À,ÄÀ,âÀ-À-À-*À-QÀ-WÀ-ƒÀ-ÎÀ.	À.À.À.FÀ.LÀ.\À.bÀ.¦À.ŞÀ/À/EÀ/IÀ/JÀ/”À/×À/ÿÀ0À0À0]À0wÀ0˜À0²À0ÌÀ0äÀ1 À1À18À1UÀ1ZÀ1[À1¯À1ĞÀ1êÀ2À2À28À2RÀ2oÀ2“À2­À2ÈÀ2ëÀ2ğÀ2ñÀ3?À3{À3ŸÀ3ĞÀ3ÔÀ3ÕÀ4
+À4À4aÀ4§À4÷À5À5À5hÀ5¦À5ÃÀ6'À6]À6À6¦À6ªÀ6«À6úÀ77À7pÀ7ÇÀ8À8;À8fÀ8ˆÀ8»À8¿À8ÀÀ9À9$À98À9lÀ9À9‰À9¥À9µÀ9ğÀ:CÀ:NÀ:uÀ:…À:ÄÀ;À;&À;.À;AÀ;KÀ;\À;`À;aÀ;€À;À;¬À;áÀ<	À<
+À<]À<À<‚À<çÀ<üÀ=^À=_À=¤À=ÚÀ=ÛÀ>'À>1À>fÀ>‡À>›À>®À>½À>êÀ?À?oÀ?zÀ?ƒÀ?’À?˜À?œÀ?À?éÀ@À@,À@WÀ@“À@ÇÀAÀAÀA.ÀAbÀA¬ÀAÅÀAÿÀBÀB;ÀBkÀB¹ÀCÀC4ÀCDÀC ÀCóÀDÀD0ÀDÀDŸÀDÂÀEÀE'ÀE6ÀEMÀE„ÀE¨ÀE¸ÀEòÀFÀF'ÀFUÀF‘ÀFºÀGÀGBÀGLÀGbÀGhÀGÀGœÀG¢ÀG£ÀGòÀH1ÀHrÀH­ÀIÀI1ÀIYÀIaÀIoÀIuÀIvÀI®ÀI¯ÀIıÀJ/ÀJpÀJ²ÀJòÀK.ÀKbÀKÀKÓÀKŞÀL$ÀLÀL®ÀL¸ÀLÀÀLÁÀLÏÀLÕÀLÖÀLùÀM&ÀMwÀMˆÀM¬ÀM¾ÀNÀNXÀNœÀN¸ÀNÛÀNåÀNúÀOÀO%ÀO5ÀO=ÀOCÀODÀOZÀO‹ÀOİÀPBÀP}ÀPÀPÌÀQ<ÀQGÀQ€ÀQ«ÀQüÀRIÀRTÀRUÀR¹ÀRåÀS)ÀS†ÀSÄÀSÕÀT1ÀT;ÀTjÀT¼ÀUÀU8ÀUrÀU­ÀUÕÀV:ÀVEÀVxÀV²ÀWÀWÀWOÀW‡ÀWÂÀX$ÀXNÀXÀXµÀXğÀY:ÀYEÀYyÀY¶ÀYÅÀYíÀYóÀY÷ÀYøÀZÀZÀZ/ÀZGÀZUÀZ[ÀZtÀZuÀZÀÀ[
+À[À[5À[QÀ[yÀ[ŠÀ[’À[šÀ[À[ŸÀ[ñÀ\.À\[À\aÀ\eÀ\fÀ\~À\¾À\ûÀ]À]À]>À]SÀ]WÀ]XÀ]•À]ÒÀ]ıÀ^À^À^À^:À^wÀ^À^£À^§À^¨À^¹À^öÀ_À_À_À_À_(À_eÀ_{À_À_…À_†À_ÕÀ`À`YÀ`_À`cÀ`dÀ`À`ËÀ`ñÀ`÷À`ûÀ`üÀaÀa[Àa}ÀaƒÀa‡ÀaˆÀaÈÀbÀb6Àb<Àb@ÀbAÀbmÀbªÀbÌÀbÒÀbÖÀb×ÀbóÀc0ÀcQÀcWÀc[Àc\Àc®ÀcÔÀcâÀcèÀcéÀd0ÀdPÀdxÀd€Àd†ÀdËÀdÏÀdĞÀeÀeÀecÀe¢ÀeİÀf+Àf/Àf0Àf|Àf°Àf¶ÀgÀgWÀg}ÀgƒÀgÈÀhÀhEÀhKÀhÀhÙÀi)ÀirÀi¹ÀiÙÀißÀj,ÀjyÀjÆÀkÀkbÀk±Àk·ÀlÀlEÀl–ÀlàÀm/ÀmwÀmÅÀmŞÀmóÀmùÀnFÀn–ÀnåÀo3Ào‚ÀoĞÀoÚÀoàÀoğÀoöÀpCÀp“ÀpÈÀqÀqYÀq–ÀqœÀq Àq¡ÀqñÀrÀrÀrZÀrŠÀrëÀs9Às=Às>Às}ÀsÁÀtÀt	ÀtÀtÀt\Àt‘Àt•ÀtäÀu0ÀusÀuwÀuÈÀvÀv2Àv6Àv|ÀvÈÀvğÀvôÀwÀwPÀwTÀw©Àw¹Àw½ÀwËÀwÏÀx$ÀxtÀx˜ÀxŞÀxôÀyÀyXÀy^ÀyªÀyıÀzLÀzMÀzšÀz ÀzìÀ{1À{ZÀ{[À{À{–À{àÀ{ñÀ{òÀ|(À|.À|nÀ|À|€À|ÈÀ|ÎÀ}À}1À}nÀ}oÀ}±À}·À~À~À~LÀ~MÀ~‘À~—À~çÀÀcÀdÀ§À­ÀùÀ€À€.À€/À€nÀ€tÀ€¼À€ËÀ€íÀ€îÀ1À7ÀƒÀ’ÀÒÀÓÀ‚À‚À‚gÀ‚vÀ‚…À‚¥À‚ßÀ‚ãÀ‚õÀƒÀƒ5ÀƒZÀƒ„Àƒ¦Àƒ®Àƒ¯ÀƒîÀƒôÀ„CÀ„RÀ„~À„À„´À„ºÀ„úÀ…À…À…NÀ…TÀ…dÀ…jÀ…•À…ÏÀ…ÑÀ…ÒÀ†
+À†BÀ†cÀ†dÀ†À†ñÀ†òÀ‡0À‡1À‡…À‡ÃÀˆÀˆ]ÀˆœÀˆìÀ‰)À‰wÀ‰‹À‰İÀ‰åÀŠÀŠÀŠÀŠ ÀŠ!ÀŠ-ÀŠ{ÀŠˆÀŠÅÀŠüÀ‹+À‹6À‹EÀ‹\À‹“À‹æÀ‹ñÀ‹õÀ‹öÀŒÀŒ*ÀŒ7ÀŒlÀŒ{ÀŒ’ÀŒÉÀÀ'À+À,À8ÀtÀÀÜÀëÀÀ9ÀÀ™ÀÀÀªÀÛÀèÀ1À@ÀWÀÀâÀíÀñÀòÀşÀÀÀIÀXÀoÀ¦À÷À‘À‘À‘À‘À‘#À‘0À‘^À‘mÀ‘„À‘»À’À’À’À’À’'À’uÀ’‚À’ÚÀ“À“0À“ZÀ“eÀ“tÀ“‹À“ÂÀ”À”&À”*À”+À”7À”\À”iÀ”·À”ÖÀ”÷À•À•*À•5À•DÀ•[À•’À•çÀ•òÀ•öÀ•÷À–À–$À–1À–zÀ–™À–ºÀ–ÔÀ–íÀ–øÀ—À—À—UÀ—¦À—±À—µÀ—¶À—ÂÀ˜À˜À˜+À˜TÀ˜ˆÀ˜¢À˜ÂÀ˜áÀ™À™$À™AÀ™eÀ™tÀ™‹À™•À™¤À™»À™òÀšHÀšSÀšWÀšXÀšdÀšvÀš—Àš¶ÀšÛÀ›À›'À›.À›?À›UÀ›uÀ›‘À›±À›×À›õÀ›şÀœÀœ	Àœ
+ÀœÀœAÀœNÀœÀœŸÀœ¶ÀœíÀ:ÀEÀIÀJÀVÀqÀ~À·ÀÆÀİÀÀ[ÀfÀjÀkÀwÀ°À½ÀŸÀŸÀŸ.ÀŸeÀŸ³ÀŸ¾ÀŸÂÀŸÄÀŸÅÀŸóÀŸ÷À CÀ ‘À ¾À ÂÀ¡À¡`À¡§À¡«À¡ûÀ¢EÀ¢„À¢©À¢­À¢×À¢ÛÀ¢éÀ¢íÀ£9À£À£ÌÀ¤À¤RÀ¤À¤”À¤¼À¤ñÀ¥%À¥)À¥*À¥dÀ¥jÀ¥¶À¦À¦6À¦<À¦À¦¡À¦ÅÀ¦ÆÀ§À§À§:À§;À§À§‘À§ÈÀ§ÎÀ§øÀ¨À¨À¨XÀ¨^À¨ˆÀ¨ºÀ¨»À©À©À©3À©4À©‚À©¯À©ÄÀªÀªÀªIÀªeÀªfÀªŠÀª‹Àª—Àª³ÀªÍÀªäÀ«	À«À«À«;À«TÀ«ZÀ«vÀ«šÀ«´À«¸À«¹À«ÅÀ«ÿÀ¬FÀ¬RÀ¬jÀ¬©À¬ôÀ¬ûÀ­À­À­7À­8À­zÀ­€À­¼À®
+À®À®_À®¢À®¨À®ôÀ¯2À¯8À¯ˆÀ¯×À¯ÿÀ°À°À°À°WÀ°§À°âÀ°ñÀ±À±MÀ±QÀ±xÀ±’À±À±ÔÀ²6À²=À²>À²{À²ßÀ³À³À³	À³À³_À³¤À³«À³¬À³àÀ³áÀ´À´À´7À´À´¶À´ÔÀ´ñÀµÀµ9ÀµBÀµJÀµNÀµOÀµŸÀµ®Àµ´ÀµğÀ¶>À¶DÀ¶“À¶ÖÀ¶ÜÀ·*À·wÀ·¯À·ûÀ¸À¸À¸hÀ¸¦À¸¬À¸üÀ¹KÀ¹sÀ¹yÀ¹‰À¹À¹ËÀºÀºVÀº°ÀºÊÀºèÀºôÀ»*À»ŒÀ»“À»”À»ÑÀ»ïÀ¼À¼EÀ¼zÀ¼À¼£À¼¤À¼°À¼úÀ½?À½FÀ½GÀ½{À½|À½ À½ÀÀ½øÀ¾À¾JÀ¾“À¾åÀ¿4À¿?À¿À¿‰À¿À¿À¿ÇÀÀÀÀ0ÀÀ1ÀÀSÀÀkÀÀ‚ÀÀŸÀÀøÀÁÀÁ<ÀÁYÀÁ|ÀÁ¡ÀÁªÀÁÄÀÁÌÀÁĞÀÁÑÀÁ÷ÀÁıÀÂKÀÂ_ÀÂeÀÂ£ÀÂ©ÀÂ¹ÀÂ¿ÀÂüÀÃLÀÃ“ÀÃ±ÀÃËÀÄÀÄQÀÄoÀÄ}ÀÄƒÀÄšÀÄÎÀÄòÀÅAÀÅ}ÀÅÊÀÅÎÀÅÏÀÅÛÀÆ ÀÆKÀÆ’ÀÆ¦ÀÆºÀÆÒÀÆ÷ÀÇÀÇ9ÀÇQÀÇZÀÇaÀÇ´ÀÇÿÀÈÀÈÀÈQÀÈdÀÈ~ÀÈŠÀÈ¢ÀÈ¦ÀÈ¨ÀÈ©ÀÈùÀÉÀÉÀÉÀÉÀÉhÀÉuÀÉÈÀÊÀÊfÀÊ|ÀÊ‡ÀÊ³ÀÊÛÀÊÜÀËÀË	ÀËYÀËiÀË†ÀË‡ÀËÕÀËíÀËîÀÌ/ÀÌZÀÌ}ÀÌ×ÀÌÛÀÌÜÀÌèÀÍÀÍÀÍÀÍ>ÀÍ`ÀÍsÀÍyÀÍ¥ÀÍ¹ÀÍ¿ÀÎ	ÀÎÀÎÀÎÀÎ]ÀÎaÀÎœÀÎ ÀÎ®ÀÎ²ÀÏÀÏÀÏ^ÀÏsÀÏÇÀĞÀĞ4ÀĞ5ÀĞAÀĞcÀĞeÀĞfÀĞ²ÀĞ¶ÀĞñÀĞõÀÑÀÑÀÑVÀÑcÀÑ²ÀÑÇÀÒÀÒZÀÒ…ÀÒ†ÀÒ’ÀÒ³ÀÒµÀÒ¶ÀÓÀÓÀÓCÀÓGÀÓUÀÓYÀÓ¨ÀÓµÀÔÀÔÀÔpÀÔ²ÀÔßÀÔàÀÔìÀÕÀÕÀÕÀÕ]ÀÕiÀÕmÀÕ¨ÀÕ¬ÀÕºÀÕ¾ÀÖÀÖÀÖkÀÖ„ÀÖİÀ×#À×TÀ×UÀ×aÀ×ˆÀ×ŠÀ×‹À×ÓÀ×ßÀ×ãÀØ3ÀØ7ÀØbÀØfÀØtÀØxÀØÇÀØÔÀÙ&ÀÙtÀÙ‚ÀÙÖÀÙğÀÚ3ÀÚvÀÚwÀÚƒÀÚ™ÀÚšÀÚ¦ÀÚÊÀÚËÀÚ×ÀÛÀÛGÀÛ{ÀÛÀÛÀÛ‚ÀÛÍÀÛÙÀÛİÀÜÀÜ4ÀÜ8ÀÜcÀÜgÀÜuÀÜyÀÜÈÀÜÕÀİ&ÀİxÀİ†ÀİİÀİ÷ÀŞ=ÀŞƒÀŞ„ÀŞÀŞ¦ÀŞ§ÀŞ³ÀŞÚÀŞÛÀŞçÀß,ÀßWÀß‹ÀßÀß‘Àß’ÀßàÀßäÀà
+Àà7Àà;ÀàfÀàjÀàxÀà|ÀàËÀàØÀá%ÀámÀá…ÀáØÀáòÀâ4ÀâvÀâwÀâƒÀâ™ÀâšÀâ¦ÀâÉÀâÊÀâÖÀãÀãFÀãzÀã~Àã€ÀãÀãËÀãİÀãáÀä-ÀävÀä“Àä—ÀäãÀåÀåÀåÀå#ÀåwÀåŒÀåÄÀæÀæaÀæ‘Àæ’ÀæÀæÑÀæÓÀæÔÀç.Àç2Àç^ÀçbÀçŒÀçÀçÀç¢ÀçñÀçşÀèPÀèeÀè¹ÀèÓÀéÀérÀésÀéÀé•Àé–ÀéÓÀéóÀéôÀê(ÀêXÀêYÀêeÀê‰ÀêŠÀê–Àê¹ÀëÀëÀëÀëÀëbÀëÀëÁÀëÿÀìNÀìRÀìSÀì_Àì”Àì•Àì¡ÀìÄÀìæÀìùÀìÿÀí9ÀíYÀíÀíƒÀí…   €ú/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:flutter/rendering.dart';
+///
+/// @docImport 'live_text.dart';
+/// @docImport 'scribe.dart';
+/// @docImport 'text_formatter.dart';ª  ¿ Ğİß ğ‚B‚E  ‚o ‚ ‚¬‚¯  ‚Ç  ‚Ş ‚öƒƒ  ƒ/  ƒL  ƒl  ƒ‹  ƒ§  ƒÊƒß„‰„Œ„½„É„Ì„ã………)…;   JWY    ZZ
+_ ohqwDDBX   6CU    WW\   llq e{‹…ŠŠD€/// Optimize for numerical information.
+///
+/// Requests a numeric keyboard with additional settings.
+/// The [signed] and [decimal] parameters are optional.  Ù“KÙ9/// Enum value index, corresponds to one of the [values]. İã İ€å/// The number is signed, allowing a positive or negative sign at the start.
+///
+/// This flag is only used for the [number] input type, otherwise `null`.
+/// Use `const TextInputType.numberWithOptions(signed: true)` to set this. áè á€ä/// The number is decimal, allowing a decimal point to provide fractional.
+///
+/// This flag is only used for the [number] input type, otherwise `null`.
+/// Use `const TextInputType.numberWithOptions(decimal: true)` to set this.‘k‘x‘y‘z‘|‘{‘dí€‘dU/// Optimize for textual information.
+///
+/// Requests the default platform keyboard.’Š’—’˜’™’›’š’~‘‚’~€Ö/// Optimize for multiline textual information.
+///
+/// Requests the default platform keyboard, but accepts newlines when the
+/// enter key is pressed. This is the input type used for all multiline text
+/// fields.“î“û“ü””“å’¡n“å/// Optimize for unsigned numerical information without a decimal point.
+///
+/// Requests a default keyboard with ready access to the number keys.
+/// Additional options, such as decimal point and/or positive/negative
+/// signs, can be requested using [TextInputType.numberWithOptions].”±”¾”¿”À”Â”Á”©”€¯”©s/// Optimize for telephone numbers.
+///
+/// Requests a keyboard with ready access to the number keys, "*", and "#".•µ•Â•Ã•Ä•Æ•Å•ª”È€ÿ•ª€º/// Optimize for date and time information.
+///
+/// On iOS, requests the default keyboard.
+///
+/// On Android, requests a keyboard with ready access to the number keys,
+/// ":", and "-".–e–r–s–t–v–u–V•Ì€«–Vh/// Optimize for email addresses.
+///
+/// Requests a keyboard with ready access to the "@" and "." keys.——————–û–|€—–û]/// Optimize for URLs.
+///
+/// Requests a keyboard with ready access to the "/" and "." keys.—Ï—Ü—İ—Ş—à—ß—½—€É—½€ƒ/// Optimize for passwords that are visible to the user.
+///
+/// Requests a keyboard with ready access to both letters and numbers.šššššš™ú—æ‚-™úè/// Optimized for a person's name.
+///
+/// On iOS, requests the
+/// [UIKeyboardType.namePhonePad](https://developer.apple.com/documentation/uikit/uikeyboardtype/namephonepad)
+/// keyboard, a keyboard optimized for entering a personâ€™s name or phone number.
+/// Does not support auto-capitalization.
+///
+/// On Android, requests a keyboard optimized for
+/// [TYPE_TEXT_VARIATION_PERSON_NAME](https://developer.android.com/reference/android/text/InputType#TYPE_TEXT_VARIATION_PERSON_NAME).›m›z›{›|›~›}›]šg›]/// Optimized for postal mailing addresses.
+///
+/// On iOS, requests the default keyboard.
+///
+/// On Android, requests a keyboard optimized for
+/// [TYPE_TEXT_VARIATION_POSTAL_ADDRESS](https://developer.android.com/reference/android/text/InputType#TYPE_TEXT_VARIATION_POSTAL_ADDRESS).›è›õ›ö›÷›ú›ø›á›„w›á?/// Prevent the OS from showing the on-screen virtual keyboard.Ÿ¢ „œ £„X/// Optimized for web searches.
+///
+/// Requests a keyboard that includes keys useful for web searches as well as URLs.
+///
+/// On iOS, requests a default keyboard with ready access to the "." key. In contrast to
+/// [url], a space bar is available.
+///
+/// On Android this is remapped to the [url] keyboard type as it always shows a space bar.ŸŸŸŸŸŸü¨qü*/// Optimized for social media.
+///
+/// Requests a keyboard that includes keys useful for handles and tags.
+///
+/// On iOS, requests a default keyboard with ready access to the "@" and "#" keys.
+///
+/// On Android this is remapped to the [emailAddress] keyboard type as it always shows the "@" key.Ÿw ,ŸhŸvŸiŸ}Ÿ‡Ÿ–Ÿ¢Ÿ­Ÿ»ŸÍŸÖŸëŸõ   !Ÿ_ŸŸ_/// All possible enum values. –¡_  •  œ ¨ ¹ Ç Ô ä ø¡¡¡&¡5¡A¡R … k€õ …    ¡¯¡¯5¡º   ¤¤¤¤D¤'     ¡è¡è€¶¢==/// Returns a representation of this object as a JSON object.  ¢¢¢£¢¢¢¢€°¢µ    £s£s£z £V£W£V£V€¹£p !"‹©‹©˜°2w/// The type of information for which to optimize the text input control.
+///
+/// On Android, behavior may vary across device and keyboard provider.
+///
+/// This class stays as close to `Enum` interface as possible, and allows
+/// for additional flags for some input types. For example, numeric input
+/// can specify whether it supports decimal numbers and/or signed numbers.  À M\ À Mr    À MyÀ MyÀ M~   À MŠÀ MŠ#À M   À M³À M³À M¸   À MÎÀ MÎÀ MÓ   À MìÀ MìÀ Mñ   À N	À N	 À N   À N/À N/ À N@   À NUÀ NUÀ NZ   À NxÀ Nx&À N}   À N¤À N¤À N©   À NºÀ Nº'À N¿   À NçÀ Nç*À Nì   À OÀ O1À O   À ONÀ ON;À OS   À OÀ O)À O”   À O¾À O¾(À OÃ   À OìÀ OìÀ Oñ   À PÀ P#À P   À P8À P8À P= @À M›À M¨À M©À MÃÀ MáÀ MÿÀ NnÀ NšÀ NÍÀ NÜÀ NİÀ OÀ OÀ OÀ O1À OCÀ ODÀ OkÀ O€À OÀ O´À OÖÀ OäÀ OåÀ OÜÀ OãÀ OİÀ PÀ P"À P0À P1À P(À P/À P)À PlÀ P\À P‰À PyÀ PŒÀ PÍÀ P™À P´À PÀ P›À PªÀ P«À P¶À PÅÀ PÆÀ PçÀ P×À QÀ PôÀ QÀ QHÀ QÀ Q/À QÀ QÀ Q%À Q&À Q1À Q@À QAÀ L©À L©„¡ €¤/// Creates configuration information for a text input control.
+///
+/// All arguments have default values, except [actionLabel]. Only
+/// [actionLabel] may be null.  À R,À QN€äÀ R,€Æ/// The ID of the view that the text input belongs to.
+///
+/// See also:
+///
+/// * [FlutterView], which is the view that the ID points to.
+/// * [View], which is a widget that wraps a [FlutterView]. À R—À R7iÀ R—I/// The type of information for which to optimize the text input control. À SÀ R¥eÀ SK/// Whether the text field can be edited or not.
+///
+/// Defaults to false. À S|À SxÀ S|[/// Whether to hide the text being edited (e.g., for passwords).
+///
+/// Defaults to false. À SİÀ SŒ\À Sİ?/// Whether to enable autocorrection.
+///
+/// Defaults to true. À UvÀ SíÀ Uv`/// The configuration to use for autofill.
+///
+/// Defaults to null, in which case no autofill information will be provided
+/// to the platform. This will prevent the corresponding input field from
+/// participating in autofills triggered by other fields. Additionally, on
+/// Android and web, setting [autofillConfiguration] to null disables autofill. À ZoÀ U„îÀ Zo„š/// {@template flutter.services.TextInputConfiguration.smartDashesType}
+/// Whether to allow the platform to automatically format dashes.
+///
+/// This flag only affects iOS versions 11 and above. It sets
+/// [`UITextSmartDashesType`](https://developer.apple.com/documentation/uikit/uitextsmartdashestype?language=objc)
+/// in the engine. When true, it passes
+/// [`UITextSmartDashesTypeYes`](https://developer.apple.com/documentation/uikit/uitextsmartdashestype/uitextsmartdashestypeyes?language=objc),
+/// and when false, it passes
+/// [`UITextSmartDashesTypeNo`](https://developer.apple.com/documentation/uikit/uitextsmartdashestype/uitextsmartdashestypeno?language=objc).
+///
+/// As an example of what this does, two consecutive hyphen characters will be
+/// automatically replaced with one en dash, and three consecutive hyphens
+/// will become one em dash.
+///
+/// Defaults to true, unless [obscureText] is true, when it defaults to false.
+/// This is to avoid the problem where password fields receive autoformatted
+/// characters.
+///
+/// See also:
+///
+///  * [smartQuotesType]
+///  * <https://developer.apple.com/documentation/uikit/uitextinputtraits>
+/// {@endtemplate} À _QÀ Zƒ„İÀ _Q„‰/// {@template flutter.services.TextInputConfiguration.smartQuotesType}
+/// Whether to allow the platform to automatically format quotes.
+///
+/// This flag only affects iOS. It sets
+/// [`UITextSmartQuotesType`](https://developer.apple.com/documentation/uikit/uitextsmartquotestype?language=objc)
+/// in the engine. When true, it passes
+/// [`UITextSmartQuotesTypeYes`](https://developer.apple.com/documentation/uikit/uitextsmartquotestype/uitextsmartquotestypeyes?language=objc),
+/// and when false, it passes
+/// [`UITextSmartQuotesTypeNo`](https://developer.apple.com/documentation/uikit/uitextsmartquotestype/uitextsmartquotestypeno?language=objc).
+///
+/// As an example of what this does, a standard vertical double quote
+/// character will be automatically replaced by a left or right double quote
+/// depending on its position in a word.
+///
+/// Defaults to true, unless [obscureText] is true, when it defaults to false.
+/// This is to avoid the problem where password fields receive autoformatted
+/// characters.
+///
+/// See also:
+///
+///  * [smartDashesType]
+///  * <https://developer.apple.com/documentation/uikit/uitextinputtraits>
+/// {@endtemplate} À a¦À _e‚RÀ a¦‚/// {@template flutter.services.TextInputConfiguration.enableSuggestions}
+/// Whether to show input suggestions as the user types.
+///
+/// This flag only affects Android. On iOS, suggestions are tied directly to
+/// [autocorrect], so that suggestions are only shown when [autocorrect] is
+/// true. On Android autocorrection and suggestion are controlled separately.
+///
+/// Defaults to true.
+///
+/// See also:
+///
+///  * <https://developer.android.com/reference/android/text/InputType.html#TYPE_TEXT_FLAG_NO_SUGGESTIONS>
+/// {@endtemplate} À bÍÀ a¼+À bÍ€÷/// Whether a user can change its selection.
+///
+/// This flag only affects iOS VoiceOver. On Android Talkback, the selection
+/// change is sent through semantics actions and is directly disabled from
+/// the widget side.
+///
+/// Defaults to true. À c@À bì_À c@C/// What text to display in the text input control's action button. À c­À cPhÀ c­D/// What kind of action to request for the action button on the IME. À dÒÀ c½'À dÒ€ë/// Specifies how platforms may automatically capitalize text entered by the
+/// user.
+///
+/// Defaults to [TextCapitalization.none].
+///
+/// See also:
+///
+///  * [TextCapitalization], for a description of each capitalization behavior. À e…À dé€®À e…€€/// The appearance of the keyboard.
+///
+/// This setting is only honored on iOS devices.
+///
+/// Defaults to [Brightness.light]. À gÀ eœ‚À gÍ/// {@template flutter.services.TextInputConfiguration.enableIMEPersonalizedLearning}
+/// Whether to enable that the IME update personalized data such as typing
+/// history and user dictionary data.
+///
+/// This flag only affects Android. On iOS, there is no equivalent flag.
+///
+/// Defaults to true.
+///
+/// See also:
+///
+///  * <https://developer.android.com/reference/android/view/inputmethod/EditorInfo#IME_FLAG_NO_PERSONALIZED_LEARNING>
+/// {@endtemplate} À hÀ g¯qÀ hK/// {@macro flutter.widgets.contentInsertionConfiguration.allowedMimeTypes} À júÀ h%‚àÀ jú‚ /// {@template flutter.services.TextInputConfiguration.hintLocales}
+/// List of the languages that the user is expected to use.
+///
+/// This special "hint" can be used mainly for, but not limited to,
+/// multilingual users who want IMEs to switch language based on editor's context.
+///
+/// Pass an empty list to express the intention that a specific hint should not be set.
+///
+/// Defaults to null, which indicates no preference in keyboard language.
+///
+/// This setting is only honored on Android devices running API 24 and above.
+///
+/// See also:
+///
+///  * <https://developer.android.com/reference/android/view/inputmethod/EditorInfo#hintLocales>
+/// {@endtemplate} À löÀ k
+‚À löË/// {@template flutter.services.TextInputConfiguration.enableInlinePrediction}
+/// Whether to enable inline predictive text.
+///
+/// This feature is specific to iOS 17 and later. It has no effect on other
+/// platforms.
+///
+/// By default, this property is null, which means inline prediction is
+/// disabled on iOS. Setting this flag overrides the platform behavior:
+/// when true, inline prediction is enabled; when false, it is disabled.
+/// {@endtemplate} À y¨À u„À y¨„T/// Whether to enable that the engine sends text input updates to the
+/// framework as [TextEditingDelta]'s or as one [TextEditingValue].
+///
+/// Enabling this flag results in granular text updates being received from the
+/// platform's text input control.
+///
+/// When this is enabled:
+///  * You must implement [DeltaTextInputClient] and not [TextInputClient] to
+///    receive granular updates from the platform's text input.
+///  * Platform text input updates will come through
+///    [DeltaTextInputClient.updateEditingValueWithDeltas].
+///  * If [TextInputClient] is implemented with this property enabled then
+///    you will experience unexpected behavior as [TextInputClient] does not implement
+///    a delta channel.
+///
+/// When this is disabled:
+///  * If [DeltaTextInputClient] is implemented then updates for the
+///    editing state will continue to come through the
+///    [DeltaTextInputClient.updateEditingValue] channel.
+///  * If [TextInputClient] is implemented then updates for the editing
+///    state will come through [TextInputClient.updateEditingValue].
+///
+/// Defaults to false.  À ƒÀ ƒÀ ƒÀ ƒ‚À ƒ     À m£À m£À m¨   À m´À m´À mÃ   À mÒÀ mÒÀ mØ   À mæÀ mæÀ mì   À mıÀ mıÀ n   À nÀ n À n%   À n:À n: À nK   À n`À n`À nf   À n}À n} À nƒ   À n£À n£À n«   À n¼À n¼À nÍ   À nŞÀ nŞÀ nê   À oÀ o&À o   À o.À o.#À o4   À oWÀ oWÀ oe   À o{À o{,À o’   À o­À o­À o³   À oÉÀ oÉÀ o×   À oèÀ oèÀ oî  À mÀ mˆÀ m”g/// Creates a copy of this [TextInputConfiguration] with the given fields
+/// replaced with new values.   À y½À y½„oÀ z=/// Returns a representation of this object as a JSON object.   À ~MÀ ~MÀ ~T À ~0À ~1À ~0À ~0„ÏÀ ~J   À …À …À …À …„3À …& À L}À L~À IuÀ Iu¿ÓÀ Lƒ/// Controls the visual appearance of the text input control.
+///
+/// Many [TextInputAction]s are common between Android and iOS. However, if an
+/// [inputAction] is provided that is not supported by the current
+/// platform in debug mode, an error will be thrown when the corresponding
+/// text input is attached. For example, providing iOS's "emergencyCall"
+/// action when running on an Android device will result in an error when in
+/// debug mode. In release mode, incompatible [TextInputAction]s are replaced
+/// either with "unspecified" on Android, or "default" on iOS. Appropriate
+/// [inputAction]s can be chosen by checking the current platform and then
+/// selecting the appropriate action.
+///
+/// See also:
+///
+///  * [TextInput.attach]
+///  * [TextInputAction]  À ’g À ’}    À ’À ’À ’„   À ’ŒÀ ’ŒÀ ’‘   À ’ À ’ À ’® À ’¼À ’ÂÀ ’üÀ ’ëÀ ’ÉÀ ’ÃÀ ’ÌÀ ’ãÀ ’äÀ ’õÀ ’îÀ ’øÀ ‘“À ‘“k €É/// Creates information for setting the position and state of a floating
+/// cursor.
+///
+/// [state] must not be null and [offset] must not be null if the state is
+/// [FloatingCursorDragState.Update].  À “\À “`À “\I/// The raw position of the floating cursor as determined by the iOS sdk. À ”‹À “g1À ”‹€ÿ/// Represents the starting location when initiating a floating cursor via long press.
+/// This is a tuple where the first item is the local offset and the second item is the new caret position.
+/// This is only non-null when a floating cursor is started. À ”ãÀ ”KÀ ”ã%/// The state of the floating cursor.    À ÂÀ Â„)À ‘x€¯/// The current state and position of the floating cursor.
+///
+/// See also:
+///
+///  * [FloatingCursorDragState], which explains the floating cursor feature in
+///    detail.  À –É À –Ù    À –àÀ –àÀ –å   À –ôÀ –ô:À –ù   À —4À —4 À —9 À –ìÀ —À —À —À —À —"À —-À —)À —#À —+À —,À —EÀ —NÀ —OÀ •cÀ •cø Q/// Creates information for editing a run of text.
+///
+/// The selection and composing range must be within the text. This is not
+/// checked during construction, and must be guaranteed by the caller.
+///
+/// The default value of [selection] is `TextSelection.collapsed(offset: -1)`.
+/// This indicates that there is no selection at all. À —›À —£À —³À —¼    À —½À —½À —Ò  À —_À —_ƒGÀ —´9/// Creates an instance of this class from a JSON object.  À šÜÀ šª6À šÜ"/// The current text being edited. À  À šå‚DÀ  ‚/// The range of text that is currently selected.
+///
+/// When [selection] is a [TextSelection] that has the same non-negative
+/// `baseOffset` and `extentOffset`, the [selection] property represents the
+/// caret position.
+///
+/// If the current [selection] has a negative `baseOffset` or `extentOffset`,
+/// then the text currently does not have a selection or a caret location, and
+/// most text editing operations that rely on the current selection (for
+/// instance, insert a character at the caret location) will do nothing. À ¢‚À .…]À ¢‚…/// The range of text that is still being composed.
+///
+/// Composing regions are created by input methods (IMEs) to indicate the text
+/// within a certain range is provisional. For instance, the Android Gboard
+/// app's English keyboard puts the current word under the caret into a
+/// composing region to indicate the word is subject to autocorrect or
+/// prediction changes.
+///
+/// Composing regions can also be used for performing multistage input, which
+/// is typically used by IMEs designed for phonetic keyboard to enter
+/// ideographic symbols. As an example, many CJK keyboards require the user to
+/// enter a Latin alphabet sequence and then convert it to CJK characters. On
+/// iOS, the default software keyboards do not have a dedicated view to show
+/// the unfinished Latin sequence, so it's displayed directly in the text
+/// field, inside of a composing region.
+///
+/// On iOS 17 and later, the composing region can also be used
+/// to display inline text predictions. The user can accept the
+/// predicted text by tapping the Space bar.
+///
+/// The composing region should typically only be changed by the IME, or the
+/// user via interacting with the IME.
+///
+/// If the range represented by this property is [TextRange.empty], then the
+/// text is not currently being composed.À £À £#À £$À £À ¢€•À £Z/// A value that corresponds to the empty string with no selection and no composing range.   À ¤‡À ¤‡‚1À ¦Mª/// Whether the [composing] range is a valid range within [text].
+///
+/// Returns true if and only if the [composing] range is normalized, its start
+/// is greater than or equal to 0, and its end is less than or equal to
+/// [text]'s length.
+///
+/// If this property is false while the [composing] range's `isValid` is true,
+/// it usually indicates the current [composing] range is invalid because of a
+/// programming error.  À ´À ´À ´À ´cÀ ´!     À £ À £ À £¨   À £®À £®À £½   À £ÈÀ £ÈÀ £Ó  À £*À £*YÀ £–X/// Creates a copy of this value but with the given fields replaced with the new values.   À ª~À ª~À ªˆ   À ªšÀ ªšÀ ª¡  À ¦¼À ¦¼‰†À ªuƒƒ/// Returns a new [TextEditingValue], which is this [TextEditingValue] with
+/// its [text] partially replaced by the `replacementString`.
+///
+/// The `replacementRange` parameter specifies the range of the
+/// [TextEditingValue.text] that needs to be replaced.
+///
+/// The `replacementString` parameter specifies the string to replace the
+/// given range of text with.
+///
+/// This method also adjusts the selection range and the composing range of the
+/// resulting [TextEditingValue], such that they point to the same substrings
+/// as the corresponding ranges in the original [TextEditingValue]. For
+/// example, if the original [TextEditingValue] is "Hello world" with the word
+/// "world" selected, replacing "Hello" with a different string using this
+/// method will not change the selected word.
+///
+/// This method does nothing if the given `replacementRange` is not
+/// [TextRange.isValid].   À °FÀ °F‚À °›=/// Returns a representation of this object as a JSON object.  À ²gÀ ²hÀ ²gÀ ²g€ŸÀ ²z    À ³'À ³'À ³. À ³
+À ³À ³
+À ³
+€ÿÀ ³$    À ¶À ¶À ¶   À ¶ À ¶ À ¶'  À µñÀ µñ½À µı À •=À •>À ”íÀ ”í¢ÃÀ •NO/// The current text, selection, and composing state for editing a run of text.      À ŞƒÀ ŞƒIÀ Şº)/// A unique identifier for this element.   À àÀ àBÀ àH//// The current bounds of the [ScribbleClient].    À ß‡À ß‡À ß  À ŞĞÀ ŞĞ€ÆÀ ßw€›/// Called by the engine when the [ScribbleClient] should receive focus.
+///
+/// For example, this method is called during a UIIndirectScribbleInteraction.   À ßşÀ ßş	À à  À ßšÀ ßšoÀ ßíK/// Tests whether the [ScribbleClient] overlaps the given rectangle bounds. À İ.À İ.ƒ#À Şp2/// An interface into iOS's stylus handwriting text input.
+///
+/// See also:
+///
+///  * [Scribe], which provides similar functionality for Android.
+///  * [UIIndirectScribbleInteraction](https://developer.apple.com/documentation/uikit/uiindirectscribbleinteraction),
+///    which is iOS's API for Scribble.  À á­ À áº    À áÁÀ áÁÀ áÏ   À áİÀ áİÀ áë   À á÷À á÷"À áü À âÀ âÀ âÀ áKÀ áK€Õ W/// Constructor for creating a [SelectionRect] from a text [position] and
+/// [bounds].  À âpÀ â$TÀ âp?/// The position of this selection rect within the text String. À ãÀ â}€œÀ ã€†/// The rectangle representing the bounds of this selection rect within the
+/// currently focused [RenderEditable]'s coordinate space. À ãmÀ ãXÀ ãm8/// The direction text flows within this selection rect.  À äÃÀ äÄÀ äÃÀ äÃ>À ä×     À ã˜À ã˜À ãŸ À ã{À ã|À ã{À ã{DÀ ã•   À åÀ åÀ åÀ åEÀ å À á(À á)À àSÀ àS„ùÀ á9€Ô/// Represents a selection rect for a character and it's position in the text.
+///
+/// This is used to report the current text selection rect and position data
+/// to the engine for Scribble support on iPadOS 14.  À ìÁ À ìÏ    À ìÖÀ ìÖÀ ìÛ   À ìëÀ ìëÀ ìğ   À ìşÀ ìşÀ í   À íÀ íÀ í!   À í4À í4À íB   À íQÀ íQÀ íV   À íiÀ íiÀ ín   À íÀ íÀ í„  À ìvÀ ìv B/// Creates text styling information for the current input client.  À íğÀ í™aÀ íğF/// The name of the font to use when painting the text (e.g., Roboto). À îXÀ íÿaÀ îXH/// The size of fonts (in logical pixels) to use when painting the text. À îÀÀ îeeÀ îÀF/// The typeface thickness to use when painting the text (e.g., bold). À ï	À îÏGÀ ï	#/// The directionality of the text. À ï^À ïLÀ ï^0/// How the text should be aligned horizontally. À ïÄÀ ïleÀ ïÄG/// The amount of space (in logical pixels) to add between each letter. À ğYÀ ïÖ€À ğYp/// The amount of space (in logical pixels) to add at each sequence of
+/// white-space (i.e. between each word). À ğ À ğiAÀ ğ &/// The line height in logical pixels.  À òàÀ òáÀ òàÀ òà€ÕÀ òô     À ğÌÀ ğÌÀ ğÓ À ğ¯À ğ°À ğ¯À ğ¯‚-À ğÉ    À ó¹À ó¹²À ô=/// Returns a representation of this object as a JSON object.   À õ”À õ”&À õ° À õoÀ õpÀ õoÀ õoƒÀ õ€ À ì8À ì9À ëÀ ëƒÀ ìO5/// Text styling information for the current input client.
+///
+/// See also:
+///
+///  * [TextInputConnection.updateStyle], which uses this class to send style
+///    information to the platform.
+///  * [TextInputControl.updateStyle], which receives this style information
+///    in custom text input controls.  À úÀ ú%À ú'    À ú(À ú(À ú- À ú<À ú8À úEÀ ú>À úÀ ú6À ú&   À úRÀ úLÀ úR  À újÀ úaÀ új  À ú„À ú~À ú„  À ú™À ú“À ú™ À úèÀ úéÀ úÙÀ úçÀ úÚÀ úÁÀ ú­=À úÁ À ûÀ úúÀ úïÀ úú  À ûÀ û	À û  À üŠÀ ütÀ üŠ    À ü–À ü–€˜À üóQ/// Whether this connection is currently interacting with the text input control.   À ı2À ı2À ş€Ä/// Whether there is currently a Scribble interaction in progress.
+///
+/// This is used to make sure selection handles are shown when UIKit changes
+/// the selection during a Scribble interaction.    À üÀ ü
+À ü! À ûîÀ ûïÀ ü&À ûÀ ûUÀ ü€Ê/// Resets the internal ID counter for testing purposes.
+///
+/// This call has no effect when asserts are disabled. Calling it from
+/// application code will likely break text input for the application.   À şIÀ şI€ƒÀ ş‰8/// Requests that the text input control become visible.   À şĞÀ şĞ`À ÿ×€ñ/// Requests the system autofill UI to appear.
+///
+/// Currently only works on Android. Other platforms do not respond to this
+/// message.
+///
+/// See also:
+///
+///  * [EditableText], a [TextInputClient] that calls this method when focused.   À ´À ´$À Ë  À 4À 4€÷À §i/// Requests that the text input control update itself according to the new
+/// [TextInputConfiguration].   À©À©Àº  À/À/€ŞÀ™`/// Requests that the text input control change its internal state to match
+/// the given state.   ÀÖÀÖÀÛ   ÀìÀìÀô  ÀÀ‚áÀº‘/// Send the size and transform of the editable text to engine.
+///
+/// The values are sent as platform messages so they can be used on web for
+/// example to correctly position and size the html input field.
+///
+/// 1. [editableBoxSize]: size of the render editable box.
+///
+/// 2. [transform]: a matrix that maps the local paint coordinate system
+///                 to the [PipelineOwner.rootNode].   ÀYÀY	À^  ÀöÀö‚LÀH</// Send the smallest rect that covers the text in the client that's currently
+/// being composed.
+///
+/// If any of the 4 coordinates of the given [Rect] is not finite, a [Rect] of
+/// size (-1, -1) will be sent instead.
+///
+/// This information is used for positioning the IME candidates menu on each
+/// platform.   ÀÊÀÊ	ÀÏ  ÀFÀFoÀ½m/// Sends the coordinates of caret rect. This is used on macOS for positioning
+/// the accent selection menu.   À	•À	•"À	©  À¹À¹µÀ	ƒ€¼/// Send the bounding boxes of the current selected glyphs in the client to
+/// the platform's text input plugin.
+///
+/// These are used by the engine during a UIDirectScribbleInteraction.   ÀîÀîÀÿ   ÀÀÀ    À.À.ÀC   ÀSÀS$Àj   À}À}À ÀmÀnÀxÀÖÀ~ÀÀ
+rÀ
+rƒ
+Àß€ğ/// Send text styling information.
+///
+/// This information is used by the Flutter Web Engine to change the style
+/// of the hidden native input's content. Hence, the content size will match
+/// to the size of the editable widget's content.   ÀŒÀŒÀ›  À€À€jÀ€€ğ/// Send text styling information.
+///
+/// This information is used by the Flutter Web Engine to change the style
+/// of the hidden native input's content. Hence, the content size will match
+/// to the size of the editable widget's content.   ÀîÀî4Àº€¾/// Stop interacting with the text input control.
+///
+/// After calling this method, the text input control might disappear if no
+/// other client attaches to it within this animation frame.   À&À& À¼€Š/// Platform sent a notification informing the connection is closed.
+///
+/// [TextInputConnection] should clean current client connection. À ø‡À ø‡˜¡À ùúl/// An interface for interacting with a text input control.
+///
+/// See also:
+///
+///  * [TextInput.attach], a method used to establish a [TextInputConnection]
+///    between the system's text input and a [TextInputClient].
+///  * [EditableText], a [TextInputClient] that connects to and interacts with
+///    the system's text input using a [TextInputConnection].  À%½À%ÆÀ%È    À%½À%½€À%Ç  À(`À(iÀ(jÀ(kÀ(lÀ(TÀ(=0À(T À/pÀ/‰À/ŠÀ/^À/LFÀ/^ À/ÕÀ0À/ÃÀ/ÔÀ/ÄÀ/ÛÀ/ôÀ/õÀ/²À/–lÀ/²  À0[À1WÀ0JÀ0ZÀ0KÀ0aÀ0pÀ0qÀ0{À0ŠÀ0‹À0œÀ0«À0¬À0¶À0ÅÀ0ÆÀ0ĞÀ0ßÀ0àÀ0èÀ0÷À0øÀ1À1À1À1À1-À1.À1<À1KÀ1LÀ0*À0QÀ0* &À1­À2íÀ1œÀ1¬À1À1³À1ÂÀ1ÃÀ1ÔÀ1ãÀ1äÀ1îÀ1ıÀ1şÀ2À2À2À2 À2/À20À2<À2KÀ2LÀ2VÀ2eÀ2fÀ2sÀ2‚À2ƒÀ2—À2¦À2§À2±À2ÀÀ2ÁÀ2ÌÀ2ÛÀ2ÜÀ1€À1]‘À1€  À;vÀ;cÀ;v  À;˜À;ƒ'À;˜  À;ÊÀ;®1À;Ê  À;øÀ;ã$À;ø À<YÀ<ZÀ<AÀ<XÀ<BÀ<JÀ<.À<OÀ<. À<zÀ<dÀ<_ À<d ÀZÀYÿÀYúÀYÿ   À<éÀ<êÀ<„À<„€ÙÀ=%b/// Used for testing within the Flutter SDK to get the currently registered [ScribbleClient] list.   À=aÀ=axÀ=¯B/// Returns true if a scribble interaction is currently happening.    À'{À'{À'‰ À'OÀ'PÀ&BÀ&B÷À'p /// Set the [MethodChannel] used to communicate with the system's text input
+/// control.
+///
+/// This is only meant for testing within the Flutter SDK. Changing this
+/// will break the ability to input text. This has no effect if asserts are
+/// disabled.   À(À(À(   À(rÀ(r€¨À(~    À)>À)>À)O  À)À)€®À)*    À,(À,(À,:  À)ĞÀ)Ğ„<À,‚/// Sets the current text input control.
+///
+/// The current text input control receives text input state changes and visual
+/// text input control requests, such as showing and hiding the input control,
+/// from the framework.
+///
+/// Setting the current text input control as `null` removes the visual text
+/// input control.
+///
+/// See also:
+///
+///  * [TextInputControl], an interface for implementing text input controls.
+///  * [TextInput.restorePlatformInputControl], a method to restore the default
+///    platform text input control.   À.À.8À.ì€Ã/// Restores the default platform text input control.
+///
+/// See also:
+///
+/// * [TextInput.setInputControl], a method to set a custom input
+///   control, or to remove the visual input control.   À2óÀ2ó€àÀ3‰€…/// Ensure that a [TextInput] instance has been set up so that the platform
+/// can handle messages on the text input method channel.   À5çÀ5çÀ5÷   À5ÿÀ5ÿ$À6  À3×À3×‚ÒÀ5àÙ/// Begin interacting with the text input control.
+///
+/// Calling this function helps multiple clients coordinate about which one is
+/// currently interacting with the text input control. The returned
+/// [TextInputConnection] provides an interface for actually interacting with
+/// the text input control.
+///
+/// A client that no longer wishes to interact with the text input control
+/// should call [TextInputConnection.close] on the returned
+/// [TextInputConnection].   À7À7À7“   À7ŸÀ7Ÿ$À7¶  À7rÀ7rLÀ7w    À8õÀ8õÀ9  À8ÂÀ8Â‚À8Î    À>À>À>  À=İÀ=İ¾À=í    À?ÊÀ?ÊÀ?Õ  À?ŸÀ?ŸšWÀ?¯    ÀZÀZ…ÀZ    À[±À[±À[Á   À[ÉÀ[É$À[à  À[¡À[¡€ÃÀ[¦    À\hÀ\h€îÀ\m    À]mÀ]m$À]„  À]ZÀ]Z€¬À]_    À^ À^ À^1  À^
+À^
+€œÀ^    À^ªÀ^ªkÀ^¯    À_À_kÀ_    À_ªÀ_ªÀ_¯   À_ÀÀ_ÀÀ_È  À_ˆÀ_ˆ€ÚÀ_    À`À`	À`†  À`fÀ`f€”À`k    ÀaÀa	Àa  À`şÀ`ş€ˆÀa    Àa¢Àa¢"Àa¶  ÀaŠÀaŠ€µÀa    ÀbUÀbUÀbd  ÀbCÀbC€’ÀbH    ÀbÙÀbÙ€ÀbŞ    ÀcwÀcwÀcˆ   ÀcÀcÀc¢  Àc^Àc^pÀcc    ÀeÃÀeÃÀeÔ  ÀdÒÀdÒ\Àe°€É/// Updates the editing value of the attached input client.
+///
+/// This method should be called by the text input control implementation to
+/// send editing value updates to the attached input client.   ÀpíÀpíÀpò ÀpÿÀf2Àf2‹mÀpÖŠ7/// Finishes the current autofill context, and potentially saves the user
+/// input for future use if `shouldSave` is true.
+///
+/// Typically, this method should be called when the user has finalized their
+/// input. For example, in a [Form], it's typically done immediately before or
+/// after its content is submitted.
+///
+/// The topmost [AutofillGroup]s also call [finishAutofillContext]
+/// automatically when they are disposed. The default behavior can be
+/// overridden in [AutofillGroup.onDisposeAction].
+///
+/// {@template flutter.services.TextInput.finishAutofillContext}
+/// An autofill context is a collection of input fields that live in the
+/// platform's text input plugin. The platform is encouraged to save the user
+/// input stored in the current autofill context before the context is
+/// destroyed, when [TextInput.finishAutofillContext] is called with
+/// `shouldSave` set to true.
+///
+/// Currently, there can only be at most one autofill context at any given
+/// time. When any input field in an [AutofillGroup] requests for autofill
+/// (which is done automatically when an autofillable [EditableText] gains
+/// focus), the current autofill context will merge the content of that
+/// [AutofillGroup] into itself. When there isn't an existing autofill context,
+/// one will be created to hold the newly added input fields from the group.
+///
+/// Once added to an autofill context, an input field will stay in the context
+/// until the context is destroyed. To prevent leaks, call
+/// [TextInput.finishAutofillContext] to signal the text input plugin that the
+/// user has finalized their input in the current autofill context. The
+/// platform text input plugin either encourages or discourages the platform
+/// from saving the user input based on the value of the `shouldSave`
+/// parameter. The platform usually shows a "Save for autofill?" prompt for
+/// user confirmation.
+/// {@endtemplate}
+///
+/// On many platforms, calling [finishAutofillContext] shows the save user
+/// input dialog and disrupts the user's flow. Ideally the dialog should only
+/// be shown no more than once for every screen. Consider removing premature
+/// [finishAutofillContext] calls to prevent showing the save user input UI
+/// too frequently. However, calling [finishAutofillContext] when there's no
+/// existing autofill context usually does not bring up the save user input
+/// UI.
+///
+/// See also:
+///
+/// * [EditableText.autofillHints] for autofill save troubleshooting tips.
+/// * [AutofillGroup.onDisposeAction], a configurable action that runs when a
+///   topmost [AutofillGroup] is getting disposed.   Àr°Àr°Àr·   ÀrÊÀrÊÀrÙ  Àq£Àq£™Àr˜€Ş/// Registers a [ScribbleClient] with [elementIdentifier] that can be focused
+/// by the engine.
+///
+/// For example, the registered [ScribbleClient] list is used to respond to
+/// UIIndirectScribbleInteraction on an iPad.   Às¥Às¥Às¬  Às@Às@€ÈÀs‹</// Unregisters a [ScribbleClient] with [elementIdentifier]. ÀGÀGÀ YÃÀ%¯‹a/// An low-level interface to the system's text input control.
+///
+/// To start interacting with the system's text input control, call [attach] to
+/// establish a [TextInputConnection] between the system's text input control
+/// and a [TextInputClient]. The majority of commands available for
+/// interacting with the text input control reside in the returned
+/// [TextInputConnection]. The communication between the system text input and
+/// the [TextInputClient] is asynchronous.
+///
+/// The platform text input plugin (which represents the system's text input)
+/// and the [TextInputClient] usually maintain their own text editing states
+/// ([TextEditingValue]) separately. They must be kept in sync as long as the
+/// [TextInputClient] is connected. The following methods can be used to send
+/// [TextEditingValue] to update the other party, when either party's text
+/// editing states change:
+///
+/// * The [TextInput.attach] method allows a [TextInputClient] to establish a
+///   connection to the text input. An optional field in its `configuration`
+///   parameter can be used to specify an initial value for the platform text
+///   input plugin's [TextEditingValue].
+///
+/// * The [TextInputClient] sends its [TextEditingValue] to the platform text
+///   input plugin using [TextInputConnection.setEditingState].
+///
+/// * The platform text input plugin sends its [TextEditingValue] to the
+///   connected [TextInputClient] via a "TextInput.setEditingState" message.
+///
+/// * When autofill happens on a disconnected [TextInputClient], the platform
+///   text input plugin sends the [TextEditingValue] to the connected
+///   [TextInputClient]'s [AutofillScope], and the [AutofillScope] will further
+///   relay the value to the correct [TextInputClient].
+///
+/// When synchronizing the [TextEditingValue]s, the communication may get stuck
+/// in an infinite when both parties are trying to send their own update. To
+/// mitigate the problem, only [TextInputClient]s are allowed to alter the
+/// received [TextEditingValue]s while platform text input plugins are to accept
+/// the received [TextEditingValue]s unmodified. More specifically:
+///
+/// * When a [TextInputClient] receives a new [TextEditingValue] from the
+///   platform text input plugin, it's allowed to modify the value (for example,
+///   apply [TextInputFormatter]s). If it decides to do so, it must send the
+///   updated [TextEditingValue] back to the platform text input plugin to keep
+///   the [TextEditingValue]s in sync.
+///
+/// * When the platform text input plugin receives a new value from the
+///   connected [TextInputClient], it must accept the new value as-is, to avoid
+///   sending back an updated value.
+///
+/// See also:
+///
+///  * [TextField], a widget in which the user may enter text.
+///  * [EditableText], a [TextInputClient] that connects to [TextInput] when it
+///    wants to take user input from the keyboard.  À†DÀ†]À†_    À†DÀ†DÀ†^  À†ÒÀ†ëÀ†ìÀ†íÀ†îÀ†ÇÀ†f€‰À†Ç7/// The shared instance of [_PlatformTextInputControl].   À†ôÀ†ô;À‡     À‡]À‡]$À‡t  À‡3À‡3‚ìÀ‡H    ÀŠ;ÀŠ;ÀŠK   ÀŠSÀŠS$ÀŠj ÀŠ#ÀŠ$ÀŠ#ÀŠ#ÑÀŠ4    ÀŒÀŒÀŒ  À‹øÀ‹ùÀ‹øÀ‹ø2ÀŒ	    ÀLÀL$Àc À.À/À.À.nÀ?    ÀÁÀÁÀÒ À À¡À À PÀ±   ÀôÀõÀôÀôÀ   À‘	À‘
+À‘	À‘	À‘    À’JÀ’JÀ’O   À’`À’`À’h À’À’À’À’‚À’.    À”OÀ”O	À”T À”-À”.À”-À”-ÈÀ”>    À–À–	À– À•ùÀ•úÀ•ùÀ•ù»À–
+    À—ÛÀ—Û"À—ï À—¸À—¹À—¸À—¸‚À—É    ÀšzÀšzÀš‹   Àš›Àš›Àš¬   ÀšºÀšºÀšÏ   ÀšßÀšß$Àšö   À›	À›	À› ÀšZÀš[ÀšZÀšZ®Àšk    Àœ)Àœ)Àœ8 ÀœÀœÀœÀœ<Àœ   ÀLÀMÀLÀLÀ]    À•À•Àš ÀmÀnÀ§ÀmÀmTÀ~  À…ÒÀ…Ò™ñÀ†7/// Provides access to the platform text input control.  À¤¾ À¤Ù    À¤ÛÀ¤ÛÀ¤à  À¤TÀ¤T€Ô c/// Creates an instance of [SystemContextMenuController].
+///
+/// Not shown until [show] is called.  À¦·À¥,—À¦·f/// Called when the system has hidden the context menu.
+///
+/// For example, tapping outside of the context menu typically causes the
+/// system to hide it directly. Flutter is made aware that the context menu is
+/// no longer visible through this callback.
+///
+/// This is not called when [show]ing a new system context menu causes another
+/// to be hidden.À¦îÀ¦üÀ¦ıÀ¦ãÀ¦È=À¦ã  À§.À§
+.À§. À§ŒÀ§À§vÀ§‹À§wÀ§À§]À§=QÀ§]  À¨ À§“|À¨ `/// The target [Rect] that was last given to [show].
+///
+/// Null if [show] has not been called. À¨®À¨€¤À¨®o/// The [IOSSystemContextMenuItem]s that were last given to [show].
+///
+/// Null if [show] has not been called.À©,À©À¨½tÀ©S/// True when the instance most recently [show]n has been hidden by the
+/// system.Àª^ÀªPÀª\ÀªPA/// After calling [dispose], this instance can no longer be used.  À©±À©²À©6À©6€ÍÀ©Ïv/// Indicates whether the system context menu managed by this controller is
+/// currently being displayed to the user.   ÀªÀªÀªÀª*Àª    À«êÀ«êÀ«ñ À«»À«¼À«»À«»YÀ«Ì    À±eÀ±eÀ±j À°äÀ°åÀ°ïÀ±OÀ°õÀ±À­:À­:ˆÀ±`ƒ/// Shows the system context menu anchored on the given [Rect].
+///
+/// Currently only supported on iOS 16.0 and later. Check
+/// [MediaQuery.maybeSupportsShowingSystemContextMenu] before calling this.
+///
+/// The [Rect] represents what the context menu is pointing to. For example,
+/// for some text selection, this would be the selection [Rect].
+///
+/// Currently this system context menu is bound to text input. Using this
+/// without an active [TextInputConnection] will be a noop.
+///
+/// There can only be one system context menu visible at a time. Calling this
+/// while another system context menu is already visible will remove the old
+/// menu before showing the new menu.
+///
+/// See also:
+///
+///  * [hide], which hides the menu shown by this method.
+///  * [MediaQuery.supportsShowingSystemContextMenu], which indicates whether
+///    this method is supported on the current platform.   ÀºsÀºsÀºx   Àº„Àº„(Àº§  ÀµQÀµQŒ~Àºe„Ğ/// Shows the system context menu anchored on the given [Rect] with the given
+/// buttons.
+///
+/// Currently only supported on iOS 16.0 and later. Check
+/// [MediaQuery.maybeSupportsShowingSystemContextMenu] before calling this.
+///
+/// The [Rect] represents what the context menu is pointing to. For example,
+/// for some text selection, this would be the selection [Rect].
+///
+/// `items` specifies the buttons that appear in the menu. The buttons that
+/// appear in the menu will be exactly as given and will not automatically
+/// update based on the state of the input field. See
+/// [SystemContextMenu.getDefaultItems] for the default items for a given
+/// [EditableTextState].
+///
+/// Currently this system context menu is bound to text input. Using this
+/// without an active [TextInputConnection] will be a noop.
+///
+/// There can only be one system context menu visible at a time. Calling this
+/// while another system context menu is already visible will remove the old
+/// menu before showing the new menu.
+///
+/// See also:
+///
+///  * [hide], which hides the menu shown by this method.
+///  * [MediaQuery.supportsShowingSystemContextMenu], which indicates whether
+///    this method is supported on the current platform.   ÀÁÓÀÁÓƒúÀÃ¢©/// Hides this system context menu.
+///
+/// If this hasn't been shown, or if another instance has hidden this menu,
+/// does nothing.
+///
+/// Currently this is only supported on iOS 16.0 and later.
+///
+/// See also:
+///
+///  * [show], which shows the menu hidden by this method.
+///  * [MediaQuery.supportsShowingSystemContextMenu], which indicates whether
+///    the system context menu is supported on the current platform.   ÀÅöÀÅö&ÀÆ ÀÅÑÀÅÒÀÅÑÀÅÑ‚1ÀÅâ    ÀÈÀÈ€ŸÀÈXJ/// Used to release resources when this instance will never be used again. ÀŸÅÀŸÅ¨âÀ¤„;/// Allows access to the system context menu.
+///
+/// The context menu is the menu that appears, for example, when doing text
+/// selection. Flutter typically draws this menu itself, but this class deals
+/// with the platform-rendered context menu.
+///
+/// Only one instance can be visible at a time. Calling [show] while the system
+/// context menu is already visible will hide it and show it again at the new
+/// [Rect]. An instance that is hidden is informed via [onSystemHide].
+///
+/// Currently this system context menu is bound to text input. The buttons that
+/// are shown and the actions they perform are dependent on the currently
+/// active [TextInputConnection]. Using this without an active
+/// [TextInputConnection] is a noop.
+///
+/// Call [dispose] when no longer needed.
+///
+/// See also:
+///
+///  * [ContextMenuController], which controls Flutter-drawn context menus.
+///  * [SystemContextMenu], which wraps this functionality in a widget.
+///  * [MediaQuery.maybeSupportsShowingSystemContextMenu], which indicates
+///    whether the system context menu is supported.  ÀÊ» ÀÊ×    ÀÊµÀÊµ%       ÀÊŞÀÊŞ€§ÀËw€„/// The text to display to the user.
+///
+/// Not exposed for some built-in menu items whose title is always set by the
+/// platform.   ÀË‰ÀË‰cÀËâK/// The type string used when serialized to json, recognized by the engine.   ÀËğÀËğ€êÀÌug/// Returns json for use in method channel calls, specifically
+/// `ContextMenu.showSystemContextMenu`.  ÀÌŞÀÌßÀÌŞÀÌŞ/ÀÌò     ÀÍ.ÀÍ.ÀÍ5 ÀÍÀÍÀÍÀÍ€ûÀÍ+ ÀÊ|ÀÊ}ÀÈ©ÀÈ©…eÀÊ”Ò/// Describes a context menu button that will be rendered in the system context
+/// menu.
+///
+/// See also:
+///
+///  * [SystemContextMenuController], which is used to show the system context
+///    menu.
+///  * [IOSSystemContextMenuItem], which performs a similar role but at the widget
+///    level, where the titles can be replaced with default localized values.
+///  * [ContextMenuButtonItem], which performs a similar role for Flutter-drawn
+///    context menus.  ÀĞ ÀĞ0    ÀÏÉÀÏÉj >/// Creates an instance of [IOSSystemContextMenuItemDataCopy].    ÀĞ7ÀĞ8ÀĞ7ÀĞ7+ÀĞN    ÀÎÀÎ‚TÀÏb/// An [IOSSystemContextMenuItemData] for the system's built-in copy button.
+///
+/// The title and action are both handled by the platform.
+///
+/// See also:
+///
+///  * [SystemContextMenuController], which is used to show the system context
+///    menu.
+///  * [IOSSystemContextMenuItemCopy], which performs a similar role but at the
+///    widget level.  ÀÒb ÀÒ    ÀÒÀÒh =/// Creates an instance of [IOSSystemContextMenuItemDataCut].    ÀÒˆÀÒ‰ÀÒˆÀÒˆ*ÀÒŸ    ÀĞfÀĞf‚NÀÑÓ`/// An [IOSSystemContextMenuItemData] for the system's built-in cut button.
+///
+/// The title and action are both handled by the platform.
+///
+/// See also:
+///
+///  * [SystemContextMenuController], which is used to show the system context
+///    menu.
+///  * [IOSSystemContextMenuItemCut], which performs a similar role but at the
+///    widget level.  ÀÔº ÀÔÛ    ÀÔrÀÔrl ?/// Creates an instance of [IOSSystemContextMenuItemDataPaste].    ÀÔâÀÔãÀÔâÀÔâ,ÀÔù    ÀÒ¶ÀÒ¶‚ZÀÔ'd/// An [IOSSystemContextMenuItemData] for the system's built-in paste button.
+///
+/// The title and action are both handled by the platform.
+///
+/// See also:
+///
+///  * [SystemContextMenuController], which is used to show the system context
+///    menu.
+///  * [IOSSystemContextMenuItemPaste], which performs a similar role but at the
+///    widget level.  À×+ À×P    ÀÖßÀÖßt C/// Creates an instance of [IOSSystemContextMenuItemDataSelectAll].    À×WÀ×XÀ×WÀ×W0À×n    ÀÕÀÕ‚wÀÖq/// An [IOSSystemContextMenuItemData] for the system's built-in select all
+/// button.
+///
+/// The title and action are both handled by the platform.
+///
+/// See also:
+///
+///  * [SystemContextMenuController], which is used to show the system context
+///    menu.
+///  * [IOSSystemContextMenuItemSelectAll], which performs a similar role but at
+///    the widget level.  ÀÚ; ÀÚ]    ÀÚ_ÀÚ_ÀÚm  ÀÙòÀÙò€ƒ @/// Creates an instance of [IOSSystemContextMenuItemDataLookUp]. ÀÚyÀÚzÀÚ’ÀÚyÀÚ’   ÀÚœÀÚÀÚœÀÚœ-ÀÚ³     ÀÚòÀÚò&ÀÛ ÀÚÍÀÚÎÀÚÍÀÚÍ€±ÀÚŞ  À×‹À×‹ƒõÀÙö/// An [IOSSystemContextMenuItemData] for the system's built-in look up
+/// button.
+///
+/// Must specify a [title], typically [WidgetsLocalizations.lookUpButtonLabel].
+///
+/// The action is handled by the platform.
+///
+/// See also:
+///
+///  * [SystemContextMenuController], which is used to show the system context
+///    menu.
+///  * [IOSSystemContextMenuItemLookUp], which performs a similar role but at the
+///    widget level, where the title can be replaced with a default localized
+///    value.  ÀŞE ÀŞj    ÀŞlÀŞlÀŞz  ÀİùÀİù€‰ C/// Creates an instance of [IOSSystemContextMenuItemDataSearchWeb]. ÀŞ†ÀŞ‡ÀŞŸÀŞ†ÀŞŸ   ÀŞ©ÀŞªÀŞ©ÀŞ©0ÀŞÀ     ÀßÀß&Àß ÀŞİÀŞŞÀŞİÀŞİ€±ÀŞî  ÀÛ‚ÀÛ‚„Àİ’‚/// An [IOSSystemContextMenuItemData] for the system's built-in search web
+/// button.
+///
+/// Must specify a [title], typically
+/// [WidgetsLocalizations.searchWebButtonLabel].
+///
+/// The action is handled by the platform.
+///
+/// See also:
+///
+///  * [SystemContextMenuController], which is used to show the system context
+///    menu.
+///  * [IOSSystemContextMenuItemSearchWeb], which performs a similar role but at
+///    the widget level, where the title can be replaced with a default localized
+///    value.  Àâ< Àâ]    Àâ_Àâ_Àâm  ÀáôÀáô€ ?/// Creates an instance of [IOSSystemContextMenuItemDataShare]. ÀâyÀâzÀâ’ÀâyÀâ’   ÀâœÀâÀâœÀâœ,Àâ³     ÀâñÀâñ&Àã ÀâÌÀâÍÀâÌÀâÌ€±Àâİ  Àß’Àß’ƒíÀá‘ò/// An [IOSSystemContextMenuItemData] for the system's built-in share button.
+///
+/// Must specify a [title], typically
+/// [WidgetsLocalizations.shareButtonLabel].
+///
+/// The action is handled by the platform.
+///
+/// See also:
+///
+///  * [SystemContextMenuController], which is used to show the system context
+///    menu.
+///  * [IOSSystemContextMenuItemShare], which performs a similar role but at
+///    the widget level, where the title can be replaced with a default
+///    localized value.  Àæi Àæ    ÀæÀær B/// Creates an instance of [IOSSystemContextMenuItemDataLiveText].    Àæ”Àæ•Àæ”Àæ”<Àæ«    ÀãÀãƒQÀåĞ‚B/// An [IOSSystemContextMenuItemData] for the system's built-in Live Text
+/// (OCR) button.
+///
+/// This button is only available on iOS 15.0+ devices with camera support.
+/// It allows the user to scan text from the camera and insert it at the
+/// current cursor position.
+///
+/// The title and action are both handled by the platform, and the platform
+/// will use its default localized title.
+///
+/// See also:
+///
+///  * [IOSSystemContextMenuItemLiveText], which performs a similar role but at the
+///    widget level.
+///  * https://github.com/flutter/flutter/issues/169781  Àé Àé@    ÀéBÀéBÀéP   ÀéWÀéWÀée  ÀèÕÀèÕ€œ @/// Creates an instance of [IOSSystemContextMenuItemDataCustom]. ÀéuÀévÀéÀéuÀé  ÀéèÀé˜YÀéè:/// The callback to be executed when the item is selected.   ÀéöÀéöaÀê51/// The unique identifier for this custom action.  Àê[Àê\Àê[Àê[-Àêr   ÀêŒÀêÀêŒÀêŒ€ƒÀê±   ÀìUÀìVÀìUÀìU>Àìi     Àë8Àë8&ÀëT ÀëÀëÀëÀë>Àë$    Àì´Àì´Àì» Àì—Àì˜Àì—Àì—€ëÀì±  ÀæÔÀæÔ†°Àèq/// An [IOSSystemContextMenuItemData] for custom action buttons defined by the developer.
+///
+/// Must specify a [title] and [onPressed].
+///
+/// Only supported on iOS 16.0 and above.
+///
+/// See also:
+///
+///  * [SystemContextMenuController], which is used to show the system context
+///    menu.
+///  * [IOSSystemContextMenuItemCustom], which performs a similar role but at the
+///    widget level.    ‡I‡I€Ãˆ€²/// Smart dashes is disabled.
+///
+/// This corresponds to the
+/// ["no" value of UITextSmartDashesType](https://developer.apple.com/documentation/uikit/uitextsmartdashestype/no). ˆˆ€ÃˆÍ€³/// Smart dashes is enabled.
+///
+/// This corresponds to the
+/// ["yes" value of UITextSmartDashesType](https://developer.apple.com/documentation/uikit/uitextsmartdashestype/yes).    …ğ…ğ‚ç‡5?/// Indicates how to handle the intelligent replacement of dashes in text input.
+///
+/// See also:
+///
+///  * [TextField.smartDashesType]
+///  * [CupertinoTextField.smartDashesType]
+///  * [EditableText.smartDashesType]
+///  * [SmartQuotesType]
+///  * <https://developer.apple.com/documentation/uikit/uitextinputtraits>   ŠŠ€ÃŠÔ€²/// Smart quotes is disabled.
+///
+/// This corresponds to the
+/// ["no" value of UITextSmartQuotesType](https://developer.apple.com/documentation/uikit/uitextsmartquotestype/no). ŠáŠá€Ã‹€³/// Smart quotes is enabled.
+///
+/// This corresponds to the
+/// ["yes" value of UITextSmartQuotesType](https://developer.apple.com/documentation/uikit/uitextsmartquotestype/yes).    ˆÙˆÙ‚ÎŠ&/// Indicates how to handle the intelligent replacement of quotes in text input.
+///
+/// See also:
+///
+///  * [TextField.smartQuotesType]
+///  * [CupertinoTextField.smartQuotesType]
+///  * [EditableText.smartQuotesType]
+///  * <https://developer.apple.com/documentation/uikit/uitextinputtraits>   «ş«ş¥­Ÿ/// Logical meaning: There is no relevant input action for the current input
+/// source, e.g., [TextField].
+///
+/// Android: Corresponds to Android's "IME_ACTION_NONE". The keyboard setup
+/// is decided by the OS. The keyboard will likely show a return key.
+///
+/// iOS: iOS does not have a keyboard return type of "none." It is
+/// inappropriate to choose this [TextInputAction] when running on iOS. ­¨­¨¯+r/// Logical meaning: Let the OS decide which action is most appropriate.
+///
+/// Android: Corresponds to Android's "IME_ACTION_UNSPECIFIED". The OS chooses
+/// which keyboard action to display. The decision will likely be a done
+/// button or a return key.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeyDefault". The title displayed in
+/// the action button is "return". ¯;¯;©°à”/// Logical meaning: The user is done providing input to a group of inputs
+/// (like a form). Some kind of finalization behavior should now take place.
+///
+/// Android: Corresponds to Android's "IME_ACTION_DONE". The OS displays a
+/// button that represents completion, e.g., a checkmark button.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeyDone". The title displayed in the
+/// action button is "Done". °é°é‚"³	‚/// Logical meaning: The user has entered some text that represents a
+/// destination, e.g., a restaurant name. The "go" button is intended to take
+/// the user to a part of the app that corresponds to this destination.
+///
+/// Android: Corresponds to Android's "IME_ACTION_GO". The OS displays a
+/// button that represents taking "the user to the target of the text they
+/// typed", e.g., a right-facing arrow button.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeyGo". The title displayed in the
+/// action button is "Go". ³³I´S4/// Logical meaning: Execute a search query.
+///
+/// Android: Corresponds to Android's "IME_ACTION_SEARCH". The OS displays a
+/// button that represents a search, e.g., a magnifying glass button.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeySearch". The title displayed in the
+/// action button is "Search". ´^´^µÛl/// Logical meaning: Sends something that the user has composed, e.g., an
+/// email or a text message.
+///
+/// Android: Corresponds to Android's "IME_ACTION_SEND". The OS displays a
+/// button that represents sending something, e.g., a paper plane button.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeySend". The title displayed in the
+/// action button is "Send". µäµäÚ·ºÁ/// Logical meaning: The user is done with the current input source and wants
+/// to move to the next one.
+///
+/// Moves the focus to the next focusable item in the same [FocusScope].
+///
+/// Android: Corresponds to Android's "IME_ACTION_NEXT". The OS displays a
+/// button that represents moving forward, e.g., a right-facing arrow button.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeyNext". The title displayed in the
+/// action button is "Next". ·Ã·Ã‚(¹ã‚/// Logical meaning: The user wishes to return to the previous input source
+/// in the group, e.g., a form with multiple [TextField]s.
+///
+/// Moves the focus to the previous focusable item in the same [FocusScope].
+///
+/// Android: Corresponds to Android's "IME_ACTION_PREVIOUS". The OS displays a
+/// button that represents moving backward, e.g., a left-facing arrow button.
+///
+/// iOS: iOS does not have a keyboard return type of "previous." It is
+/// inappropriate to choose this [TextInputAction] when running on iOS. ¹ğ¹ğ„½èƒÕ/// Logical meaning: In iOS apps, it is common for a "Back" button and
+/// "Continue" button to appear at the top of the screen. However, when the
+/// keyboard is open, these buttons are often hidden off-screen. Therefore,
+/// the purpose of the "Continue" return key on iOS is to make the "Continue"
+/// button available when the user is entering text.
+///
+/// Historical context aside, [TextInputAction.continueAction] can be used any
+/// time that the term "Continue" seems most appropriate for the given action.
+///
+/// Android: Android does not have an IME input type of "continue." It is
+/// inappropriate to choose this [TextInputAction] when running on Android.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeyContinue". The title displayed in the
+/// action button is "Continue". This action is only available on iOS 9.0+.
+///
+/// The reason that this value has "Action" post-fixed to it is because
+/// "continue" is a reserved word in Dart, as well as many other languages. ½û½ûl¿cW/// Logical meaning: The user wants to join something, e.g., a wireless
+/// network.
+///
+/// Android: Android does not have an IME input type of "join." It is
+/// inappropriate to choose this [TextInputAction] when running on Android.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeyJoin". The title displayed in the
+/// action button is "Join". ¿l¿lhÀ @ÏT/// Logical meaning: The user wants routing options, e.g., driving directions.
+///
+/// Android: Android does not have an IME input type of "route." It is
+/// inappropriate to choose this [TextInputAction] when running on Android.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeyRoute". The title displayed in the
+/// action button is "Route". À @ÙÀ @ÙvÀ BBZ/// Logical meaning: Initiate a call to emergency services.
+///
+/// Android: Android does not have an IME input type of "emergencyCall." It is
+/// inappropriate to choose this [TextInputAction] when running on Android.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeyEmergencyCall". The title displayed
+/// in the action button is "Emergency Call". À BTÀ BTƒ[À E¨ƒ5/// Logical meaning: Insert a newline character in the focused text input,
+/// e.g., [TextField].
+///
+/// Android: Corresponds to Android's "IME_ACTION_NONE". The OS displays a
+/// button that represents a new line, e.g., a carriage return button.
+///
+/// iOS: Corresponds to iOS's "UIReturnKeyDefault". The title displayed in the
+/// action button is "return".
+///
+/// The term [TextInputAction.newline] exists in Flutter but not in Android
+/// or iOS. The reason for introducing this term is so that developers can
+/// achieve the common result of inserting new lines without needing to
+/// understand the various IME actions on Android and return keys on iOS.
+/// Thus, [TextInputAction.newline] is a convenience term that alleviates the
+/// need to understand the underlying platforms to achieve this common behavior.    ¤[¤[¡W«ê‡/// An action the user has requested the text input control to perform.
+///
+/// Each action represents a logical meaning, and also configures the soft
+/// keyboard to display a certain kind of action button. The visual appearance
+/// of the action button might differ between versions of the same OS.
+///
+/// Despite the logical meaning of each action, choosing a particular
+/// [TextInputAction] does not necessarily cause any specific behavior to
+/// happen, other than changing the focus when appropriate. It is up to the
+/// developer to ensure that the behavior that occurs when an action button is
+/// pressed is appropriate for the action button chosen.
+///
+/// For example: If the user presses the keyboard action button on iOS when it
+/// reads "Emergency Call", the result should not be a focus change to the next
+/// TextField. This behavior is not logically appropriate for a button that says
+/// "Emergency Call".
+///
+/// See [EditableText] for more information about customizing action button
+/// behavior.
+///
+/// Most [TextInputAction]s are supported equally by both Android and iOS.
+/// However, there is not a complete, direct mapping between Android's IME input
+/// types and iOS's keyboard return types. Therefore, some [TextInputAction]s
+/// are inappropriate for one of the platforms. If a developer chooses an
+/// inappropriate [TextInputAction] when running in debug mode, an error will be
+/// thrown. If the same thing is done in release mode, then instead of sending
+/// the inappropriate value, Android will use "unspecified" on the platform
+/// side and iOS will use "default" on the platform side.
+///
+/// See also:
+///
+///  * [TextInput], which configures the platform's keyboard setup.
+///  * [EditableText], which invokes callbacks when the action button is pressed.   À F¬À F¬€ÒÀ Gy€Ä/// Defaults to an uppercase keyboard for the first letter of each word.
+///
+/// Corresponds to `InputType.TYPE_TEXT_FLAG_CAP_WORDS` on Android, and
+/// `UITextAutocapitalizationTypeWords` on iOS. À GƒÀ Gƒ€âÀ H\€Ğ/// Defaults to an uppercase keyboard for the first letter of each sentence.
+///
+/// Corresponds to `InputType.TYPE_TEXT_FLAG_CAP_SENTENCES` on Android, and
+/// `UITextAutocapitalizationTypeSentences` on iOS. À HjÀ Hj€ÕÀ I5€Â/// Defaults to an uppercase keyboard for each character.
+///
+/// Corresponds to `InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS` on Android, and
+/// `UITextAutocapitalizationTypeAllCharacters` on iOS. À IDÀ ID,À Il%/// Defaults to a lowercase keyboard.    À E´À E´ƒ¿À F•€Û/// Configures how the platform keyboard will select an uppercase or
+/// lowercase keyboard.
+///
+/// Only supports text keyboards, other keyboard types will ignore this
+/// configuration. Capitalization is locale-aware.   À ÆÀ Æ_À  U/// A user has just activated a floating cursor by long pressing on the
+/// spacebar. À *À *2À V)/// A user is dragging a floating cursor. À aÀ a\À ºT/// A user has lifted their finger off the screen after using a floating
+/// cursor.    À Š À Š † À ª…„/// The state of a "floating cursor" drag on an iOS soft keyboard.
+///
+/// The "floating cursor" cursor-positioning mode is an iOS feature used to
+/// precisely position the caret in some editable text using certain touch
+/// gestures. As an example, when the user long-presses the spacebar on the iOS
+/// virtual keyboard, iOS enters floating cursor mode where the whole keyboard
+/// becomes a trackpad. In this mode, there are two visible cursors. One, the
+/// floating cursor, hovers over the text, following the user's horizontal
+/// movements exactly and snapping to lines vertically. The other, the
+/// placeholder cursor, is a "shadow" that also snaps to the actual location
+/// where the cursor will go horizontally when the user releases the trackpad.
+///
+/// The floating cursor renders over the text field, while the placeholder
+/// cursor is a faint shadow of the cursor rendered in the text field in the
+/// location between characters where the cursor will drop into when released.
+/// The placeholder cursor is a faint vertical bar, while the floating cursor
+/// has the same appearance as a normal cursor (a blue vertical bar).
+///
+/// This feature works out-of-the-box with Flutter. Support is built into
+/// [EditableText].
+///
+/// See also:
+///
+///  * [EditableText.backgroundCursorColor], which configures the color of the
+///    placeholder cursor while the floating cursor is being dragged.  	 À ¸:À ¸:tÀ ¸«l/// The user tapped on the text and that caused the selection (or the location
+/// of the cursor) to change. À ¸³À ¸³€”À ¹>€†/// The user tapped twice in quick succession on the text and that caused
+/// the selection (or the location of the cursor) to change. À ¹LÀ ¹L}À ¹Ào/// The user long-pressed the text and that caused the selection (or the
+/// location of the cursor) to change. À ¹ÎÀ ¹ÎÀ ºCp/// The user force-pressed the text and that caused the selection (or the
+/// location of the cursor) to change. À ºRÀ ºR€ôÀ »>€á/// The user used the keyboard to change the selection or the location of the
+/// cursor.
+///
+/// Keyboard-triggered selection changes may be caused by the IME as well as
+/// by accessibility tools (e.g. TalkBack on Android). À »KÀ »K€ºÀ »ş€ª/// The user used the selection toolbar to change the selection or the
+/// location of the cursor.
+///
+/// An example is when the user taps on select all in the tool bar. À ¼
+À ¼
+bÀ ¼hY/// The user used the mouse to change the selection by dragging over a piece
+/// of text. À ¼qÀ ¼q€ÛÀ ½;€Á/// The user used stylus handwriting to change the selection.
+///
+/// Currently, this is only supported on iPadOS 14+ via the Scribble feature,
+/// or on Android API 34+ via the Scribe feature.À ¾À ¾À ¾&À ¾ŠÀ ¾,À ¾RÀ ¾¼À ¾±À ½Q|À ¾±€Á/// The user used stylus handwriting to change the selection.
+///
+/// Currently, this is only supported on iPadOS 14+ via the Scribble feature,
+/// or on Android API 34+ via the Scribe feature.    À ·²À ·²‡À ¸ h/// Indicates what triggered the change in selected text (including changes to
+/// the cursor location).     	   À ¿IÀ ¿IIÀ ¿ /// Gets the current text input.   À ÃPÀ ÃP:À Ãw/// Whether cut is enabled.   À ÃÀ Ã<À Ã¶/// Whether copy is enabled.   À ÃÎÀ ÃÎ>À Ã÷/// Whether paste is enabled.   À ÄÀ ÄGÀ Ä>"/// Whether select all is enabled.   À Ä[À Ä[AÀ Ä†/// Whether look up is enabled.   À Ä À Ä GÀ ÄÎ"/// Whether search web is enabled.   À ÄëÀ Äë>À Å/// Whether share is enabled.   À Å-À Å-À Æ €ß/// Whether Live Text input is enabled.
+///
+/// See also:
+///  * [LiveText], where the availability of Live Text input can be obtained.
+///  * [LiveTextInputStatusNotifier], where the status of Live Text can be listened to.    À ÁqÀ ÁqÀ Á‚   À Á‰À Á‰À ÁŸ  À ¿–À ¿–‚À ÁV¤/// Indicates that the user has requested the delegate to replace its current
+/// text editing state with [value].
+///
+/// The new [value] is treated as user input and thus may subject to input
+/// formatting.
+///
+/// See also:
+///
+/// * [EditableTextState.userUpdateTextEditingValue]: an implementation that
+///   applies additional pre-processing to the specified [value], before
+///   updating the text editing state.   À Â¬À Â¬À Â± À Â¿À ÁªÀ ÁªÀ ÂŸ€å/// Hides the text selection toolbar.
+///
+/// By default, hideHandles is true, and the toolbar is hidden along with its
+/// handles. If hideHandles is set to false, then the toolbar will be hidden
+/// but the handles will remain.   À Ã5À Ã5À ÃB  À ÂÊÀ ÂÊ€‚À Ã'S/// Brings the provided [TextPosition] into the visible area of the text
+/// input.   À ÇÀ ÇÀ Ç4  À ÆBÀ ÆB€ùÀ Ç€Á/// Cut current selection to [Clipboard].
+///
+/// If and only if [cause] is [SelectionChangedCause.toolbar], the toolbar
+/// will be hidden and the current selection will be scrolled into view.   À È[À È[À Èq  À Ç?À Ç?9À ÈQ€ø/// Paste text from [Clipboard].
+///
+/// If there is currently a selection, it will be replaced.
+///
+/// If and only if [cause] is [SelectionChangedCause.toolbar], the toolbar
+/// will be hidden and the current selection will be scrolled into view.   À ÉDÀ ÉDÀ ÉZ  À È|À È|€åÀ É:€°/// Set the current selection to contain the entire text value.
+///
+/// If and only if [cause] is [SelectionChangedCause.toolbar], the selection
+/// will be scrolled into view.   À Ê4À Ê4À ÊJ  À ÉeÀ Ée€ìÀ Ê&€³/// Copy current selection to [Clipboard].
+///
+/// If [cause] is [SelectionChangedCause.toolbar], the position of
+/// [bringIntoView] to selection will be called and hide toolbar. À ¾ÒÀ ¾Ò‹À ¿/V/// A mixin for manipulating the selection, provided for toolbar or shortcut
+/// keys.      À Ì&À Ì&uÀ ÌƒD/// The current state of the [TextEditingValue] held by this client.   À ÌŸÀ ÌŸÚÀ Îd/// The [AutofillScope] this [TextInputClient] belongs to, if any.
+///
+/// It should return null if this [TextInputClient] does not need autofill
+/// support. For a [TextInputClient] that supports autofill, returning null
+/// causes it to participate in autofill alone.
+///
+/// See also:
+///
+/// * [AutofillGroup], a widget that creates an [AutofillScope] for its
+///   descendent autofillable [TextInputClient]s.    À ÏGÀ ÏGÀ ÏX  À Î}À Î}€âÀ Ï4€©/// Requests that this client update its editing state to the given value.
+///
+/// The new [value] is treated as user input and thus may subject to input
+/// formatting.   À Ï°À Ï°À ÏÀ  À ÏcÀ ÏceÀ Ï¢7/// Requests that this client perform the given action.   À Ğ&À Ğ&À Ğ>  À ÏÌÀ ÏÌ}À ĞD/// Notify client about new content insertion from Android keyboard.   À Ó¨À Ó¨À Ó¯   À Ó·À Ó·À ÓÌ  À ĞMÀ ĞMƒ…À Ó’ƒ%/// Request from the input method that this client perform the given private
+/// command.
+///
+/// This can be used to provide domain-specific features that are only known
+/// between certain input methods and their clients.
+///
+/// See also:
+///   * [performPrivateCommand](https://developer.android.com/reference/android/view/inputmethod/InputConnection#performPrivateCommand\(java.lang.String,%20android.os.Bundle\)),
+///     which is the Android documentation for performPrivateCommand, used to
+///     send a command from the input method.
+///   * [sendAppPrivateCommand](https://developer.android.com/reference/android/view/inputmethod/InputMethodManager#sendAppPrivateCommand),
+///     which is the Android documentation for sendAppPrivateCommand, used to
+///     send a command to the input method.   À Ô¥À Ô¥À Ô¼  À ÓÖÀ ÓÖ€íÀ Ô€¨/// Updates the floating cursor position and state.
+///
+/// See also:
+///
+///  * [FloatingCursorDragState], which explains the floating cursor feature
+///    in detail.   À ÕÈÀ ÕÈ	À ÕÌ   À ÕÓÀ ÕÓÀ Õ×  À ÔÇÀ ÔÇÀ Õ«€Ö/// Requests that this client display a prompt rectangle for the given text range,
+/// to indicate the range of text that will be changed by a pending autocorrection.
+///
+/// This method will only be called on iOS.   À ÕàÀ ÕàKÀ ×/// Notifies the client that the platform moved focus back to this input.
+///
+/// This is necessary to support autofill on some browsers (e.g. iOS Safari) that blur the text
+/// field and refocus it before autofilling.
+///
+/// Returns true if the client acquired focus, false otherwise.   À ×/À ×/€¢À ×¾€ƒ/// Platform notified framework of closed connection.
+///
+/// [TextInputClient] should cleanup its connection and finalize editing.   À ÙŠÀ ÙŠÀ Ùœ   À Ù¨À Ù¨À Ùº  À ×ÕÀ ×ÕóÀ Ùt…/// The framework calls this method to notify that the text input control has
+/// been changed.
+///
+/// The [TextInputClient] may switch to the new text input control by hiding
+/// the old and showing the new input control.
+///
+/// See also:
+///
+///  * [TextInputControl.hide], a method to hide the old input control.
+///  * [TextInputControl.show], a method to show the new input control.   À ÙÌÀ ÙÌ€½À Úy€¡/// Requests that the client show the editing toolbar, for example when the
+/// platform changes the selection through a non-flutter method such as
+/// scribble.   À ÛàÀ Ûà	À Ûå  À ÚÀ Ú`À ÛÊ+/// Requests that the client add a text placeholder to reserve visual space
+/// in the text.
+///
+/// For example, this is called when responding to UIKit requesting
+/// a text placeholder be added at the current selection, such as when
+/// requesting additional writing space with iPadOS14 Scribble.   À ÛñÀ Ûñ[À Ü29/// Requests that the client remove the text placeholder.   À İÀ İÀ İ  À ÜPÀ ÜP€ÚÀ İ€§/// Performs the specified MacOS-specific selector from the
+/// `NSStandardKeyBindingResponding` protocol or user-specified selector
+/// from `DefaultKeyBinding.Dict`. À ÊUÀ ÊU’×À Ì¶/// An interface to receive information from [TextInput].
+///
+/// If [TextInputConfiguration.enableDeltaModel] is set to true,
+/// [DeltaTextInputClient] must be implemented instead of this class.
+///
+/// See also:
+///
+///  * [TextInput.attach]
+///  * [EditableText], a [TextInputClient] implementation.
+///  * [DeltaTextInputClient], a [TextInputClient] extension that receives
+///    granular information from the platform's text input.        À êÔÀ êÔ(À êë  À æ³À æ³„KÀ ê·ƒÂ/// Requests that this client update its editing state by applying the deltas
+/// received from the engine.
+///
+/// The list of [TextEditingDelta]'s are treated as changes that will be applied
+/// to the client's editing state. A change is any mutation to the raw text
+/// value, or any updates to the selection and/or composing region.
+///
+/// {@tool snippet}
+/// This example shows what an implementation of this method could look like.
+///
+/// ```dart
+/// class MyClient with DeltaTextInputClient {
+///   TextEditingValue? _localValue;
+///
+///   @override
+///   void updateEditingValueWithDeltas(List<TextEditingDelta> textEditingDeltas) {
+///     if (_localValue == null) {
+///       return;
+///     }
+///     TextEditingValue newValue = _localValue!;
+///     for (final TextEditingDelta delta in textEditingDeltas) {
+///       newValue = delta.apply(newValue);
+///     }
+///     _localValue = newValue;
+///   }
+///
+///   // ...
+/// }
+/// ```
+/// {@end-tool} À åNÀ åN…²À æ*/// An interface to receive granular information from [TextInput].
+///
+/// See also:
+///
+///  * [TextInput.attach]
+///  * [TextInputConfiguration], to opt-in to receive [TextEditingDelta]'s from
+///    the platforms [TextInput] you must set [TextInputConfiguration.enableDeltaModel]
+///    to true.        ÀzÀzÀz   Àz#Àz#$Àz:  ÀyÀy<Àz€ç/// Requests the text input control to attach to the given input client.
+///
+/// This method is called when a text input client is attached. The input
+/// control should update its configuration to match the client's configuration.   À{?À{?À{O  ÀzOÀzO
+À{8€Û/// Requests the text input control to detach from the given input client.
+///
+/// This method is called when a text input client is detached. The input
+/// control should release any resources allocated for the client.   À{]À{]€“À{ç~/// Requests that the text input control is shown.
+///
+/// This method is called when the input control should become visible.   À{ôÀ{ô€ŠÀ|uu/// Requests that the text input control is hidden.
+///
+/// This method is called when the input control should hide.   À}EÀ}E$À}\  À|‚À|‚€ëÀ}8€¨/// Informs the text input control about input configuration changes.
+///
+/// This method is called when the configuration of the attached input client
+/// has changed.   À~1À~1À~B  À}qÀ}q€ÚÀ~!€¢/// Informs the text input control about editing state changes.
+///
+/// This method is called when the editing state of the attached input client
+/// has changed.   À7À7À<   ÀMÀMÀU  À~OÀ~OÀ€¾/// Informs the text input control about client position changes.
+///
+/// This method is called on when the input control should position itself in
+/// relation to the attached input client.   À€ À€ 	À€%  ÀfÀf€ÇÀ€€›/// Informs the text input control about composing area changes.
+///
+/// This method is called when the attached input client's composing area
+/// changes.   À€ßÀ€ß	À€ä  À€1À€1€»À€Ò€“/// Informs the text input control about caret area changes.
+///
+/// This method is called when the attached input client's caret area
+/// changes.   À«À«"À¿  À€ğÀ€ğ€áÀ™€›/// Informs the text input control about selection area changes.
+///
+/// This method is called when the attached input client's selection area
+/// changes.   À‚ùÀ‚ùÀƒ
+   ÀƒÀƒÀƒ+   Àƒ9Àƒ9ÀƒN   Àƒ^Àƒ^$Àƒu   ÀƒˆÀƒˆÀƒ› À‚xÀ‚yÀ‚ƒÀ‚áÀ‚‰À‚©ÀÕÀÕØÀ‚ê€š/// Informs the text input control about text style changes.
+///
+/// This method is called on the when the attached input client's text style
+/// changes.   À„eÀ„eÀ„t  Àƒ±Àƒ±€ÌÀ„Y€š/// Informs the text input control about text style changes.
+///
+/// This method is called on the when the attached input client's text style
+/// changes.   À„À„€”À…t/// Requests autofill from the text input control.
+///
+/// This method is called when the autofill UI should appear.   À…³À…³À…¸ À…ÅÀ…À…€µÀ…œs/// Requests that the autofill context is finalized.
+///
+/// See also:
+///
+///  * [TextInput.finishAutofillContext] ÀtÀt‘ÄÀxú„ç/// An interface for implementing text input controls that receive text editing
+/// state changes and visual input control requests.
+///
+/// Editing state changes and input control requests are sent by the framework
+/// when the editing state of the attached text input client changes, or it
+/// requests the input control to be shown or hidden, for example.
+///
+/// The input control can be installed with [TextInput.setInputControl], and the
+/// default platform text input control can be restored with
+/// [TextInput.restorePlatformInputControl].
+///
+/// The [TextInputControl] class must be extended. [TextInputControl]
+/// implementations should call [TextInput.updateEditingValue] to send user
+/// input to the attached input client.
+///
+/// {@tool dartpad}
+/// This example illustrates a basic [TextInputControl] implementation.
+///
+/// ** See code in examples/api/lib/services/text_input/text_input_control.0.dart **
+/// {@end-tool}
+///
+/// See also:
+///
+///  * [TextInput.setInputControl], a method to install a custom text input control.
+///  * [TextInput.restorePlatformInputControl], a method to restore the default
+///    platform text input control.
+///  * [TextInput.updateEditingValue], a method to send user input to
+///    the framework.   À ‰hÀ ‰hÀ ‰p  À ‰JÀ ‰J€ÔÀ ‰X    ÀMÀMÀT  À*À*ƒ¸À:    ÀÀÀ  ÀäÀä§Àü    À±À±ÀÉ   ÀĞÀĞÀå  ÀÀ‚CÀ¤    ÀçÀçÀî   ÀûÀûÀ   ÀÀÀ   À#À#*À9  ÀÒÀÒsÀ×        €®  package:flutter/cupertino.dart  €ß  package:flutter/material.dart    package:flutter/rendering.dart  D  live_text.dart  e  scribe.dart  ƒ  text_formatter.dart X <€†€¤€¥€Ö7;\z ©ª¿ß‚D‚E‚o‚®‚¯‚Ç‚Şƒƒ/ƒLƒlƒ‹ƒ§ƒÉƒÊƒÛƒäƒø„„„*„8„K„b„x„‹„Œ„Ë„Ì……=…>…´…ï…ğ†A†E†S†W†z†¦†Ì†å‡0‡G‡g‡m‡‹ˆˆˆˆ.ˆ4ˆRˆËˆÖˆØˆÙ‰*‰.‰<‰@‰c‰‰µŠ ŠŠ7Š=Š[ŠÒŠŞŠßŠş‹‹"‹›‹¦‹¨‹©‹ó‹÷Œ>ŒBŒŒŒÖ!,B‡ˆ²¸ô.‘Íàá06‚Ïåæ39…Óêë‘‘‘G‘‘€‘²‘¸’’S’a’’Ÿ’ê’ğ“8““È”””8”>”Œ”Å”Æ”ô”ú•'•-•y••É•Ê•î•ô–9–y–z–“–™–Ş———Q—W— —ã—ä˜	˜˜*˜›˜î™™ ™T™İšššDšJšwš}š±›@››‚›Ä›ı›şœ œ&œ|œ‚œİ
+g¥¦ÈÎsyßŸŸŸ<ŸyŸƒŸ’ŸŸ©Ÿ·ŸÉŸÒŸçŸñ    * / 0 i ˜ ¤ µ Ã Ğ à ô ÿ¡¡"¡1¡=¡N¡]¡b¡c¡­¡å¡æ¢&¢H¢›¢Ÿ¢ ¢¬¢Â¢ü££1£O£S£T£`£ƒ£¨£È£ê¤¤¤¤¤X¤Z¤[¤£¤§¤ò¥A¥ˆ¥Œ¥Ò¦¦h¦·¦ğ¦ô§C§“§ä§ú§ş¨J¨X¨\¨§¨ø©F©©áª0ª|ª¶ªºªÈªÌ««b«e«È«å«ü¬K¬l¬r¬À­­­S­­¥­¦­ñ­÷®H®“®±®·¯¯)¯8¯9¯†¯Õ¯Û°(°k°q°¿°Ş°æ°ç±/±±É±Ï²²g²˜²²ê³³³³=³C³’³Ú³à´0´Q´[´\´¨´Ç´ÍµµfµlµºµÙµáµâ¶2¶Q¶W¶¢¶¨¶õ·E·K·™·¸·À·Á¸¸L¸R¸¡¸§¸ø¹H¹N¹—¹á¹í¹îº7º…ºÓ»#»Z»`»±¼¼¼T¼¢¼¨¼ú½H½N½˜½æ½ø½ù¾C¾R¾X¾ ¾î¾ô¿B¿a¿i¿j¿»¿ÁÀ @
+À @XÀ @^À @­À @ÍÀ @ÖÀ @×À AÀ AÀ AlÀ AºÀ AÀÀ BÀ B@À BQÀ BRÀ BŸÀ B¸À B¾À CÀ CTÀ CZÀ C«À CÌÀ CÒÀ D À DmÀ D·À EÀ ESÀ E¦À E±À E³À E´À EùÀ FÀ FÀ F]À FÀ FªÀ FõÀ FûÀ GEÀ GwÀ G€À GÀ GĞÀ GÖÀ H$À HZÀ HgÀ HhÀ H¤À HªÀ HùÀ I3À IAÀ IBÀ IjÀ IrÀ ItÀ IuÀ I³À I·À JÀ JIÀ J”À JİÀ K*À KxÀ KÃÀ LÀ L4À L8À LFÀ LJÀ LdÀ L}À LˆÀ L§À LéÀ LïÀ M3À MTÀ MuÀ M†À M¯À MÊÀ MèÀ NÀ N+À NQÀ NtÀ N À N¶À NãÀ OÀ OJÀ O‹À OºÀ OèÀ PÀ P4À PUÀ PnÀ PĞÀ PéÀ QKÀ QLÀ Q…À Q‹À Q›À Q¡À QáÀ RÀ R4À R5À RÀ R¢À R£À RÖÀ RÜÀ RõÀ SÀ SÀ SPÀ SVÀ SoÀ S‰À SŠÀ S²À S¸À SĞÀ SêÀ SëÀ TÀ TÀ TmÀ T¹À UÀ UXÀ UÀ UÀ UØÀ VÀ V"À VbÀ V×À WÀ W“À W³À XCÀ XIÀ XšÀ XçÀ YÀ YÀ Y]À Y¬À Y¾À YÄÀ YÔÀ YÚÀ YõÀ ZBÀ ZWÀ Z€À ZÀ ZËÀ [À [À [?À [´À [ŞÀ \pÀ \À ] À ]&À ]nÀ ]½À ]èÀ ]îÀ ^?À ^À ^ À ^¦À ^¶À ^¼À ^×À _$À _9À _bÀ _cÀ _¯À _êÀ _ğÀ `?À `À `İÀ `ãÀ `ûÀ aÀ aÀ aÀ a„À a™À a¹À aºÀ aéÀ aïÀ b>À b‹À b¢À b¨À bÀÀ béÀ bêÀ c0À cMÀ cNÀ c•À cºÀ c»À d
+À dÀ dÀ dIÀ dOÀ d_À deÀ d·À dæÀ dçÀ eÀ eÀ eFÀ eLÀ erÀ e™À ešÀ eòÀ f?À fgÀ fmÀ f¸À f¾À fÖÀ fÜÀ fìÀ fòÀ gkÀ g€À g¬À g­À gûÀ h"À h#À hiÀ h§À h­À hóÀ iHÀ iNÀ i¨À i®À iúÀ j À jPÀ jVÀ jfÀ jlÀ jÏÀ jäÀ kÀ kÀ kYÀ k‰À kÀ kİÀ kîÀ kôÀ l>À lˆÀ lÓÀ lèÀ mÀ mÀ m[À m{À mŸÀ m°À mÎÀ mâÀ mùÀ nÀ n6À n\À nyÀ nŸÀ n¸À nÚÀ nşÀ o*À oSÀ owÀ o©À oÅÀ oäÀ pÀ pÀ p0À pUÀ pƒÀ p®À pâÀ qÀ qVÀ q–À qÜÀ r=À rqÀ r¥À rîÀ s7À s\À s«À sîÀ t@À tƒÀ t·À uÀ uÀ uÀ uÀ u`À u¦À u¬À uşÀ v#À v)À vEÀ v•À v×À wÀ wLÀ w™À wòÀ xÀ xÀ x/À xvÀ x¯À xëÀ y5À y|À y‚À y›À yºÀ y»À yûÀ zÀ zhÀ z†À zÀ zÅÀ záÀ {À {%À {`À {›À {ÉÀ |	À |+À |XÀ |“À |ÎÀ }À }FÀ }cÀ }À }êÀ ~"À ~)À ~-À ~.À ~:À ~]À ~À ~’À ~˜À ~ÄÀ ~ØÀ ~ŞÀ À .À VÀ |À ¨À ÔÀ €À €<À €tÀ €¾À €êÀ À PÀ ŠÀ ÊÀ ‚À ‚ZÀ ‚À ‚¼À ‚üÀ ƒ À ƒÀ ƒÀ ƒ"À ƒ:À ƒHÀ ƒYÀ ƒiÀ ƒ|À ƒÀ ƒ¦À ƒ½À ƒÖÀ ƒøÀ „À „À „8À „RÀ „oÀ „”À „¼À „ÔÀ „çÀ …À …À …À …À …À …3À …UÀ …‚À …¡À …¾À …áÀ †À †/À †ZÀ †‰À †ÊÀ ‡À ‡)À ‡ZÀ ‡‹À ‡ÂÀ ˆ	À ˆ6À ˆcÀ ˆŸÀ ˆüÀ ‰À ‰CÀ ‰GÀ ‰IÀ ‰JÀ ‰|À ‰™À ‰ÓÀ Š	À ŠÀ ŠÀ ŠÀ Š À ŠcÀ ŠgÀ Š³À ŠşÀ ‹NÀ ‹À ‹ëÀ Œ6À Œ}À ŒÊÀ À À hÀ µÀ À RÀ ˜À œÀ æÀ úÀ şÀ À À _À ¥À ÄÀ À À 'À (À TÀ ^À _À ªÀ ¸À ¿À ÁÀ ÂÀ ıÀ ‘À ‘À ‘À ‘cÀ ‘rÀ ‘‘À ‘ÜÀ ‘êÀ ‘ğÀ ’=À ’eÀ ’¶À ’ÿÀ “ À “LÀ “dÀ “eÀ “¾À ”,À ”kÀ ”šÀ ”›À ”ÃÀ ”êÀ ”ìÀ ”íÀ •=À •HÀ •aÀ •–À •œÀ •éÀ –2À –8À –‰À –ÁÀ –ÜÀ –ğÀ —0À —VÀ —\À —]À —™À —İÀ ˜	À ˜.À ˜hÀ ˜¦À ™À ™UÀ ™\À ™}À ™²À ™çÀ ™îÀ šÀ šNÀ š£À š§À š¨À šÍÀ šâÀ šãÀ ›À ›À ›hÀ ›·À ›ÍÀ ›ÓÀ œ#À œtÀ œ¿À 
+À +À ,À bÀ hÀ ¹À À QÀ šÀ ´À ºÀ Ÿ
+À ŸRÀ Ÿ£À ŸóÀ  BÀ  À  ¹À  ¿À ¡ À ¡BÀ ¡qÀ ¡wÀ ¡ÆÀ ¡ïÀ ¡õÀ ¢DÀ ¢pÀ ¢À ¢À ¢ëÀ £'À £(À £ƒÀ £áÀ £şÀ ¤À ¤KÀ ¤yÀ ¤€À ¤„À ¤…À ¤ÉÀ ¤ÏÀ ¥ À ¥jÀ ¥À ¥‡À ¥ØÀ ¦)À ¦BÀ ¦fÀ ¦¹À ¦ºÀ §À §HÀ §NÀ §À §ÉÀ §ÏÀ ¨À ¨;À ¨AÀ ¨“À ¨ãÀ ©-À ©~À ©ËÀ ©ûÀ ªÀ ªGÀ ªbÀ ª¶À ªÛÀ ªîÀ ªôÀ «"À «@À «\À «uÀ «|À «}À «ÒÀ «øÀ «şÀ «ÿÀ ¬(À ¬cÀ ¬„À ¬ŞÀ ¬ìÀ ­À ­PÀ ­pÀ ­¾À ­àÀ ®À ®#À ®$À ®QÀ ®†À ®¿À ®ÆÀ ®ïÀ ¯À ¯AÀ ¯HÀ ¯ƒÀ ¯¾À ¯ÛÀ ¯ğÀ °À °8À °?À °CÀ °DÀ °„À °¦À °ÖÀ ±À ±$À ±8À ±eÀ ±–À ±ĞÀ ²	À ²1À ²YÀ ²`À ²dÀ ²eÀ ²qÀ ²ˆÀ ³À ³À ³À ³7À ³YÀ ³lÀ ³rÀ ³šÀ ³¸À ³àÀ ´À ´
+À ´À ´À ´qÀ ´rÀ ´§À ´¬À ´íÀ µ4À µ|À µÈÀ µïÀ ¶/À ¶_À ¶rÀ ¶xÀ ¶„À ¶ºÀ ·À ·À ·À ·KÀ ·“À ·šÀ ·«À ·¯À ·±À ·²À ¸À ¸À ¸8À ¸‰À ¸©À ¸°À ¸±À ¸ıÀ ¹<À ¹IÀ ¹JÀ ¹•À ¹¾À ¹ËÀ ¹ÌÀ ºÀ ºAÀ ºOÀ ºPÀ º À º®À º´À »À »<À »HÀ »IÀ »’À »°À »¶À »üÀ ¼À ¼À ¼WÀ ¼fÀ ¼nÀ ¼oÀ ¼¯À ¼µÀ ½À ½9À ½NÀ ½OÀ ½À ½•À ½åÀ ¾À ¾(À ¾NÀ ¾ˆÀ ¾ŒÀ ¾ÏÀ ¾ÑÀ ¾ÒÀ ¿À ¿)À ¿GÀ ¿jÀ ¿“À ¿”À ¿äÀ ÀÀ ÀÀ À^À ÀpÀ ÀvÀ À†À ÀŒÀ ÀÛÀ Á&À ÁOÀ Á§À Á¨À ÁĞÀ ÁÖÀ Â&À ÂuÀ Â˜À ÂÇÀ ÂÈÀ ÃÀ Ã À ÃMÀ ÃNÀ ÃlÀ Ã‹À ÃŒÀ Ã«À ÃËÀ ÃÌÀ ÃìÀ ÄÀ ÄÀ Ä3À ÄXÀ ÄYÀ Ä{À ÄÀ ÄÀ ÄÃÀ ÄèÀ ÄéÀ Å	À Å*À Å+À ÅUÀ Å[À ÅkÀ Å»À ÆÀ Æ?À Æ@À ÆlÀ ÆrÀ Æ¿À Ç
+À Ç<À Ç=À Ç`À ÇfÀ Ç¤À ÇªÀ Ç÷À ÈBÀ ÈyÀ ÈzÀ È¼À ÈÂÀ ÉÀ É3À ÉbÀ ÉcÀ ÉÀ É–À ÉÛÀ ÊÀ ÊRÀ ÊTÀ ÊUÀ ÊÀ Ê“À ÊÔÀ ËÀ ËÀ Ë,À Ë0À ËJÀ Ë…À ËĞÀ ÌÀ Ì$À ÌkÀ ÌœÀ ÌÀ ÌâÀ ÌèÀ Í5À ÍƒÀ ÍµÀ Í»À ÍËÀ ÍÑÀ ÎÀ ÎOÀ ÎzÀ Î{À ÎÈÀ ÎÎÀ ÏÀ Ï-À Ï`À ÏaÀ Ï›À ÏÉÀ ÏÊÀ ĞÀ ĞJÀ ĞKÀ ĞšÀ Ğ©À Ğ¯À ĞşÀ Ñ5À Ñ;À ÑKÀ ÑÿÀ ÒOÀ ÒÀ ÓÀ Ó]À Ó‹À ÓÓÀ ÓÔÀ Ô
+À ÔÀ Ô À Ô&À ÔuÀ Ô‰À ÔÄÀ ÔÅÀ ÕÀ ÕpÀ ÕvÀ Õ¤À ÕİÀ ÕŞÀ Ö*À Ö0À Ö’À ÖÁÀ ÖÇÀ ×	À ×,À ×-À ×eÀ ×kÀ ×·À ×ÒÀ ×ÓÀ Ø#À Ø7À Ø=À ØŒÀ Ø½À ØÃÀ ØÓÀ ØÙÀ Ù#À ÙmÀ ÙÉÀ ÙÊÀ ÚÀ ÚbÀ ÚrÀ ÚŠÀ Ú‹À ÚÙÀ ÚìÀ ÚòÀ Û8À ÛÀ ÛÃÀ ÛîÀ ÛïÀ Ü+À ÜMÀ ÜNÀ ÜŒÀ Ü×À ÜüÀ İ+À İ-À İ.À İiÀ İmÀ İ{À İÀ İÂÀ Ş9À ŞaÀ ŞÀ Ş­À ŞÍÀ ŞÎÀ ßÀ ßÀ ßpÀ ß—À ß˜À ßæÀ à
+À àÀ à=À àPÀ àRÀ àSÀ à¢À à¦À àóÀ á(À á3À áIÀ á•À á¥À á½À áÙÀ áóÀ âÀ â!À â"À âdÀ âzÀ â{À âÉÀ ãÀ ãÀ ãÀ ãWÀ ãxÀ ãyÀ ã…À ã¨À ãÊÀ ãİÀ ããÀ äÀ ä#À ä)À äNÀ ätÀ ä–À ä¼À äÀÀ äÁÀ äÍÀ åÀ åÀ åÀ åKÀ åMÀ åNÀ å‘À å•À å£À å§À åÁÀ æÀ æiÀ æyÀ æ±À çÀ ç!À ç'À çzÀ çÈÀ èÀ èÀ è*À èzÀ è€À èÀ è¿À èæÀ èìÀ èşÀ éTÀ éyÀ éÀ é™À éÍÀ êÀ ê?À êKÀ êmÀ êwÀ ê}À êŒÀ ê”À êÀ ê°À êÿÀ ëÀ ëÀ ë=À ëAÀ ëOÀ ëSÀ ë¡À ëÅÀ ìÀ ì8À ìCÀ ìtÀ ì¹À ìÒÀ ìçÀ ìúÀ íÀ í0À íMÀ íeÀ í{À íÀ í–À í—À íàÀ íüÀ íıÀ îHÀ îbÀ îcÀ î¬À îÌÀ îÍÀ îóÀ ïÀ ïÀ ïLÀ ïiÀ ïjÀ ï´À ïÓÀ ïÔÀ ğÀ ğIÀ ğfÀ ğgÀ ğÀ ğ¬À ğ­À ğ¹À ğÜÀ ğşÀ ñÀ ñÀ ñCÀ ñWÀ ñ]À ñƒÀ ñ­À ñÓÀ ñıÀ ò-À òUÀ ò…À ò±À òÙÀ òİÀ òŞÀ òêÀ òÿÀ óÀ ó)À ó9À óKÀ ó`À óqÀ ó†À ó™À ó«À ó²À ó¶À ó·À ó÷À ôÀ ô7À ôWÀ ôsÀ ôŸÀ ôÈÀ ôùÀ õÀ õAÀ õaÀ õhÀ õlÀ õmÀ õyÀ õ¾À õéÀ ö;À ö‰À öìÀ ÷=À ÷‚À ÷ÚÀ ø.À ø€À ø„À ø†À ø‡À øÃÀ øÇÀ øÕÀ øÙÀ ù'À ùgÀ ù¶À ùôÀ úÀ úIÀ úJÀ ú_À ú|À ú‘À ú«À úìÀ úíÀ ûÀ ûÀ ûÀ ûTÀ ûZÀ û£À ûìÀ üÀ ü,À ü<À üPÀ ücÀ ümÀ üqÀ ürÀ ü“À ü”À üèÀ ı/À ı0À ıuÀ ı{À ıÊÀ ııÀ şFÀ şGÀ ş‚À ş’À ş¨À şÉÀ şÍÀ şÎÀ şÿÀ ÿÀ ÿSÀ ÿbÀ ÿhÀ ÿxÀ ÿ~À ÿĞÀ ÿëÀ À -À 1À 2À €À  À ÜÀ òÀ(À,À-À{À’ÀÃÀÙÀ
+ÀÀÀQÀWÀ¥ÀèÀîÀ+À1À|À³ÀÀLÀqÀ•ÀéÀïÀóÀôÀEÀ[ÀaÀ²ÀÜÀâÀ1ÀAÀfÀ…À“À™À±ÀÀ?ÀCÀDÀ•À¶À×ÀûÀ	ÀÀ,À€À²À¶À·À	À	-À	3À	|À	»À	ùÀ
+'À
+eÀ
+kÀ
+oÀ
+pÀ
+•À
+›À
+èÀ7ÀkÀzÀšÀÔÀØÀêÀÀ*ÀOÀyÀ›À¢À³ÀÉÀéÀÀ%ÀKÀiÀrÀyÀ}À~À£À©ÀöÀEÀyÀ¤ÀºÀçÀëÀìÀ À&ÀtÀ³ÀÄÀØÀÀÀÀ#À$ÀkÀqÀµÀÙÀÀ#À'À)À*À^ÀyÀ­ÀïÀÀWÀ‹À¿ÀûÀCÀwÀ­ÀóÀ'ÀaÀšÀÔÀÜÀáÀãÀäÀ À:À€ÀÈÀ
+ÀCÀ}À…ÀŠÀŒÀÀğÀúÀÀhÀmÀwÀ‘ÀãÀèÀ(À{ÀÀÏÀÑÀÒÀåÀùÀÀ!ÀOÀTÀpÀ‰À¥À¹ÀÜÀÀ8À?ÀDÀFÀGÀ†ÀŠÀÚÀ(ÀlÀ¯ÀşÀ)À-À{ÀÈÀÀdÀ¯ÀÊÀÎÀÀiÀ·ÀàÀäÀ2ÀrÀvÀ¿À À À ^À ¤À ôÀ!,À!0À!€À!ÍÀ"À"iÀ"­À"±À"ûÀ#LÀ#™À#éÀ$À$À$\À$¬À$ÑÀ$ÕÀ$ãÀ$çÀ%&À%vÀ%©À%»À%ÍÀ%öÀ&;À&?À&@À&À&À&¤À&ïÀ'=À'MÀ'bÀ'—À'§À'ÍÀ(À(,À(6À(:À(;À(oÀ(pÀ(«À(äÀ)À)À)À)À)ZÀ)“À)ÃÀ)ÉÀ)ÍÀ)ÎÀ)ùÀ)ÿÀ*QÀ*¢À*¼À*ÂÀ+À+&À+,À+<À+BÀ+’À+äÀ,
+À,HÀ,ŒÀ,°À,¾À,ÄÀ,âÀ-À-À-*À-QÀ-WÀ-ƒÀ-ÎÀ.	À.À.À.FÀ.LÀ.\À.bÀ.¦À.ŞÀ/À/EÀ/IÀ/JÀ/”À/×À/ÿÀ0À0À0]À0wÀ0˜À0²À0ÌÀ0äÀ1 À1À18À1UÀ1ZÀ1[À1¯À1ĞÀ1êÀ2À2À28À2RÀ2oÀ2“À2­À2ÈÀ2ëÀ2ğÀ2ñÀ3?À3{À3ŸÀ3ĞÀ3ÔÀ3ÕÀ4
+À4À4aÀ4§À4÷À5À5À5hÀ5¦À5ÃÀ6'À6]À6À6¦À6ªÀ6«À6úÀ77À7pÀ7ÇÀ8À8;À8fÀ8ˆÀ8»À8¿À8ÀÀ9À9$À98À9lÀ9À9‰À9¥À9µÀ9ğÀ:CÀ:NÀ:uÀ:…À:ÄÀ;À;&À;.À;AÀ;KÀ;\À;`À;aÀ;€À;À;¬À;áÀ<	À<
+À<]À<À<‚À<çÀ<üÀ=^À=_À=¤À=ÚÀ=ÛÀ>'À>1À>fÀ>‡À>›À>®À>½À>êÀ?À?oÀ?zÀ?ƒÀ?’À?˜À?œÀ?À?éÀ@À@,À@WÀ@“À@ÇÀAÀAÀA.ÀAbÀA¬ÀAÅÀAÿÀBÀB;ÀBkÀB¹ÀCÀC4ÀCDÀC ÀCóÀDÀD0ÀDÀDŸÀDÂÀEÀE'ÀE6ÀEMÀE„ÀE¨ÀE¸ÀEòÀFÀF'ÀFUÀF‘ÀFºÀGÀGBÀGLÀGbÀGhÀGÀGœÀG¢ÀG£ÀGòÀH1ÀHrÀH­ÀIÀI1ÀIYÀIaÀIoÀIuÀIvÀI®ÀI¯ÀIıÀJ/ÀJpÀJ²ÀJòÀK.ÀKbÀKÀKÓÀKŞÀL$ÀLÀL®ÀL¸ÀLÀÀLÁÀLÏÀLÕÀLÖÀLùÀM&ÀMwÀMˆÀM¬ÀM¾ÀNÀNXÀNœÀN¸ÀNÛÀNåÀNúÀOÀO%ÀO5ÀO=ÀOCÀODÀOZÀO‹ÀOİÀPBÀP}ÀPÀPÌÀQ<ÀQGÀQ€ÀQ«ÀQüÀRIÀRTÀRUÀR¹ÀRåÀS)ÀS†ÀSÄÀSÕÀT1ÀT;ÀTjÀT¼ÀUÀU8ÀUrÀU­ÀUÕÀV:ÀVEÀVxÀV²ÀWÀWÀWOÀW‡ÀWÂÀX$ÀXNÀXÀXµÀXğÀY:ÀYEÀYyÀY¶ÀYÅÀYíÀYóÀY÷ÀYøÀZÀZÀZ/ÀZGÀZUÀZ[ÀZtÀZuÀZÀÀ[
+À[À[5À[QÀ[yÀ[ŠÀ[’À[šÀ[À[ŸÀ[ñÀ\.À\[À\aÀ\eÀ\fÀ\~À\¾À\ûÀ]À]À]>À]SÀ]WÀ]XÀ]•À]ÒÀ]ıÀ^À^À^À^:À^wÀ^À^£À^§À^¨À^¹À^öÀ_À_À_À_À_(À_eÀ_{À_À_…À_†À_ÕÀ`À`YÀ`_À`cÀ`dÀ`À`ËÀ`ñÀ`÷À`ûÀ`üÀaÀa[Àa}ÀaƒÀa‡ÀaˆÀaÈÀbÀb6Àb<Àb@ÀbAÀbmÀbªÀbÌÀbÒÀbÖÀb×ÀbóÀc0ÀcQÀcWÀc[Àc\Àc®ÀcÔÀcâÀcèÀcéÀd0ÀdPÀdxÀd€Àd†ÀdËÀdÏÀdĞÀeÀeÀecÀe¢ÀeİÀf+Àf/Àf0Àf|Àf°Àf¶ÀgÀgWÀg}ÀgƒÀgÈÀhÀhEÀhKÀhÀhÙÀi)ÀirÀi¹ÀiÙÀißÀj,ÀjyÀjÆÀkÀkbÀk±Àk·ÀlÀlEÀl–ÀlàÀm/ÀmwÀmÅÀmŞÀmóÀmùÀnFÀn–ÀnåÀo3Ào‚ÀoĞÀoÚÀoàÀoğÀoöÀpCÀp“ÀpÈÀqÀqYÀq–ÀqœÀq Àq¡ÀqñÀrÀrÀrZÀrŠÀrëÀs9Às=Às>Às}ÀsÁÀtÀt	ÀtÀtÀt\Àt‘Àt•ÀtäÀu0ÀusÀuwÀuÈÀvÀv2Àv6Àv|ÀvÈÀvğÀvôÀwÀwPÀwTÀw©Àw¹Àw½ÀwËÀwÏÀx$ÀxtÀx˜ÀxŞÀxôÀyÀyXÀy^ÀyªÀyıÀzLÀzMÀzšÀz ÀzìÀ{1À{ZÀ{[À{À{–À{àÀ{ñÀ{òÀ|(À|.À|nÀ|À|€À|ÈÀ|ÎÀ}À}1À}nÀ}oÀ}±À}·À~À~À~LÀ~MÀ~‘À~—À~çÀÀcÀdÀ§À­ÀùÀ€À€.À€/À€nÀ€tÀ€¼À€ËÀ€íÀ€îÀ1À7ÀƒÀ’ÀÒÀÓÀ‚À‚À‚gÀ‚vÀ‚…À‚¥À‚ßÀ‚ãÀ‚õÀƒÀƒ5ÀƒZÀƒ„Àƒ¦Àƒ®Àƒ¯ÀƒîÀƒôÀ„CÀ„RÀ„~À„À„´À„ºÀ„úÀ…À…À…NÀ…TÀ…dÀ…jÀ…•À…ÏÀ…ÑÀ…ÒÀ†
+À†BÀ†cÀ†dÀ†À†ñÀ†òÀ‡0À‡1À‡…À‡ÃÀˆÀˆ]ÀˆœÀˆìÀ‰)À‰wÀ‰‹À‰İÀ‰åÀŠÀŠÀŠÀŠ ÀŠ!ÀŠ-ÀŠ{ÀŠˆÀŠÅÀŠüÀ‹+À‹6À‹EÀ‹\À‹“À‹æÀ‹ñÀ‹õÀ‹öÀŒÀŒ*ÀŒ7ÀŒlÀŒ{ÀŒ’ÀŒÉÀÀ'À+À,À8ÀtÀÀÜÀëÀÀ9ÀÀ™ÀÀÀªÀÛÀèÀ1À@ÀWÀÀâÀíÀñÀòÀşÀÀÀIÀXÀoÀ¦À÷À‘À‘À‘À‘À‘#À‘0À‘^À‘mÀ‘„À‘»À’À’À’À’À’'À’uÀ’‚À’ÚÀ“À“0À“ZÀ“eÀ“tÀ“‹À“ÂÀ”À”&À”*À”+À”7À”\À”iÀ”·À”ÖÀ”÷À•À•*À•5À•DÀ•[À•’À•çÀ•òÀ•öÀ•÷À–À–$À–1À–zÀ–™À–ºÀ–ÔÀ–íÀ–øÀ—À—À—UÀ—¦À—±À—µÀ—¶À—ÂÀ˜À˜À˜+À˜TÀ˜ˆÀ˜¢À˜ÂÀ˜áÀ™À™$À™AÀ™eÀ™tÀ™‹À™•À™¤À™»À™òÀšHÀšSÀšWÀšXÀšdÀšvÀš—Àš¶ÀšÛÀ›À›'À›.À›?À›UÀ›uÀ›‘À›±À›×À›õÀ›şÀœÀœ	Àœ
+ÀœÀœAÀœNÀœÀœŸÀœ¶ÀœíÀ:ÀEÀIÀJÀVÀqÀ~À·ÀÆÀİÀÀ[ÀfÀjÀkÀwÀ°À½ÀŸÀŸÀŸ.ÀŸeÀŸ³ÀŸ¾ÀŸÂÀŸÄÀŸÅÀŸóÀŸ÷À CÀ ‘À ¾À ÂÀ¡À¡`À¡§À¡«À¡ûÀ¢EÀ¢„À¢©À¢­À¢×À¢ÛÀ¢éÀ¢íÀ£9À£À£ÌÀ¤À¤RÀ¤À¤”À¤¼À¤ñÀ¥%À¥)À¥*À¥dÀ¥jÀ¥¶À¦À¦6À¦<À¦À¦¡À¦ÅÀ¦ÆÀ§À§À§:À§;À§À§‘À§ÈÀ§ÎÀ§øÀ¨À¨À¨XÀ¨^À¨ˆÀ¨ºÀ¨»À©À©À©3À©4À©‚À©¯À©ÄÀªÀªÀªIÀªeÀªfÀªŠÀª‹Àª—Àª³ÀªÍÀªäÀ«	À«À«À«;À«TÀ«ZÀ«vÀ«šÀ«´À«¸À«¹À«ÅÀ«ÿÀ¬FÀ¬RÀ¬jÀ¬©À¬ôÀ¬ûÀ­À­À­7À­8À­zÀ­€À­¼À®
+À®À®_À®¢À®¨À®ôÀ¯2À¯8À¯ˆÀ¯×À¯ÿÀ°À°À°À°WÀ°§À°âÀ°ñÀ±À±MÀ±QÀ±xÀ±’À±À±ÔÀ²6À²=À²>À²{À²ßÀ³À³À³	À³À³_À³¤À³«À³¬À³àÀ³áÀ´À´À´7À´À´¶À´ÔÀ´ñÀµÀµ9ÀµBÀµJÀµNÀµOÀµŸÀµ®Àµ´ÀµğÀ¶>À¶DÀ¶“À¶ÖÀ¶ÜÀ·*À·wÀ·¯À·ûÀ¸À¸À¸hÀ¸¦À¸¬À¸üÀ¹KÀ¹sÀ¹yÀ¹‰À¹À¹ËÀºÀºVÀº°ÀºÊÀºèÀºôÀ»*À»ŒÀ»“À»”À»ÑÀ»ïÀ¼À¼EÀ¼zÀ¼À¼£À¼¤À¼°À¼úÀ½?À½FÀ½GÀ½{À½|À½ À½ÀÀ½øÀ¾À¾JÀ¾“À¾åÀ¿4À¿?À¿À¿‰À¿À¿À¿ÇÀÀÀÀ0ÀÀ1ÀÀSÀÀkÀÀ‚ÀÀŸÀÀøÀÁÀÁ<ÀÁYÀÁ|ÀÁ¡ÀÁªÀÁÄÀÁÌÀÁĞÀÁÑÀÁ÷ÀÁıÀÂKÀÂ_ÀÂeÀÂ£ÀÂ©ÀÂ¹ÀÂ¿ÀÂüÀÃLÀÃ“ÀÃ±ÀÃËÀÄÀÄQÀÄoÀÄ}ÀÄƒÀÄšÀÄÎÀÄòÀÅAÀÅ}ÀÅÊÀÅÎÀÅÏÀÅÛÀÆ ÀÆKÀÆ’ÀÆ¦ÀÆºÀÆÒÀÆ÷ÀÇÀÇ9ÀÇQÀÇZÀÇaÀÇ´ÀÇÿÀÈÀÈÀÈQÀÈdÀÈ~ÀÈŠÀÈ¢ÀÈ¦ÀÈ¨ÀÈ©ÀÈùÀÉÀÉÀÉÀÉÀÉhÀÉuÀÉÈÀÊÀÊfÀÊ|ÀÊ‡ÀÊ³ÀÊÛÀÊÜÀËÀË	ÀËYÀËiÀË†ÀË‡ÀËÕÀËíÀËîÀÌ/ÀÌZÀÌ}ÀÌ×ÀÌÛÀÌÜÀÌèÀÍÀÍÀÍÀÍ>ÀÍ`ÀÍsÀÍyÀÍ¥ÀÍ¹ÀÍ¿ÀÎ	ÀÎÀÎÀÎÀÎ]ÀÎaÀÎœÀÎ ÀÎ®ÀÎ²ÀÏÀÏÀÏ^ÀÏsÀÏÇÀĞÀĞ4ÀĞ5ÀĞAÀĞcÀĞeÀĞfÀĞ²ÀĞ¶ÀĞñÀĞõÀÑÀÑÀÑVÀÑcÀÑ²ÀÑÇÀÒÀÒZÀÒ…ÀÒ†ÀÒ’ÀÒ³ÀÒµÀÒ¶ÀÓÀÓÀÓCÀÓGÀÓUÀÓYÀÓ¨ÀÓµÀÔÀÔÀÔpÀÔ²ÀÔßÀÔàÀÔìÀÕÀÕÀÕÀÕ]ÀÕiÀÕmÀÕ¨ÀÕ¬ÀÕºÀÕ¾ÀÖÀÖÀÖkÀÖ„ÀÖİÀ×#À×TÀ×UÀ×aÀ×ˆÀ×ŠÀ×‹À×ÓÀ×ßÀ×ãÀØ3ÀØ7ÀØbÀØfÀØtÀØxÀØÇÀØÔÀÙ&ÀÙtÀÙ‚ÀÙÖÀÙğÀÚ3ÀÚvÀÚwÀÚƒÀÚ™ÀÚšÀÚ¦ÀÚÊÀÚËÀÚ×ÀÛÀÛGÀÛ{ÀÛÀÛÀÛ‚ÀÛÍÀÛÙÀÛİÀÜÀÜ4ÀÜ8ÀÜcÀÜgÀÜuÀÜyÀÜÈÀÜÕÀİ&ÀİxÀİ†ÀİİÀİ÷ÀŞ=ÀŞƒÀŞ„ÀŞÀŞ¦ÀŞ§ÀŞ³ÀŞÚÀŞÛÀŞçÀß,ÀßWÀß‹ÀßÀß‘Àß’ÀßàÀßäÀà
+Àà7Àà;ÀàfÀàjÀàxÀà|ÀàËÀàØÀá%ÀámÀá…ÀáØÀáòÀâ4ÀâvÀâwÀâƒÀâ™ÀâšÀâ¦ÀâÉÀâÊÀâÖÀãÀãFÀãzÀã~Àã€ÀãÀãËÀãİÀãáÀä-ÀävÀä“Àä—ÀäãÀåÀåÀåÀå#ÀåwÀåŒÀåÄÀæÀæaÀæ‘Àæ’ÀæÀæÑÀæÓÀæÔÀç.Àç2Àç^ÀçbÀçŒÀçÀçÀç¢ÀçñÀçşÀèPÀèeÀè¹ÀèÓÀéÀérÀésÀéÀé•Àé–ÀéÓÀéóÀéôÀê(ÀêXÀêYÀêeÀê‰ÀêŠÀê–Àê¹ÀëÀëÀëÀëÀëbÀëÀëÁÀëÿÀìNÀìRÀìSÀì_Àì”Àì•Àì¡ÀìÄÀìæÀìùÀìÿÀí9ÀíYÀíÀíƒÀí…   $SmartDashesTypeSmartQuotesTypeTextInputTypeTextInputActionTextCapitalizationTextInputConfiguration_toTextAffinityFloatingCursorDragStateRawFloatingCursorPointTextEditingValueSelectionChangedCauseTextSelectionDelegateTextInputClientScribbleClientSelectionRectDeltaTextInputClientTextInputStyleTextInputConnection_toTextInputAction_toTextCursorAction_toTextPoint_reportError	TextInputTextInputControl_PlatformTextInputControlSystemContextMenuControllerIOSSystemContextMenuItemData IOSSystemContextMenuItemDataCopyIOSSystemContextMenuItemDataCut!IOSSystemContextMenuItemDataPaste%IOSSystemContextMenuItemDataSelectAll"IOSSystemContextMenuItemDataLookUp%IOSSystemContextMenuItemDataSearchWeb!IOSSystemContextMenuItemDataShare$IOSSystemContextMenuItemDataLiveText"IOSSystemContextMenuItemDataCustom7flutter.services.TextInputConfiguration.smartDashesTypeƒğWhether to allow the platform to automatically format dashes.
+
+This flag only affects iOS versions 11 and above. It sets
+[`UITextSmartDashesType`](https://developer.apple.com/documentation/uikit/uitextsmartdashestype?language=objc)
+in the engine. When true, it passes
+[`UITextSmartDashesTypeYes`](https://developer.apple.com/documentation/uikit/uitextsmartdashestype/uitextsmartdashestypeyes?language=objc),
+and when false, it passes
+[`UITextSmartDashesTypeNo`](https://developer.apple.com/documentation/uikit/uitextsmartdashestype/uitextsmartdashestypeno?language=objc).
+
+As an example of what this does, two consecutive hyphen characters will be
+automatically replaced with one en dash, and three consecutive hyphens
+will become one em dash.
+
+Defaults to true, unless [obscureText] is true, when it defaults to false.
+This is to avoid the problem where password fields receive autoformatted
+characters.
+
+See also:
+
+ * [smartQuotesType]
+ * <https://developer.apple.com/documentation/uikit/uitextinputtraits>7flutter.services.TextInputConfiguration.smartQuotesTypeƒßWhether to allow the platform to automatically format quotes.
+
+This flag only affects iOS. It sets
+[`UITextSmartQuotesType`](https://developer.apple.com/documentation/uikit/uitextsmartquotestype?language=objc)
+in the engine. When true, it passes
+[`UITextSmartQuotesTypeYes`](https://developer.apple.com/documentation/uikit/uitextsmartquotestype/uitextsmartquotestypeyes?language=objc),
+and when false, it passes
+[`UITextSmartQuotesTypeNo`](https://developer.apple.com/documentation/uikit/uitextsmartquotestype/uitextsmartquotestypeno?language=objc).
+
+As an example of what this does, a standard vertical double quote
+character will be automatically replaced by a left or right double quote
+depending on its position in a word.
+
+Defaults to true, unless [obscureText] is true, when it defaults to false.
+This is to avoid the problem where password fields receive autoformatted
+characters.
+
+See also:
+
+ * [smartDashesType]
+ * <https://developer.apple.com/documentation/uikit/uitextinputtraits>9flutter.services.TextInputConfiguration.enableSuggestions–Whether to show input suggestions as the user types.
+
+This flag only affects Android. On iOS, suggestions are tied directly to
+[autocorrect], so that suggestions are only shown when [autocorrect] is
+true. On Android autocorrection and suggestion are controlled separately.
+
+Defaults to true.
+
+See also:
+
+ * <https://developer.android.com/reference/android/text/InputType.html#TYPE_TEXT_FLAG_NO_SUGGESTIONS>Eflutter.services.TextInputConfiguration.enableIMEPersonalizedLearning@Whether to enable that the IME update personalized data such as typing
+history and user dictionary data.
+
+This flag only affects Android. On iOS, there is no equivalent flag.
+
+Defaults to true.
+
+See also:
+
+ * <https://developer.android.com/reference/android/view/inputmethod/EditorInfo#IME_FLAG_NO_PERSONALIZED_LEARNING>3flutter.services.TextInputConfiguration.hintLocales‚List of the languages that the user is expected to use.
+
+This special "hint" can be used mainly for, but not limited to,
+multilingual users who want IMEs to switch language based on editor's context.
+
+Pass an empty list to express the intention that a specific hint should not be set.
+
+Defaults to null, which indicates no preference in keyboard language.
+
+This setting is only honored on Android devices running API 24 and above.
+
+See also:
+
+ * <https://developer.android.com/reference/android/view/inputmethod/EditorInfo#hintLocales>>flutter.services.TextInputConfiguration.enableInlinePredictionKWhether to enable inline predictive text.
+
+This feature is specific to iOS 17 and later. It has no effect on other
+platforms.
+
+By default, this property is null, which means inline prediction is
+disabled on iOS. Setting this flag overrides the platform behavior:
+when true, inline prediction is enabled; when false, it is disabled.0flutter.services.TextInput.finishAutofillContext„ÓAn autofill context is a collection of input fields that live in the
+platform's text input plugin. The platform is encouraged to save the user
+input stored in the current autofill context before the context is
+destroyed, when [TextInput.finishAutofillContext] is called with
+`shouldSave` set to true.
+
+Currently, there can only be at most one autofill context at any given
+time. When any input field in an [AutofillGroup] requests for autofill
+(which is done automatically when an autofillable [EditableText] gains
+focus), the current autofill context will merge the content of that
+[AutofillGroup] into itself. When there isn't an existing autofill context,
+one will be created to hold the newly added input fields from the group.
+
+Once added to an autofill context, an input field will stay in the context
+until the context is destroyed. To prevent leaks, call
+[TextInput.finishAutofillContext] to signal the text input plugin that the
+user has finalized their input in the current autofill context. The
+platform text input plugin either encourages or discourages the platform
+from saving the user input based on the value of the `shouldSave`
+parameter. The platform usually shows a "Save for autofill?" prompt for
+user confirmation. 8°
