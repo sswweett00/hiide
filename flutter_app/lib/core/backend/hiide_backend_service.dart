@@ -6,10 +6,8 @@ import 'backend_service.dart';
 
 class HiideBackendService implements BackendService {
   HiideBackendService({this.host = '127.0.0.1', this.port = 4879});
-
   final String host;
   final int port;
-
   static const Duration _connectTimeout = Duration(seconds: 3);
   static const Duration _requestTimeout = Duration(seconds: 15);
   static const Duration _agentToolTimeout = Duration(seconds: 180);
@@ -51,10 +49,10 @@ class HiideBackendService implements BackendService {
     _socket = socket;
     _connected = true;
     _socketSubscription = socket
+        .cast<List<int>>()
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(_handleLine, onDone: _onDisconnected, onError: _onSocketError);
-
     try {
       final hello = await _request('hello', null, timeout: _requestTimeout);
       _emitOutput('Connected to Hiide Zig engine (${hello['service'] ?? 'unknown'} v${hello['version'] ?? 'unknown'}) on $host:$port');
@@ -86,16 +84,10 @@ class HiideBackendService implements BackendService {
       unawaited(disconnect());
       return;
     }
-
     dynamic decoded;
-    try {
-      decoded = jsonDecode(line);
-    } catch (_) {
-      return;
-    }
+    try { decoded = jsonDecode(line); } catch (_) { return; }
     if (decoded is! Map) return;
     final message = Map<String, dynamic>.from(decoded);
-
     if (message['event'] == 'fs.change') {
       final rawParams = message['params'];
       if (rawParams is! Map) return;
@@ -106,15 +98,10 @@ class HiideBackendService implements BackendService {
         final map = Map<String, dynamic>.from(raw);
         final path = map['path']?.toString() ?? '';
         if (path.isEmpty || _fsChanges.isClosed) continue;
-        _fsChanges.add(FsChange(
-          path: path,
-          isDirectory: map['is_dir'] == true,
-          kind: map['kind']?.toString() ?? 'modified',
-        ));
+        _fsChanges.add(FsChange(path: path, isDirectory: map['is_dir'] == true, kind: map['kind']?.toString() ?? 'modified'));
       }
       return;
     }
-
     final id = message['id'];
     if (id is! int) return;
     final completer = _pending.remove(id);
@@ -150,7 +137,6 @@ class HiideBackendService implements BackendService {
   Future<Map<String, dynamic>> _request(String method, Object? params, {Duration? timeout}) async {
     final socket = _socket;
     if (!_connected || socket == null) throw StateError('backend not connected');
-
     final id = _nextId++;
     final completer = Completer<Map<String, dynamic>>();
     _pending[id] = completer;
@@ -177,7 +163,6 @@ class HiideBackendService implements BackendService {
 
   @override
   Future<String> ping() async => (await _request('ping', null))['result']?.toString() ?? '';
-
   @override
   Future<int> editorLoad(String text) async {
     final result = _expectResult(await _request('editor.load', text));
@@ -185,10 +170,8 @@ class HiideBackendService implements BackendService {
     if (handle is! int) throw StateError('invalid editor handle');
     return handle;
   }
-
   @override
   Future<String> editorGetText(int handle) async => _expectResult(await _request('editor.get_text', handle))['text']?.toString() ?? '';
-
   Future<Map<String, dynamic>> _editorObjectOp(String method, int handle, {int? pos, int? len, String? text, String? query, String? lang}) async {
     final params = <String, dynamic>{'handle': handle};
     if (pos != null) params['pos'] = pos;
@@ -198,7 +181,6 @@ class HiideBackendService implements BackendService {
     if (lang != null) params['lang'] = lang;
     return _expectResult(await _request(method, params));
   }
-
   @override
   Future<int> editorInsert(int handle, int pos, String text) async => (_editorObjectOp('editor.insert', handle, pos: pos, text: text).then((r) => r['size'] is int ? r['size'] as int : 0));
   @override
@@ -211,25 +193,21 @@ class HiideBackendService implements BackendService {
   Future<int> editorLineCount(int handle) async => (_editorObjectOp('editor.line_count', handle).then((r) => r['lines'] is int ? r['lines'] as int : 0));
   @override
   Future<int> editorSize(int handle) async => (_editorObjectOp('editor.size', handle).then((r) => r['size'] is int ? r['size'] as int : 0));
-
   @override
   Future<List<EditorSearchResult>> editorSearch(int handle, String query) async {
-    final raw = _editorObjectOp('editor.search', handle, query: query).then((r) => r['results']);
-    final value = await raw;
+    final value = await _editorObjectOp('editor.search', handle, query: query).then((r) => r['results']);
     if (value is! List) return const [];
     return value.whereType<Map>().map((item) {
       final map = Map<String, dynamic>.from(item);
       return EditorSearchResult(line: map['line'] is int ? map['line'] as int : 0, col: map['col'] is int ? map['col'] as int : 0, text: map['text']?.toString() ?? '');
     }).toList();
   }
-
   @override
   Future<String> editorHighlight(int handle, String lang) async => _editorObjectOp('editor.highlight', handle, lang: lang).then((r) => r['html']?.toString() ?? '');
   @override
   Future<void> editorDestroy(int handle) async { await _editorObjectOp('editor.destroy', handle); }
   @override
   Future<void> editorApplyText(int handle, String text) async { await _editorObjectOp('editor.apply_text', handle, text: text); }
-
   @override
   Future<List<EditorDiffRegion>> editorDiffLines(int handle, String diskText) async {
     final raw = _expectResult(await _request('editor.diff_lines', {'handle': handle, 'disk_text': diskText}))['changes'];
@@ -239,7 +217,6 @@ class HiideBackendService implements BackendService {
       return EditorDiffRegion(line: map['line'] is int ? map['line'] as int : 0, kind: map['kind']?.toString() ?? 'modified', count: map['count'] is int ? map['count'] as int : 1);
     }).toList();
   }
-
   @override
   Future<List<WorkspaceSearchResult>> workspaceSearch(String root, String query, {int maxResults = 200}) async {
     final limit = maxResults.clamp(1, _maxSearchResults);
@@ -250,7 +227,6 @@ class HiideBackendService implements BackendService {
       return WorkspaceSearchResult(path: map['path']?.toString() ?? '', line: map['line'] is int ? map['line'] as int : 0, col: map['col'] is int ? map['col'] as int : 0, text: map['text']?.toString() ?? '');
     }).toList();
   }
-
   @override
   Future<List<WorkspaceFile>> workspaceTree(String root, {int maxEntries = 50000}) async {
     final limit = maxEntries.clamp(1, _maxTreeEntries);
@@ -261,7 +237,6 @@ class HiideBackendService implements BackendService {
       return WorkspaceFile(name: map['name']?.toString() ?? '', path: map['path']?.toString() ?? '', isDirectory: map['kind']?.toString() == 'directory', size: map['size'] is int ? map['size'] as int : 0);
     }).toList();
   }
-
   @override
   Future<AgentToolResult> executeAgentTool(String toolId, Map<String, dynamic> input, {String? workspaceRoot, Duration? timeout}) async {
     late String encoded;
@@ -271,19 +246,10 @@ class HiideBackendService implements BackendService {
     final result = value is Map ? Map<String, dynamic>.from(value) : const <String, dynamic>{};
     return AgentToolResult(ok: result['ok'] == true, output: result['output']?.toString() ?? '', error: result['error']?.toString() ?? '');
   }
-
   @override
-  Future<void> watchWorkspace(String root) async {
-    await _request('watch.subscribe', {'root': root});
-    _watchedRoot = root;
-  }
-
+  Future<void> watchWorkspace(String root) async { await _request('watch.subscribe', {'root': root}); _watchedRoot = root; }
   @override
-  Future<void> unwatchWorkspace() async {
-    _watchedRoot = null;
-    if (_connected) await _request('watch.unsubscribe', null);
-  }
-
+  Future<void> unwatchWorkspace() async { _watchedRoot = null; if (_connected) await _request('watch.unsubscribe', null); }
   @override
   void dispose() {
     if (_disposed) return;
