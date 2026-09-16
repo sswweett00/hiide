@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../core/design_system/tokens.dart';
-import '../../core/backend/terminal_service.dart';
 import '../../shared/providers/editor_providers.dart';
-import '../../shared/widgets/ide_shell.dart';
 import '../../shared/widgets/ai_widgets.dart';
 
 final gitStatusProvider = StateProvider<List<Map<String, String>>>((ref) => []);
 final isGitLoadingProvider = StateProvider<bool>((ref) => false);
+final gitErrorProvider = StateProvider<String?>((ref) => null);
 
 class SourceControlScreen extends ConsumerStatefulWidget {
   const SourceControlScreen({super.key});
@@ -22,11 +22,12 @@ class SourceControlScreen extends ConsumerStatefulWidget {
 
 class _SourceControlScreenState extends ConsumerState<SourceControlScreen> {
   final TextEditingController _commitController = TextEditingController();
+  int _operation = 0;
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => _fetchGitStatus());
+    Future.microtask(_fetchGitStatus);
   }
 
   @override
@@ -35,68 +36,124 @@ class _SourceControlScreenState extends ConsumerState<SourceControlScreen> {
     super.dispose();
   }
 
+  Future<ProcessResult> _runGit(List<String> args, String root) {
+    return Process.run('git', args, workingDirectory: root);
+  }
+
   Future<void> _fetchGitStatus() async {
-    ref.read(isGitLoadingProvider.notifier).state = true;
-    final terminalService = TerminalService();
-    final root = ref.read(workspaceRootProvider);
+    final token = ++_operation;
+    final root = ref.read(workspaceRootProvider).trim();
     if (kIsWeb || root.isEmpty) {
-      ref.read(isGitLoadingProvider.notifier).state = false;
+      ref.read(gitStatusProvider.notifier).state = [];
+      ref.read(gitErrorProvider.notifier).state =
+          kIsWeb ? 'Git is unavailable in the web build.' : 'No workspace is open.';
       return;
     }
-    try {
-      final result = await Process.run('git', ['status', '--porcelain'],
-          workingDirectory: root);
-      final lines = result.stdout
-          .toString()
-          .split('\n')
-          .where((l) => l.trim().isNotEmpty)
-          .toList();
 
-      final List<Map<String, String>> items = [];
-      for (final line in lines) {
-        if (line.length >= 3) {
-          final status = line.substring(0, 2).trim();
-          final file = line.substring(3).trim();
-          items.add({'status': status.isEmpty ? 'M' : status, 'file': file});
-        }
+    ref.read(isGitLoadingProvider.notifier).state = true;
+    ref.read(gitErrorProvider.notifier).state = null;
+    try {
+      final result = await _runGit(['status', '--porcelain=v1'], root);
+      if (!mounted || token != _operation) return;
+      if (result.exitCode != 0) {
+        throw StateError(result.stderr.toString().trim().isEmpty
+            ? 'git status failed with exit code ${result.exitCode}'
+            : result.stderr.toString().trim());
+      }
+
+      final items = <Map<String, String>>[];
+      for (final raw in result.stdout.toString().split('\n')) {
+        if (raw.isEmpty || raw.length < 3) continue;
+        final status = raw.substring(0, 2).trim();
+        final path = raw.substring(3).trim();
+        if (path.isEmpty) continue;
+        items.add({
+          'status': status.isEmpty ? '??' : status,
+          'file': path,
+        });
       }
       ref.read(gitStatusProvider.notifier).state = items;
-    } catch (e) {
-      debugPrint('Git status error: $e');
+    } catch (error) {
+      if (!mounted || token != _operation) return;
+      ref.read(gitStatusProvider.notifier).state = [];
+      ref.read(gitErrorProvider.notifier).state = error.toString();
     } finally {
-      ref.read(isGitLoadingProvider.notifier).state = false;
-      terminalService.dispose();
+      if (mounted && token == _operation) {
+        ref.read(isGitLoadingProvider.notifier).state = false;
+      }
     }
   }
 
   Future<void> _commit() async {
-    final msg = _commitController.text.trim();
-    if (msg.isEmpty) return;
-    ref.read(isGitLoadingProvider.notifier).state = true;
-    try {
-      final root = ref.read(workspaceRootProvider);
-      await Process.run('git', ['add', '.'],
-          workingDirectory: root);
-      await Process.run('git', ['commit', '-m', msg],
-          workingDirectory: root);
-      _commitController.clear();
-      await _fetchGitStatus();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Changes committed successfully')));
-      }
-    } catch (e) {
-      debugPrint('Commit failed: $e');
-    } finally {
-      ref.read(isGitLoadingProvider.notifier).state = false;
+    final message = _commitController.text.trim();
+    if (message.isEmpty) {
+      _showMessage('Commit message is required.');
+      return;
     }
+
+    final root = ref.read(workspaceRootProvider).trim();
+    if (kIsWeb || root.isEmpty) {
+      _showMessage(kIsWeb ? 'Git is unavailable in the web build.' : 'No workspace is open.');
+      return;
+    }
+
+    final token = ++_operation;
+    ref.read(isGitLoadingProvider.notifier).state = true;
+    ref.read(gitErrorProvider.notifier).state = null;
+
+    try {
+      final add = await _runGit(['add', '--all'], root);
+      if (add.exitCode != 0) {
+        throw StateError(add.stderr.toString().trim().isEmpty
+            ? 'git add failed with exit code ${add.exitCode}'
+            : add.stderr.toString().trim());
+      }
+
+      final commit = await _runGit(['commit', '-m', message], root);
+      final stdout = commit.stdout.toString().trim();
+      final stderr = commit.stderr.toString().trim();
+      if (commit.exitCode != 0) {
+        final details = stderr.isNotEmpty ? stderr : stdout;
+        throw StateError(details.isEmpty
+            ? 'git commit failed with exit code ${commit.exitCode}'
+            : details);
+      }
+
+      _commitController.clear();
+      if (mounted && token == _operation) {
+        _showMessage(stdout.isEmpty ? 'Changes committed.' : stdout);
+      }
+    } catch (error) {
+      if (!mounted || token != _operation) return;
+      ref.read(gitErrorProvider.notifier).state = error.toString();
+      _showMessage('Commit failed: $error', error: true);
+    } finally {
+      if (mounted && token == _operation) {
+        ref.read(isGitLoadingProvider.notifier).state = false;
+      }
+      if (mounted && token == _operation) {
+        await _fetchGitStatus();
+      }
+    }
+  }
+
+  void _showMessage(String message, {bool error = false}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: error ? Theme.of(context).colorScheme.error : null,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final gitItems = ref.watch(gitStatusProvider);
-    final isLoading = ref.watch(isGitLoadingProvider);
+    final items = ref.watch(gitStatusProvider);
+    final loading = ref.watch(isGitLoadingProvider);
+    final error = ref.watch(gitErrorProvider);
 
     return Container(
       color: cs.surface,
@@ -109,7 +166,7 @@ class _SourceControlScreenState extends ConsumerState<SourceControlScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.refresh, size: DesignTokens.iconSM),
-                onPressed: () => _fetchGitStatus(),
+                onPressed: loading ? null : _fetchGitStatus,
                 tooltip: 'Refresh Git status',
               ),
             ],
@@ -118,8 +175,10 @@ class _SourceControlScreenState extends ConsumerState<SourceControlScreen> {
             padding: const EdgeInsets.all(DesignTokens.space4),
             child: TextField(
               controller: _commitController,
+              enabled: !loading,
+              onSubmitted: (_) => _commit(),
               decoration: const InputDecoration(
-                hintText: 'Message (Ctrl+Enter to commit on "main")',
+                hintText: 'Commit message',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -130,44 +189,51 @@ class _SourceControlScreenState extends ConsumerState<SourceControlScreen> {
               children: [
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: isLoading ? null : () => _commit(_commitController.text),
+                    onPressed: loading ? null : _commit,
                     icon: const Icon(Icons.check, size: DesignTokens.iconSM),
                     label: const Text('Commit'),
                   ),
                 ),
                 const SizedBox(width: DesignTokens.space2),
                 OutlinedButton.icon(
-                  onPressed: _fetchGitStatus,
+                  onPressed: loading ? null : _fetchGitStatus,
                   icon: const Icon(Icons.refresh, size: DesignTokens.iconSM),
                   label: const Text('Refresh'),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: DesignTokens.space4),
-          if (isLoading)
-            const LinearProgressIndicator()
-          else
+          if (loading) const LinearProgressIndicator(),
+          if (error != null)
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: DesignTokens.space4,
-                  vertical: DesignTokens.space2),
+              padding: const EdgeInsets.all(DesignTokens.space4),
               child: Text(
-                '${gitItems.length} Changed Files',
-                style: TextStyle(
-                    color: cs.onSurfaceVariant,
-                    fontSize: DesignTokens.fontSizeSM),
+                error,
+                style: TextStyle(color: cs.error, fontSize: DesignTokens.fontSizeSM),
               ),
             ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              DesignTokens.space4,
+              DesignTokens.space3,
+              DesignTokens.space4,
+              DesignTokens.space2,
+            ),
+            child: Text(
+              '${items.length} changed files',
+              style: TextStyle(color: cs.onSurfaceVariant, fontSize: DesignTokens.fontSizeSM),
+            ),
+          ),
           Expanded(
             child: ListView.builder(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
-              itemCount: gitItems.length,
+              padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
+              itemCount: items.length,
               itemBuilder: (context, index) {
-                final item = gitItems[index];
+                final item = items[index];
                 return _SCMItem(
-                    label: item['status'] ?? 'M', file: item['file'] ?? '');
+                  label: item['status'] ?? '??',
+                  file: item['file'] ?? '',
+                );
               },
             ),
           ),
@@ -186,24 +252,24 @@ class _SCMItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final color = label.contains('M')
-        ? const Color(0xFFD29922)
-        : (label.contains('A') || label.contains('?'))
-            ? const Color(0xFF3FB950)
-            : cs.onSurfaceVariant;
+    final color = label.contains('D')
+        ? DesignTokens.deleted
+        : label.contains('?') || label.contains('A')
+            ? DesignTokens.added
+            : label.contains('M') || label.contains('R')
+                ? DesignTokens.modified
+                : cs.onSurfaceVariant;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: DesignTokens.space2),
       decoration: BoxDecoration(
-        border: Border(
-            bottom: BorderSide(
-                color: cs.outlineVariant, width: DesignTokens.borderWidthThin)),
+        border: Border(bottom: BorderSide(color: cs.outlineVariant, width: DesignTokens.borderWidthThin)),
       ),
       child: Row(
         children: [
           Container(
-            width: DesignTokens.space6,
-            height: DesignTokens.space6,
+            width: 28,
+            height: 24,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(DesignTokens.radiusSM),
@@ -211,10 +277,7 @@ class _SCMItem extends StatelessWidget {
             child: Center(
               child: Text(
                 label,
-                style: TextStyle(
-                    color: color,
-                    fontSize: DesignTokens.fontSizeXS,
-                    fontWeight: DesignTokens.fontWeightSemibold),
+                style: TextStyle(color: color, fontSize: DesignTokens.fontSizeXS, fontWeight: DesignTokens.fontWeightSemibold),
               ),
             ),
           ),
@@ -222,11 +285,8 @@ class _SCMItem extends StatelessWidget {
           Expanded(
             child: Text(
               file,
-              style: TextStyle(
-                  color: cs.onSurface,
-                  fontSize: DesignTokens.fontSizeMD,
-                  fontFamily: 'JetBrains Mono'),
               overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: cs.onSurface, fontSize: DesignTokens.fontSizeMD, fontFamily: 'JetBrains Mono'),
             ),
           ),
         ],
