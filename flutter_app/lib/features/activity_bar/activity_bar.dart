@@ -22,14 +22,12 @@ class ActivityBar extends ConsumerWidget {
           cs.surfaceContainerHighest.withValues(alpha: 0.30),
           cs.surface,
         ),
-        border: Border(
-          right: BorderSide(color: cs.outlineVariant),
-        ),
+        border: Border(right: BorderSide(color: cs.outlineVariant)),
       ),
       child: Column(
         children: [
           const SizedBox(height: 7),
-          _ActivityBrandMark(),
+          const _ActivityBrandMark(),
           const SizedBox(height: 9),
           Expanded(
             child: ListView.builder(
@@ -37,10 +35,9 @@ class ActivityBar extends ConsumerWidget {
               itemCount: ActivityItem.values.length,
               itemBuilder: (context, index) {
                 final item = ActivityItem.values[index];
-                final isSelected = item.id == selected;
                 return _ActivityBarItem(
                   item: item,
-                  isSelected: isSelected,
+                  isSelected: item.id == selected,
                   onTap: () {
                     ref.read(selectedActivityProvider.notifier).state = item.id;
                     if (item.route != null) context.go(item.route!.path);
@@ -127,9 +124,18 @@ class _ActivityBarItemState extends State<_ActivityBarItem> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final tooltip = switch (widget.item) {
+      ActivityItem.files => 'Explorer',
+      ActivityItem.search => 'Search',
+      ActivityItem.sourceControl => 'Source Control',
+      ActivityItem.debug => 'Run & Debug',
+      ActivityItem.extensions => 'Extensions',
+      ActivityItem.ai => 'AI',
+      ActivityItem.settings => 'Settings',
+    };
 
     return Tooltip(
-      message: widget.item.label,
+      message: tooltip,
       preferBelow: false,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
@@ -156,7 +162,7 @@ class _ActivityBarItemState extends State<_ActivityBarItem> {
                   ),
                 ),
                 Icon(
-                  widget.item.icon,
+                  widget.isSelected ? widget.item.activeIcon : widget.item.icon,
                   size: 20,
                   color: widget.isSelected
                       ? cs.primary
