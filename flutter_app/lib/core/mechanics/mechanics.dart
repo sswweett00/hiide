@@ -1,5 +1,27 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'backpressure_queue.dart';
+import 'cancellation_token.dart';
+import 'circuit_breaker.dart';
+import 'command_history.dart';
+import 'conflict_tracker.dart';
+import 'error_taxonomy.dart';
+import 'event_bus.dart';
+import 'health_monitor.dart';
+import 'ide_runtime.dart';
+import 'idempotency_store.dart';
+import 'notification_center.dart';
+import 'performance_monitor.dart';
+import 'rate_limiter.dart';
+import 'recovery_journal.dart';
+import 'resource_lease.dart';
+import 'retry_queue.dart';
+import 'save_coordinator.dart';
+import 'state_machine.dart';
+import 'ttl_cache.dart';
+import 'worker_pool.dart';
+import 'workspace_session.dart';
+
 export 'backpressure_queue.dart';
 export 'cancellation_token.dart';
 export 'circuit_breaker.dart';
@@ -28,11 +50,12 @@ final appEventBusProvider = Provider<AppEventBus<Object>>((ref) {
   return bus;
 });
 
-final commandHistoryProvider = Provider<CommandHistory>((ref) => CommandHistory(capacity: 100));
+final commandHistoryProvider = Provider<CommandHistory>((ref) =>
+    CommandHistory(capacity: 100));
 
 final saveCoordinatorProvider = Provider<SaveCoordinator>((ref) {
   final coordinator = SaveCoordinator();
-  ref.onDispose(() => coordinator.dispose());
+  ref.onDispose(coordinator.dispose);
   return coordinator;
 });
 
@@ -48,8 +71,10 @@ final retryQueueProvider = Provider<RetryQueue>((ref) {
   return queue;
 });
 
-final recoveryJournalProvider = Provider<RecoveryJournal>((ref) => RecoveryJournal());
-final performanceMonitorProvider = Provider<PerformanceMonitor>((ref) => PerformanceMonitor());
+final recoveryJournalProvider = Provider<RecoveryJournal>((ref) =>
+    RecoveryJournal());
+final performanceMonitorProvider = Provider<PerformanceMonitor>((ref) =>
+    PerformanceMonitor());
 
 final notificationCenterProvider = Provider<NotificationCenter>((ref) {
   final center = NotificationCenter();
@@ -57,7 +82,8 @@ final notificationCenterProvider = Provider<NotificationCenter>((ref) {
   return center;
 });
 
-final workspaceSessionStoreProvider = Provider<WorkspaceSessionStore>((ref) => WorkspaceSessionStore());
+final workspaceSessionStoreProvider = Provider<WorkspaceSessionStore>((ref) =>
+    WorkspaceSessionStore());
 
 final cancellationTokenProvider = Provider<CancellationToken>((ref) {
   final token = CancellationToken();
@@ -71,7 +97,8 @@ final idempotencyStoreProvider = Provider<IdempotencyStore<Object?>>((ref) {
   return store;
 });
 
-final circuitBreakerProvider = Provider<CircuitBreaker>((ref) => CircuitBreaker());
+final circuitBreakerProvider = Provider<CircuitBreaker>((ref) =>
+    CircuitBreaker());
 
 final cacheProvider = Provider<TtlCache<String, Object?>>((ref) {
   final cache = TtlCache<String, Object?>();
@@ -80,7 +107,10 @@ final cacheProvider = Provider<TtlCache<String, Object?>>((ref) {
 });
 
 final rateLimiterProvider = Provider<SlidingWindowRateLimiter>((ref) =>
-    SlidingWindowRateLimiter(maxEvents: 20, window: const Duration(seconds: 1)));
+    SlidingWindowRateLimiter(
+      maxEvents: 20,
+      window: const Duration(seconds: 1),
+    ));
 
 final resourceLeaseProvider = Provider<ResourceLeaseManager>((ref) {
   final manager = ResourceLeaseManager();
