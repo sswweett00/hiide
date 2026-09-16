@@ -7,6 +7,12 @@ class LeaseUnavailableException implements Exception {
   String toString() => 'Resource lease unavailable: $key';
 }
 
+class _Lease {
+  _Lease(this.token, this.expiresAt);
+  final Object token;
+  DateTime expiresAt;
+}
+
 class ResourceLeaseManager {
   ResourceLeaseManager({this.defaultTtl = const Duration(seconds: 30)})
       : assert(defaultTtl > Duration.zero);
