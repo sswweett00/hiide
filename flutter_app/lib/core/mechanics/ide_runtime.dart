@@ -4,9 +4,9 @@ import 'mechanics.dart';
 
 /// Coordinates the production lifecycle of editor/workspace operations.
 ///
-/// The coordinator is intentionally UI-agnostic: screens can call the same
-/// methods and observe the event/notification stores without duplicating
-/// retry, recovery, conflict, or performance policy.
+/// The coordinator is UI-agnostic: screens can call the same methods and
+/// observe the event/notification stores without duplicating retry, recovery,
+/// conflict, or performance policy.
 class IdeRuntime {
   IdeRuntime({
     required this.events,
@@ -32,10 +32,6 @@ class IdeRuntime {
 
   bool _disposed = false;
 
-  /// Saves content with one bounded retry envelope and journals the latest
-  /// content before the write starts. Successful writes clear the recovery
-  /// record; failures remain recoverable and are surfaced to the notification
-  /// center without throwing away the user's latest buffer.
   Future<bool> saveFile({
     required String path,
     required String content,
@@ -43,34 +39,30 @@ class IdeRuntime {
   }) async {
     if (_disposed) return false;
 
-    recovery.put(path, content);
     final started = DateTime.now();
     var success = false;
     Object? failure;
 
     try {
+      await recovery.put(path, content);
       await performance.measureAsync('file.save', () async {
-        final completer = Completer<void>();
-        retries.enqueue(() async {
-          try {
-            await write();
-            if (!completer.isCompleted) completer.complete();
-          } catch (error, stack) {
-            failure = error;
-            if (retries.policy.maxAttempts <= 0 && !completer.isCompleted) {
-              completer.completeError(error, stack);
-            }
-            rethrow;
-          }
-        });
-        await completer.future;
+        await retries.enqueue(write);
       });
       success = true;
-      recovery.remove(path);
-      conflicts.clear(path);
+      await recovery.remove(path);
+      conflicts.resolve(path);
       notifications.dismiss('save:$path');
+      events.emit(IdeSavedEvent(path));
     } catch (error) {
       failure = error;
+      notifications.publish(
+        id: 'save:$path',
+        title: 'Save failed',
+        message: '$path could not be saved. Your recovery copy was kept.',
+        level: NotificationLevel.error,
+        persistent: true,
+      );
+      events.emit(IdeSaveFailedEvent(path, error.toString()));
     }
 
     commands.add(CommandRecord(
@@ -81,37 +73,21 @@ class IdeRuntime {
       success: success,
     ));
 
-    if (success) {
-      events.emit(IdeRuntimeEvent.saved(path));
-      return true;
-    }
-
-    final message = failure?.toString() ?? 'Unknown save error';
-    notifications.publish(
-      id: 'save:$path',
-      title: 'Save failed',
-      message: '$path could not be saved. Your recovery copy was kept.',
-      level: NotificationLevel.error,
-      persistent: true,
-    );
-    events.emit(IdeRuntimeEvent.saveFailed(path, message));
-    return false;
+    return success && failure == null;
   }
 
-  /// Records an external disk change against the current editor buffer.
-  /// Identical states are ignored; divergent states create one conflict.
   void reconcileExternalChange({
     required String path,
     required String diskContent,
     required String editorContent,
   }) {
     if (_disposed) return;
-    final conflict = conflicts.detect(
+    conflicts.detect(
       path: path,
       diskContent: diskContent,
       editorContent: editorContent,
     );
-    if (conflict == null) {
+    if (!conflicts.has(path)) {
       notifications.dismiss('conflict:$path');
       return;
     }
@@ -122,13 +98,13 @@ class IdeRuntime {
       level: NotificationLevel.warning,
       persistent: true,
     );
-    events.emit(IdeRuntimeEvent.conflict(path));
+    events.emit(IdeConflictEvent(path));
   }
 
   void rememberWorkspace(WorkspaceSession snapshot) {
     if (_disposed) return;
     session.set(snapshot);
-    events.emit(IdeRuntimeEvent.workspaceChanged(snapshot.root));
+    events.emit(IdeWorkspaceChangedEvent(snapshot.root));
   }
 
   Future<void> dispose() async {
@@ -141,13 +117,6 @@ class IdeRuntime {
 
 sealed class IdeRuntimeEvent {
   const IdeRuntimeEvent();
-
-  const factory IdeRuntimeEvent.saved(String path) = IdeSavedEvent;
-  const factory IdeRuntimeEvent.saveFailed(String path, String message) =
-      IdeSaveFailedEvent;
-  const factory IdeRuntimeEvent.conflict(String path) = IdeConflictEvent;
-  const factory IdeRuntimeEvent.workspaceChanged(String root) =
-      IdeWorkspaceChangedEvent;
 }
 
 final class IdeSavedEvent extends IdeRuntimeEvent {
