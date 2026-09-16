@@ -39,8 +39,7 @@ class TerminalService {
         if (dir.existsSync()) return dir.resolveSymbolicLinksSync();
       } catch (_) {}
     }
-    final cwd = Directory.current.path;
-    return cwd;
+    return Directory.current.path;
   }
 
   void setWorkingDirectory(String path) {
@@ -49,9 +48,7 @@ class TerminalService {
     if (requested.isEmpty) return;
     try {
       final dir = Directory(requested);
-      if (dir.existsSync()) {
-        _workingDirectory = dir.resolveSymbolicLinksSync();
-      }
+      if (dir.existsSync()) _workingDirectory = dir.resolveSymbolicLinksSync();
     } catch (_) {}
   }
 
@@ -60,68 +57,53 @@ class TerminalService {
     final normalized = command.trim();
     if (normalized.isEmpty) return;
     _remember(normalized);
-
     if (_handleBuiltin(normalized)) return;
     _addLine('\$ $command', TerminalLineType.command);
     await _runAndLog(command, timeout: null);
   }
 
-  Future<String> executeCapture(
-    String command, {
-    Duration timeout = const Duration(seconds: 60),
-  }) async {
+  Future<String> executeCapture(String command, {Duration timeout = const Duration(seconds: 60)}) async {
     if (_disposed) return '(error) terminal disposed';
     final normalized = command.trim();
     if (normalized.isEmpty) return '';
     _remember(normalized);
-
-    if (_handleBuiltin(normalized, capture: true)) {
+    if (_handleBuiltin(normalized)) {
       if (normalized == 'clear') return '(terminal cleared)';
-      if (normalized == 'cd') return 'Changed directory to $_workingDirectory';
-      if (normalized.startsWith('cd ')) return 'Changed directory to $_workingDirectory';
+      if (normalized == 'cd' || normalized.startsWith('cd ')) return 'Changed directory to $_workingDirectory';
       return '';
     }
-
     _addLine('\$ $command', TerminalLineType.command);
     return _runAndLog(command, timeout: timeout);
   }
 
-  bool _handleBuiltin(String command, {bool capture = false}) {
+  bool _handleBuiltin(String command) {
     if (command == 'clear') {
       _outputLog.clear();
       _addLine('\x1B[2J', TerminalLineType.info);
       return true;
     }
-
     if (command == 'cd' || command.startsWith('cd ')) {
       final target = command.length <= 2 ? '~' : command.substring(3).trim();
       final candidate = target == '~' || target == r'~/'
           ? (Platform.environment['HOME'] ?? _workingDirectory)
           : target;
-      final dir = Directory(_isAbsolute(candidate)
-          ? candidate
-          : '$_workingDirectory${Platform.pathSeparator}$candidate');
+      final dir = Directory(_isAbsolute(candidate) ? candidate : '$_workingDirectory${Platform.pathSeparator}$candidate');
       try {
         if (!dir.existsSync()) {
-          _addLine('\$ $command', TerminalLineType.command);
           _addLine('cd: no such file or directory: $target', TerminalLineType.stderr);
           return true;
         }
         _workingDirectory = dir.resolveSymbolicLinksSync();
-        _addLine('\$ $command', TerminalLineType.command);
         _addLine(_workingDirectory, TerminalLineType.info);
       } catch (error) {
         _addLine('cd: $error', TerminalLineType.stderr);
       }
       return true;
     }
-
     return false;
   }
 
-  bool _isAbsolute(String path) {
-    return path.startsWith('/') || RegExp(r'^[A-Za-z]:[\\/]').hasMatch(path);
-  }
+  bool _isAbsolute(String path) => path.startsWith('/') || RegExp(r'^[A-Za-z]:[\\/]').hasMatch(path);
 
   void _remember(String command) {
     if (_cmdHistory.isNotEmpty && _cmdHistory.last == command) {
@@ -129,25 +111,16 @@ class TerminalService {
       return;
     }
     _cmdHistory.add(command);
-    if (_cmdHistory.length > _maxHistory) {
-      _cmdHistory.removeAt(0);
-    }
+    if (_cmdHistory.length > _maxHistory) _cmdHistory.removeAt(0);
     _historyIndex = _cmdHistory.length;
   }
 
   Future<String> _runAndLog(String command, {Duration? timeout}) async {
-    if (_disposed) return '(error) terminal disposed';
-
-    late final Process process;
+    Process? process;
     try {
       final executable = Platform.isWindows ? 'cmd.exe' : 'bash';
       final arguments = Platform.isWindows ? <String>['/C', command] : <String>['-lc', command];
-      process = await Process.start(
-        executable,
-        arguments,
-        workingDirectory: _workingDirectory,
-        runInShell: false,
-      );
+      process = await Process.start(executable, arguments, workingDirectory: _workingDirectory, runInShell: false);
       _activeProcesses.add(process);
 
       final stdoutBuffer = StringBuffer();
@@ -165,28 +138,21 @@ class TerminalService {
         }
       }).asFuture<void>();
 
-      bool timedOut = false;
-      int exitCode;
-      try {
-        exitCode = timeout == null
-            ? await process.exitCode
-            : await process.exitCode.timeout(timeout, onTimeout: () {
-                timedOut = true;
-                process.kill();
-                return -1;
-              });
-      } finally {
-        _activeProcesses.remove(process);
-        await Future.wait<void>([stdoutDone, stderrDone]).timeout(
-          const Duration(seconds: 1),
-          onTimeout: () => <void>[],
-        );
-      }
+      var timedOut = false;
+      final exitCode = timeout == null
+          ? await process.exitCode
+          : await process.exitCode.timeout(timeout, onTimeout: () {
+              timedOut = true;
+              process!.kill();
+              return -1;
+            });
+
+      _activeProcesses.remove(process);
+      await Future.wait<void>([stdoutDone, stderrDone]).timeout(const Duration(seconds: 1), onTimeout: () => <void>[]);
 
       final stdout = stdoutBuffer.toString().trimRight();
       final stderr = stderrBuffer.toString().trimRight();
       final combined = [if (stdout.isNotEmpty) stdout, if (stderr.isNotEmpty) stderr].join('\n');
-
       if (timedOut) {
         final seconds = timeout?.inSeconds ?? 0;
         _addLine('Command timed out after ${seconds}s', TerminalLineType.stderr);
@@ -198,7 +164,7 @@ class TerminalService {
       }
       return combined.isEmpty ? '(command completed with no output)' : combined;
     } catch (error) {
-      _activeProcesses.remove(process);
+      if (process != null) _activeProcesses.remove(process);
       _addLine('Error: $error', TerminalLineType.stderr);
       return '(error) $error';
     }
@@ -215,11 +181,10 @@ class TerminalService {
 
   void _addLine(String text, TerminalLineType type) {
     if (_disposed) return;
-    _outputLog.add(TerminalLine(text: text, type: type));
-    if (_outputLog.length > _maxOutputLines) {
-      _outputLog.removeRange(0, _outputLog.length - _maxOutputLines);
-    }
-    if (!_controller.isClosed) _controller.add(_outputLog.last);
+    final line = TerminalLine(text: text, type: type);
+    _outputLog.add(line);
+    if (_outputLog.length > _maxOutputLines) _outputLog.removeRange(0, _outputLog.length - _maxOutputLines);
+    if (!_controller.isClosed) _controller.add(line);
   }
 
   String? navigateHistory(bool up) {
@@ -240,9 +205,7 @@ class TerminalService {
     if (_disposed) return;
     _disposed = true;
     for (final process in List<Process>.from(_activeProcesses)) {
-      try {
-        process.kill();
-      } catch (_) {}
+      try { process.kill(); } catch (_) {}
     }
     _activeProcesses.clear();
     await _controller.close();
