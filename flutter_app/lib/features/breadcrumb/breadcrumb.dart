@@ -35,10 +35,11 @@ class Breadcrumb extends ConsumerWidget {
       segments.addAll(relative.split('/').where((s) => s.isNotEmpty));
     }
 
+    final workspaceParts =
+        currentWorkspace.split('/').where((s) => s.isNotEmpty).toList();
     final workspaceName = currentWorkspace.isEmpty
         ? 'Workspace'
-        : currentWorkspace.split('/').where((s) => s.isNotEmpty).lastOrNull ??
-            currentWorkspace;
+        : (workspaceParts.isEmpty ? currentWorkspace : workspaceParts.last);
 
     return Container(
       height: 30,
@@ -110,7 +111,8 @@ class _CrumbText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Flexible(
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 220),
       child: Text(
         text,
         maxLines: 1,
@@ -132,7 +134,11 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Icon(Icons.chevron_right, size: 13, color: Theme.of(context).colorScheme.outline),
+      child: Icon(
+        Icons.chevron_right,
+        size: 13,
+        color: Theme.of(context).colorScheme.outline,
+      ),
     );
   }
 }
