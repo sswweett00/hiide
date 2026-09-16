@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,13 +22,13 @@ ThemeData _resolveDarkTheme(AppThemePreference preference) {
     AppThemePreference.dark => AppThemes.darkTheme,
     AppThemePreference.oledBlack => AppThemes.oledBlackTheme,
     AppThemePreference.highContrast => AppThemes.highContrastTheme,
-    AppThemePreference.light => AppThemes.darkTheme,
+    AppThemePreference.light => AppThemes.lightTheme,
   };
 }
 
 /// Connects to the native Zig engine (hiide-ipc-server on 127.0.0.1:4879).
 /// Falls back to the in-memory mock when the engine is not running so the IDE
-/// stays usable offline.
+/// stays usable without the native process.
 Future<BackendService> _createBackendService() async {
   if (kIsWeb) return MockBackendService();
 
@@ -62,8 +64,12 @@ Future<void> main() async {
     debugPrint('Could not restore workspace: $e');
   }
 
-  // Restore the last UI style (AI-native chat vs classic IDE shell) so the
-  // app reopens in the layout the user left it in.
+  // No developer-specific absolute path is used as the production fallback.
+  // When there is no persisted workspace yet, start from the process working
+  // directory on desktop; the normal workspace picker can immediately replace
+  // it with an explicit project folder.
+  final fallbackWorkspace = kIsWeb ? '/' : Directory.current.path;
+
   var uiMode = UiMode.ide;
   try {
     uiMode = await settingsService.getUiMode();
@@ -71,7 +77,6 @@ Future<void> main() async {
     debugPrint('Could not restore UI mode: $e');
   }
 
-  // Restore the auto-save preference.
   var autoSave = true;
   try {
     autoSave = await settingsService.getAutoSave();
@@ -79,7 +84,6 @@ Future<void> main() async {
     debugPrint('Could not restore auto-save: $e');
   }
 
-  // Restore editor preferences (font size, tab size, word wrap, minimap).
   double fontSize = 14.0;
   int tabSize = 4;
   bool wordWrap = false;
@@ -97,7 +101,6 @@ Future<void> main() async {
     minimap = await settingsService.getMinimap();
   } catch (_) {}
 
-  // Restore AI provider settings.
   String aiProviderId = 'groq';
   String openaiKey = '';
   String anthropicKey = '';
@@ -118,18 +121,19 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       overrides: [
-        if (workspaceRoot != null)
-          workspaceRootProvider.overrideWith((ref) => workspaceRoot!),
+        workspaceRootProvider.overrideWith(
+          (ref) => workspaceRoot ?? fallbackWorkspace,
+        ),
         workspaceRestoredProvider.overrideWith((ref) => restoredWorkspace),
         uiModeProvider.overrideWith((ref) => uiMode),
         autoSaveEnabledProvider.overrideWith((ref) => autoSave),
-        editorFontSizeProvider.overrideWith((ref) => fontSize),
-        editorTabSizeProvider.overrideWith((ref) => tabSize),
+        editorFontSizeProvider.overrideWith((ref) => fontSize.clamp(10.0, 32.0)),
+        editorTabSizeProvider.overrideWith((ref) => tabSize.clamp(1, 16)),
         editorWordWrapProvider.overrideWith((ref) => wordWrap),
         settingsProvider.overrideWith((ref) => {
           'theme': 'Dark',
-          'fontSize': fontSize.toInt(),
-          'tabSize': tabSize,
+          'fontSize': fontSize.clamp(10.0, 32.0).toInt(),
+          'tabSize': tabSize.clamp(1, 16),
           'wordWrap': wordWrap,
           'minimap': minimap,
           'aiSuggestions': true,
