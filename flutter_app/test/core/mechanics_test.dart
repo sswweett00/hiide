@@ -6,28 +6,15 @@ void main() {
   test('command history stays bounded and most recent first', () {
     final history = CommandHistory(capacity: 2);
     final now = DateTime(2026, 1, 1);
-    history.add(CommandRecord(
-      id: 'a',
-      label: 'A',
-      startedAt: now,
-      duration: Duration.zero,
-      success: true,
-    ));
-    history.add(CommandRecord(
-      id: 'b',
-      label: 'B',
-      startedAt: now,
-      duration: Duration.zero,
-      success: true,
-    ));
-    history.add(CommandRecord(
-      id: 'c',
-      label: 'C',
-      startedAt: now,
-      duration: Duration.zero,
-      success: true,
-    ));
-
+    for (final id in ['a', 'b', 'c']) {
+      history.add(CommandRecord(
+        id: id,
+        label: id.toUpperCase(),
+        startedAt: now,
+        duration: Duration.zero,
+        success: true,
+      ));
+    }
     expect(history.items.map((e) => e.id), ['c', 'b']);
   });
 
@@ -55,7 +42,6 @@ void main() {
       monitor.measureAsync('async-failure', () async => throw StateError('x')),
       throwsStateError,
     );
-
     expect(monitor.statsFor('sync')?.count, 1);
     expect(monitor.statsFor('async-failure')?.failures, 1);
   });
@@ -65,7 +51,6 @@ void main() {
     center.publish(id: 'x', title: 'Old', message: '1');
     center.publish(id: 'x', title: 'New', message: '2', persistent: true);
     center.publish(id: 'y', title: 'Y', message: '3');
-
     expect(center.items.length, 2);
     expect(center.items.first.title, 'Y');
     expect(center.items.last.message, '2');
@@ -82,11 +67,10 @@ void main() {
     coordinator.schedule(() async => saves++);
     await Future<void>.delayed(const Duration(milliseconds: 20));
     await coordinator.dispose();
-
     expect(saves, 1);
   });
 
-  test('retry queue retries bounded transient failures', () async {
+  test('retry queue propagates terminal failures', () async {
     final queue = RetryQueue(
       policy: const RetryPolicy(
         maxAttempts: 3,
@@ -95,13 +79,31 @@ void main() {
       ),
     );
     var attempts = 0;
-    queue.enqueue(() async {
-      attempts++;
-      if (attempts < 3) throw StateError('retry');
-    });
-    await Future<void>.delayed(const Duration(milliseconds: 30));
-    await queue.dispose();
-
+    await expectLater(
+      queue.enqueue(() async {
+        attempts++;
+        throw StateError('retry');
+      }),
+      throwsStateError,
+    );
     expect(attempts, 3);
+    await queue.dispose();
+  });
+
+  test('retry queue completes successfully after transient failures', () async {
+    final queue = RetryQueue(
+      policy: const RetryPolicy(
+        maxAttempts: 3,
+        baseDelay: Duration(milliseconds: 1),
+        maxDelay: Duration(milliseconds: 2),
+      ),
+    );
+    var attempts = 0;
+    await queue.enqueue(() async {
+      attempts++;
+      if (attempts < 3) throw StateError('transient');
+    });
+    expect(attempts, 3);
+    await queue.dispose();
   });
 }
