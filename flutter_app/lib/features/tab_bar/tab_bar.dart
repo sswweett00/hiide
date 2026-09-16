@@ -31,85 +31,69 @@ class _TabBarState extends ConsumerState<TabBar> {
     );
   }
 
-  void _setTabs(List<EditorTab> tabs) {
-    ref.read(openTabsProvider.notifier).state = tabs;
-    final activeId = ref.read(activeTabIdProvider);
-    if (tabs.isEmpty) {
-      ref.read(activeTabIdProvider.notifier).state = null;
-    } else if (activeId == null || !tabs.any((tab) => tab.id == activeId)) {
-      ref.read(activeTabIdProvider.notifier).state = tabs.last.id;
-    }
-  }
-
   void _closeTab(EditorTab tab) {
     final tabs = ref.read(openTabsProvider);
-    final index = tabs.indexWhere((t) => t.id == tab.id);
     final activeId = ref.read(activeTabIdProvider);
+    final index = tabs.indexWhere((t) => t.id == tab.id);
     if (index < 0) return;
 
-    final nextTabs = [...tabs]..removeAt(index);
-    ref.read(openTabsProvider.notifier).state = nextTabs;
+    final newTabs = tabs.where((t) => t.id != tab.id).toList();
+    ref.read(openTabsProvider.notifier).state = newTabs;
 
     if (activeId == tab.id) {
-      if (nextTabs.isEmpty) {
+      if (newTabs.isEmpty) {
         ref.read(activeTabIdProvider.notifier).state = null;
       } else {
-        final nextIndex = (index - 1).clamp(0, nextTabs.length - 1);
-        ref.read(activeTabIdProvider.notifier).state = nextTabs[nextIndex].id;
+        final nextIndex = index >= newTabs.length ? newTabs.length - 1 : index;
+        ref.read(activeTabIdProvider.notifier).state = newTabs[nextIndex].id;
       }
     }
   }
 
-  void _showContextMenu(BuildContext context, EditorTab tab) {
+  void _closeOthers(EditorTab tab) {
     final tabs = ref.read(openTabsProvider);
-    showModalBottomSheet<void>(
+    if (!tabs.any((item) => item.id == tab.id)) return;
+    ref.read(openTabsProvider.notifier).state = [tab];
+    ref.read(activeTabIdProvider.notifier).state = tab.id;
+  }
+
+  void _closeToRight(EditorTab tab) {
+    final tabs = ref.read(openTabsProvider);
+    final index = tabs.indexWhere((item) => item.id == tab.id);
+    if (index < 0) return;
+
+    final remaining = tabs.sublist(0, index + 1);
+    ref.read(openTabsProvider.notifier).state = remaining;
+    if (!remaining.any((item) => item.id == ref.read(activeTabIdProvider))) {
+      ref.read(activeTabIdProvider.notifier).state = tab.id;
+    }
+  }
+
+  void _showContextMenu(BuildContext context, EditorTab tab, Offset position) {
+    showMenu<String>(
       context: context,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      builder: (sheetContext) {
-        final cs = Theme.of(sheetContext).colorScheme;
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: Icon(tab.icon ?? Icons.description_outlined),
-                title: Text(tab.title, overflow: TextOverflow.ellipsis),
-                subtitle: tab.isModified ? const Text('Unsaved changes') : null,
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.close),
-                title: const Text('Close'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _closeTab(tab);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.layers_clear_outlined),
-                title: const Text('Close Others'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _setTabs([tab]);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.last_page_outlined),
-                title: const Text('Close to the Right'),
-                enabled: tabs.indexOf(tab) < tabs.length - 1,
-                textColor: cs.onSurface,
-                onTap: () {
-                  final index = tabs.indexOf(tab);
-                  if (index < 0) return;
-                  Navigator.pop(sheetContext);
-                  _setTabs(tabs.sublist(0, index + 1));
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        position.dx + 1,
+        position.dy + 1,
+      ),
+      items: const [
+        PopupMenuItem(value: 'close', child: Text('Close')),
+        PopupMenuItem(value: 'close_others', child: Text('Close Others')),
+        PopupMenuItem(value: 'close_right', child: Text('Close to the Right')),
+      ],
+    ).then((value) {
+      if (!mounted) return;
+      switch (value) {
+        case 'close':
+          _closeTab(tab);
+        case 'close_others':
+          _closeOthers(tab);
+        case 'close_right':
+          _closeToRight(tab);
+      }
+    });
   }
 
   @override
@@ -131,7 +115,6 @@ class _TabBarState extends ConsumerState<TabBar> {
           Expanded(
             child: Scrollbar(
               controller: _scrollController,
-              thumbVisibility: false,
               child: ListView.separated(
                 controller: _scrollController,
                 scrollDirection: Axis.horizontal,
@@ -144,7 +127,8 @@ class _TabBarState extends ConsumerState<TabBar> {
                     tab: tab,
                     isActive: tab.id == activeId,
                     onClose: () => _closeTab(tab),
-                    onContextMenu: () => _showContextMenu(context, tab),
+                    onContextMenu: (position) =>
+                        _showContextMenu(context, tab, position),
                   );
                 },
               ),
@@ -179,7 +163,7 @@ class _TabItem extends StatefulWidget {
   final EditorTab tab;
   final bool isActive;
   final VoidCallback onClose;
-  final VoidCallback onContextMenu;
+  final ValueChanged<Offset> onContextMenu;
 
   const _TabItem({
     required this.tab,
@@ -198,6 +182,7 @@ class _TabItemState extends State<_TabItem> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final ref = ProviderScope.containerOf(context);
     final active = widget.isActive;
 
     return MouseRegion(
@@ -205,10 +190,9 @@ class _TabItemState extends State<_TabItem> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTap: () => ProviderScope.containerOf(context)
-            .read(activeTabIdProvider.notifier)
-            .state = widget.tab.id,
-        onSecondaryTap: widget.onContextMenu,
+        onTap: () => ref.read(activeTabIdProvider.notifier).state = widget.tab.id,
+        onSecondaryTapDown: (details) =>
+            widget.onContextMenu(details.globalPosition),
         child: AnimatedContainer(
           duration: DesignTokens.durationFast,
           curve: DesignTokens.curveStandard,
@@ -219,15 +203,14 @@ class _TabItemState extends State<_TabItem> {
                 ? cs.surface
                 : (_hovered
                     ? cs.surfaceContainerHighest.withValues(alpha: 0.72)
-                    : cs.surfaceContainerHighest.withValues(alpha: 0.3)),
+                    : cs.surfaceContainerHighest.withValues(alpha: 0.30)),
             border: Border(
               top: BorderSide(
                 color: active ? cs.primary : Colors.transparent,
                 width: 2,
               ),
               right: BorderSide(
-                color: cs.outlineVariant.withValues(alpha: 0.55),
-              ),
+                  color: cs.outlineVariant.withValues(alpha: 0.55)),
             ),
           ),
           child: Row(
@@ -253,7 +236,7 @@ class _TabItemState extends State<_TabItem> {
                 ),
               ),
               const SizedBox(width: 4),
-              if (widget.tab.isModified && !(_hovered || active))
+              if (widget.tab.isModified && !_hovered)
                 Icon(Icons.circle, size: 6, color: cs.tertiary)
               else
                 InkWell(
