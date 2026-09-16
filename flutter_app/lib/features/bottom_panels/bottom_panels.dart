@@ -15,12 +15,12 @@ class BottomPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = ref.watch(selectedBottomPanelProvider);
-    final height = ref.watch(bottomPanelHeightProvider);
+    final height = ref.watch(bottomPanelHeightProvider).clamp(140.0, 520.0);
     final cs = Theme.of(context).colorScheme;
     if (selected == null) return const SizedBox.shrink();
 
     return SizedBox(
-      height: height.clamp(140.0, 520.0),
+      height: height,
       child: Container(
         decoration: BoxDecoration(
           color: cs.surface,
@@ -28,6 +28,32 @@ class BottomPanel extends ConsumerWidget {
         ),
         child: Column(
           children: [
+            MouseRegion(
+              cursor: SystemMouseCursors.resizeUpDown,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onVerticalDragUpdate: (details) {
+                  final current = ref.read(bottomPanelHeightProvider);
+                  ref.read(bottomPanelHeightProvider.notifier).state =
+                      (current - details.delta.dy).clamp(140.0, 520.0);
+                },
+                onDoubleTap: () =>
+                    ref.read(bottomPanelHeightProvider.notifier).state = 220,
+                child: SizedBox(
+                  height: 6,
+                  child: Center(
+                    child: Container(
+                      width: 44,
+                      height: 2,
+                      decoration: BoxDecoration(
+                        color: cs.outline,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
             SizedBox(
               height: 34,
               child: Row(
