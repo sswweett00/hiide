@@ -9,14 +9,20 @@ class RetryPolicy {
     this.maxAttempts = 4,
     this.baseDelay = const Duration(milliseconds: 250),
     this.maxDelay = const Duration(seconds: 5),
-  }) : assert(maxAttempts > 0),
-       assert(baseDelay >= Duration.zero),
-       assert(maxDelay >= Duration.zero);
+  }) : assert(maxAttempts > 0);
+
+  bool get isValid =>
+      maxAttempts > 0 &&
+      baseDelay >= Duration.zero &&
+      maxDelay >= Duration.zero;
 }
 
 class RetryQueue {
   RetryQueue({this.policy = const RetryPolicy(), this.concurrency = 1})
-      : assert(concurrency > 0);
+      : assert(concurrency > 0),
+        assert(policy.baseDelay.inMilliseconds >= 0),
+        assert(policy.maxDelay.inMilliseconds >= 0),
+        assert(policy.maxAttempts > 0);
 
   final RetryPolicy policy;
   final int concurrency;
