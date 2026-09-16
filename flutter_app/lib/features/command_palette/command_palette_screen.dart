@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/design_system/tokens.dart';
+import '../../shared/models/editor_tab.dart';
 import '../../shared/providers/editor_providers.dart';
 import '../bottom_panels/bottom_panels.dart';
 import '../../shared/widgets/ai_widgets.dart';
@@ -75,9 +76,7 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final commands = ref.watch(commandPaletteFilterProvider);
-    if (_selectedIndex >= commands.length && commands.isNotEmpty) {
-      _selectedIndex = commands.length - 1;
-    }
+    if (_selectedIndex >= commands.length && commands.isNotEmpty) _selectedIndex = commands.length - 1;
 
     return Focus(
       autofocus: true,
@@ -127,11 +126,10 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
                 itemCount: commands.length,
                 itemBuilder: (context, index) {
                   final command = commands[index];
-                  final selected = index == _selectedIndex;
                   return _CommandItem(
                     label: command['label']!,
                     shortcut: command['shortcut']!,
-                    selected: selected,
+                    selected: index == _selectedIndex,
                     onTap: () {
                       Navigator.of(context).pop();
                       _executeCommand(context, ref, command['label']!);
@@ -155,7 +153,7 @@ Future<void> _saveActiveTab(WidgetRef ref, BuildContext context) async {
   if (index < 0) return;
   final tab = tabs[index];
   if (tab.path == null || tab.path!.isEmpty || tab.title.startsWith('Untitled')) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This tab has no file path yet.')));
+    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This tab has no file path yet.')));
     return;
   }
   try {
@@ -209,8 +207,7 @@ void _executeCommand(BuildContext context, WidgetRef ref, String label) {
       break;
     case 'View: Toggle Minimap':
       final settings = Map<String, dynamic>.from(ref.read(settingsProvider));
-      final current = settings['minimap'] == true;
-      settings['minimap'] = !current;
+      settings['minimap'] = !(settings['minimap'] == true);
       ref.read(settingsProvider.notifier).state = settings;
       break;
     case 'File: Save':
