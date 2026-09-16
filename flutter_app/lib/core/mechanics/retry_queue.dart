@@ -9,7 +9,7 @@ class RetryPolicy {
     this.maxAttempts = 4,
     this.baseDelay = const Duration(milliseconds: 250),
     this.maxDelay = const Duration(seconds: 5),
-  });
+  }) : assert(maxAttempts > 0);
 }
 
 class RetryQueue {
@@ -27,7 +27,7 @@ class RetryQueue {
   void enqueue(Future<void> Function() task) {
     if (_disposed) return;
     _queue.add(task);
-    _drain();
+    unawaited(_drain());
   }
 
   Future<void> _drain() async {
@@ -36,31 +36,25 @@ class RetryQueue {
       _running++;
       unawaited(_run(task).whenComplete(() {
         _running--;
-        _drain();
+        unawaited(_drain());
       }));
     }
   }
 
   Future<void> _run(Future<void> Function() task) async {
-    Object? lastError;
     for (var attempt = 1; attempt <= policy.maxAttempts; attempt++) {
       try {
         await task();
         return;
-      } catch (error) {
-        lastError = error;
-        if (attempt == policy.maxAttempts || _disposed) break;
+      } catch (_) {
+        if (attempt == policy.maxAttempts || _disposed) return;
         final factor = 1 << (attempt - 1);
-        final delay = Duration(
-          milliseconds: (policy.baseDelay.inMilliseconds * factor)
-              .clamp(0, policy.maxDelay.inMilliseconds),
-        );
-        await Future<void>.delayed(delay);
+        final millis = (policy.baseDelay.inMilliseconds * factor)
+            .clamp(0, policy.maxDelay.inMilliseconds)
+            .toInt();
+        await Future<void>.delayed(Duration(milliseconds: millis));
       }
     }
-    // The queue intentionally swallows failures after bounded retries. The
-    // caller owns user-facing error reporting and can enqueue its own event.
-    if (lastError != null) return;
   }
 
   Future<void> dispose() async {
