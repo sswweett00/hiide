@@ -31,21 +31,85 @@ class _TabBarState extends ConsumerState<TabBar> {
     );
   }
 
+  void _setTabs(List<EditorTab> tabs) {
+    ref.read(openTabsProvider.notifier).state = tabs;
+    final activeId = ref.read(activeTabIdProvider);
+    if (tabs.isEmpty) {
+      ref.read(activeTabIdProvider.notifier).state = null;
+    } else if (activeId == null || !tabs.any((tab) => tab.id == activeId)) {
+      ref.read(activeTabIdProvider.notifier).state = tabs.last.id;
+    }
+  }
+
   void _closeTab(EditorTab tab) {
     final tabs = ref.read(openTabsProvider);
-    final activeId = ref.read(activeTabIdProvider);
     final index = tabs.indexWhere((t) => t.id == tab.id);
-    final newTabs = tabs.where((t) => t.id != tab.id).toList();
-    ref.read(openTabsProvider.notifier).state = newTabs;
+    final activeId = ref.read(activeTabIdProvider);
+    if (index < 0) return;
+
+    final nextTabs = [...tabs]..removeAt(index);
+    ref.read(openTabsProvider.notifier).state = nextTabs;
 
     if (activeId == tab.id) {
-      if (newTabs.isEmpty) {
+      if (nextTabs.isEmpty) {
         ref.read(activeTabIdProvider.notifier).state = null;
       } else {
-        final nextIndex = index >= newTabs.length ? newTabs.length - 1 : index;
-        ref.read(activeTabIdProvider.notifier).state = newTabs[nextIndex].id;
+        final nextIndex = (index - 1).clamp(0, nextTabs.length - 1);
+        ref.read(activeTabIdProvider.notifier).state = nextTabs[nextIndex].id;
       }
     }
+  }
+
+  void _showContextMenu(BuildContext context, EditorTab tab) {
+    final tabs = ref.read(openTabsProvider);
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      builder: (sheetContext) {
+        final cs = Theme.of(sheetContext).colorScheme;
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(tab.icon ?? Icons.description_outlined),
+                title: Text(tab.title, overflow: TextOverflow.ellipsis),
+                subtitle: tab.isModified ? const Text('Unsaved changes') : null,
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.close),
+                title: const Text('Close'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _closeTab(tab);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.layers_clear_outlined),
+                title: const Text('Close Others'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _setTabs([tab]);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.last_page_outlined),
+                title: const Text('Close to the Right'),
+                enabled: tabs.indexOf(tab) < tabs.length - 1,
+                textColor: cs.onSurface,
+                onTap: () {
+                  final index = tabs.indexOf(tab);
+                  if (index < 0) return;
+                  Navigator.pop(sheetContext);
+                  _setTabs(tabs.sublist(0, index + 1));
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -80,6 +144,7 @@ class _TabBarState extends ConsumerState<TabBar> {
                     tab: tab,
                     isActive: tab.id == activeId,
                     onClose: () => _closeTab(tab),
+                    onContextMenu: () => _showContextMenu(context, tab),
                   );
                 },
               ),
@@ -114,8 +179,14 @@ class _TabItem extends StatefulWidget {
   final EditorTab tab;
   final bool isActive;
   final VoidCallback onClose;
+  final VoidCallback onContextMenu;
 
-  const _TabItem({required this.tab, required this.isActive, required this.onClose});
+  const _TabItem({
+    required this.tab,
+    required this.isActive,
+    required this.onClose,
+    required this.onContextMenu,
+  });
 
   @override
   State<_TabItem> createState() => _TabItemState();
@@ -127,7 +198,6 @@ class _TabItemState extends State<_TabItem> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ref = ProviderScope.containerOf(context);
     final active = widget.isActive;
 
     return MouseRegion(
@@ -135,8 +205,10 @@ class _TabItemState extends State<_TabItem> {
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTap: () => ref.read(activeTabIdProvider.notifier).state = widget.tab.id,
-        onSecondaryTap: () => widget.onClose(),
+        onTap: () => ProviderScope.containerOf(context)
+            .read(activeTabIdProvider.notifier)
+            .state = widget.tab.id,
+        onSecondaryTap: widget.onContextMenu,
         child: AnimatedContainer(
           duration: DesignTokens.durationFast,
           curve: DesignTokens.curveStandard,
@@ -153,7 +225,9 @@ class _TabItemState extends State<_TabItem> {
                 color: active ? cs.primary : Colors.transparent,
                 width: 2,
               ),
-              right: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.55)),
+              right: BorderSide(
+                color: cs.outlineVariant.withValues(alpha: 0.55),
+              ),
             ),
           ),
           child: Row(
@@ -179,7 +253,7 @@ class _TabItemState extends State<_TabItem> {
                 ),
               ),
               const SizedBox(width: 4),
-              if (widget.tab.isModified && !_hovered)
+              if (widget.tab.isModified && !(_hovered || active))
                 Icon(Icons.circle, size: 6, color: cs.tertiary)
               else
                 InkWell(
@@ -209,7 +283,11 @@ class _TabAction extends StatelessWidget {
   final String tooltip;
   final VoidCallback onTap;
 
-  const _TabAction({required this.icon, required this.tooltip, required this.onTap});
+  const _TabAction({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
