@@ -15,55 +15,59 @@ class BottomPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = ref.watch(selectedBottomPanelProvider);
+    final height = ref.watch(bottomPanelHeightProvider);
     final cs = Theme.of(context).colorScheme;
     if (selected == null) return const SizedBox.shrink();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: cs.surface,
-        border: Border(top: BorderSide(color: cs.outlineVariant)),
-      ),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 34,
-            child: Row(
-              children: [
-                const SizedBox(width: 8),
-                _PanelTab(label: 'TERMINAL', value: 'terminal', selected: selected),
-                _PanelTab(label: 'PROBLEMS', value: 'problems', selected: selected),
-                _PanelTab(label: 'OUTPUT', value: 'output', selected: selected),
-                _PanelTab(label: 'DEBUG CONSOLE', value: 'debug', selected: selected),
-                const Spacer(),
-                Tooltip(
-                  message: 'Close panel',
-                  child: IconButton(
-                    icon: Icon(Icons.close, size: 16, color: cs.onSurfaceVariant),
-                    onPressed: () => ref.read(selectedBottomPanelProvider.notifier).state = null,
-                    padding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
+    return SizedBox(
+      height: height.clamp(140.0, 520.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: cs.surface,
+          border: Border(top: BorderSide(color: cs.outlineVariant)),
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 34,
+              child: Row(
+                children: [
+                  const SizedBox(width: 8),
+                  _PanelTab(label: 'TERMINAL', value: 'terminal', selected: selected),
+                  _PanelTab(label: 'PROBLEMS', value: 'problems', selected: selected),
+                  _PanelTab(label: 'OUTPUT', value: 'output', selected: selected),
+                  _PanelTab(label: 'DEBUG CONSOLE', value: 'debug', selected: selected),
+                  const Spacer(),
+                  Tooltip(
+                    message: 'Close panel',
+                    child: IconButton(
+                      icon: Icon(Icons.close, size: 16, color: cs.onSurfaceVariant),
+                      onPressed: () => ref.read(selectedBottomPanelProvider.notifier).state = null,
+                      padding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: cs.surfaceContainerHighest.withValues(alpha: 0.28),
-                border: Border(top: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.55))),
+                  const SizedBox(width: 4),
+                ],
               ),
-              child: switch (selected) {
-                'problems' => const TodoIssuesPanel(),
-                'terminal' => const TerminalScreen(),
-                'output' => const _InlineOutputScreen(),
-                'debug' => const _InlineDebugScreen(),
-                _ => const SizedBox.shrink(),
-              },
             ),
-          ),
-        ],
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainerHighest.withValues(alpha: 0.28),
+                  border: Border(top: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.55))),
+                ),
+                child: switch (selected) {
+                  'problems' => const TodoIssuesPanel(),
+                  'terminal' => const TerminalScreen(),
+                  'output' => const _InlineOutputScreen(),
+                  'debug' => const _InlineDebugScreen(),
+                  _ => const SizedBox.shrink(),
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
