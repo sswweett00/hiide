@@ -17,14 +17,26 @@ class CancellationToken {
     if (!_controller.isClosed) _controller.add(null);
   }
 
-  Future<T> race<T>(Future<T> future) async {
-    if (_cancelled) throw const CancellationException();
-    final cancellation = onCancel.first.then<T>((_) => throw const CancellationException());
-    try {
-      return await Future.any<T>(<Future<T>>[future, cancellation]);
-    } finally {
-      await cancellation.catchError((_) {});
-    }
+  Future<T> race<T>(Future<T> future) {
+    if (_cancelled) return Future<T>.error(const CancellationException());
+    final completer = Completer<T>();
+    late StreamSubscription<void> subscription;
+    subscription = onCancel.listen((_) {
+      if (!completer.isCompleted) {
+        completer.completeError(const CancellationException());
+      }
+    });
+
+    future.then(
+      (value) {
+        if (!completer.isCompleted) completer.complete(value);
+      },
+      onError: (Object error, StackTrace stack) {
+        if (!completer.isCompleted) completer.completeError(error, stack);
+      },
+    );
+
+    return completer.future.whenComplete(subscription.cancel);
   }
 
   Future<void> dispose() async {
