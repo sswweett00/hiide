@@ -5,6 +5,8 @@ import '../../core/providers/backend_provider.dart';
 import '../../shared/models/editor_tab.dart';
 import '../../shared/providers/editor_providers.dart';
 
+final statusAiThinkingProvider = StateProvider<bool>((ref) => false);
+
 class StatusBar extends ConsumerWidget {
   const StatusBar({super.key});
 
@@ -13,7 +15,7 @@ class StatusBar extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final cursorLine = ref.watch(cursorLineProvider);
     final cursorColumn = ref.watch(cursorColumnProvider);
-    final isThinking = ref.watch(isAiThinkingProvider);
+    final isThinking = ref.watch(statusAiThinkingProvider);
     final activeId = ref.watch(activeTabIdProvider);
     final tabs = ref.watch(openTabsProvider);
     EditorTab? active;
@@ -112,7 +114,6 @@ class _StatusItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color? tone;
-
   const _StatusItem({required this.icon, required this.label, this.tone});
 
   @override
