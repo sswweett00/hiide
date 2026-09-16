@@ -8,3 +8,4 @@ export 'theme/app_themes.dart';
 export 'providers/theme_provider.dart';
 export 'routing/router.dart';
 export 'localization/app_localizations.dart';
+export 'mechanics/mechanics.dart';
