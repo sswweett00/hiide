@@ -1,19 +1,50 @@
+# Zig build/cache output
 zig-out/
 .zig-cache/
 .zig-global-cache/
+
+# Flutter / Dart generated state
+.dart-tool/
+.dartServer/
+.packages
+.pub-cache/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Node / frontend build output
 node_modules/
 dist/
+build/
 target/
 
-# stray build artifacts in repo root
+# IDE/editor generated metadata
+.idea/
+.vscode/
+
+# Local tool state / caches
+.config/flutter/tool_state
+.freebuff/
+.kilo/
+.kilocode/
+
+# Crash dumps / temporary output
+*.log
+*.tmp
+*.swp
+core
+
+# Native build artifacts
 *.a
 *.a.o
 *.so
 *.dylib
 *.dll
+*.exe
 
-# secrets
+# Secrets / local credentials
 groq-api-key
 .env
-.freebuff/
-.freebuff/
+.env.*
+!.env.example
+*.pem
+*.key
