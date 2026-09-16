@@ -2,10 +2,9 @@
     .name = .hiide,
     .fingerprint = 0x5201b8c307e8d497,
     .version = "0.1.0",
-    // The compatibility layer uses the post-0.16 std.Io APIs and raw Linux
-    // shims for APIs removed in Zig 0.17. Keep the build contract explicit
-    // instead of advertising an older, incompatible compiler floor.
-    .minimum_zig_version = "0.17.0",
+    // Hiide uses the std.Io-based filesystem APIs introduced in Zig 0.16.
+    // Keep the minimum compiler contract aligned with the latest stable SDK.
+    .minimum_zig_version = "0.16.0",
     .dependencies = .{},
     .paths = .{
         "build.zig",
