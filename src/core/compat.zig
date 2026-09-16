@@ -161,10 +161,6 @@ pub const Condition = struct {
     }
 };
 
-// ── Managed ArrayList (drop-in for the removed std.ArrayList in 0.17) ──────
-// In Zig 0.17 std.ArrayList(T) became the unmanaged variant. This re-adds
-// the managed API that the existing codebase depends on: .init(alloc),
-// .append(item), .deinit(), .items field access, etc.
 pub fn ManagedArrayList(comptime T: type) type {
     return struct {
         items: []T,
@@ -219,9 +215,6 @@ pub fn ManagedArrayList(comptime T: type) type {
             return .{ .context = self };
         }
 
-        /// Minimal `std.Io.Writer`-compatible writer that appends into the list.
-        /// `print` formats into a temporary allocating writer, then copies the
-        /// result into the list (correctness over raw throughput).
         pub const Writer = struct {
             context: *@This(),
 
@@ -245,9 +238,6 @@ pub fn ManagedArrayList(comptime T: type) type {
     };
 }
 
-// ── JSON serialization (std.json.stringify / stringifyAlloc removed in 0.17) ─
-
-/// Serializes `value` to an allocator-owned JSON string.
 pub fn jsonStringifyAlloc(
     allocator: std.mem.Allocator,
     value: anytype,
@@ -258,8 +248,6 @@ pub fn jsonStringifyAlloc(
     try out.writer.print("{f}", .{std.json.fmt(value, options)});
     return out.toOwnedSlice();
 }
-
-// ── Time ────────────────────────────────────────────────────────────────────
 
 pub fn milliTimestamp() i64 {
     if (builtin.os.tag == .linux) {
@@ -284,9 +272,6 @@ pub fn sleep(ms: u64) void {
     }
 }
 
-/// Reads an environment variable without libc (std.posix.getenv was removed in
-/// Zig 0.17) by parsing /proc/self/environ directly. Returns an owned copy, or
-/// null when the variable is unset / the platform isn't Linux.
 pub fn getEnvAlloc(allocator: std.mem.Allocator, name: []const u8) ?[]u8 {
     if (builtin.os.tag != .linux) return null;
     const fd = linux.open("/proc/self/environ", .{ .ACCMODE = .RDONLY }, 0);
@@ -316,14 +301,10 @@ pub fn getEnvAlloc(allocator: std.mem.Allocator, name: []const u8) ?[]u8 {
     return null;
 }
 
-// ── Filesystem ──────────────────────────────────────────────────────────────
-
 pub fn cwd() std.Io.Dir {
     return std.Io.Dir.cwd();
 }
 
-/// Resolves a path relative to the current working directory.
-/// Uses getcwd + path.join, which is sufficient for workspace roots.
 pub fn realpathAlloc(allocator: std.mem.Allocator, rel_path: []const u8) ![:0]u8 {
     if (builtin.os.tag == .linux) {
         var buf: [4096]u8 = undefined;
@@ -334,8 +315,6 @@ pub fn realpathAlloc(allocator: std.mem.Allocator, rel_path: []const u8) ![:0]u8
     }
     return error.NotFound;
 }
-
-// ── Process spawning (raw Linux) ────────────────────────────────────────────
 
 pub const ChildResult = struct {
     stdout: []u8,
@@ -348,11 +327,7 @@ pub const ChildResult = struct {
     }
 };
 
-/// Spawns a child process, captures stdout/stderr, and waits for completion.
-/// Uses raw Linux syscalls (fork + execve + pipe + waitpid) to avoid the
-/// `std.Io` dependency that Zig 0.17 requires for `std.process.Child`.
 pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !ChildResult {
-    // Create pipes for stdout and stderr
     var stdout_pipe: [2]i32 = undefined;
     var stderr_pipe: [2]i32 = undefined;
     if (linux.pipe(&stdout_pipe) != 0) return error.PipeFailed;
@@ -363,7 +338,6 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     }
 
     const pid_result = linux.fork();
-    // fork() returns usize: 0 = child, positive PID = parent, large value = error.
     if (pid_result > @as(usize, @intCast(std.math.maxInt(i32) - 1))) {
         _ = linux.close(stdout_pipe[0]);
         _ = linux.close(stdout_pipe[1]);
@@ -373,58 +347,52 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     }
 
     if (pid_result == 0) {
-    // Child process
-    _ = linux.close(stdout_pipe[0]);
-    _ = linux.close(stderr_pipe[0]);
-    _ = linux.dup2(stdout_pipe[1], 1);
-    _ = linux.dup2(stderr_pipe[1], 2);
-    _ = linux.close(stdout_pipe[1]);
-    _ = linux.close(stderr_pipe[1]);
+        _ = linux.close(stdout_pipe[0]);
+        _ = linux.close(stderr_pipe[0]);
+        _ = linux.dup2(stdout_pipe[1], 1);
+        _ = linux.dup2(stderr_pipe[1], 2);
+        _ = linux.close(stdout_pipe[1]);
+        _ = linux.close(stderr_pipe[1]);
 
-    // Build null-terminated argv
-    var args_buf: [64][]const u8 = undefined;
-    const argc = @min(argv.len, args_buf.len);
-    for (argv[0..argc], 0..) |arg, i| {
-        args_buf[i] = arg;
-    }
+        var args_buf: [64][]const u8 = undefined;
+        const argc = @min(argv.len, args_buf.len);
+        for (argv[0..argc], 0..) |arg, i| {
+            args_buf[i] = arg;
+        }
 
-    // execve needs null-terminated strings
-    var arg_zs: [64][:0]const u8 = undefined;
-    for (args_buf[0..argc], 0..) |arg, i| {
-        arg_zs[i] = try std.heap.page_allocator.dupeSentinel(u8, arg, 0);
-    }
+        var arg_zs: [64][:0]const u8 = undefined;
+        for (args_buf[0..argc], 0..) |arg, i| {
+            arg_zs[i] = try std.heap.page_allocator.dupeSentinel(u8, arg, 0);
+        }
 
-    var ptrs: [65:null]?[*:0]const u8 = undefined;
-    for (arg_zs[0..argc], 0..) |arg, i| {
-        ptrs[i] = arg.ptr;
-    }
-    ptrs[argc] = null;
+        var ptrs: [65:null]?[*:0]const u8 = undefined;
+        for (arg_zs[0..argc], 0..) |arg, i| {
+            ptrs[i] = arg.ptr;
+        }
+        ptrs[argc] = null;
 
-    // Find the binary in PATH
-    const default_path = "/usr/bin:/bin";
-    const path_env = getEnvAlloc(std.heap.page_allocator, "PATH") orelse default_path;
-    defer if (path_env.ptr != default_path.ptr) std.heap.page_allocator.free(path_env);
-    var path_iter = std.mem.splitScalar(u8, path_env, ':');
-    while (path_iter.next()) |dir| {
-        const full_path = std.fs.path.join(std.heap.page_allocator, &.{ dir, argv[0] }) catch continue;
-        defer std.heap.page_allocator.free(full_path);
-        const path_z = std.heap.page_allocator.dupeSentinel(u8, full_path, 0) catch continue;
-        defer std.heap.page_allocator.free(path_z);
+        const default_path = "/usr/bin:/bin";
+        const path_env = getEnvAlloc(std.heap.page_allocator, "PATH") orelse default_path;
+        defer if (path_env.ptr != default_path.ptr) std.heap.page_allocator.free(path_env);
+        var path_iter = std.mem.splitScalar(u8, path_env, ':');
+        while (path_iter.next()) |dir| {
+            const full_path = std.fs.path.join(std.heap.page_allocator, &.{ dir, argv[0] }) catch continue;
+            defer std.heap.page_allocator.free(full_path);
+            const path_z = std.heap.page_allocator.dupeSentinel(u8, full_path, 0) catch continue;
+            defer std.heap.page_allocator.free(path_z);
 
-        const envp = [_:null]?[*:0]const u8{null};
-        _ = linux.execve(path_z.ptr, &ptrs, &envp);
-    }
+            const envp = [_:null]?[*:0]const u8{null};
+            _ = linux.execve(path_z.ptr, &ptrs, &envp);
+        }
 
-        // exec failed
         linux.exit(127);
     }
 
-    // Parent process
     _ = linux.close(stdout_pipe[1]);
     _ = linux.close(stderr_pipe[1]);
 
     var stdout_list = std.ArrayList(u8).initCapacity(allocator, 4096) catch {
-        var dummy: i32 = 0;
+        var dummy: u32 = 0;
         _ = linux.close(stdout_pipe[0]);
         _ = linux.close(stderr_pipe[0]);
         _ = linux.waitpid(@intCast(pid_result), &dummy, 0);
@@ -433,7 +401,7 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     defer stdout_list.deinit(allocator);
 
     var stderr_list = std.ArrayList(u8).initCapacity(allocator, 4096) catch {
-        var dummy: i32 = 0;
+        var dummy: u32 = 0;
         _ = linux.close(stdout_pipe[0]);
         _ = linux.close(stderr_pipe[0]);
         _ = linux.waitpid(@intCast(pid_result), &dummy, 0);
@@ -441,7 +409,6 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     };
     defer stderr_list.deinit(allocator);
 
-    // Read stdout
     var buf: [4096]u8 = undefined;
     while (true) {
         const n = linux.read(stdout_pipe[0], &buf, buf.len);
@@ -450,7 +417,6 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     }
     _ = linux.close(stdout_pipe[0]);
 
-    // Read stderr
     while (true) {
         const n = linux.read(stderr_pipe[0], &buf, buf.len);
         if (n == 0 or n > buf.len) break;
@@ -458,10 +424,9 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     }
     _ = linux.close(stderr_pipe[0]);
 
-    // Wait for child
-    var status_raw: i32 = 0;
+    var status_raw: u32 = 0;
     _ = linux.waitpid(@intCast(pid_result), &status_raw, 0);
-    const status: u32 = @bitCast(status_raw);
+    const status: u32 = status_raw;
 
     return .{
         .stdout = try stdout_list.toOwnedSlice(allocator),
