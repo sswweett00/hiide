@@ -1,3 +1,9 @@
+import 'dart:async';
+
+import 'cancellation_token.dart';
+import 'circuit_breaker.dart';
+import 'rate_limiter.dart';
+
 enum FailureCode {
   cancelled,
   timeout,
@@ -44,7 +50,6 @@ class HiideFailure implements Exception {
       return HiideFailure(
         code: FailureCode.cancelled,
         message: 'Operation cancelled',
-        retryable: false,
         cause: error,
         stackTrace: stack,
       );
@@ -70,7 +75,6 @@ class HiideFailure implements Exception {
     return HiideFailure(
       code: FailureCode.unknown,
       message: error.toString(),
-      retryable: false,
       cause: error,
       stackTrace: stack,
     );
