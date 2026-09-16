@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-/// A single line of terminal output, tagged with its type.
 class TerminalLine {
   final String text;
   final TerminalLineType type;
@@ -12,183 +12,239 @@ class TerminalLine {
 enum TerminalLineType { command, stdout, stderr, info }
 
 class TerminalService {
+  TerminalService({String? workingDirectory})
+      : _workingDirectory = _validDirectory(workingDirectory);
+
+  static const int _maxOutputLines = 2000;
+  static const int _maxHistory = 200;
+
   final _controller = StreamController<TerminalLine>.broadcast();
-  final List<TerminalLine> _outputLog = [];
-  final List<String> _cmdHistory = [];
+  final List<TerminalLine> _outputLog = <TerminalLine>[];
+  final List<String> _cmdHistory = <String>[];
+  final Set<Process> _activeProcesses = <Process>{};
   int _historyIndex = -1;
-  String _workingDirectory = '/home/kaan';
+  String _workingDirectory;
+  bool _disposed = false;
 
   Stream<TerminalLine> get lineStream => _controller.stream;
+  List<TerminalLine> get outputLog => List<TerminalLine>.unmodifiable(_outputLog);
+  List<String> get history => List<String>.unmodifiable(_cmdHistory);
+  String get workingDirectory => _workingDirectory;
 
-  /// All output lines ever written — used to rebuild the UI on first mount.
-  List<TerminalLine> get outputLog => List.unmodifiable(_outputLog);
-
-  /// Command history (for up/down arrow navigation).
-  List<String> get history => List.unmodifiable(_cmdHistory);
-
-  void setWorkingDirectory(String path) {
-    _workingDirectory = path;
+  static String _validDirectory(String? requested) {
+    final path = requested?.trim();
+    if (path != null && path.isNotEmpty) {
+      try {
+        final dir = Directory(path);
+        if (dir.existsSync()) return dir.resolveSymbolicLinksSync();
+      } catch (_) {}
+    }
+    final cwd = Directory.current.path;
+    return cwd;
   }
 
-  /// Runs [command] and logs it (and its output) to the terminal panel.
-  Future<void> execute(String command) async {
-    _cmdHistory.add(command);
-    _historyIndex = _cmdHistory.length;
-
-    // Handle built-in `cd` command
-    if (command.trim().startsWith('cd ')) {
-      final target = command.trim().substring(3).trim();
-      final newPath =
-          target.startsWith('/') ? target : '$_workingDirectory/$target';
-      final dir = Directory(newPath);
-      if (await dir.exists()) {
+  void setWorkingDirectory(String path) {
+    if (_disposed) return;
+    final requested = path.trim();
+    if (requested.isEmpty) return;
+    try {
+      final dir = Directory(requested);
+      if (dir.existsSync()) {
         _workingDirectory = dir.resolveSymbolicLinksSync();
-        _addLine('\$ $command', TerminalLineType.command);
-        _addLine('$_workingDirectory', TerminalLineType.info);
-      } else {
-        _addLine('\$ $command', TerminalLineType.command);
-        _addLine(
-            'cd: no such file or directory: $target', TerminalLineType.stderr);
       }
-      return;
-    }
+    } catch (_) {}
+  }
 
-    if (command.trim() == 'clear') {
-      _outputLog.clear();
-      // Emit a special clear signal
-      _addLine('\x1B[2J', TerminalLineType.info);
-      return;
-    }
+  Future<void> execute(String command) async {
+    if (_disposed) return;
+    final normalized = command.trim();
+    if (normalized.isEmpty) return;
+    _remember(normalized);
 
+    if (_handleBuiltin(normalized)) return;
     _addLine('\$ $command', TerminalLineType.command);
-    // No Dart-side timeout here: the UI path must not leave a pending timer
-    // (widget tests assert no timers are pending after the tree is disposed).
     await _runAndLog(command, timeout: null);
   }
 
-  /// Runs [command], logs it to the terminal panel, and returns the combined
-  /// stdout + stderr text so the AI agent can react to the output.
-  /// [timeout] guards against commands that hang the agent loop.
   Future<String> executeCapture(
     String command, {
     Duration timeout = const Duration(seconds: 60),
   }) async {
-    _cmdHistory.add(command);
-    _historyIndex = _cmdHistory.length;
+    if (_disposed) return '(error) terminal disposed';
+    final normalized = command.trim();
+    if (normalized.isEmpty) return '';
+    _remember(normalized);
 
-    // Handle built-in `cd` command
-    if (command.trim().startsWith('cd ')) {
-      final target = command.trim().substring(3).trim();
-      final newPath =
-          target.startsWith('/') ? target : '$_workingDirectory/$target';
-      final dir = Directory(newPath);
-      if (await dir.exists()) {
-        _workingDirectory = dir.resolveSymbolicLinksSync();
-        _addLine('\$ $command', TerminalLineType.command);
-        _addLine('$_workingDirectory', TerminalLineType.info);
-        return 'Changed directory to $_workingDirectory';
-      }
-      _addLine('\$ $command', TerminalLineType.command);
-      _addLine(
-          'cd: no such file or directory: $target', TerminalLineType.stderr);
-      return '(error) cd: no such file or directory: $target';
-    }
-
-    if (command.trim() == 'clear') {
-      _outputLog.clear();
-      _addLine('\x1B[2J', TerminalLineType.info);
-      return '(terminal cleared)';
+    if (_handleBuiltin(normalized, capture: true)) {
+      if (normalized == 'clear') return '(terminal cleared)';
+      if (normalized == 'cd') return 'Changed directory to $_workingDirectory';
+      if (normalized.startsWith('cd ')) return 'Changed directory to $_workingDirectory';
+      return '';
     }
 
     _addLine('\$ $command', TerminalLineType.command);
-    try {
-      final output = await _runAndLog(command, timeout: timeout);
-      return output;
-    } catch (e) {
-      _addLine('Error: $e', TerminalLineType.stderr);
-      return '(error) $e';
-    }
+    return _runAndLog(command, timeout: timeout);
   }
 
-  /// Shared process runner: logs the command + output and returns the combined
-  /// text output ('' on failure or empty output). A null [timeout] runs without
-  /// a Dart-side timer (used by the interactive UI path).
-  Future<String> _runAndLog(
-    String command, {
-    Duration? timeout,
-  }) async {
+  bool _handleBuiltin(String command, {bool capture = false}) {
+    if (command == 'clear') {
+      _outputLog.clear();
+      _addLine('\x1B[2J', TerminalLineType.info);
+      return true;
+    }
+
+    if (command == 'cd' || command.startsWith('cd ')) {
+      final target = command.length <= 2 ? '~' : command.substring(3).trim();
+      final candidate = target == '~' || target == r'~/'
+          ? (Platform.environment['HOME'] ?? _workingDirectory)
+          : target;
+      final dir = Directory(_isAbsolute(candidate)
+          ? candidate
+          : '$_workingDirectory${Platform.pathSeparator}$candidate');
+      try {
+        if (!dir.existsSync()) {
+          _addLine('\$ $command', TerminalLineType.command);
+          _addLine('cd: no such file or directory: $target', TerminalLineType.stderr);
+          return true;
+        }
+        _workingDirectory = dir.resolveSymbolicLinksSync();
+        _addLine('\$ $command', TerminalLineType.command);
+        _addLine(_workingDirectory, TerminalLineType.info);
+      } catch (error) {
+        _addLine('cd: $error', TerminalLineType.stderr);
+      }
+      return true;
+    }
+
+    return false;
+  }
+
+  bool _isAbsolute(String path) {
+    return path.startsWith('/') || RegExp(r'^[A-Za-z]:[\\/]').hasMatch(path);
+  }
+
+  void _remember(String command) {
+    if (_cmdHistory.isNotEmpty && _cmdHistory.last == command) {
+      _historyIndex = _cmdHistory.length;
+      return;
+    }
+    _cmdHistory.add(command);
+    if (_cmdHistory.length > _maxHistory) {
+      _cmdHistory.removeAt(0);
+    }
+    _historyIndex = _cmdHistory.length;
+  }
+
+  Future<String> _runAndLog(String command, {Duration? timeout}) async {
+    if (_disposed) return '(error) terminal disposed';
+
+    late final Process process;
     try {
-      var process = Process.run(
-        'bash',
-        ['-c', command],
+      final executable = Platform.isWindows ? 'cmd.exe' : 'bash';
+      final arguments = Platform.isWindows ? <String>['/C', command] : <String>['-lc', command];
+      process = await Process.start(
+        executable,
+        arguments,
         workingDirectory: _workingDirectory,
         runInShell: false,
       );
-      if (timeout != null) {
-        process = process.timeout(timeout);
-      }
-      final result = await process;
+      _activeProcesses.add(process);
 
-      final stdout = result.stdout.toString().trimRight();
-      final stderr = result.stderr.toString().trimRight();
-
-      if (stdout.isNotEmpty) {
-        for (final line in stdout.split('\n')) {
-          _addLine(line, TerminalLineType.stdout);
+      final stdoutBuffer = StringBuffer();
+      final stderrBuffer = StringBuffer();
+      final stdoutDone = process.stdout.transform(utf8.decoder).listen((chunk) {
+        stdoutBuffer.write(chunk);
+        for (final line in chunk.split('\n')) {
+          if (line.isNotEmpty) _addLine(line, TerminalLineType.stdout);
         }
-      }
-      if (stderr.isNotEmpty) {
-        for (final line in stderr.split('\n')) {
-          _addLine(line, TerminalLineType.stderr);
+      }).asFuture<void>();
+      final stderrDone = process.stderr.transform(utf8.decoder).listen((chunk) {
+        stderrBuffer.write(chunk);
+        for (final line in chunk.split('\n')) {
+          if (line.isNotEmpty) _addLine(line, TerminalLineType.stderr);
         }
+      }).asFuture<void>();
+
+      bool timedOut = false;
+      int exitCode;
+      try {
+        exitCode = timeout == null
+            ? await process.exitCode
+            : await process.exitCode.timeout(timeout, onTimeout: () {
+                timedOut = true;
+                process.kill();
+                return -1;
+              });
+      } finally {
+        _activeProcesses.remove(process);
+        await Future.wait<void>([stdoutDone, stderrDone]).timeout(
+          const Duration(seconds: 1),
+          onTimeout: () => <void>[],
+        );
       }
 
-      final combined = [
-        if (stdout.isNotEmpty) stdout,
-        if (stderr.isNotEmpty) stderr,
-      ].join('\n');
+      final stdout = stdoutBuffer.toString().trimRight();
+      final stderr = stderrBuffer.toString().trimRight();
+      final combined = [if (stdout.isNotEmpty) stdout, if (stderr.isNotEmpty) stderr].join('\n');
+
+      if (timedOut) {
+        final seconds = timeout?.inSeconds ?? 0;
+        _addLine('Command timed out after ${seconds}s', TerminalLineType.stderr);
+        return '(error) Command timed out after ${seconds}s';
+      }
+      if (exitCode != 0) {
+        _addLine('Command exited with code $exitCode', TerminalLineType.stderr);
+        return combined.isEmpty ? '(error) exit code $exitCode' : '(error) $combined';
+      }
       return combined.isEmpty ? '(command completed with no output)' : combined;
-    } on TimeoutException {
-      final seconds = timeout?.inSeconds ?? 0;
-      _addLine('Command timed out after ${seconds}s', TerminalLineType.stderr);
-      return '(error) Command timed out after ${seconds}s';
-    } catch (e) {
-      _addLine('Error: $e', TerminalLineType.stderr);
-      return '(error) $e';
+    } catch (error) {
+      _activeProcesses.remove(process);
+      _addLine('Error: $error', TerminalLineType.stderr);
+      return '(error) $error';
     }
   }
 
-  /// Publishes a command the AI agent ran (through the Zig engine) into the
-  /// terminal panel so the user can see what the agent did. The command itself
-  /// is executed by the engine — this only mirrors it for display.
   void logAgentRun(String command, String output) {
+    if (_disposed) return;
+    _remember(command);
     _addLine('\$ $command', TerminalLineType.command);
-    if (output.trim().isEmpty) return;
     for (final line in output.split('\n')) {
-      _addLine(line, TerminalLineType.stdout);
+      if (line.isNotEmpty) _addLine(line, TerminalLineType.stdout);
     }
   }
 
   void _addLine(String text, TerminalLineType type) {
-    final line = TerminalLine(text: text, type: type);
-    _outputLog.add(line);
-    if (!_controller.isClosed) {
-      _controller.add(line);
+    if (_disposed) return;
+    _outputLog.add(TerminalLine(text: text, type: type));
+    if (_outputLog.length > _maxOutputLines) {
+      _outputLog.removeRange(0, _outputLog.length - _maxOutputLines);
     }
+    if (!_controller.isClosed) _controller.add(_outputLog.last);
   }
 
   String? navigateHistory(bool up) {
     if (_cmdHistory.isEmpty) return null;
     if (up) {
       if (_historyIndex > 0) _historyIndex--;
-    } else {
-      if (_historyIndex < _cmdHistory.length - 1) _historyIndex++;
+      return _cmdHistory[_historyIndex];
     }
-    if (_historyIndex < 0 || _historyIndex >= _cmdHistory.length) return null;
-    return _cmdHistory[_historyIndex];
+    if (_historyIndex < _cmdHistory.length - 1) {
+      _historyIndex++;
+      return _cmdHistory[_historyIndex];
+    }
+    _historyIndex = _cmdHistory.length;
+    return '';
   }
 
-  void dispose() {
-    _controller.close();
+  Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
+    for (final process in List<Process>.from(_activeProcesses)) {
+      try {
+        process.kill();
+      } catch (_) {}
+    }
+    _activeProcesses.clear();
+    await _controller.close();
   }
 }
