@@ -2,11 +2,6 @@ import 'dart:async';
 
 import 'mechanics.dart';
 
-/// Coordinates the production lifecycle of editor/workspace operations.
-///
-/// The coordinator is UI-agnostic: screens can call the same methods and
-/// observe the event/notification stores without duplicating retry, recovery,
-/// conflict, or performance policy.
 class IdeRuntime {
   IdeRuntime({
     required this.events,
@@ -41,25 +36,21 @@ class IdeRuntime {
 
     final started = DateTime.now();
     var success = false;
-    Object? failure;
 
     try {
       await recovery.put(path, content);
-      await performance.measureAsync('file.save', () async {
-        await retries.enqueue(write);
-      });
+      await performance.measureAsync('file.save', () => retries.enqueue(write));
       success = true;
       await recovery.remove(path);
       conflicts.resolve(path);
       notifications.dismiss('save:$path');
       events.emit(IdeSavedEvent(path));
     } catch (error) {
-      failure = error;
       notifications.publish(
         id: 'save:$path',
         title: 'Save failed',
         message: '$path could not be saved. Your recovery copy was kept.',
-        level: NotificationLevel.error,
+        level: AppNotificationLevel.error,
         persistent: true,
       );
       events.emit(IdeSaveFailedEvent(path, error.toString()));
@@ -73,7 +64,7 @@ class IdeRuntime {
       success: success,
     ));
 
-    return success && failure == null;
+    return success;
   }
 
   void reconcileExternalChange({
@@ -95,7 +86,7 @@ class IdeRuntime {
       id: 'conflict:$path',
       title: 'External change detected',
       message: '$path changed on disk while you have local edits.',
-      level: NotificationLevel.warning,
+      level: AppNotificationLevel.warning,
       persistent: true,
     );
     events.emit(IdeConflictEvent(path));
