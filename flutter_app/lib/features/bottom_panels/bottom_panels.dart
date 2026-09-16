@@ -5,6 +5,7 @@ import '../problems/todo_panel.dart';
 import '../terminal/terminal_screen.dart';
 import '../output/output_screen.dart';
 import '../debug/debug_screen.dart';
+import '../chat/ai_chat_sidebar.dart';
 
 final selectedBottomPanelProvider = StateProvider<String?>((ref) => null);
 final bottomPanelHeightProvider = StateProvider<double>((ref) => 220);
@@ -63,6 +64,7 @@ class BottomPanel extends ConsumerWidget {
                   _PanelTab(label: 'PROBLEMS', value: 'problems', selected: selected),
                   _PanelTab(label: 'OUTPUT', value: 'output', selected: selected),
                   _PanelTab(label: 'DEBUG CONSOLE', value: 'debug', selected: selected),
+                  _PanelTab(label: 'AI CHAT', value: 'ai_chat', selected: selected),
                   const Spacer(),
                   Tooltip(
                     message: 'Close panel',
@@ -88,6 +90,7 @@ class BottomPanel extends ConsumerWidget {
                   'terminal' => const TerminalScreen(),
                   'output' => const _InlineOutputScreen(),
                   'debug' => const _InlineDebugScreen(),
+                  'ai_chat' => const AiChatSidebar(),
                   _ => const SizedBox.shrink(),
                 },
               ),
