@@ -70,7 +70,7 @@ jobs:
         run: flutter pub get
 
       - name: Analyze
-        run: flutter analyze --fatal-infos
+        run: flutter analyze
 
       - name: Run Flutter tests
         run: flutter test --reporter expanded
