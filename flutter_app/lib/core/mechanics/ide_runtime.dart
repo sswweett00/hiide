@@ -94,8 +94,8 @@ class IdeRuntime {
 
   void rememberWorkspace(WorkspaceSession snapshot) {
     if (_disposed) return;
-    session.set(snapshot);
-    events.emit(IdeWorkspaceChangedEvent(snapshot.root));
+    unawaited(session.save(snapshot));
+    events.emit(IdeWorkspaceChangedEvent(snapshot.workspace));
   }
 
   Future<void> dispose() async {
@@ -127,6 +127,6 @@ final class IdeConflictEvent extends IdeRuntimeEvent {
 }
 
 final class IdeWorkspaceChangedEvent extends IdeRuntimeEvent {
-  const IdeWorkspaceChangedEvent(this.root);
-  final String root;
+  const IdeWorkspaceChangedEvent(this.workspace);
+  final String workspace;
 }
