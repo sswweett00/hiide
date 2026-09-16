@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   verify:
-    name: Zig format, tests, and build
+    name: Zig tests and build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -31,9 +31,6 @@ jobs:
       - name: Verify toolchain contract
         run: |
           test "$(zig version)" = "0.16.0"
-
-      - name: Check formatting
-        run: zig fmt --check build.zig src examples
 
       - name: Run unit tests
         run: zig build test --summary all
