@@ -17,7 +17,6 @@ final isSearchingProvider = StateProvider<bool>((ref) => false);
 const _searchDebounce = Duration(milliseconds: 300);
 const _maxResults = 100;
 const _maxFiles = 500;
-const _maxFileBytes = 1024 * 1024;
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -126,10 +125,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         if (item.isFile) {
           scannedFiles++;
           try {
-            final size = await File(item.path).length();
-            if (size > _maxFileBytes) continue;
-          } catch (_) {}
-          try {
             final content = await workspace.readFile(item.path);
             final lines = content.split('\n');
             for (var i = 0; i < lines.length && results.length < _maxResults; i++) {
@@ -151,9 +146,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       }
     }
 
-    if (items.isNotEmpty && !identical(items, const [])) {
-      await walk(items);
-    }
+    await walk(items);
   }
 
   Future<void> _openSearchResult(Map<String, dynamic> result) async {
@@ -162,9 +155,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final workspace = ref.read(workspaceServiceProvider);
     final content = await _safeRead(workspace, path);
     if (content == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('File could not be read.')));
-      }
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('File could not be read.')));
       return;
     }
 
@@ -218,7 +209,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 prefixIcon: Icon(Icons.search, size: DesignTokens.iconMD, color: cs.onSurfaceVariant),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(icon: const Icon(Icons.clear), onPressed: _searchController.clear)
-                    : IconButton(icon: const Icon(Icons.arrow_forward), onPressed: () => _onSearchChanged()),
+                    : IconButton(icon: const Icon(Icons.arrow_forward), onPressed: _onSearchChanged),
               ),
             ),
           ),
