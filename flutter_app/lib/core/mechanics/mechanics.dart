@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'command_history.dart';
 export 'conflict_tracker.dart';
 export 'event_bus.dart';
+export 'ide_runtime.dart';
 export 'notification_center.dart';
 export 'performance_monitor.dart';
 export 'recovery_journal.dart';
@@ -38,13 +39,8 @@ final retryQueueProvider = Provider<RetryQueue>((ref) {
   return queue;
 });
 
-final recoveryJournalProvider = Provider<RecoveryJournal>((ref) {
-  return RecoveryJournal();
-});
-
-final performanceMonitorProvider = Provider<PerformanceMonitor>((ref) {
-  return PerformanceMonitor();
-});
+final recoveryJournalProvider = Provider<RecoveryJournal>((ref) => RecoveryJournal());
+final performanceMonitorProvider = Provider<PerformanceMonitor>((ref) => PerformanceMonitor());
 
 final notificationCenterProvider = Provider<NotificationCenter>((ref) {
   final center = NotificationCenter();
@@ -54,4 +50,20 @@ final notificationCenterProvider = Provider<NotificationCenter>((ref) {
 
 final workspaceSessionStoreProvider = Provider<WorkspaceSessionStore>((ref) {
   return WorkspaceSessionStore();
+});
+
+final ideRuntimeProvider = Provider<IdeRuntime>((ref) {
+  final runtime = IdeRuntime(
+    events: ref.read(appEventBusProvider),
+    commands: ref.read(commandHistoryProvider),
+    saves: ref.read(saveCoordinatorProvider),
+    conflicts: ref.read(conflictTrackerProvider),
+    retries: ref.read(retryQueueProvider),
+    recovery: ref.read(recoveryJournalProvider),
+    performance: ref.read(performanceMonitorProvider),
+    notifications: ref.read(notificationCenterProvider),
+    session: ref.read(workspaceSessionStoreProvider),
+  );
+  ref.onDispose(runtime.dispose);
+  return runtime;
 });
