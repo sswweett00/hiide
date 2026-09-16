@@ -1,6 +1,7 @@
 /// Policy engine per spec §3: deny-by-default, compiled IR, audit ledger.
 /// Policy files (YAML/TOML) are loaded as rules and compiled to a flat IR
-/// for fast evaluation. The audit ledger is hash-chained and append-only.
+/// for deterministic evaluation. The audit ledger is hash-chained and
+/// tamper-evident.
 const std = @import("std");
 const classifier = @import("classifier.zig");
 
@@ -40,12 +41,9 @@ pub const AuditRecord = struct {
     decision: Decision,
 };
 
-/// A single compiled policy rule.
 pub const PolicyRule = struct {
     id: []const u8,
-    /// Minimum classification that triggers this rule.
     min_classification: classifier.Classification,
-    /// Actions this rule applies to ("*" matches all).
     action_pattern: []const u8,
     decision: Decision,
     redaction_profile_id: ?[]const u8,
@@ -58,11 +56,15 @@ pub const PolicyError = error{
     InvalidRule,
 };
 
-/// Compiled policy IR evaluated with deny-by-default semantics.
-/// @example
-/// var engine = PolicyEngine.init(alloc);
-/// try engine.loadRule(.{ .id = "deny-secrets", .min_classification = .secret, ... });
-/// const verdict = try engine.evaluate(input);
+fn decisionPrecedence(decision: Decision) u8 {
+    return switch (decision) {
+        .allow => 0,
+        .redact => 1,
+        .require_approval => 2,
+        .deny => 3,
+    };
+}
+
 pub const PolicyEngine = struct {
     allocator: std.mem.Allocator,
     rules: std.ArrayListUnmanaged(PolicyRule),
@@ -76,11 +78,7 @@ pub const PolicyEngine = struct {
         self.* = undefined;
     }
 
-    /// Loads a default permissive ruleset for local development.
-    /// @example
-    /// try engine.loadDefaults();
     pub fn loadDefaults(self: *PolicyEngine) !void {
-        // Allow all public/internal actions.
         try self.rules.append(self.allocator, .{
             .id = "allow-public",
             .min_classification = .public,
@@ -89,7 +87,6 @@ pub const PolicyEngine = struct {
             .redaction_profile_id = null,
             .reason = "public content is unrestricted",
         });
-        // Redact confidential content before sending to external providers.
         try self.rules.append(self.allocator, .{
             .id = "redact-confidential",
             .min_classification = .confidential,
@@ -98,7 +95,6 @@ pub const PolicyEngine = struct {
             .redaction_profile_id = "default",
             .reason = "confidential content must be redacted before provider egress",
         });
-        // Deny regulated/secret content from any external egress.
         try self.rules.append(self.allocator, .{
             .id = "deny-secret-egress",
             .min_classification = .regulated,
@@ -107,7 +103,6 @@ pub const PolicyEngine = struct {
             .redaction_profile_id = null,
             .reason = "regulated/secret content may not be sent to external providers",
         });
-        // Filesystem writes outside workspace need approval.
         try self.rules.append(self.allocator, .{
             .id = "approve-fs-outside-workspace",
             .min_classification = .public,
@@ -118,40 +113,29 @@ pub const PolicyEngine = struct {
         });
     }
 
-    /// Appends a compiled rule.
     pub fn loadRule(self: *PolicyEngine, rule: PolicyRule) !void {
+        if (rule.id.len == 0 or rule.action_pattern.len == 0 or rule.reason.len == 0) {
+            return PolicyError.InvalidRule;
+        }
         try self.rules.append(self.allocator, rule);
     }
 
-    /// Evaluates the policy IR for a given input. Deny-by-default.
-    /// @example
-    /// const verdict = try engine.evaluate(input);
+    /// Evaluates all matching rules and chooses the most restrictive decision.
+    /// Unmatched actions remain denied.
     pub fn evaluate(self: *const PolicyEngine, input: PolicyInput) PolicyError!PolicyDecision {
         if (self.rules.items.len == 0) return PolicyError.NoPolicyLoaded;
 
-        // Compute max classification from input.
         var max_class = classifier.Classification.public;
         for (input.classifications) |c| {
             if (@intFromEnum(c) > @intFromEnum(max_class)) max_class = c;
         }
 
-        // Evaluate rules in order; last matching rule wins.
         var verdict = PolicyDecision{
-            .decision = .allow,
-            .rule_id = "default-allow",
+            .decision = .deny,
+            .rule_id = "default-deny",
             .redaction_profile_id = null,
-            .reason = "no matching rule; default allow for public content",
+            .reason = "no matching allow rule; policy is deny-by-default",
         };
-
-        // Default deny if classification >= confidential and no explicit allow.
-        if (@intFromEnum(max_class) >= @intFromEnum(classifier.Classification.confidential)) {
-            verdict = .{
-                .decision = .deny,
-                .rule_id = "default-deny",
-                .redaction_profile_id = null,
-                .reason = "deny-by-default for elevated classification",
-            };
-        }
 
         for (self.rules.items) |rule| {
             if (@intFromEnum(max_class) < @intFromEnum(rule.min_classification)) continue;
@@ -159,23 +143,23 @@ pub const PolicyEngine = struct {
                 std.mem.eql(u8, rule.action_pattern, input.action);
             if (!action_match) continue;
 
-            verdict = .{
-                .decision = rule.decision,
-                .rule_id = rule.id,
-                .redaction_profile_id = rule.redaction_profile_id,
-                .reason = rule.reason,
-            };
+            if (decisionPrecedence(rule.decision) > decisionPrecedence(verdict.decision) or
+                (decisionPrecedence(rule.decision) == decisionPrecedence(verdict.decision) and
+                    std.mem.eql(u8, verdict.rule_id, "default-deny")))
+            {
+                verdict = .{
+                    .decision = rule.decision,
+                    .rule_id = rule.id,
+                    .redaction_profile_id = rule.redaction_profile_id,
+                    .reason = rule.reason,
+                };
+            }
         }
 
         return verdict;
     }
 };
 
-/// Append-only hash-chained audit ledger per spec §3.4.
-/// Each record's hash is chained to the previous record's hash for tamper evidence.
-/// @example
-/// var ledger = AuditLedger.init(alloc);
-/// try ledger.append(record);
 pub const AuditLedger = struct {
     allocator: std.mem.Allocator,
     entries: std.ArrayListUnmanaged(LedgerEntry),
@@ -200,56 +184,38 @@ pub const AuditLedger = struct {
         self.* = undefined;
     }
 
-    /// Appends a tamper-evident audit frame.
-    /// @example
-    /// try ledger.append(record);
+    fn hashRecord(record: AuditRecord) [32]u8 {
+        var hasher = std.crypto.hash.sha2.Sha256.init(.{});
+        hasher.update(std.mem.asBytes(&record.ts_unix_ms));
+        hasher.update(&record.user_id_hash);
+        hasher.update(&record.prompt_hash);
+        hasher.update(&record.response_hash);
+        hasher.update(record.provider_id);
+        hasher.update(&[_]u8{0});
+        hasher.update(record.model_id);
+        hasher.update(&[_]u8{0});
+        hasher.update(std.mem.asBytes(&record.latency_ms));
+        hasher.update(std.mem.asBytes(&record.input_tokens));
+        hasher.update(std.mem.asBytes(&record.output_tokens));
+        const decision_byte = @intFromEnum(record.decision);
+        hasher.update(&[_]u8{decision_byte});
+        var digest: [32]u8 = undefined;
+        hasher.final(&digest);
+        return digest;
+    }
+
+    fn hashChain(record_hash: [32]u8, prev_hash: [32]u8) [32]u8 {
+        var hasher = std.crypto.hash.sha2.Sha256.init(.{});
+        hasher.update(&record_hash);
+        hasher.update(&prev_hash);
+        var digest: [32]u8 = undefined;
+        hasher.final(&digest);
+        return digest;
+    }
+
     pub fn append(self: *AuditLedger, record: AuditRecord) !void {
-        // Serialize record fields into a hash input buffer.
-        // Use a larger buffer to prevent truncation for long provider/model IDs.
-        var buf: [512]u8 = undefined;
-        const record_bytes = std.fmt.bufPrint(&buf, "{d}|{s}|{s}|{d}|{d}|{d}", .{
-            record.ts_unix_ms,
-            record.provider_id,
-            record.model_id,
-            record.input_tokens,
-            record.output_tokens,
-            @intFromEnum(record.decision),
-        }) catch {
-            // Fallback: hash a struct representation that can't overflow.
-            // Encode only numeric fields to guarantee a stable, non-truncated hash input.
-            var fb_buf: [64]u8 = undefined;
-            const fallback = std.fmt.bufPrint(&fb_buf, "{d}|{d}|{d}|{d}", .{
-                record.ts_unix_ms,
-                record.input_tokens,
-                record.output_tokens,
-                @intFromEnum(record.decision),
-            }) catch &fb_buf;
-            var record_hash_fb: [32]u8 = undefined;
-            std.crypto.hash.sha2.Sha256.hash(fallback, &record_hash_fb, .{});
-            var chain_input_fb: [64]u8 = undefined;
-            @memcpy(chain_input_fb[0..32], &record_hash_fb);
-            @memcpy(chain_input_fb[32..64], &self.prev_hash);
-            var chain_hash_fb: [32]u8 = undefined;
-            std.crypto.hash.sha2.Sha256.hash(&chain_input_fb, &chain_hash_fb, .{});
-            try self.entries.append(self.allocator, .{
-                .record = record,
-                .record_hash = record_hash_fb,
-                .chain_hash = chain_hash_fb,
-            });
-            self.prev_hash = chain_hash_fb;
-            return;
-        };
-
-        var record_hash: [32]u8 = undefined;
-        std.crypto.hash.sha2.Sha256.hash(record_bytes, &record_hash, .{});
-
-        // Chain hash = SHA256(record_hash || prev_hash).
-        var chain_input: [64]u8 = undefined;
-        @memcpy(chain_input[0..32], &record_hash);
-        @memcpy(chain_input[32..64], &self.prev_hash);
-        var chain_hash: [32]u8 = undefined;
-        std.crypto.hash.sha2.Sha256.hash(&chain_input, &chain_hash, .{});
-
+        const record_hash = hashRecord(record);
+        const chain_hash = hashChain(record_hash, self.prev_hash);
         try self.entries.append(self.allocator, .{
             .record = record,
             .record_hash = record_hash,
@@ -258,18 +224,13 @@ pub const AuditLedger = struct {
         self.prev_hash = chain_hash;
     }
 
-    /// Verifies the hash chain integrity. Returns false if tampered.
-    /// @example
-    /// const ok = ledger.verifyChain();
     pub fn verifyChain(self: *const AuditLedger) bool {
         var prev: [32]u8 = @as([32]u8, @splat(0));
         for (self.entries.items) |entry| {
-            var chain_input: [64]u8 = undefined;
-            @memcpy(chain_input[0..32], &entry.record_hash);
-            @memcpy(chain_input[32..64], &prev);
-            var expected: [32]u8 = undefined;
-            std.crypto.hash.sha2.Sha256.hash(&chain_input, &expected, .{});
-            if (!std.mem.eql(u8, &expected, &entry.chain_hash)) return false;
+            const expected_record = hashRecord(entry.record);
+            if (!std.mem.eql(u8, &expected_record, &entry.record_hash)) return false;
+            const expected_chain = hashChain(expected_record, prev);
+            if (!std.mem.eql(u8, &expected_chain, &entry.chain_hash)) return false;
             prev = entry.chain_hash;
         }
         return true;
@@ -285,36 +246,61 @@ test "policy: default rules evaluate correctly" {
     defer engine.deinit();
     try engine.loadDefaults();
 
-    // Public content to provider_send → allow.
-    {
-        const input = PolicyInput{
-            .user_id = "u1",
-            .action = "provider_send",
-            .provider_id = "openai",
-            .model_id = "gpt-4o",
-            .classifications = &[_]classifier.Classification{.public},
-            .workspace_id = "ws1",
-        };
-        const verdict = try engine.evaluate(input);
-        try std.testing.expectEqual(Decision.allow, verdict.decision);
-    }
+    const public_verdict = try engine.evaluate(.{
+        .user_id = "u1",
+        .action = "provider_send",
+        .provider_id = "openai",
+        .model_id = "gpt-4o",
+        .classifications = &[_]classifier.Classification{.public},
+        .workspace_id = "ws1",
+    });
+    try std.testing.expectEqual(Decision.allow, public_verdict.decision);
 
-    // Secret content to provider_send → deny.
-    {
-        const input = PolicyInput{
-            .user_id = "u1",
-            .action = "provider_send",
-            .provider_id = "openai",
-            .model_id = "gpt-4o",
-            .classifications = &[_]classifier.Classification{.secret},
-            .workspace_id = "ws1",
-        };
-        const verdict = try engine.evaluate(input);
-        try std.testing.expectEqual(Decision.deny, verdict.decision);
-    }
+    const secret_verdict = try engine.evaluate(.{
+        .user_id = "u1",
+        .action = "provider_send",
+        .provider_id = "openai",
+        .model_id = "gpt-4o",
+        .classifications = &[_]classifier.Classification{.secret},
+        .workspace_id = "ws1",
+    });
+    try std.testing.expectEqual(Decision.deny, secret_verdict.decision);
 }
 
-test "audit ledger: chain integrity" {
+test "policy: restrictive rule wins regardless of declaration order" {
+    var engine = PolicyEngine.init(std.testing.allocator);
+    defer engine.deinit();
+
+    try engine.loadRule(.{
+        .id = "deny-secret",
+        .min_classification = .secret,
+        .action_pattern = "provider_send",
+        .decision = .deny,
+        .redaction_profile_id = null,
+        .reason = "secrets never leave the workspace",
+    });
+    try engine.loadRule(.{
+        .id = "late-allow",
+        .min_classification = .public,
+        .action_pattern = "provider_send",
+        .decision = .allow,
+        .redaction_profile_id = null,
+        .reason = "broad public rule",
+    });
+
+    const verdict = try engine.evaluate(.{
+        .user_id = "u1",
+        .action = "provider_send",
+        .provider_id = "provider",
+        .model_id = "model",
+        .classifications = &[_]classifier.Classification{.secret},
+        .workspace_id = "ws1",
+    });
+    try std.testing.expectEqual(Decision.deny, verdict.decision);
+    try std.testing.expectEqualStrings("deny-secret", verdict.rule_id);
+}
+
+test "audit ledger: chain integrity and record tamper detection" {
     var ledger = AuditLedger.init(std.testing.allocator);
     defer ledger.deinit();
 
@@ -335,4 +321,7 @@ test "audit ledger: chain integrity" {
     try ledger.append(rec);
     try std.testing.expect(ledger.verifyChain());
     try std.testing.expectEqual(@as(usize, 2), ledger.len());
+
+    ledger.entries.items[0].record.model_id = "tampered";
+    try std.testing.expect(!ledger.verifyChain());
 }
