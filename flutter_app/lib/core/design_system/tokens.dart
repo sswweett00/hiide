@@ -2,34 +2,35 @@ import 'package:flutter/material.dart';
 
 class DesignTokens {
   // ── AI Native Brand Palette ────────────────────────────────────────────────
-  // The signature aurora used for AI surfaces across the IDE: violet → blue →
-  // cyan. Every AI element (orbs, glows, gradient buttons, headers, cards)
-  // draws from these tokens so the identity stays consistent app-wide.
   static const Color aiViolet = Color(0xFFA78BFA);
   static const Color aiIndigo = Color(0xFF818CF8);
   static const Color aiBlue = Color(0xFF58A6FF);
   static const Color aiCyan = Color(0xFF22D3EE);
   static const Color aiPink = Color(0xFFF472B6);
-
-  /// Soft translucent tint used for AI glows and backdrops.
   static const Color aiGlow = Color(0x3399A3FF);
+  static const Color aiGlowShadow = Color(0x55A78BFA);
 
-  /// The app-wide AI gradient (violet → blue → cyan).
   static const LinearGradient aiGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [aiViolet, aiBlue, aiCyan],
   );
 
-  /// Warm accent gradient for “agent” surfaces (violet → pink).
   static const LinearGradient aiAgentGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [aiViolet, aiPink],
   );
 
-  /// Shadow used behind AI orbs / gradient buttons to fake a glow.
-  static const Color aiGlowShadow = Color(0x55A78BFA);
+  // Semantic status palette. Use these instead of page-specific raw colors.
+  static const Color success = Color(0xFF3FB950);
+  static const Color warning = Color(0xFFFFC857);
+  static const Color danger = Color(0xFFFF6B7A);
+  static const Color info = Color(0xFF54B7FF);
+  static const Color modified = Color(0xFFFFA657);
+  static const Color added = Color(0xFF3FB950);
+  static const Color deleted = Color(0xFFF85149);
+  static const Color selection = Color(0x3358A6FF);
 
   // Spacing Scale (4px system)
   static const double space0 = 0;
@@ -101,8 +102,11 @@ class DesignTokens {
   static const double opacityHover = 0.08;
   static const double opacityFocus = 0.12;
   static const double opacitySelected = 0.16;
+  static const double opacityMuted = 0.62;
+  static const double opacitySubtle = 0.42;
 
   // Motion
+  static const Duration durationInstant = Duration(milliseconds: 70);
   static const Duration durationFast = Duration(milliseconds: 100);
   static const Duration durationNormal = Duration(milliseconds: 200);
   static const Duration durationSlow = Duration(milliseconds: 300);
