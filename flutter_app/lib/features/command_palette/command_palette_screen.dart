@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,7 +8,6 @@ import '../../shared/models/editor_tab.dart';
 import '../../shared/providers/editor_providers.dart';
 import '../bottom_panels/bottom_panels.dart';
 import '../../shared/widgets/ai_widgets.dart';
-import '../../shared/widgets/ide_shell.dart';
 
 final commandPaletteQueryProvider = StateProvider<String>((ref) => '');
 
@@ -15,7 +15,6 @@ const _allCommands = <Map<String, String>>[
   {'label': 'View: Toggle Terminal', 'shortcut': 'Ctrl+`', 'category': 'View'},
   {'label': 'View: Toggle AI Chat', 'shortcut': 'Ctrl+J', 'category': 'View'},
   {'label': 'View: Toggle Zen Mode', 'shortcut': 'Ctrl+K Z', 'category': 'View'},
-  {'label': 'View: Toggle Minimap', 'shortcut': 'Ctrl+Alt+M', 'category': 'View'},
   {'label': 'File: Save', 'shortcut': 'Ctrl+S', 'category': 'File'},
   {'label': 'File: Close Editor', 'shortcut': 'Ctrl+W', 'category': 'File'},
   {'label': 'Edit: Find', 'shortcut': 'Ctrl+F', 'category': 'Edit'},
@@ -42,7 +41,6 @@ final commandPaletteFilterProvider = Provider<List<Map<String, String>>>((ref) {
 
 class CommandPaletteScreen extends ConsumerStatefulWidget {
   const CommandPaletteScreen({super.key});
-
   @override
   ConsumerState<CommandPaletteScreen> createState() => _CommandPaletteScreenState();
 }
@@ -68,15 +66,18 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
   void _executeSelected() {
     final commands = ref.read(commandPaletteFilterProvider);
     if (commands.isEmpty) return;
+    final label = commands[_selectedIndex]['label']!;
     Navigator.of(context).pop();
-    _executeCommand(context, ref, commands[_selectedIndex]['label']!);
+    _executeCommand(context, ref, label);
   }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final commands = ref.watch(commandPaletteFilterProvider);
-    if (_selectedIndex >= commands.length && commands.isNotEmpty) _selectedIndex = commands.length - 1;
+    if (_selectedIndex >= commands.length && commands.isNotEmpty) {
+      _selectedIndex = commands.length - 1;
+    }
 
     return Focus(
       autofocus: true,
@@ -153,16 +154,24 @@ Future<void> _saveActiveTab(WidgetRef ref, BuildContext context) async {
   if (index < 0) return;
   final tab = tabs[index];
   if (tab.path == null || tab.path!.isEmpty || tab.title.startsWith('Untitled')) {
-    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This tab has no file path yet.')));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This tab has no file path yet.')),
+      );
+    }
     return;
   }
   try {
     await ref.read(workspaceServiceProvider).writeFile(tab.path!, tab.content);
     final updated = tab.copyWith(isModified: false);
     ref.read(openTabsProvider.notifier).state = List<EditorTab>.from(tabs)..[index] = updated;
-    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Saved ${tab.title}')));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Saved ${tab.title}')));
+    }
   } catch (error) {
-    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save failed: $error')));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save failed: $error')));
+    }
   }
 }
 
@@ -179,7 +188,9 @@ Future<void> _showGoToLine(BuildContext context, WidgetRef ref) async {
           FilledButton(
             onPressed: () {
               final line = int.tryParse(controller.text.trim());
-              if (line != null && line > 0) ref.read(cursorLineProvider.notifier).state = line;
+              if (line != null && line > 0) {
+                ref.read(cursorLineProvider.notifier).state = line;
+              }
               Navigator.of(dialogContext).pop();
             },
             child: const Text('Go'),
@@ -205,13 +216,8 @@ void _executeCommand(BuildContext context, WidgetRef ref, String label) {
     case 'View: Toggle Zen Mode':
       ref.read(zenModeProvider.notifier).state = !ref.read(zenModeProvider);
       break;
-    case 'View: Toggle Minimap':
-      final settings = Map<String, dynamic>.from(ref.read(settingsProvider));
-      settings['minimap'] = !(settings['minimap'] == true);
-      ref.read(settingsProvider.notifier).state = settings;
-      break;
     case 'File: Save':
-      _saveActiveTab(ref, context);
+      unawaited(_saveActiveTab(ref, context));
       break;
     case 'File: Close Editor':
       final id = ref.read(activeTabIdProvider);
@@ -234,7 +240,7 @@ void _executeCommand(BuildContext context, WidgetRef ref, String label) {
       context.go('/quick-open');
       break;
     case 'Go: Go to Line':
-      _showGoToLine(context, ref);
+      unawaited(_showGoToLine(context, ref));
       break;
     case 'Go: Explorer':
       context.go('/explorer');
@@ -262,9 +268,7 @@ class _CommandItem extends StatelessWidget {
   final String shortcut;
   final bool selected;
   final VoidCallback? onTap;
-
   const _CommandItem({required this.label, required this.shortcut, required this.selected, this.onTap});
-
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
