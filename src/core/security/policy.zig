@@ -40,6 +40,8 @@ pub const PolicyRule = struct {
     id: []const u8,
     min_classification: classifier.Classification,
     action_pattern: []const u8,
+    provider_pattern: []const u8 = "*",
+    workspace_pattern: []const u8 = "*",
     decision: Decision,
     redaction_profile_id: ?[]const u8,
     reason: []const u8,
@@ -54,6 +56,10 @@ fn decisionPrecedence(decision: Decision) u8 {
         .require_approval => 2,
         .deny => 3,
     };
+}
+
+fn matchesPattern(pattern: []const u8, value: []const u8) bool {
+    return std.mem.eql(u8, pattern, "*") or std.mem.eql(u8, pattern, value);
 }
 
 pub const PolicyEngine = struct {
@@ -77,31 +83,36 @@ pub const PolicyEngine = struct {
     }
 
     pub fn loadRule(self: *PolicyEngine, rule: PolicyRule) !void {
-        if (rule.id.len == 0 or rule.action_pattern.len == 0 or rule.reason.len == 0) return PolicyError.InvalidRule;
+        if (rule.id.len == 0 or rule.action_pattern.len == 0 or rule.provider_pattern.len == 0 or rule.workspace_pattern.len == 0 or rule.reason.len == 0) return PolicyError.InvalidRule;
         try self.rules.append(self.allocator, rule);
     }
 
     /// Evaluates all matching rules and chooses the most restrictive decision.
-    /// Unmatched actions remain denied.
+    /// Unclassified inputs and unmatched actions remain denied.
     pub fn evaluate(self: *const PolicyEngine, input: PolicyInput) PolicyError!PolicyDecision {
         if (self.rules.items.len == 0) return PolicyError.NoPolicyLoaded;
 
-        var max_class = classifier.Classification.public;
+        // No classification is treated as unknown, not public. This prevents
+        // callers that forgot to classify data from bypassing public-content rules.
+        var max_class: ?classifier.Classification = null;
         for (input.classifications) |c| {
-            if (@intFromEnum(c) > @intFromEnum(max_class)) max_class = c;
+            if (max_class == null or @intFromEnum(c) > @intFromEnum(max_class.?)) max_class = c;
         }
 
         var verdict = PolicyDecision{ .decision = .deny, .rule_id = "default-deny", .redaction_profile_id = null, .reason = "no matching allow rule; policy is deny-by-default" };
         var matched = false;
 
-        for (self.rules.items) |rule| {
-            if (@intFromEnum(max_class) < @intFromEnum(rule.min_classification)) continue;
-            const action_match = std.mem.eql(u8, rule.action_pattern, "*") or std.mem.eql(u8, rule.action_pattern, input.action);
-            if (!action_match) continue;
+        if (max_class) |classification| {
+            for (self.rules.items) |rule| {
+                if (@intFromEnum(classification) < @intFromEnum(rule.min_classification)) continue;
+                if (!matchesPattern(rule.action_pattern, input.action)) continue;
+                if (!matchesPattern(rule.provider_pattern, input.provider_id)) continue;
+                if (!matchesPattern(rule.workspace_pattern, input.workspace_id)) continue;
 
-            if (!matched or decisionPrecedence(rule.decision) > decisionPrecedence(verdict.decision)) {
-                verdict = .{ .decision = rule.decision, .rule_id = rule.id, .redaction_profile_id = rule.redaction_profile_id, .reason = rule.reason };
-                matched = true;
+                if (!matched or decisionPrecedence(rule.decision) > decisionPrecedence(verdict.decision)) {
+                    verdict = .{ .decision = rule.decision, .rule_id = rule.id, .redaction_profile_id = rule.redaction_profile_id, .reason = rule.reason };
+                    matched = true;
+                }
             }
         }
 
@@ -185,6 +196,31 @@ test "policy: default rules evaluate correctly" {
 
     const secret_verdict = try engine.evaluate(.{ .user_id = "u1", .action = "provider_send", .provider_id = "openai", .model_id = "gpt-4o", .classifications = &[_]classifier.Classification{.secret}, .workspace_id = "ws1" });
     try std.testing.expectEqual(Decision.deny, secret_verdict.decision);
+}
+
+test "policy: missing classification fails closed" {
+    var engine = PolicyEngine.init(std.testing.allocator);
+    defer engine.deinit();
+    try engine.loadDefaults();
+
+    const verdict = try engine.evaluate(.{ .user_id = "u1", .action = "provider_send", .provider_id = "openai", .model_id = "gpt-4o", .classifications = &[_]classifier.Classification{}, .workspace_id = "ws1" });
+    try std.testing.expectEqual(Decision.deny, verdict.decision);
+}
+
+test "policy: provider and workspace scopes are enforced" {
+    var engine = PolicyEngine.init(std.testing.allocator);
+    defer engine.deinit();
+
+    try engine.loadRule(.{ .id = "scoped-allow", .min_classification = .public, .action_pattern = "provider_send", .provider_pattern = "local", .workspace_pattern = "trusted", .decision = .allow, .redaction_profile_id = null, .reason = "local provider in trusted workspace" });
+
+    const allowed = try engine.evaluate(.{ .user_id = "u1", .action = "provider_send", .provider_id = "local", .model_id = "model", .classifications = &[_]classifier.Classification{.public}, .workspace_id = "trusted" });
+    try std.testing.expectEqual(Decision.allow, allowed.decision);
+
+    const wrong_provider = try engine.evaluate(.{ .user_id = "u1", .action = "provider_send", .provider_id = "cloud", .model_id = "model", .classifications = &[_]classifier.Classification{.public}, .workspace_id = "trusted" });
+    try std.testing.expectEqual(Decision.deny, wrong_provider.decision);
+
+    const wrong_workspace = try engine.evaluate(.{ .user_id = "u1", .action = "provider_send", .provider_id = "local", .model_id = "model", .classifications = &[_]classifier.Classification{.public}, .workspace_id = "other" });
+    try std.testing.expectEqual(Decision.deny, wrong_workspace.decision);
 }
 
 test "policy: restrictive rule wins regardless of declaration order" {
