@@ -4,15 +4,6 @@ import 'dart:io';
 
 import 'backend_service.dart';
 
-/// Production backend: speaks the Zig engine's wire protocol.
-///
-/// Transport: TCP to `127.0.0.1:4879` (the `hiide-ipc-server` binary).
-/// Framing:   one JSON object per line — request lines from the client,
-///            response lines from the server, correlated by `id`.
-///
-/// NOTE: the Zig server historically uses raw JSON values for `editor.load`
-/// (params = the text string) and `editor.get_text` (params = the handle int),
-/// and JSON objects for every newer method. `_request` accepts any JSON value.
 class HiideBackendService implements BackendService {
   HiideBackendService({this.host = '127.0.0.1', this.port = 4879});
 
@@ -21,91 +12,102 @@ class HiideBackendService implements BackendService {
 
   static const Duration _connectTimeout = Duration(seconds: 3);
   static const Duration _requestTimeout = Duration(seconds: 15);
-
-  /// Agent tool calls can run long builds/tests; the engine's `process.run`
-  /// watchdog kills the command well before this socket ceiling.
   static const Duration _agentToolTimeout = Duration(seconds: 180);
+  static const int _maxLineBytes = 2 * 1024 * 1024;
+  static const int _maxSearchResults = 1000;
+  static const int _maxTreeEntries = 50000;
 
   Socket? _socket;
+  StreamSubscription<String>? _socketSubscription;
+  Future<void>? _connectFuture;
   final StreamController<String> _output = StreamController<String>.broadcast();
-  final Map<int, Completer<Map<String, dynamic>>> _pending = {};
-  final StringBuffer _buffer = StringBuffer();
+  final StreamController<FsChange> _fsChanges = StreamController<FsChange>.broadcast();
+  final Map<int, Completer<Map<String, dynamic>>> _pending = <int, Completer<Map<String, dynamic>>>{};
   int _nextId = 1;
   bool _connected = false;
-
-  /// Pushed `fs.change` events from the native watcher (broadcast; the
-  /// workspace tree provider and open editor tabs subscribe here).
-  final StreamController<FsChange> _fsChanges =
-      StreamController<FsChange>.broadcast();
+  bool _disposed = false;
+  String? _watchedRoot;
 
   @override
   Stream<FsChange> get fsChangeStream => _fsChanges.stream;
-
   @override
   Stream<String> get outputStream => _output.stream;
-
   @override
   bool get isConnected => _connected;
 
   @override
-  Future<void> connect() async {
-    if (_connected) return;
+  Future<void> connect() {
+    if (_disposed) return Future<void>.error(StateError('backend disposed'));
+    if (_connected) return Future<void>.value();
+    return _connectFuture ??= _connectInternal().whenComplete(() => _connectFuture = null);
+  }
 
+  Future<void> _connectInternal() async {
     final socket = await Socket.connect(host, port, timeout: _connectTimeout);
+    if (_disposed) {
+      socket.destroy();
+      throw StateError('backend disposed');
+    }
     _socket = socket;
     _connected = true;
-    _buffer.clear();
-    socket.listen(_onData, onDone: _onDisconnected, onError: _onSocketError);
+    _socketSubscription = socket
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .listen(_handleLine, onDone: _onDisconnected, onError: _onSocketError);
 
-    // Handshake: confirm we are talking to the Zig engine.
-    final hello = await _request('hello', null);
-    _output.add(
-      'Connected to Hiide Zig engine '
-      '(${hello['service']} v${hello['version']}) on $host:$port',
-    );
+    try {
+      final hello = await _request('hello', null, timeout: _requestTimeout);
+      _emitOutput('Connected to Hiide Zig engine (${hello['service'] ?? 'unknown'} v${hello['version'] ?? 'unknown'}) on $host:$port');
+      final watched = _watchedRoot;
+      if (watched != null && watched!.isNotEmpty) {
+        await _request('watch.subscribe', {'root': watched});
+      }
+    } catch (error) {
+      await disconnect();
+      rethrow;
+    }
   }
 
   @override
   Future<void> disconnect() async {
     _connected = false;
+    _failPending(StateError('disconnected'));
+    await _socketSubscription?.cancel();
+    _socketSubscription = null;
     final socket = _socket;
     _socket = null;
     socket?.destroy();
-    _failPending(StateError('disconnected'));
-    _output.add('Backend disconnected');
-  }
-
-  void _onData(List<int> data) {
-    _buffer.write(utf8.decode(data));
-    var text = _buffer.toString();
-    _buffer.clear();
-
-    var newline = text.indexOf('\n');
-    while (newline != -1) {
-      final line = text.substring(0, newline).trim();
-      text = text.substring(newline + 1);
-      if (line.isNotEmpty) _handleLine(line);
-      newline = text.indexOf('\n');
-    }
-    _buffer.write(text);
+    _emitOutput('Backend disconnected');
   }
 
   void _handleLine(String line) {
-    Map<String, dynamic> message;
-    try {
-      message = jsonDecode(line) as Map<String, dynamic>;
-    } catch (_) {
+    if (line.length > _maxLineBytes) {
+      _failPending(StateError('backend response exceeded maximum size'));
+      unawaited(disconnect());
       return;
     }
 
-    // Server-pushed events have no request id.
+    dynamic decoded;
+    try {
+      decoded = jsonDecode(line);
+    } catch (_) {
+      return;
+    }
+    if (decoded is! Map) return;
+    final message = Map<String, dynamic>.from(decoded);
+
     if (message['event'] == 'fs.change') {
-      final params = message['params'] as Map<String, dynamic>? ?? const {};
-      final changes = params['changes'] as List<dynamic>? ?? const [];
+      final rawParams = message['params'];
+      if (rawParams is! Map) return;
+      final changes = rawParams['changes'];
+      if (changes is! List) return;
       for (final raw in changes) {
-        final map = raw as Map<String, dynamic>;
+        if (raw is! Map) continue;
+        final map = Map<String, dynamic>.from(raw);
+        final path = map['path']?.toString() ?? '';
+        if (path.isEmpty || _fsChanges.isClosed) continue;
         _fsChanges.add(FsChange(
-          path: map['path']?.toString() ?? '',
+          path: path,
           isDirectory: map['is_dir'] == true,
           kind: map['kind']?.toString() ?? 'modified',
         ));
@@ -116,15 +118,15 @@ class HiideBackendService implements BackendService {
     final id = message['id'];
     if (id is! int) return;
     final completer = _pending.remove(id);
-    if (completer != null && !completer.isCompleted)
-      completer.complete(message);
+    if (completer != null && !completer.isCompleted) completer.complete(message);
   }
 
   void _onDisconnected() {
     _connected = false;
     _socket = null;
+    _socketSubscription = null;
     _failPending(StateError('connection closed by engine'));
-    _output.add('Backend disconnected');
+    _emitOutput('Backend disconnected');
   }
 
   void _onSocketError(Object error) {
@@ -134,72 +136,60 @@ class HiideBackendService implements BackendService {
   }
 
   void _failPending(Object error) {
-    for (final completer in _pending.values) {
+    final pending = List<Completer<Map<String, dynamic>>>.from(_pending.values);
+    _pending.clear();
+    for (final completer in pending) {
       if (!completer.isCompleted) completer.completeError(error);
     }
-    _pending.clear();
   }
 
-  Future<Map<String, dynamic>> _request(
-    String method,
-    Object? params, {
-    Duration? timeout,
-  }) async {
+  void _emitOutput(String value) {
+    if (!_output.isClosed) _output.add(value);
+  }
+
+  Future<Map<String, dynamic>> _request(String method, Object? params, {Duration? timeout}) async {
     final socket = _socket;
-    if (socket == null) {
-      throw StateError('backend not connected');
-    }
+    if (!_connected || socket == null) throw StateError('backend not connected');
+
     final id = _nextId++;
     final completer = Completer<Map<String, dynamic>>();
     _pending[id] = completer;
-
-    final message = <String, dynamic>{'id': id, 'method': method};
-    if (params != null) message['params'] = params;
-    socket.write('${jsonEncode(message)}\n');
-
     try {
+      final message = <String, dynamic>{'id': id, 'method': method};
+      if (params != null) message['params'] = params;
+      socket.add(utf8.encode('${jsonEncode(message)}\n'));
       return await completer.future.timeout(timeout ?? _requestTimeout);
     } on TimeoutException {
+      _pending.remove(id);
+      throw TimeoutException('IPC request $method timed out');
+    } catch (_) {
       _pending.remove(id);
       rethrow;
     }
   }
 
   Map<String, dynamic> _expectResult(Map<String, dynamic> response) {
-    final err = response['err'];
-    if (err != null) {
-      throw StateError('engine error: $err');
-    }
-    return (response['result'] as Map<String, dynamic>?) ?? const {};
+    if (response['err'] != null) throw StateError('engine error: ${response['err']}');
+    final value = response['result'];
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return const <String, dynamic>{};
   }
 
   @override
-  Future<String> ping() async {
-    final response = await _request('ping', null);
-    return response['result'] as String? ?? '';
-  }
+  Future<String> ping() async => (await _request('ping', null))['result']?.toString() ?? '';
 
   @override
   Future<int> editorLoad(String text) async {
     final result = _expectResult(await _request('editor.load', text));
-    return result['handle'] as int;
+    final handle = result['handle'];
+    if (handle is! int) throw StateError('invalid editor handle');
+    return handle;
   }
 
   @override
-  Future<String> editorGetText(int handle) async {
-    final result = _expectResult(await _request('editor.get_text', handle));
-    return result['text'] as String? ?? '';
-  }
+  Future<String> editorGetText(int handle) async => _expectResult(await _request('editor.get_text', handle))['text']?.toString() ?? '';
 
-  Future<Map<String, dynamic>> _editorObjectOp(
-    String method,
-    int handle, {
-    int? pos,
-    int? len,
-    String? text,
-    String? query,
-    String? lang,
-  }) async {
+  Future<Map<String, dynamic>> _editorObjectOp(String method, int handle, {int? pos, int? len, String? text, String? query, String? lang}) async {
     final params = <String, dynamic>{'handle': handle};
     if (pos != null) params['pos'] = pos;
     if (len != null) params['len'] = len;
@@ -210,180 +200,103 @@ class HiideBackendService implements BackendService {
   }
 
   @override
-  Future<int> editorInsert(int handle, int pos, String text) async {
-    final result =
-        await _editorObjectOp('editor.insert', handle, pos: pos, text: text);
-    return result['size'] as int? ?? 0;
-  }
+  Future<int> editorInsert(int handle, int pos, String text) async => (_editorObjectOp('editor.insert', handle, pos: pos, text: text).then((r) => r['size'] is int ? r['size'] as int : 0));
+  @override
+  Future<int> editorDelete(int handle, int pos, int len) async => (_editorObjectOp('editor.delete', handle, pos: pos, len: len).then((r) => r['size'] is int ? r['size'] as int : 0));
+  @override
+  Future<void> editorUndo(int handle) async { await _editorObjectOp('editor.undo', handle); }
+  @override
+  Future<void> editorRedo(int handle) async { await _editorObjectOp('editor.redo', handle); }
+  @override
+  Future<int> editorLineCount(int handle) async => (_editorObjectOp('editor.line_count', handle).then((r) => r['lines'] is int ? r['lines'] as int : 0));
+  @override
+  Future<int> editorSize(int handle) async => (_editorObjectOp('editor.size', handle).then((r) => r['size'] is int ? r['size'] as int : 0));
 
   @override
-  Future<int> editorDelete(int handle, int pos, int len) async {
-    final result =
-        await _editorObjectOp('editor.delete', handle, pos: pos, len: len);
-    return result['size'] as int? ?? 0;
-  }
-
-  @override
-  Future<void> editorUndo(int handle) async {
-    await _editorObjectOp('editor.undo', handle);
-  }
-
-  @override
-  Future<void> editorRedo(int handle) async {
-    await _editorObjectOp('editor.redo', handle);
-  }
-
-  @override
-  Future<int> editorLineCount(int handle) async {
-    final result = await _editorObjectOp('editor.line_count', handle);
-    return result['lines'] as int? ?? 0;
-  }
-
-  @override
-  Future<int> editorSize(int handle) async {
-    final result = await _editorObjectOp('editor.size', handle);
-    return result['size'] as int? ?? 0;
-  }
-
-  @override
-  Future<List<EditorSearchResult>> editorSearch(
-      int handle, String query) async {
-    final result = await _editorObjectOp('editor.search', handle, query: query);
-    final raw = (result['results'] as List<dynamic>?) ?? const [];
-    return raw.map((item) {
-      final map = item as Map<String, dynamic>;
-      return EditorSearchResult(
-        line: map['line'] as int,
-        col: map['col'] as int,
-        text: map['text'] as String? ?? '',
-      );
+  Future<List<EditorSearchResult>> editorSearch(int handle, String query) async {
+    final raw = _editorObjectOp('editor.search', handle, query: query).then((r) => r['results']);
+    final value = await raw;
+    if (value is! List) return const [];
+    return value.whereType<Map>().map((item) {
+      final map = Map<String, dynamic>.from(item);
+      return EditorSearchResult(line: map['line'] is int ? map['line'] as int : 0, col: map['col'] is int ? map['col'] as int : 0, text: map['text']?.toString() ?? '');
     }).toList();
   }
 
   @override
-  Future<String> editorHighlight(int handle, String lang) async {
-    final result =
-        await _editorObjectOp('editor.highlight', handle, lang: lang);
-    return result['html'] as String? ?? '';
-  }
+  Future<String> editorHighlight(int handle, String lang) async => _editorObjectOp('editor.highlight', handle, lang: lang).then((r) => r['html']?.toString() ?? '');
+  @override
+  Future<void> editorDestroy(int handle) async { await _editorObjectOp('editor.destroy', handle); }
+  @override
+  Future<void> editorApplyText(int handle, String text) async { await _editorObjectOp('editor.apply_text', handle, text: text); }
 
   @override
-  Future<void> editorDestroy(int handle) async {
-    await _editorObjectOp('editor.destroy', handle);
-  }
-
-  @override
-  Future<void> editorApplyText(int handle, String text) async {
-    await _editorObjectOp('editor.apply_text', handle, text: text);
-  }
-
-  @override
-  Future<List<EditorDiffRegion>> editorDiffLines(
-      int handle, String diskText) async {
-    final response = await _request('editor.diff_lines', {
-      'handle': handle,
-      'disk_text': diskText,
-    });
-    final result = _expectResult(response);
-    final raw = (result['changes'] as List<dynamic>?) ?? const [];
-    return raw.map((item) {
-      final map = item as Map<String, dynamic>;
-      return EditorDiffRegion(
-        line: map['line'] as int,
-        kind: map['kind']?.toString() ?? 'modified',
-        count: map['count'] as int? ?? 1,
-      );
+  Future<List<EditorDiffRegion>> editorDiffLines(int handle, String diskText) async {
+    final raw = _expectResult(await _request('editor.diff_lines', {'handle': handle, 'disk_text': diskText}))['changes'];
+    if (raw is! List) return const [];
+    return raw.whereType<Map>().map((item) {
+      final map = Map<String, dynamic>.from(item);
+      return EditorDiffRegion(line: map['line'] is int ? map['line'] as int : 0, kind: map['kind']?.toString() ?? 'modified', count: map['count'] is int ? map['count'] as int : 1);
     }).toList();
   }
 
   @override
-  Future<List<WorkspaceSearchResult>> workspaceSearch(
-    String root,
-    String query, {
-    int maxResults = 200,
-  }) async {
-    final response = await _request('workspace.search', {
-      'root': root,
-      'query': query,
-      'max_results': maxResults,
-    });
-    final result = _expectResult(response);
-    final raw = (result['results'] as List<dynamic>?) ?? const [];
-    return raw.map((item) {
-      final map = item as Map<String, dynamic>;
-      return WorkspaceSearchResult(
-        path: map['path'] as String? ?? '',
-        line: map['line'] as int,
-        col: map['col'] as int,
-        text: map['text'] as String? ?? '',
-      );
+  Future<List<WorkspaceSearchResult>> workspaceSearch(String root, String query, {int maxResults = 200}) async {
+    final limit = maxResults.clamp(1, _maxSearchResults);
+    final raw = _expectResult(await _request('workspace.search', {'root': root, 'query': query, 'max_results': limit}))['results'];
+    if (raw is! List) return const [];
+    return raw.whereType<Map>().take(limit).map((item) {
+      final map = Map<String, dynamic>.from(item);
+      return WorkspaceSearchResult(path: map['path']?.toString() ?? '', line: map['line'] is int ? map['line'] as int : 0, col: map['col'] is int ? map['col'] as int : 0, text: map['text']?.toString() ?? '');
     }).toList();
   }
 
   @override
-  Future<List<WorkspaceFile>> workspaceTree(
-    String root, {
-    int maxEntries = 50000,
-  }) async {
-    final response = await _request('workspace.tree', {
-      'root': root,
-      'max_entries': maxEntries,
-    });
-    final result = _expectResult(response);
-    final raw = (result['entries'] as List<dynamic>?) ?? const [];
-    return raw.map((item) {
-      final map = item as Map<String, dynamic>;
-      return WorkspaceFile(
-        name: map['name'] as String? ?? '',
-        path: map['path'] as String? ?? '',
-        isDirectory: map['kind']?.toString() == 'directory',
-        size: map['size'] as int? ?? 0,
-      );
+  Future<List<WorkspaceFile>> workspaceTree(String root, {int maxEntries = 50000}) async {
+    final limit = maxEntries.clamp(1, _maxTreeEntries);
+    final raw = _expectResult(await _request('workspace.tree', {'root': root, 'max_entries': limit}))['entries'];
+    if (raw is! List) return const [];
+    return raw.whereType<Map>().take(limit).map((item) {
+      final map = Map<String, dynamic>.from(item);
+      return WorkspaceFile(name: map['name']?.toString() ?? '', path: map['path']?.toString() ?? '', isDirectory: map['kind']?.toString() == 'directory', size: map['size'] is int ? map['size'] as int : 0);
     }).toList();
   }
 
   @override
-  Future<AgentToolResult> executeAgentTool(
-    String toolId,
-    Map<String, dynamic> input, {
-    String? workspaceRoot,
-    Duration? timeout,
-  }) async {
-    final response = await _request(
-      'agent.tool.execute',
-      {
-        'tool': toolId,
-        'input': jsonEncode(input),
-        if (workspaceRoot != null) 'workspace_root': workspaceRoot,
-        'timeout_ms': (timeout ?? _agentToolTimeout).inMilliseconds,
-      },
-      timeout: timeout ?? _agentToolTimeout,
-    );
-    final result = response['result'] as Map<String, dynamic>? ?? const {};
-    return AgentToolResult(
-      ok: result['ok'] == true,
-      output: result['output']?.toString() ?? '',
-      error: result['error']?.toString() ?? '',
-    );
+  Future<AgentToolResult> executeAgentTool(String toolId, Map<String, dynamic> input, {String? workspaceRoot, Duration? timeout}) async {
+    late String encoded;
+    try { encoded = jsonEncode(input); } catch (error) { return AgentToolResult(ok: false, output: '', error: 'Invalid tool input: $error'); }
+    final response = await _request('agent.tool.execute', {'tool': toolId, 'input': encoded, if (workspaceRoot != null) 'workspace_root': workspaceRoot, 'timeout_ms': (timeout ?? _agentToolTimeout).inMilliseconds}, timeout: timeout ?? _agentToolTimeout);
+    final value = response['result'];
+    final result = value is Map ? Map<String, dynamic>.from(value) : const <String, dynamic>{};
+    return AgentToolResult(ok: result['ok'] == true, output: result['output']?.toString() ?? '', error: result['error']?.toString() ?? '');
   }
 
   @override
   Future<void> watchWorkspace(String root) async {
     await _request('watch.subscribe', {'root': root});
+    _watchedRoot = root;
   }
 
   @override
   Future<void> unwatchWorkspace() async {
-    await _request('watch.unsubscribe', null);
+    _watchedRoot = null;
+    if (_connected) await _request('watch.unsubscribe', null);
   }
 
   @override
   void dispose() {
-    _output.close();
-    _fsChanges.close();
+    if (_disposed) return;
+    _disposed = true;
     _connected = false;
+    _failPending(StateError('backend disposed'));
+    final subscription = _socketSubscription;
+    _socketSubscription = null;
+    unawaited(subscription?.cancel() ?? Future<void>.value());
     final socket = _socket;
     _socket = null;
     socket?.destroy();
+    _output.close();
+    _fsChanges.close();
   }
 }
