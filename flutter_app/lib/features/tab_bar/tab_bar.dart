@@ -21,10 +21,30 @@ class _TabBarState extends ConsumerState<TabBar> {
   }
 
   void _scrollTabs(double delta) {
-    if (_scrollController.hasClients) {
-      final target = (_scrollController.offset + delta)
-          .clamp(0.0, _scrollController.position.maxScrollExtent);
-      _scrollController.jumpTo(target);
+    if (!_scrollController.hasClients) return;
+    final target = (_scrollController.offset + delta)
+        .clamp(0.0, _scrollController.position.maxScrollExtent);
+    _scrollController.animateTo(
+      target,
+      duration: DesignTokens.durationFast,
+      curve: DesignTokens.curveStandard,
+    );
+  }
+
+  void _closeTab(EditorTab tab) {
+    final tabs = ref.read(openTabsProvider);
+    final activeId = ref.read(activeTabIdProvider);
+    final index = tabs.indexWhere((t) => t.id == tab.id);
+    final newTabs = tabs.where((t) => t.id != tab.id).toList();
+    ref.read(openTabsProvider.notifier).state = newTabs;
+
+    if (activeId == tab.id) {
+      if (newTabs.isEmpty) {
+        ref.read(activeTabIdProvider.notifier).state = null;
+      } else {
+        final nextIndex = index >= newTabs.length ? newTabs.length - 1 : index;
+        ref.read(activeTabIdProvider.notifier).state = newTabs[nextIndex].id;
+      }
     }
   }
 
@@ -35,139 +55,173 @@ class _TabBarState extends ConsumerState<TabBar> {
     final cs = Theme.of(context).colorScheme;
 
     return Container(
-      height: 36,
-      color: cs.surface,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final showScrollButtons =
-              tabs.isNotEmpty && constraints.maxWidth >= 480;
-
-          return Row(
-            children: [
-              Expanded(
-                child: ListView(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.zero,
-                  children: tabs.map((tab) {
-                    final isActive = tab.id == activeId;
-                    return _TabItem(tab: tab, isActive: isActive);
-                  }).toList(),
-                ),
+      height: 40,
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest.withValues(alpha: 0.32),
+        border: Border(
+          bottom: BorderSide(color: cs.outlineVariant, width: 1),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Scrollbar(
+              controller: _scrollController,
+              thumbVisibility: false,
+              child: ListView.separated(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(left: 2),
+                itemCount: tabs.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 1),
+                itemBuilder: (context, index) {
+                  final tab = tabs[index];
+                  return _TabItem(
+                    tab: tab,
+                    isActive: tab.id == activeId,
+                    onClose: () => _closeTab(tab),
+                  );
+                },
               ),
-              if (showScrollButtons)
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.chevron_left,
-                          size: DesignTokens.iconSM,
-                          color: cs.onSurfaceVariant),
-                      onPressed: () => _scrollTabs(-120),
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 24, minHeight: 24),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.chevron_right,
-                          size: DesignTokens.iconSM,
-                          color: cs.onSurfaceVariant),
-                      onPressed: () => _scrollTabs(120),
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 24, minHeight: 24),
-                    ),
-                  ],
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              border: Border(left: BorderSide(color: cs.outlineVariant)),
+            ),
+            child: Row(
+              children: [
+                _TabAction(
+                  icon: Icons.chevron_left,
+                  tooltip: 'Scroll tabs left',
+                  onTap: () => _scrollTabs(-160),
                 ),
-            ],
-          );
-        },
+                _TabAction(
+                  icon: Icons.chevron_right,
+                  tooltip: 'Scroll tabs right',
+                  onTap: () => _scrollTabs(160),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _TabItem extends StatelessWidget {
+class _TabItem extends StatefulWidget {
   final EditorTab tab;
   final bool isActive;
+  final VoidCallback onClose;
 
-  const _TabItem({required this.tab, required this.isActive});
+  const _TabItem({required this.tab, required this.isActive, required this.onClose});
+
+  @override
+  State<_TabItem> createState() => _TabItemState();
+}
+
+class _TabItemState extends State<_TabItem> {
+  bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ref = ProviderScope.containerOf(context);
+    final active = widget.isActive;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTap: () => ref.read(activeTabIdProvider.notifier).state = tab.id,
+        onTap: () => ref.read(activeTabIdProvider.notifier).state = widget.tab.id,
+        onSecondaryTap: () => widget.onClose(),
         child: AnimatedContainer(
           duration: DesignTokens.durationFast,
           curve: DesignTokens.curveStandard,
-          padding: const EdgeInsets.symmetric(
-              horizontal: DesignTokens.space3, vertical: DesignTokens.space2),
+          constraints: const BoxConstraints(minWidth: 128, maxWidth: 250),
+          padding: const EdgeInsets.only(left: 12, right: 7),
           decoration: BoxDecoration(
-            color: isActive
+            color: active
                 ? cs.surface
-                : cs.surfaceContainerHighest.withValues(alpha: 0.3),
+                : (_hovered
+                    ? cs.surfaceContainerHighest.withValues(alpha: 0.72)
+                    : cs.surfaceContainerHighest.withValues(alpha: 0.3)),
             border: Border(
-              bottom: BorderSide(
-                color: isActive ? cs.primary : Colors.transparent,
+              top: BorderSide(
+                color: active ? cs.primary : Colors.transparent,
                 width: 2,
               ),
-              right: BorderSide(
-                  color: cs.outlineVariant.withValues(alpha: 0.3), width: 1),
+              right: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.55)),
             ),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                tab.icon ?? Icons.description_outlined,
-                size: DesignTokens.iconSM,
-                color: isActive ? cs.primary : cs.onSurfaceVariant,
+                widget.tab.icon ?? Icons.description_outlined,
+                size: 15,
+                color: active ? cs.primary : cs.onSurfaceVariant,
               ),
-              const SizedBox(width: DesignTokens.space1),
-              Text(
-                tab.title,
-                style: TextStyle(
-                  fontSize: DesignTokens.fontSizeMD,
-                  color: isActive ? cs.onSurface : cs.onSurfaceVariant,
-                  fontWeight: isActive
-                      ? DesignTokens.fontWeightMedium
-                      : DesignTokens.fontWeightRegular,
-                ),
-              ),
-              if (tab.isModified)
-                Padding(
-                  padding: const EdgeInsets.only(left: DesignTokens.space1),
-                  child: Icon(Icons.circle, size: 8, color: cs.tertiary),
-                ),
-              const SizedBox(width: DesignTokens.space1),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    final tabs = ref.read(openTabsProvider);
-                    final activeId = ref.read(activeTabIdProvider);
-                    final newTabs = tabs.where((t) => t.id != tab.id).toList();
-                    ref.read(openTabsProvider.notifier).state = newTabs;
-                    if (activeId == tab.id && newTabs.isNotEmpty) {
-                      ref.read(activeTabIdProvider.notifier).state =
-                          newTabs.last.id;
-                    }
-                  },
-                  child: Icon(
-                    Icons.close,
-                    size: DesignTokens.iconSM,
-                    color: cs.onSurfaceVariant,
+              const SizedBox(width: 7),
+              Expanded(
+                child: Text(
+                  widget.tab.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: DesignTokens.fontSizeSM,
+                    color: active ? cs.onSurface : cs.onSurfaceVariant,
+                    fontWeight: active
+                        ? DesignTokens.fontWeightMedium
+                        : DesignTokens.fontWeightRegular,
                   ),
                 ),
               ),
+              const SizedBox(width: 4),
+              if (widget.tab.isModified && !_hovered)
+                Icon(Icons.circle, size: 6, color: cs.tertiary)
+              else
+                InkWell(
+                  onTap: widget.onClose,
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: Icon(
+                      Icons.close,
+                      size: 14,
+                      color: _hovered || active
+                          ? cs.onSurfaceVariant
+                          : Colors.transparent,
+                    ),
+                  ),
+                ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TabAction extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  const _TabAction({required this.icon, required this.tooltip, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        child: SizedBox(
+          width: 30,
+          height: 39,
+          child: Icon(icon, size: 17, color: cs.onSurfaceVariant),
         ),
       ),
     );
