@@ -16,33 +16,49 @@ class ActivityBar extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
 
     return Container(
-      width: 48,
-      color: cs.surface,
+      width: 52,
+      decoration: BoxDecoration(
+        color: Color.alphaBlend(
+          cs.surfaceContainerHighest.withValues(alpha: 0.30),
+          cs.surface,
+        ),
+        border: Border(
+          right: BorderSide(color: cs.outlineVariant),
+        ),
+      ),
       child: Column(
         children: [
+          const SizedBox(height: 7),
+          _ActivityBrandMark(),
+          const SizedBox(height: 9),
           Expanded(
-            child: ListView(
+            child: ListView.builder(
               padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              children: ActivityItem.values.map((item) {
+              itemCount: ActivityItem.values.length,
+              itemBuilder: (context, index) {
+                final item = ActivityItem.values[index];
                 final isSelected = item.id == selected;
                 return _ActivityBarItem(
                   item: item,
                   isSelected: isSelected,
                   onTap: () {
                     ref.read(selectedActivityProvider.notifier).state = item.id;
-                    if (item.route != null) {
-                      context.go(item.route!.path);
-                    }
+                    if (item.route != null) context.go(item.route!.path);
                   },
                 );
-              }).toList(),
+              },
             ),
           ),
-          _ActivityBarItem(
-            item: ActivityItem.settings,
-            isSelected: selected == 'settings',
-            onTap: () => context.go(RoutePath.settings.path),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _ActivityBarItem(
+              item: ActivityItem.settings,
+              isSelected: selected == 'settings',
+              onTap: () {
+                ref.read(selectedActivityProvider.notifier).state = 'settings';
+                context.go(RoutePath.settings.path);
+              },
+            ),
           ),
         ],
       ),
@@ -50,7 +66,47 @@ class ActivityBar extends ConsumerWidget {
   }
 }
 
-class _ActivityBarItem extends StatelessWidget {
+class _ActivityBrandMark extends StatelessWidget {
+  const _ActivityBrandMark();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Tooltip(
+      message: 'Hiide',
+      child: Container(
+        width: 34,
+        height: 34,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(9),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [cs.primary, cs.tertiary],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: cs.primary.withValues(alpha: 0.24),
+              blurRadius: 16,
+              spreadRadius: -4,
+            ),
+          ],
+        ),
+        child: const Text(
+          'H',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ActivityBarItem extends StatefulWidget {
   final ActivityItem item;
   final bool isSelected;
   final VoidCallback onTap;
@@ -62,36 +118,66 @@ class _ActivityBarItem extends StatelessWidget {
   });
 
   @override
+  State<_ActivityBarItem> createState() => _ActivityBarItemState();
+}
+
+class _ActivityBarItemState extends State<_ActivityBarItem> {
+  bool _hovered = false;
+
+  @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: DesignTokens.durationFast,
-          curve: DesignTokens.curveStandard,
-          width: double.infinity,
-          height: 48,
-          decoration: BoxDecoration(
-            color: isSelected
-                ? cs.surfaceContainerHighest
-                    .withValues(alpha: DesignTokens.opacitySelected)
-                : Colors.transparent,
-            border: Border(
-              left: BorderSide(
-                color: isSelected ? cs.primary : Colors.transparent,
-                width: 3,
-              ),
+    return Tooltip(
+      message: widget.item.label,
+      preferBelow: false,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: SizedBox(
+            height: 47,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                AnimatedContainer(
+                  duration: DesignTokens.durationFast,
+                  curve: DesignTokens.curveStandard,
+                  margin: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(9),
+                    color: widget.isSelected
+                        ? cs.primary.withValues(alpha: 0.14)
+                        : _hovered
+                            ? cs.onSurface.withValues(alpha: 0.06)
+                            : Colors.transparent,
+                  ),
+                ),
+                Icon(
+                  widget.item.icon,
+                  size: 20,
+                  color: widget.isSelected
+                      ? cs.primary
+                      : cs.onSurfaceVariant.withValues(alpha: _hovered ? 0.95 : 0.72),
+                ),
+                AnimatedPositioned(
+                  duration: DesignTokens.durationFast,
+                  curve: DesignTokens.curveStandard,
+                  left: 3,
+                  top: widget.isSelected ? 11 : 20,
+                  height: widget.isSelected ? 25 : 7,
+                  width: 2,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: cs.primary,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          child: Icon(
-            item.icon,
-            size: DesignTokens.iconLG,
-            color: isSelected
-                ? cs.primary
-                : cs.onSurfaceVariant.withValues(alpha: 0.7),
           ),
         ),
       ),
