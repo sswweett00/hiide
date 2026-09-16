@@ -33,19 +33,21 @@ class SaveCoordinator {
     final save = _pendingSave;
     _pendingSave = null;
     if (save == null || _disposed) return;
-    _serial = _serial.then((_) => save());
-    await _serial;
+
+    final current = _serial.then((_) => save());
+    _serial = current.catchError((_) {});
+    await current;
   }
 
   Future<void> dispose({bool flushPending = false}) async {
     if (_disposed) return;
-    if (flushPending) await flush();
+    if (flushPending) await flush().catchError((_) {});
     _disposed = true;
     _debounce?.cancel();
     _maxWaitTimer?.cancel();
     _debounce = null;
     _maxWaitTimer = null;
     _pendingSave = null;
-    await _serial;
+    await _serial.catchError((_) {});
   }
 }
