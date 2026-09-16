@@ -6,11 +6,9 @@ pub const Scheduler = struct {
     allocator: std.mem.Allocator,
     mutex: compat.Mutex = .init,
     ready: std.ArrayListUnmanaged(types.AgentTask) = .empty,
+    ready_head: usize = 0,
     canceled: std.AutoHashMapUnmanaged(u128, void) = .{},
 
-    /// Initializes the scheduler state for a single engine instance.
-    /// @example
-    /// var scheduler = Scheduler.init(allocator);
     pub fn init(allocator: std.mem.Allocator) Scheduler {
         return .{ .allocator = allocator };
     }
@@ -21,9 +19,6 @@ pub const Scheduler = struct {
         self.* = undefined;
     }
 
-    /// Enqueues a task if it has not been cancelled.
-    /// @example
-    /// try scheduler.submit(task);
     pub fn submit(self: *Scheduler, task: types.AgentTask) !void {
         self.mutex.lock();
         defer self.mutex.unlock();
@@ -32,41 +27,64 @@ pub const Scheduler = struct {
         try self.ready.append(self.allocator, task);
     }
 
-    /// Returns the next runnable task in FIFO order, skipping and purging cancelled tasks.
-    /// @example
-    /// const task = scheduler.pop() orelse return;
+    /// Returns the next runnable task in FIFO order.
+    /// The queue uses a head index so popping is O(1) instead of shifting the
+    /// whole backing array on every task. Periodic compaction keeps memory bounded.
     pub fn pop(self: *Scheduler) ?types.AgentTask {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        while (self.ready.items.len > 0) {
-            const task = self.ready.orderedRemove(0);
-            if (!self.canceled.contains(task.id)) return task;
-            // Cancelled task is silently discarded; keep draining.
+        while (self.ready_head < self.ready.items.len) {
+            const task = self.ready.items[self.ready_head];
+            self.ready_head += 1;
+
+            if (self.canceled.fetchRemove(task.id)) |_| {
+                continue;
+            }
+
+            self.compactIfNeeded();
+            return task;
         }
+
+        self.ready.clearRetainingCapacity();
+        self.ready_head = 0;
         return null;
+    }
+
+    fn compactIfNeeded(self: *Scheduler) void {
+        const consumed = self.ready_head;
+        if (consumed == 0) return;
+        const remaining = self.ready.items.len - consumed;
+
+        // Compact when the consumed prefix is substantial. This preserves the
+        // O(1) hot path while preventing long-lived schedulers from retaining
+        // large dead prefixes.
+        if (consumed < 1024 and consumed * 2 < self.ready.items.len) return;
+
+        if (remaining > 0) {
+            std.mem.copyForwards(types.AgentTask, self.ready.items[0..remaining], self.ready.items[consumed..]);
+        }
+        self.ready.shrinkRetainingCapacity(remaining);
+        self.ready_head = 0;
     }
 
     /// Cancels a task subtree rooted at `root_task_id` using BFS.
     /// All transitive descendants are marked cancelled, not just direct children.
-    /// @example
-    /// try scheduler.cancelSubtree(task_id);
     pub fn cancelSubtree(self: *Scheduler, root_task_id: u128) !void {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        // BFS frontier: collect all IDs to cancel transitively.
         var frontier = std.ArrayListUnmanaged(u128).empty;
         defer frontier.deinit(self.allocator);
 
         try frontier.append(self.allocator, root_task_id);
 
         while (frontier.items.len > 0) {
-            const current_id = frontier.swapRemove(0);
+            const current_id = frontier.pop();
+            if (self.canceled.contains(current_id)) continue;
             try self.canceled.put(self.allocator, current_id, {});
 
-            // Find all direct children of current_id in the ready queue.
-            for (self.ready.items) |task| {
+            for (self.ready.items[self.ready_head..]) |task| {
                 if (task.parent_id == current_id and !self.canceled.contains(task.id)) {
                     try frontier.append(self.allocator, task.id);
                 }
@@ -82,18 +100,13 @@ test "scheduler: cancelSubtree cancels transitive descendants" {
     const budget = types.TokenBudget.defaultPlanning();
     const mem_ref = types.WorkingMemoryRef{ .symbol_snapshot_id = 0, .task_graph_id = 0, .policy_snapshot_id = 0, .artifact_set_id = 0 };
 
-    // Submit: root(1) → child(2) → grandchild(3).
-    try scheduler.submit(.{ .id = 1, .parent_id = null,  .kind = .planner, .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "root" });
-    try scheduler.submit(.{ .id = 2, .parent_id = 1,    .kind = .coder,   .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "child" });
-    try scheduler.submit(.{ .id = 3, .parent_id = 2,    .kind = .tester,  .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "grandchild" });
+    try scheduler.submit(.{ .id = 1, .parent_id = null, .kind = .planner, .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "root" });
+    try scheduler.submit(.{ .id = 2, .parent_id = 1, .kind = .coder, .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "child" });
+    try scheduler.submit(.{ .id = 3, .parent_id = 2, .kind = .tester, .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "grandchild" });
 
     try scheduler.cancelSubtree(1);
-
-    // All three should be cancelled — pop should return null.
     try std.testing.expectEqual(@as(?types.AgentTask, null), scheduler.pop());
-    try std.testing.expect(scheduler.canceled.contains(1));
-    try std.testing.expect(scheduler.canceled.contains(2));
-    try std.testing.expect(scheduler.canceled.contains(3));
+    try std.testing.expectEqual(@as(usize, 0), scheduler.canceled.count());
 }
 
 test "scheduler: pop skips multiple cancelled tasks and returns first valid one" {
@@ -104,8 +117,8 @@ test "scheduler: pop skips multiple cancelled tasks and returns first valid one"
     const mem_ref = types.WorkingMemoryRef{ .symbol_snapshot_id = 0, .task_graph_id = 0, .policy_snapshot_id = 0, .artifact_set_id = 0 };
 
     try scheduler.submit(.{ .id = 10, .parent_id = null, .kind = .planner, .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "t10" });
-    try scheduler.submit(.{ .id = 11, .parent_id = null, .kind = .coder,   .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "t11" });
-    try scheduler.submit(.{ .id = 12, .parent_id = null, .kind = .tester,  .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "t12" });
+    try scheduler.submit(.{ .id = 11, .parent_id = null, .kind = .coder, .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "t11" });
+    try scheduler.submit(.{ .id = 12, .parent_id = null, .kind = .tester, .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "t12" });
 
     try scheduler.cancelSubtree(10);
     try scheduler.cancelSubtree(11);
@@ -113,6 +126,7 @@ test "scheduler: pop skips multiple cancelled tasks and returns first valid one"
     const task = scheduler.pop();
     try std.testing.expect(task != null);
     try std.testing.expectEqual(@as(u128, 12), task.?.id);
+    try std.testing.expectEqual(@as(usize, 0), scheduler.canceled.count());
 }
 
 test "scheduler enqueues and pops task" {
@@ -142,4 +156,24 @@ test "scheduler enqueues and pops task" {
     const popped = scheduler.pop() orelse return error.ExpectedTask;
     try std.testing.expectEqual(task.id, popped.id);
     try std.testing.expectEqual(task.kind, popped.kind);
+}
+
+test "scheduler preserves FIFO order across compaction" {
+    var scheduler = Scheduler.init(std.testing.allocator);
+    defer scheduler.deinit();
+
+    const budget = types.TokenBudget.defaultPlanning();
+    const mem_ref = types.WorkingMemoryRef{ .symbol_snapshot_id = 0, .task_graph_id = 0, .policy_snapshot_id = 0, .artifact_set_id = 0 };
+
+    var id: u128 = 1000;
+    while (id < 3100) : (id += 1) {
+        try scheduler.submit(.{ .id = id, .parent_id = null, .kind = .coder, .mode = .sequential, .state = .queued, .budget = budget, .memory = mem_ref, .prompt_template_id = 0, .rollback_journal_id = 0, .title = "fifo" });
+    }
+
+    var expected: u128 = 1000;
+    while (expected < 3100) : (expected += 1) {
+        const task = scheduler.pop() orelse return error.ExpectedTask;
+        try std.testing.expectEqual(expected, task.id);
+    }
+    try std.testing.expectEqual(@as(?types.AgentTask, null), scheduler.pop());
 }
