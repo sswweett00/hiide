@@ -23,9 +23,12 @@ class IdempotencyStore<T> {
       _entries.remove(_entries.keys.first);
     }
 
-    future.catchError((_) {
-      _entries.remove(key);
-    });
+    future.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stackTrace) {
+        _entries.remove(key);
+      },
+    );
     return future;
   }
 
