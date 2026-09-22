@@ -238,7 +238,7 @@ fn deinitValue(allocator: std.mem.Allocator, value: *json.Value) void {
         .object => |*obj| {
             var it = obj.iterator();
             while (it.next()) |entry| deinitValue(allocator, entry.value_ptr);
-            obj.deinit();
+            obj.deinit(allocator);
         },
         .array => |*arr| {
             for (arr.items) |*item| deinitValue(allocator, item);
@@ -264,11 +264,11 @@ fn deinitObject(allocator: std.mem.Allocator, map: *json.ObjectMap) void {
         var value = entry.value_ptr.*;
         deinitValue(allocator, &value);
     }
-    map.deinit();
+    map.deinit(allocator);
 }
 
 fn buildObj(allocator: std.mem.Allocator, pairs: []const struct { []const u8, json.Value }) !json.ObjectMap {
-    var map = try json.ObjectMap.init(allocator, &.{}, &.{});
+    var map: json.ObjectMap = .empty;
     errdefer deinitObject(allocator, &map);
     for (pairs) |pair| {
         try map.put(allocator, pair[0], pair[1]);
@@ -434,7 +434,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
             arr.deinit();
         }
         for (out[0..count]) |r| {
-            var map = json.ObjectMap.init(allocator);
+            var map: json.ObjectMap = .empty;
             errdefer deinitObject(allocator, &map);
             try map.put("line", .{ .integer = @intCast(r.line) });
             try map.put("col", .{ .integer = @intCast(r.col) });
