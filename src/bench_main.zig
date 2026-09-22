@@ -4,10 +4,8 @@ const std = @import("std");
 const hiide = @import("hiide");
 const bench = hiide.bench.runner;
 
-pub fn main() !void {
-    var gpa = std.heap.DebugAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const alloc = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const alloc = init.gpa;
 
     const stdout = std.io.getStdOut().writer();
     try stdout.print("hiide benchmark suite — build: 0.1.0-dev\n\n", .{});
