@@ -126,8 +126,8 @@ pub const Client = struct {
         const body = try buildRequestJson(self.allocator, req);
         defer self.allocator.free(body);
 
-        var response_body: std.ArrayList(u8) = .empty;
-        defer response_body.deinit(self.allocator);
+        var response_body = std.Io.Writer.Allocating.init(self.allocator);
+        defer response_body.deinit();
 
         const auth_value = std.fmt.allocPrint(self.allocator, "Bearer {s}", .{self.api_key}) catch
             return GroqError.OutOfMemory;
@@ -142,8 +142,7 @@ pub const Client = struct {
                 .{ .name = "Content-Type", .value = "application/json" },
                 .{ .name = "Accept", .value = "application/json" },
             },
-            .response_storage = .{ .dynamic = &response_body },
-            .max_append_size = 8 * 1024 * 1024,
+            .response_writer = &response_body.writer,
         }) catch return GroqError.HttpFailed;
 
         const status_int: u16 = @intFromEnum(result.status);
@@ -151,7 +150,7 @@ pub const Client = struct {
             return GroqError.BadStatus;
         }
 
-        return try parseChatResponse(self.allocator, response_body.items);
+        return try parseChatResponse(self.allocator, response_body.written());
     }
 };
 
@@ -203,7 +202,7 @@ pub fn loadApiKey(allocator: std.mem.Allocator, io: std.Io) GroqError![]u8 {
 fn buildRequestJson(allocator: std.mem.Allocator, req: ChatRequest) GroqError![]u8 {
     var list = compat.ManagedArrayList(u8).init(allocator);
     errdefer list.deinit();
-    const w = list.writer();
+    var w = list.writer();
 
     w.writeAll("{\"model\":\"") catch return GroqError.OutOfMemory;
     try writeJsonString(w, req.model);
