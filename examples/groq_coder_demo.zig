@@ -1,6 +1,7 @@
 /// Fast demo of real LLM-based coder agent using Groq.
 /// Build/run with: `zig build groq-coder-demo -- "instruction"`
 const std = @import("std");
+const compat = @import("../src/core/compat.zig");
 const hiide = @import("hiide");
 
 const framework = hiide.agent.framework;
@@ -14,12 +15,14 @@ const journal_mod = hiide.agent.journal;
 
 pub fn main(init: std.process.Init) !void {
     const allocator = init.gpa;
-    const out = std.io.getStdOut().writer();
+    var stdout_buf: [4096]u8 = undefined;
+    var stdout_writer = std.Io.File.stdout().writerStreaming(init.io, &stdout_buf);
+    const out = &stdout_writer.interface;
+    defer out.flush() catch {};
 
     // Parse instruction from command line
-    var args = try std.process.argsWithAllocator(allocator);
-    defer args.deinit();
-    _ = args.skip(); // exe
+    var args = init.minimal.args.iterate();
+    _ = args.next(); // exe
     
     const instruction = args.next() orelse "Create a Python file that adds two numbers";
     
@@ -54,7 +57,7 @@ pub fn main(init: std.process.Init) !void {
     };
     
     // Create Groq coder agent
-    var coder = try GroqCoder.init(allocator);
+    var coder = try GroqCoder.init(allocator, init.io);
     defer coder.deinit(allocator);
     
     const descriptor = agent_mod.AgentDescriptor{
@@ -104,13 +107,13 @@ pub fn main(init: std.process.Init) !void {
     try out.print("Running Groq coder agent...\n", .{});
     
     // Run the agent
-    const start = std.time.nanoTimestamp();
+    const start = compat.milliTimestamp();
     const output = agent.run(&ctx) catch |err| {
         try out.print("Agent error: {}\n", .{err});
         return err;
     };
-    const end = std.time.nanoTimestamp();
-    const elapsed_ms = @divTrunc(end - start, std.time.ns_per_ms);
+    const end = compat.milliTimestamp();
+    const elapsed_ms = end - start;
     
     try out.print("Status: {s}\n", .{@tagName(output.status)});
     try out.print("Summary: {s}\n", .{output.summary});
