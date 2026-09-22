@@ -6,8 +6,8 @@ const highlighter_mod = @import("highlighter.zig");
 pub const Editor = struct {
     allocator: std.mem.Allocator,
     buffer: buffer_mod.TextBuffer,
-    undo_stack: std.ArrayList(UndoEntry),
-    redo_stack: std.ArrayList(UndoEntry),
+    undo_stack: compat.ManagedArrayList(UndoEntry),
+    redo_stack: compat.ManagedArrayList(UndoEntry),
     cursor_pos: usize,
     selection_start: usize,
     selection_end: usize,
