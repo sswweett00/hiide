@@ -355,28 +355,38 @@ class WorkspacePickerScreen extends ConsumerWidget {
                         )),
                     const SizedBox(height: DesignTokens.space2),
                   ],
-                  Row(
-                    children: [
-                      if (!kIsWeb) ...[
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () => _openNativePicker(context, ref),
-                            icon: const Icon(Icons.laptop,
-                                size: DesignTokens.iconSM),
-                            label: const Text('Sistem seçici'),
-                          ),
-                        ),
-                        const SizedBox(width: DesignTokens.space2),
-                      ],
-                      Expanded(
-                        child: AiGradientButton(
-                          onPressed: () => _pickFolder(context, ref),
-                          label: kIsWeb ? 'Browse Folder' : 'Open Workspace',
-                          icon: Icons.folder_open,
-                          expand: true,
-                        ),
-                      ),
-                    ],
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final compact = constraints.maxWidth < 430;
+                      final browse = AiGradientButton(
+                        onPressed: () => _pickFolder(context, ref),
+                        label: kIsWeb ? 'Browse Folder' : 'Open Workspace',
+                        icon: Icons.folder_open,
+                        expand: true,
+                      );
+                      if (kIsWeb) return browse;
+                      final native = OutlinedButton.icon(
+                        onPressed: () => _openNativePicker(context, ref),
+                        icon: const Icon(Icons.laptop, size: DesignTokens.iconSM),
+                        label: const Text('Sistem seçici'),
+                      );
+                      return compact
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                native,
+                                const SizedBox(height: DesignTokens.space2),
+                                browse,
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Expanded(child: native),
+                                const SizedBox(width: DesignTokens.space2),
+                                Expanded(child: browse),
+                              ],
+                            );
+                    },
                   ),
                 ],
               ),
