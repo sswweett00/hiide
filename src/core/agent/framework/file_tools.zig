@@ -110,7 +110,7 @@ pub fn writeFileTool() tool_mod.Tool {
             defer allocator.free(path);
             const io = std.Io.Threaded.global_single_threaded.io();
             if (std.fs.path.dirname(path)) |dir_path| {
-                compat.cwd().makePath(io, dir_path) catch return ToolResult.failure("unable to create workspace parent directory");
+                std.fs.cwd().makePath(dir_path) catch return ToolResult.failure("unable to create workspace parent directory");
             }
             // Re-check before writing to reduce symlink TOCTOU risk.
             try rejectUnsafePath(ctx, parsed.value.path);
@@ -193,10 +193,10 @@ pub fn listFilesTool() tool_mod.Tool {
                 const kind: []const u8 = if (entry.kind == .directory) "directory" else if (entry.kind == .sym_link) "symlink" else "file";
                 try entries.append(.{ .name = try allocator.dupe(u8, entry.name), .kind = try allocator.dupe(u8, kind) });
             }
-            var output = compat.ManagedArrayList(u8).init(allocator);
-            defer output.deinit();
-            try std.json.stringify(entries.items, .{}, output.writer());
-            return ToolResult.success(try output.toOwnedSlice());
+            const output = compat.jsonStringifyAlloc(allocator, entries.items, .{}) catch {
+                return ToolResult.failure("failed to serialize workspace entries");
+            };
+            return ToolResult.success(output);
         }
     };
     return tool_mod.fromFn(.{
@@ -238,7 +238,7 @@ pub fn createDirectoryTool() tool_mod.Tool {
             const path = try resolvePathInput(ctx, input);
             defer allocator.free(path);
             const io = std.Io.Threaded.global_single_threaded.io();
-            compat.cwd().makePath(io, path) catch |err| return ToolResult.failure(try std.fmt.allocPrint(allocator, "failed to create workspace directory: {s}", .{@errorName(err)}));
+            std.fs.cwd().makePath(path) catch |err| return ToolResult.failure(try std.fmt.allocPrint(allocator, "failed to create workspace directory: {s}", .{@errorName(err)}));
             return ToolResult.success("{\"created\":true}");
         }
     };
