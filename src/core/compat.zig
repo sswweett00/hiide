@@ -163,6 +163,8 @@ pub const Condition = struct {
 
 pub fn ManagedArrayList(comptime T: type) type {
     return struct {
+        const Self = @This();
+
         items: []T,
         capacity: usize,
         allocator_: std.mem.Allocator,
@@ -228,7 +230,7 @@ pub fn ManagedArrayList(comptime T: type) type {
         }
 
         pub const Writer = struct {
-            context: *@This(),
+            context: *Self,
 
             pub fn writeAll(self: *@This(), bytes: []const u8) anyerror!void {
                 try self.context.appendSlice(bytes);
