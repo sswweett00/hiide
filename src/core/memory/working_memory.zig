@@ -1,6 +1,9 @@
 const std = @import("std");
 const agent_types = @import("../agent/types.zig");
 
+const MAX_ARTIFACTS: usize = 10_000;
+const MAX_ARTIFACT_BYTES: usize = 16 * 1024 * 1024;
+
 pub const ArtifactKind = enum(u8) {
     diagnostic_bundle,
     patch_candidate,
@@ -39,6 +42,8 @@ pub const WorkingMemory = struct {
     /// @example
     /// const artifact = try memory.put(.semantic_query, "{\"query\":\"auth\"}");
     pub fn put(self: *WorkingMemory, kind: ArtifactKind, bytes: []const u8) !ArtifactRef {
+        if (bytes.len > MAX_ARTIFACT_BYTES) return error.ArtifactTooLarge;
+        if (self.artifacts.items.len >= MAX_ARTIFACTS) return error.ArtifactLimitExceeded;
         const owned = try self.allocator.dupe(u8, bytes);
         const artifact = ArtifactRef{
             .id = self.next_artifact_id,
@@ -62,3 +67,19 @@ pub const WorkingMemory = struct {
         };
     }
 };
+
+
+test "working memory: bounds oversized artifacts and artifact count" {
+    var memory = WorkingMemory.init(std.testing.allocator);
+    defer memory.deinit();
+
+    const oversized = try std.testing.allocator.alloc(u8, MAX_ARTIFACT_BYTES + 1);
+    defer std.testing.allocator.free(oversized);
+    try std.testing.expectError(error.ArtifactTooLarge, memory.put(.test_report, oversized));
+
+    var i: usize = 0;
+    while (i < MAX_ARTIFACTS) : (i += 1) {
+        _ = try memory.put(.semantic_query, "x");
+    }
+    try std.testing.expectError(error.ArtifactLimitExceeded, memory.put(.semantic_query, "y"));
+}
