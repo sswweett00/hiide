@@ -40,9 +40,9 @@ class StatusBar extends ConsumerWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final w = constraints.maxWidth;
-            final showFile = w >= 480;
-            final showStats = w >= 650;
-            final showAi = w >= 760;
+            final showFile = w >= 1000;
+            final showStats = w >= 1000;
+            final showAi = true;
             return Row(
               children: [
                 _StatusItem(icon: connected ? Icons.cloud_done_outlined : Icons.cloud_off_outlined, label: connected ? 'Engine' : 'Fallback', tone: connected ? const Color(0xFF3FB950) : Colors.amber),
@@ -88,11 +88,11 @@ class _AiStatusItem extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final connection = ref.watch(groqConnectionProvider);
     final (label, tone) = isThinking
-        ? ('AI Working', cs.primary)
+        ? ('AI: Working', cs.primary)
         : switch (connection) {
-            AsyncData(:final value) => value.ok ? ('AI Ready', const Color(0xFF3FB950)) : ('AI Offline', cs.error),
-            AsyncError() => ('AI Offline', cs.error),
-            _ => ('AI Checking', Colors.amber),
+            AsyncData(:final value) => value.ok ? ('AI: Ready', const Color(0xFF3FB950)) : ('AI: Offline', cs.error),
+            AsyncError() => ('AI: Offline', cs.error),
+            _ => ('AI: Checking', Colors.amber),
           };
 
     return Row(
