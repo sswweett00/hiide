@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 import '../ai_chat_client.dart';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -109,17 +107,6 @@ for standard library types that are already available. Output ONLY valid JSON.''
 
   String _buildImportLine(ImportSuggestion s) {
     return "import '${s.importPath}';";
-  }
-
-  int _findImportPosition(List<String> lines) {
-    for (var i = 0; i < lines.length; i++) {
-      final trimmed = lines[i].trim();
-      if (trimmed.isEmpty || trimmed.startsWith('//') || trimmed.startsWith('import ') || trimmed.startsWith('export ') || trimmed.startsWith('part ')) {
-        continue;
-      }
-      return i;
-    }
-    return lines.length;
   }
 
   int _findImportInsertPosition(List<String> lines) {
