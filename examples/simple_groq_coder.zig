@@ -80,9 +80,10 @@ pub fn main(init: std.process.Init) !void {
                 if (parsed.value.content) |file_content| {
                     try out.print("\nCreating file: {s}\n", .{path});
                     
-                    var file = try std.fs.cwd().createFile(path, .{});
-                    defer file.close();
-                    try file.writeAll(file_content);
+                    const dir = std.Io.Dir.cwd();
+                    const file = try dir.createFile(init.io, path, .{});
+                    defer file.close(init.io);
+                    try file.writeStreamingAll(init.io, file_content);
                     
                     try out.print("File created successfully!\n", .{});
                 }
