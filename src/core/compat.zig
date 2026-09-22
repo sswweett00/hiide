@@ -451,7 +451,7 @@ pub fn runCommandWithTimeout(
 
     var done = std.atomic.Value(bool).init(timeout_ms == 0);
     var timed_out = std.atomic.Value(bool).init(false);
-    var watchdog: ?Watchdog = null;
+    var watchdog_state: Watchdog = undefined;
     var watchdog_thread: ?std.Thread = null;
 
     if (timeout_ms > 0) {
