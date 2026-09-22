@@ -3,13 +3,9 @@
 const std = @import("std");
 const hiide = @import("hiide");
 
-pub fn main(init: std.process.Init.Minimal) !void {
-    var gpa = std.heap.DebugAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
-
-    // Zig 0.16 exposes argv through process.Init.Minimal.
-    var args = init.args.iterate();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
+    var args = init.minimal.args.iterate();
     _ = args.next(); // exe
 
     var model: []const u8 = hiide.provider.groq.default_model;
