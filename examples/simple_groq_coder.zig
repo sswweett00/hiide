@@ -5,10 +5,8 @@ const hiide = @import("hiide");
 
 const groq_mod = hiide.provider.groq;
 
-pub fn main() !void {
-    var gpa = std.heap.DebugAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
     const out = std.io.getStdOut().writer();
 
     // Parse instruction from command line
