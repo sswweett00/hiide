@@ -51,6 +51,8 @@ pub const CrdtOp = struct {
 
 pub const CollabError = error{
     SessionNotFound,
+    SessionExists,
+    DocumentExists,
     PermissionDenied,
     DivergenceDetected,
     OutOfMemory,
@@ -96,13 +98,20 @@ pub const DocState = struct {
 /// const sess = CollaborationSession{ .session_id = "s1", .doc_id = "f.zig", .role = .executor, .shared_index_key_id = "k1" };
 /// try engine.createSession(sess, "initial content");
 /// try engine.applyRemote(sess, op);
+const StoredSession = struct {
+    doc_id: []const u8,
+    role: Role,
+    shared_index_key_id: []const u8,
+};
+
 pub const CollabEngine = struct {
     allocator: std.mem.Allocator,
     docs: std.StringHashMapUnmanaged(DocState),
+    sessions: std.StringHashMapUnmanaged(StoredSession),
     presence: std.StringHashMapUnmanaged(PresenceState),
 
     pub fn init(alloc: std.mem.Allocator) CollabEngine {
-        return .{ .allocator = alloc, .docs = .{}, .presence = .{} };
+        return .{ .allocator = alloc, .docs = .{}, .sessions = .{}, .presence = .{} };
     }
 
     pub fn deinit(self: *CollabEngine) void {
@@ -110,7 +119,13 @@ pub const CollabEngine = struct {
         while (it.next()) |entry| {
             entry.value_ptr.deinit(self.allocator);
         }
-        self.docs.deinit(self.allocator);
+        var sit = self.sessions.iterator();
+        while (sit.next()) |entry| {
+            self.allocator.free(entry.key_ptr.*);
+            self.allocator.free(entry.value_ptr.doc_id);
+            self.allocator.free(entry.value_ptr.shared_index_key_id);
+        }
+        self.sessions.deinit(self.allocator);
         self.presence.deinit(self.allocator);
         self.* = undefined;
     }
@@ -121,10 +136,22 @@ pub const CollabEngine = struct {
         sess: CollaborationSession,
         initial_content: []const u8,
     ) !void {
+        if (self.sessions.contains(sess.session_id)) return error.SessionExists;
+        if (self.docs.contains(sess.doc_id)) return error.DocumentExists;
+
         var doc = DocState.init(self.allocator, sess.doc_id);
+        errdefer doc.deinit(self.allocator);
         try doc.content.appendSlice(self.allocator, initial_content);
         doc.recomputeHash();
-        try self.docs.put(self.allocator, sess.doc_id, doc);
+        try self.docs.put(self.allocator, try self.allocator.dupe(u8, sess.doc_id), doc);
+
+        const session_id = try self.allocator.dupe(u8, sess.session_id);
+        errdefer self.allocator.free(session_id);
+        const doc_id = try self.allocator.dupe(u8, sess.doc_id);
+        errdefer self.allocator.free(doc_id);
+        const key_id = try self.allocator.dupe(u8, sess.shared_index_key_id);
+        errdefer self.allocator.free(key_id);
+        try self.sessions.put(self.allocator, session_id, .{ .doc_id = doc_id, .role = sess.role, .shared_index_key_id = key_id });
     }
 
     /// Applies a remote CRDT operation to the local document.
@@ -136,12 +163,11 @@ pub const CollabEngine = struct {
         sess: CollaborationSession,
         op: CrdtOp,
     ) CollabError!void {
-        // Observers cannot mutate the document.
-        if (sess.role == .observer and op.kind != .retain) {
-            return CollabError.PermissionDenied;
-        }
+        const stored = self.sessions.get(sess.session_id) orelse return CollabError.SessionNotFound;
+        if (!std.mem.eql(u8, stored.doc_id, sess.doc_id)) return CollabError.SessionNotFound;
+        if (stored.role != .executor and op.kind != .retain) return CollabError.PermissionDenied;
 
-        const doc = self.docs.getPtr(sess.doc_id) orelse return CollabError.SessionNotFound;
+        const doc = self.docs.getPtr(stored.doc_id) orelse return CollabError.SessionNotFound;
 
         switch (op.kind) {
             .insert => {
@@ -309,4 +335,29 @@ test "collab: presence update and read" {
     const p = engine.getPresence("alice");
     try std.testing.expect(p != null);
     try std.testing.expectEqual(@as(u32, 42), p.?.line);
+}
+
+
+test "collab: commenter cannot mutate and session identity is enforced" {
+    var engine = CollabEngine.init(std.testing.allocator);
+    defer engine.deinit();
+
+    const sess = CollaborationSession{
+        .session_id = "commenter",
+        .doc_id = "shared.zig",
+        .role = .commenter,
+        .shared_index_key_id = "k",
+    };
+    try engine.createSession(sess, "data");
+
+    const insert = CrdtOp{ .seq = 1, .author = "commenter", .kind = .insert, .offset = 0, .content = "X", .length = 0, .ts_unix_ms = 0 };
+    try std.testing.expectError(CollabError.PermissionDenied, engine.applyRemote(sess, insert));
+
+    const forged = CollaborationSession{
+        .session_id = "unknown",
+        .doc_id = "shared.zig",
+        .role = .executor,
+        .shared_index_key_id = "k",
+    };
+    try std.testing.expectError(CollabError.SessionNotFound, engine.applyRemote(forged, insert));
 }
