@@ -11,6 +11,7 @@ pub const JournalEntryKind = enum(u8) {
     network_request,
     package_install,
     secret_access,
+    process_exec,
 };
 
 pub const JournalEntryState = enum(u8) {
