@@ -119,13 +119,21 @@ class _FolderBrowserDialogState extends State<FolderBrowserDialog> {
     // The current path is selectable only when it is an existing directory.
     final canSelect = _error == null && _isReadableDir(currentPath);
 
+    final media = MediaQuery.sizeOf(context);
+    final dialogWidth = media.width < 640 ? media.width - 24 : 600.0;
+    final dialogHeight = media.height < 620 ? media.height - 32 : 500.0;
+
     return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        width: 600,
-        height: 500,
-        padding: const EdgeInsets.all(DesignTokens.space4),
-        child: Column(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: dialogWidth.clamp(280.0, 600.0),
+          maxHeight: dialogHeight.clamp(280.0, 500.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(DesignTokens.space4),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -149,48 +157,55 @@ class _FolderBrowserDialogState extends State<FolderBrowserDialog> {
               ],
             ),
             const Divider(),
-            // Path Navigation Header
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_upward),
-                  onPressed: _goUp,
-                  tooltip: 'Üst Klasör',
-                ),
-                IconButton(
-                  icon: const Icon(Icons.home_outlined),
-                  onPressed: _goHome,
-                  tooltip: 'Ana Klasör',
-                ),
-                Expanded(
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: cs.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(6),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < 430;
+                final controls = Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(icon: const Icon(Icons.arrow_upward), onPressed: _goUp, tooltip: 'Üst Klasör'),
+                    IconButton(icon: const Icon(Icons.home_outlined), onPressed: _goHome, tooltip: 'Ana Klasör'),
+                    IconButton(
+                      icon: Icon(_showHidden ? Icons.visibility : Icons.visibility_off, size: DesignTokens.iconSM),
+                      tooltip: 'Gizli dosyalar',
+                      onPressed: () {
+                        setState(() => _showHidden = !_showHidden);
+                        _reload();
+                      },
                     ),
-                    child: Text(
-                      currentPath,
-                      style: TextStyle(
-                          color: cs.onSurface,
-                          fontFamily: 'JetBrains Mono',
-                          fontSize: DesignTokens.fontSizeSM),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  ],
+                );
+                final pathBox = Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(color: cs.surfaceContainerHighest, borderRadius: BorderRadius.circular(6)),
+                  child: Text(
+                    currentPath,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: cs.onSurface, fontFamily: 'JetBrains Mono', fontSize: DesignTokens.fontSizeSM),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(
-                      _showHidden ? Icons.visibility : Icons.visibility_off,
-                      size: DesignTokens.iconSM),
-                  tooltip: 'Gizli dosyalar',
-                  onPressed: () {
-                    setState(() => _showHidden = !_showHidden);
-                    _reload();
-                  },
-                ),
-              ],
+                );
+                return compact
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [controls, const SizedBox(height: DesignTokens.space1), pathBox],
+                      )
+                    : Row(
+                        children: [
+                          IconButton(icon: const Icon(Icons.arrow_upward), onPressed: _goUp, tooltip: 'Üst Klasör'),
+                          IconButton(icon: const Icon(Icons.home_outlined), onPressed: _goHome, tooltip: 'Ana Klasör'),
+                          Expanded(child: pathBox),
+                          IconButton(
+                            icon: Icon(_showHidden ? Icons.visibility : Icons.visibility_off, size: DesignTokens.iconSM),
+                            tooltip: 'Gizli dosyalar',
+                            onPressed: () {
+                              setState(() => _showHidden = !_showHidden);
+                              _reload();
+                            },
+                          ),
+                        ],
+                      );
+              },
             ),
             if (_error != null) ...[
               const SizedBox(height: DesignTokens.space2),
@@ -252,16 +267,11 @@ class _FolderBrowserDialogState extends State<FolderBrowserDialog> {
                                   ? OutlinedButton.icon(
                                       style: OutlinedButton.styleFrom(
                                         visualDensity: VisualDensity.compact,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: DesignTokens.space2),
+                                        padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space2),
                                       ),
-                                      icon: const Icon(Icons.check,
-                                          size: DesignTokens.iconXS),
-                                      label: const Text('Seç',
-                                          style: TextStyle(
-                                              fontSize: DesignTokens.fontSizeXS)),
-                                      onPressed: () =>
-                                          Navigator.pop(context, item.path),
+                                      icon: const Icon(Icons.check, size: DesignTokens.iconXS),
+                                      label: const Text('Seç', style: TextStyle(fontSize: DesignTokens.fontSizeXS)),
+                                      onPressed: () => Navigator.pop(context, item.path),
                                     )
                                   : null,
                               onTap: () {
