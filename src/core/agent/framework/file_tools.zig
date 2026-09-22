@@ -62,6 +62,13 @@ fn rejectUnsafePath(ctx: *tool_mod.ToolContext, relative_path: []const u8) !void
     }
 }
 
+fn readWorkspaceFile(allocator: std.mem.Allocator, io: std.Io, path: []const u8, max_bytes: usize) ![]u8 {
+    var file = try compat.cwd().openFile(io, path, .{});
+    defer file.close(io);
+    var reader = file.reader(io, &.{});
+    return reader.interface.allocRemaining(allocator, .limited(max_bytes));
+}
+
 fn resolvePathInput(ctx: *tool_mod.ToolContext, input: []const u8) ![]u8 {
     const raw = try rawPathInput(ctx, input);
     defer ctx.allocator.free(raw);
@@ -74,7 +81,8 @@ pub fn readFileTool() tool_mod.Tool {
         fn invoke(ctx: *tool_mod.ToolContext, input: []const u8) !ToolResult {
             const path = try resolvePathInput(ctx, input);
             defer ctx.allocator.free(path);
-            const content = compat.cwd().readFileAlloc(ctx.allocator, path, MAX_FILE_BYTES) catch {
+            const io = std.Io.Threaded.global_single_threaded.io();
+            const content = readWorkspaceFile(ctx.allocator, io, path, MAX_FILE_BYTES) catch {
                 return ToolResult.failure("file could not be read inside workspace");
             };
             return ToolResult.success(content);
@@ -100,14 +108,15 @@ pub fn writeFileTool() tool_mod.Tool {
 
             const path = try resolvePathInput(ctx, parsed.value.path);
             defer allocator.free(path);
+            const io = std.Io.Threaded.global_single_threaded.io();
             if (std.fs.path.dirname(path)) |dir_path| {
-                compat.cwd().makePath(dir_path) catch return ToolResult.failure("unable to create workspace parent directory");
+                compat.cwd().makePath(io, dir_path) catch return ToolResult.failure("unable to create workspace parent directory");
             }
             // Re-check before writing to reduce symlink TOCTOU risk.
             try rejectUnsafePath(ctx, parsed.value.path);
-            var file = compat.cwd().createFile(path, .{}) catch return ToolResult.failure("unable to open workspace file for write");
-            defer file.close();
-            try file.writeAll(parsed.value.content);
+            var file = compat.cwd().createFile(io, path, .{}) catch return ToolResult.failure("unable to open workspace file for write");
+            defer file.close(io);
+            try file.writeAll(io, parsed.value.content);
             const response = try std.fmt.allocPrint(allocator, "{{\"written\":true,\"size\":{d}}}", .{parsed.value.content.len});
             return ToolResult.success(response);
         }
@@ -131,7 +140,8 @@ pub fn applyDiffTool() tool_mod.Tool {
             if (parsed.value.target.len == 0) return ToolResult.failure("diff target must not be empty");
             const path = try resolvePathInput(ctx, parsed.value.path);
             defer allocator.free(path);
-            const content = compat.cwd().readFileAlloc(allocator, path, MAX_FILE_BYTES) catch return ToolResult.failure("file could not be read inside workspace");
+            const io = std.Io.Threaded.global_single_threaded.io();
+            const content = readWorkspaceFile(allocator, io, path, MAX_FILE_BYTES) catch return ToolResult.failure("file could not be read inside workspace");
             defer allocator.free(content);
 
             const idx = std.mem.indexOf(u8, content, parsed.value.target) orelse return ToolResult.failure("target text not found");
@@ -146,9 +156,10 @@ pub fn applyDiffTool() tool_mod.Tool {
             @memcpy(new_content[idx .. idx + parsed.value.replacement.len], parsed.value.replacement);
             @memcpy(new_content[idx + parsed.value.replacement.len ..], content[idx + parsed.value.target.len ..]);
 
-            var file = compat.cwd().createFile(path, .{ .truncate = true }) catch return ToolResult.failure("unable to open workspace file for patch");
-            defer file.close();
-            try file.writeAll(new_content);
+            const io = std.Io.Threaded.global_single_threaded.io();
+            var file = compat.cwd().createFile(io, path, .{ .truncate = true }) catch return ToolResult.failure("unable to open workspace file for patch");
+            defer file.close(io);
+            try file.writeAll(io, new_content);
             return ToolResult.success("{\"applied\":true}");
         }
     };
@@ -169,8 +180,9 @@ pub fn listFilesTool() tool_mod.Tool {
             const allocator = ctx.allocator;
             const path = if (input.len == 0 or std.mem.eql(u8, input, ".")) try allocator.dupe(u8, ".") else try resolvePathInput(ctx, input);
             defer allocator.free(path);
-            var dir = compat.cwd().openDir(path, .{ .iterate = true }) catch return ToolResult.failure("directory not found inside workspace");
-            defer dir.close();
+            const io = std.Io.Threaded.global_single_threaded.io();
+            var dir = compat.cwd().openDir(io, path, .{ .iterate = true }) catch return ToolResult.failure("directory not found inside workspace");
+            defer dir.close(io);
             var entries = compat.ManagedArrayList(Entry).init(allocator);
             defer {
                 for (entries.items) |e| { allocator.free(e.name); allocator.free(e.kind); }
@@ -178,7 +190,7 @@ pub fn listFilesTool() tool_mod.Tool {
             }
             var iter = dir.iterate();
             while (entries.items.len < MAX_LIST_ENTRIES) {
-                const entry = try iter.next() orelse break;
+                const entry = try iter.next(io) orelse break;
                 const kind: []const u8 = if (entry.kind == .directory) "directory" else if (entry.kind == .sym_link) "symlink" else "file";
                 try entries.append(.{ .name = try allocator.dupe(u8, entry.name), .kind = try allocator.dupe(u8, kind) });
             }
@@ -204,8 +216,9 @@ pub fn deleteFileTool() tool_mod.Tool {
             const path = try resolvePathInput(ctx, input);
             defer allocator.free(path);
             if (std.mem.eql(u8, path, ".") or std.mem.eql(u8, path, "/")) return ToolResult.failure("cannot delete workspace root");
-            compat.cwd().deleteFile(path) catch {
-                compat.cwd().deleteTree(path) catch return ToolResult.failure("failed to delete workspace path");
+            const io = std.Io.Threaded.global_single_threaded.io();
+            compat.cwd().deleteFile(io, path) catch {
+                compat.cwd().deleteTree(io, path) catch return ToolResult.failure("failed to delete workspace path");
             };
             return ToolResult.success("{\"deleted\":true}");
         }
@@ -225,7 +238,8 @@ pub fn createDirectoryTool() tool_mod.Tool {
             const allocator = ctx.allocator;
             const path = try resolvePathInput(ctx, input);
             defer allocator.free(path);
-            compat.cwd().makePath(path) catch |err| return ToolResult.failure(try std.fmt.allocPrint(allocator, "failed to create workspace directory: {s}", .{@errorName(err)}));
+            const io = std.Io.Threaded.global_single_threaded.io();
+            compat.cwd().makePath(io, path) catch |err| return ToolResult.failure(try std.fmt.allocPrint(allocator, "failed to create workspace directory: {s}", .{@errorName(err)}));
             return ToolResult.success("{\"created\":true}");
         }
     };
