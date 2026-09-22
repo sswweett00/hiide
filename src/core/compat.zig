@@ -157,8 +157,7 @@ pub const Condition = struct {
     }
 
     pub fn signal(self: *Condition) void {
-        _ = self.seq.fetchAdd(1, .release);
-    }
+        _ = self.seq.fetchAdd(1, .release);    }
 };
 
 pub fn ManagedArrayList(comptime T: type) type {
@@ -317,8 +316,7 @@ pub fn cwd() std.Io.Dir {
     return std.Io.Dir.cwd();
 }
 
-pub fn realpathAlloc(allocator: std.mem.Allocator, rel_path: []const u8) ![:0]u8 {
-    if (builtin.os.tag == .linux) {
+pub fn realpathAlloc(allocator: std.mem.Allocator, rel_path: []const u8) ![:0]u8 {    if (builtin.os.tag == .linux) {
         var buf: [4096]u8 = undefined;
         const len = linux.getcwd(&buf, buf.len);
         if (len == 0) return error.NotFound;
@@ -332,6 +330,7 @@ pub const ChildResult = struct {
     stdout: []u8,
     stderr: []u8,
     success: bool,
+    timed_out: bool = false,
 
     pub fn deinit(self: *ChildResult, allocator: std.mem.Allocator) void {
         allocator.free(self.stdout);
@@ -340,6 +339,16 @@ pub const ChildResult = struct {
 };
 
 pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !ChildResult {
+    return runCommandWithTimeout(allocator, argv, 0);
+}
+
+/// Executes argv and optionally kills the child when timeout_ms elapses.
+/// A zero timeout preserves the legacy unbounded behaviour.
+pub fn runCommandWithTimeout(
+    allocator: std.mem.Allocator,
+    argv: []const []const u8,
+    timeout_ms: u32,
+) !ChildResult {
     var stdout_pipe: [2]i32 = undefined;
     var stderr_pipe: [2]i32 = undefined;
     if (linux.pipe(&stdout_pipe) != 0) return error.PipeFailed;
@@ -409,20 +418,57 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     var stdout_list = std.ArrayList(u8).initCapacity(allocator, 4096) catch {
         var dummy: u32 = 0;
         _ = linux.close(stdout_pipe[0]);
-        _ = linux.close(stderr_pipe[0]);
         _ = linux.waitpid(@intCast(pid_result), &dummy, 0);
         return error.OutOfMemory;
     };
     defer stdout_list.deinit(allocator);
 
-    var stderr_list = std.ArrayList(u8).initCapacity(allocator, 4096) catch {
+    // The stderr pipe is intentionally merged into stdout in the child. Keep a
+    // zero-length stderr buffer in the public result for API compatibility.
+    var stderr_list = std.ArrayList(u8).initCapacity(allocator, 0) catch {
         var dummy: u32 = 0;
         _ = linux.close(stdout_pipe[0]);
-        _ = linux.close(stderr_pipe[0]);
         _ = linux.waitpid(@intCast(pid_result), &dummy, 0);
         return error.OutOfMemory;
     };
     defer stderr_list.deinit(allocator);
+
+    const Watchdog = struct {
+        done: *std.atomic.Value(bool),
+        timed_out: *std.atomic.Value(bool),
+        pid: i32,
+        timeout_ms: u32,
+
+        fn run(self: *@This()) void {
+            sleep(self.timeout_ms);
+            if (!self.done.load(.acquire)) {
+                self.timed_out.store(true, .release);
+                _ = linux.kill(self.pid, 9);
+            }
+        }
+    };
+
+    var done = std.atomic.Value(bool).init(timeout_ms == 0);
+    var timed_out = std.atomic.Value(bool).init(false);
+    var watchdog: ?Watchdog = null;
+    var watchdog_thread: ?std.Thread = null;
+
+    if (timeout_ms > 0) {
+        const pid: i32 = @intCast(pid_result);
+        watchdog = .{
+            .done = &done,
+            .timed_out = &timed_out,
+            .pid = pid,
+            .timeout_ms = timeout_ms,
+        };
+        watchdog_thread = std.Thread.spawn(.{}, Watchdog.run, .{&watchdog.?}) catch {
+            _ = linux.kill(pid, 9);
+            var dummy: u32 = 0;
+            _ = linux.waitpid(pid, &dummy, 0);
+            _ = linux.close(stdout_pipe[0]);
+            return error.WatchdogSpawnFailed;
+        };
+    }
 
     var buf: [4096]u8 = undefined;
     while (true) {
@@ -435,20 +481,22 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     }
     _ = linux.close(stdout_pipe[0]);
 
-    while (true) {
-        const n = linux.read(stderr_pipe[0], &buf, buf.len);
-        if (n == 0 or n > buf.len) break;
-        stderr_list.appendSlice(allocator, buf[0..n]) catch break;
-    }
-    _ = linux.close(stderr_pipe[0]);
+    // EOF means the child closed its stdout/stderr descriptors; tell the
+    // watchdog before reaping so the timeout thread cannot race a clean exit.
+    done.store(true, .release);
 
     var status_raw: u32 = 0;
     _ = linux.waitpid(@intCast(pid_result), &status_raw, 0);
-    const status: u32 = status_raw;
 
+    if (watchdog_thread) |*thread| {
+        thread.join();
+    }
+
+    const status: u32 = status_raw;
     return .{
         .stdout = try stdout_list.toOwnedSlice(allocator),
         .stderr = try stderr_list.toOwnedSlice(allocator),
-        .success = linux.W.IFEXITED(status) and linux.W.EXITSTATUS(status) == 0,
+        .success = !timed_out.load(.acquire) and linux.W.IFEXITED(status) and linux.W.EXITSTATUS(status) == 0,
+        .timed_out = timed_out.load(.acquire),
     };
 }
