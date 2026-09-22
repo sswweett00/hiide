@@ -1,8 +1,8 @@
 /// Process execution tool for agents: runs a shell command and returns its
 /// combined stdout + stderr so the agent can react to output.
 ///
-/// The command runs under `bash -c`. The framework enforces a bounded timeout
-/// so a tool call cannot block the agent indefinitely.
+/// The command runs from `ToolContext.workspace_root` under `bash -c`. The
+/// framework enforces a bounded timeout so a tool call cannot block forever.
 const std = @import("std");
 const compat = @import("../../compat.zig");
 const tool_mod = @import("tool.zig");
@@ -33,7 +33,17 @@ pub fn processRunTool() tool_mod.Tool {
             const timeout_ms = @min(requested_timeout, 10 * 60 * 1000);
             if (timeout_ms == 0) return tool_mod.ToolResult.failure("timeout_ms must be greater than zero");
 
-            var result = compat.runCommandWithTimeout(allocator, &.{ "bash", "-c", parsed.value.command }, timeout_ms) catch |err| {
+            // Keep the workspace path out of the shell string: pass it as an
+            // argument so paths containing quotes/metacharacters remain data.
+            const argv = [_][]const u8{
+                "bash",
+                "-c",
+                "cd -- \"$1\" && exec bash -c \"$2\"",
+                "--",
+                ctx.workspace_root,
+                parsed.value.command,
+            };
+            var result = compat.runCommandWithTimeout(allocator, &argv, timeout_ms) catch |err| {
                 return tool_mod.ToolResult.failure(@errorName(err));
             };
             defer result.deinit(allocator);
@@ -144,4 +154,28 @@ test "process.run: enforces the execution timeout" {
     try std.testing.expect(!result.ok);
     try std.testing.expectEqualStrings("command timed out", result.error_message);
     try std.testing.expect(elapsed < 900);
+}
+
+
+test "process.run: executes from the workspace root" {
+    const allocator = std.testing.allocator;
+    const tool = processRunTool();
+
+    var arena = std.heap.ArenaAllocator.init(allocator);
+    defer arena.deinit();
+
+    var token = @import("cancel.zig").Token.init(null);
+    var sys = @import("clock.zig").SystemClock{};
+    var tool_ctx = tool_mod.ToolContext{
+        .allocator = arena.allocator(),
+        .task_id = 1,
+        .agent_id = "test",
+        .cancel = &token,
+        .clock = sys.clock(),
+        .workspace_root = "/tmp",
+    };
+
+    const result = try tool.invoke(&tool_ctx, "{"command":"pwd"}");
+    try std.testing.expect(result.ok);
+    try std.testing.expect(std.mem.containsAtLeast(u8, result.output, 1, "/tmp"));
 }
