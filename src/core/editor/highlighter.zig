@@ -63,7 +63,7 @@ fn writeSpanOpen(out: *compat.ManagedArrayList(u8), t: TokenType) !void {
 }
 
 /// Writes escaped HTML for [text] directly into [out] (no heap allocation).
-fn writeEscaped(out: *std.ArrayList(u8), text: []const u8) !void {
+fn writeEscaped(out: *compat.ManagedArrayList(u8), text: []const u8) !void {
     for (text) |c| {
         switch (c) {
             '&' => try out.appendSlice("&amp;"),
