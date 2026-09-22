@@ -8,7 +8,6 @@ import '../design_system/tokens.dart';
 import '../../shared/providers/editor_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
 import '../../shared/widgets/folder_browser_dialog.dart';
-import '../../shared/widgets/ide_shell.dart';
 import '../../features/editor/editor_screen.dart';
 import '../../features/explorer/explorer_screen.dart';
 import '../../features/search/search_screen.dart';
