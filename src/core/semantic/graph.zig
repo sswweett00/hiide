@@ -110,7 +110,7 @@ pub const SemanticGraph = struct {
         return .{
             .allocator = alloc,
             .nodes = .{},
-            .edges = .{},
+            .edges = .empty,
             .strings = StringPool.init(),
             .current_snapshot = 0,
         };
