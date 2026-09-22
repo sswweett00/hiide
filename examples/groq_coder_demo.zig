@@ -12,10 +12,8 @@ const context_mod = framework.context;
 const types = hiide.agent.types;
 const journal_mod = hiide.agent.journal;
 
-pub fn main() !void {
-    var gpa = std.heap.DebugAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
     const out = std.io.getStdOut().writer();
 
     // Parse instruction from command line
