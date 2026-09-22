@@ -22,12 +22,26 @@ pub const WorkingMemory = struct {
     allocator: std.mem.Allocator,
     artifacts: std.ArrayListUnmanaged(ArtifactRef) = .empty,
     next_artifact_id: u64 = 1,
+    max_artifacts: usize = MAX_ARTIFACTS,
+    max_artifact_bytes: usize = MAX_ARTIFACT_BYTES,
 
     /// Initializes an empty working-memory store for one agent session.
     /// @example
     /// var memory = WorkingMemory.init(allocator);
     pub fn init(allocator: std.mem.Allocator) WorkingMemory {
         return .{ .allocator = allocator };
+    }
+
+    pub fn initWithLimits(
+        allocator: std.mem.Allocator,
+        max_artifacts: usize,
+        max_artifact_bytes: usize,
+    ) WorkingMemory {
+        return .{
+            .allocator = allocator,
+            .max_artifacts = max_artifacts,
+            .max_artifact_bytes = max_artifact_bytes,
+        };
     }
 
     pub fn deinit(self: *WorkingMemory) void {
@@ -42,8 +56,8 @@ pub const WorkingMemory = struct {
     /// @example
     /// const artifact = try memory.put(.semantic_query, "{\"query\":\"auth\"}");
     pub fn put(self: *WorkingMemory, kind: ArtifactKind, bytes: []const u8) !ArtifactRef {
-        if (bytes.len > MAX_ARTIFACT_BYTES) return error.ArtifactTooLarge;
-        if (self.artifacts.items.len >= MAX_ARTIFACTS) return error.ArtifactLimitExceeded;
+        if (bytes.len > self.max_artifact_bytes) return error.ArtifactTooLarge;
+        if (self.artifacts.items.len >= self.max_artifacts) return error.ArtifactLimitExceeded;
         const owned = try self.allocator.dupe(u8, bytes);
         const artifact = ArtifactRef{
             .id = self.next_artifact_id,
@@ -70,15 +84,15 @@ pub const WorkingMemory = struct {
 
 
 test "working memory: bounds oversized artifacts and artifact count" {
-    var memory = WorkingMemory.init(std.testing.allocator);
+    var memory = WorkingMemory.initWithLimits(std.testing.allocator, 8, 16);
     defer memory.deinit();
 
-    const oversized = try std.testing.allocator.alloc(u8, MAX_ARTIFACT_BYTES + 1);
+    const oversized = try std.testing.allocator.alloc(u8, 17);
     defer std.testing.allocator.free(oversized);
     try std.testing.expectError(error.ArtifactTooLarge, memory.put(.test_report, oversized));
 
     var i: usize = 0;
-    while (i < MAX_ARTIFACTS) : (i += 1) {
+    while (i < 8) : (i += 1) {
         _ = try memory.put(.semantic_query, "x");
     }
     try std.testing.expectError(error.ArtifactLimitExceeded, memory.put(.semantic_query, "y"));
