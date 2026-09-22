@@ -57,7 +57,7 @@ class HiideBackendService implements BackendService {
       final hello = await _request('hello', null, timeout: _requestTimeout);
       _emitOutput('Connected to Hiide Zig engine (${hello['service'] ?? 'unknown'} v${hello['version'] ?? 'unknown'}) on $host:$port');
       final watched = _watchedRoot;
-      if (watched != null && watched!.isNotEmpty) {
+      if (watched != null && watched.isNotEmpty) {
         await _request('watch.subscribe', {'root': watched});
       }
     } catch (error) {
