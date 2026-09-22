@@ -104,8 +104,8 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
       },
       child: Container(
         color: cs.surface,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: [
             const AiPageHeader(icon: Icons.keyboard_command_key, title: 'Command Palette'),
             Padding(
@@ -123,24 +123,19 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
               ),
             ),
             const SizedBox(height: DesignTokens.space3),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
-                itemCount: commands.length,
-                itemBuilder: (context, index) {
-                  final command = commands[index];
-                  return _CommandItem(
+            ...commands.map((command) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
+                  child: _CommandItem(
                     label: command['label']!,
                     shortcut: command['shortcut']!,
-                    selected: index == _selectedIndex,
+                    selected: commands.indexOf(command) == _selectedIndex,
                     onTap: () {
                       Navigator.of(context).pop();
                       _executeCommand(context, ref, command['label']!);
                     },
-                  );
-                },
-              ),
-            ),
+                  ),
+                )),
+            const SizedBox(height: DesignTokens.space4),
           ],
         ),
       ),
