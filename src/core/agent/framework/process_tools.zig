@@ -175,7 +175,7 @@ test "process.run: executes from the workspace root" {
         .workspace_root = "/tmp",
     };
 
-    const result = try tool.invoke(&tool_ctx, "{"command":"pwd"}");
+    const result = try tool.invoke(&tool_ctx, "{\"command\":\"pwd\"}");
     try std.testing.expect(result.ok);
     try std.testing.expect(std.mem.containsAtLeast(u8, result.output, 1, "/tmp"));
 }
