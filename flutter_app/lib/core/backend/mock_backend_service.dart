@@ -355,30 +355,43 @@ class MockBackendService implements BackendService {
             return const AgentToolResult(
                 ok: false, output: '', error: 'no command provided');
           }
-          final result = await Process.run(
+          final process = await Process.start(
             'bash',
             ['-c', command],
             workingDirectory: root,
             runInShell: false,
-          ).timeout(delay);
-          final stdout = result.stdout.toString().trimRight();
-          final stderr = result.stderr.toString().trimRight();
-          final combined = [
-            if (stdout.isNotEmpty) stdout,
-            if (stderr.isNotEmpty) stderr,
-          ].join('\n');
-          final isSuccess = result.exitCode == 0;
-          return AgentToolResult(
-            ok: isSuccess,
-            output: isSuccess
-                ? (combined.isEmpty ? '(command completed with no output)' : combined)
-                : stdout,
-            error: isSuccess
-                ? ''
-                : (stderr.isNotEmpty
-                    ? stderr
-                    : 'process exited with code ${result.exitCode}'),
           );
+          final stdoutFuture = process.stdout.transform(utf8.decoder).join();
+          final stderrFuture = process.stderr.transform(utf8.decoder).join();
+          try {
+            final exitCode = await process.exitCode.timeout(delay);
+            final stdout = await stdoutFuture;
+            final stderr = await stderrFuture;
+            final combined = [
+              if (stdout.trimRight().isNotEmpty) stdout.trimRight(),
+              if (stderr.trimRight().isNotEmpty) stderr.trimRight(),
+            ].join('\n');
+            final isSuccess = exitCode == 0;
+            return AgentToolResult(
+              ok: isSuccess,
+              output: isSuccess
+                  ? (combined.isEmpty ? '(command completed with no output)' : combined)
+                  : stdout.trimRight(),
+              error: isSuccess
+                  ? ''
+                  : (stderr.trimRight().isNotEmpty
+                      ? stderr.trimRight()
+                      : 'process exited with code ' + exitCode.toString()),
+            );
+          } on TimeoutException {
+            process.kill(ProcessSignal.sigkill);
+            await process.exitCode;
+            return AgentToolResult(
+              ok: false,
+              output: '',
+              error: 'command timed out after ' + delay.inSeconds.toString() + 's',
+            );
+          }
 
         case 'workspace.search':
           // Engine-less fallback: empty result — the caller falls back to a
