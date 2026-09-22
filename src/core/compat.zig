@@ -484,7 +484,7 @@ pub fn runCommandWithTimeout(
                 const elapsed = nanoTimestamp() - self.started_ns;
                 if (elapsed >= timeout_ns) {
                     self.timed_out.store(true, .release);
-                    _ = linux.kill(self.pid, 9);
+                    _ = linux.kill(self.pid, .KILL);
                     return;
                 }
                 const remaining_ns = @max(@as(i64, 0), timeout_ns - elapsed);
