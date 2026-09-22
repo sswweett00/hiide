@@ -433,7 +433,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         defer allocator.free(out);
         const count = ipc_c_api.hiide_editor_search(handle, query.ptr, query.len, out.ptr, max);
 
-        var arr = compat.ManagedArrayList(json.Value).init(allocator);
+        var arr = json.Array.init(allocator);
         errdefer {
             for (arr.items) |*item| deinitValue(allocator, item);
             arr.deinit();
