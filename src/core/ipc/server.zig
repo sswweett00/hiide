@@ -159,7 +159,8 @@ fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator) void {
     var pending = compat.ManagedArrayList(u8).init(allocator);
     defer pending.deinit();
 
-    const max_pending = 16 * 1024 * 1024; // guard against a client flooding without newlines
+    const max_pending = 2 * 1024 * 1024; // keep server/client response limits aligned
+    const max_line = 2 * 1024 * 1024;
 
     while (true) {
         const n = conn.stream.read(&buf) catch break;
@@ -172,6 +173,10 @@ fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator) void {
             const line = pending.items[start..nl];
             start = nl + 1;
             if (line.len == 0) continue;
+            if (line.len > max_line) {
+                writeResponse(allocator, conn, &write_mutex, IpcResponse{ .id = 0, .err = "line too large" });
+                return;
+            }
             handleLine(allocator, conn, line, &write_mutex, conn_id);
         }
 
