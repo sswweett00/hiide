@@ -8,9 +8,10 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    var args = try std.process.argsWithAllocator(allocator);
-    defer args.deinit();
-    _ = args.skip(); // exe
+    // Zig 0.16 exposes argv through process.Init.Minimal.
+    const init = std.process.initMinimal();
+    var args = init.args.iterate();
+    _ = args.next(); // exe
 
     var model: []const u8 = hiide.provider.groq.default_model;
     var prompt: []const u8 = "Reply with exactly: hiide-ok";
