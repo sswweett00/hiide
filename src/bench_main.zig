@@ -27,7 +27,7 @@ pub fn main(init: std.process.Init) !void {
                 g_scheduler = hiide.agent.scheduler.Scheduler.init(a);
             }
 
-            fn run(rng: std.Random) anyerror!void {
+            fn run(random: std.Random) anyerror!void {
                 const budget = hiide.agent.types.TokenBudget.defaultPlanning();
                 const mem_ref = hiide.agent.types.WorkingMemoryRef{
                     .symbol_snapshot_id = 0,
@@ -36,7 +36,7 @@ pub fn main(init: std.process.Init) !void {
                     .artifact_set_id = 0,
                 };
                 const task = hiide.agent.types.AgentTask{
-                    .id = hiide.agent.types.nextTaskId(rng),
+                    .id = hiide.agent.types.nextTaskId(random),
                     .parent_id = null,
                     .kind = .coder,
                     .mode = .sequential,
