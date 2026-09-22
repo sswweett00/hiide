@@ -195,8 +195,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     return Container(
       color: cs.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
           const AiPageHeader(icon: Icons.search, title: 'Search Workspace Files'),
           Padding(
@@ -219,37 +219,32 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4, vertical: DesignTokens.space2),
             child: Text('${results.length} results found', style: TextStyle(color: cs.onSurfaceVariant, fontSize: DesignTokens.fontSizeSM)),
           ),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
-              itemCount: results.length,
-              itemBuilder: (context, index) {
-                final item = results[index];
-                return InkWell(
-                  onTap: () => _openSearchResult(item),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: DesignTokens.space2),
-                    decoration: BoxDecoration(border: Border(bottom: BorderSide(color: cs.outlineVariant, width: DesignTokens.borderWidthThin))),
-                    child: Row(
-                      children: [
-                        Icon(item['icon'] as IconData? ?? Icons.insert_drive_file, size: DesignTokens.iconSM, color: cs.primary),
-                        const SizedBox(width: DesignTokens.space2),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('${item['file']}:${item['line']}', style: TextStyle(color: cs.primary, fontWeight: FontWeight.bold, fontSize: DesignTokens.fontSizeSM)),
-                              Text(item['content']?.toString() ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: cs.onSurface, fontFamily: 'JetBrains Mono', fontSize: DesignTokens.fontSizeSM)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+          ...results.map((item) => InkWell(
+                onTap: () => _openSearchResult(item),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
+                  padding: const EdgeInsets.symmetric(vertical: DesignTokens.space2),
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: cs.outlineVariant, width: DesignTokens.borderWidthThin)),
                   ),
-                );
-              },
-            ),
-          ),
+                  child: Row(
+                    children: [
+                      Icon(item['icon'] as IconData? ?? Icons.insert_drive_file, size: DesignTokens.iconSM, color: cs.primary),
+                      const SizedBox(width: DesignTokens.space2),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${item['file']}:${item['line']}', style: TextStyle(color: cs.primary, fontWeight: FontWeight.bold, fontSize: DesignTokens.fontSizeSM)),
+                            Text(item['content']?.toString() ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: cs.onSurface, fontFamily: 'JetBrains Mono', fontSize: DesignTokens.fontSizeSM)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+          const SizedBox(height: DesignTokens.space4),
         ],
       ),
     );
