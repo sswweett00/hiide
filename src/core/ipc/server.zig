@@ -268,7 +268,7 @@ fn deinitObject(allocator: std.mem.Allocator, map: *json.ObjectMap) void {
 }
 
 fn buildObj(allocator: std.mem.Allocator, pairs: []const struct { []const u8, json.Value }) !json.ObjectMap {
-    var map = json.ObjectMap.init(allocator);
+    var map = try json.ObjectMap.init(allocator, &.{}, &.{});
     errdefer deinitObject(allocator, &map);
     for (pairs) |pair| {
         try map.put(pair[0], pair[1]);
