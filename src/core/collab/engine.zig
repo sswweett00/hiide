@@ -56,6 +56,7 @@ pub const CollabError = error{
     PermissionDenied,
     DivergenceDetected,
     OutOfMemory,
+    DuplicateOperation,
 };
 
 /// Per-session CRDT document state.
@@ -118,6 +119,7 @@ pub const CollabEngine = struct {
         var it = self.docs.iterator();
         while (it.next()) |entry| {
             entry.value_ptr.deinit(self.allocator);
+            self.allocator.free(entry.key_ptr.*);
         }
         var sit = self.sessions.iterator();
         while (sit.next()) |entry| {
@@ -139,19 +141,36 @@ pub const CollabEngine = struct {
         if (self.sessions.contains(sess.session_id)) return error.SessionExists;
         if (self.docs.contains(sess.doc_id)) return error.DocumentExists;
 
-        var doc = DocState.init(self.allocator, sess.doc_id);
+        const owned_doc_key = try self.allocator.dupe(u8, sess.doc_id);
+        errdefer self.allocator.free(owned_doc_key);
+
+        var doc = DocState.init(self.allocator, owned_doc_key);
         errdefer doc.deinit(self.allocator);
         try doc.content.appendSlice(self.allocator, initial_content);
         doc.recomputeHash();
-        try self.docs.put(self.allocator, try self.allocator.dupe(u8, sess.doc_id), doc);
 
         const session_id = try self.allocator.dupe(u8, sess.session_id);
         errdefer self.allocator.free(session_id);
-        const doc_id = try self.allocator.dupe(u8, sess.doc_id);
-        errdefer self.allocator.free(doc_id);
+        const session_doc_id = try self.allocator.dupe(u8, owned_doc_key);
+        errdefer self.allocator.free(session_doc_id);
         const key_id = try self.allocator.dupe(u8, sess.shared_index_key_id);
         errdefer self.allocator.free(key_id);
-        try self.sessions.put(self.allocator, session_id, .{ .doc_id = doc_id, .role = sess.role, .shared_index_key_id = key_id });
+
+        try self.sessions.put(self.allocator, session_id, .{
+            .doc_id = session_doc_id,
+            .role = sess.role,
+            .shared_index_key_id = key_id,
+        });
+
+        errdefer {
+            if (self.sessions.fetchRemove(sess.session_id)) |removed| {
+                self.allocator.free(removed.key);
+                self.allocator.free(removed.value.doc_id);
+                self.allocator.free(removed.value.shared_index_key_id);
+            }
+        }
+
+        try self.docs.put(self.allocator, owned_doc_key, doc);
     }
 
     /// Applies a remote CRDT operation to the local document.
@@ -168,6 +187,12 @@ pub const CollabEngine = struct {
         if (stored.role != .executor and op.kind != .retain) return CollabError.PermissionDenied;
 
         const doc = self.docs.getPtr(stored.doc_id) orelse return CollabError.SessionNotFound;
+
+        for (doc.op_log.items) |existing| {
+            if (existing.seq == op.seq and std.mem.eql(u8, existing.author, op.author)) {
+                return CollabError.DuplicateOperation;
+            }
+        }
 
         switch (op.kind) {
             .insert => {
