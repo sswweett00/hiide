@@ -276,7 +276,7 @@ fn buildObj(allocator: std.mem.Allocator, pairs: []const struct { []const u8, js
     var map: json.ObjectMap = .empty;
     errdefer deinitObject(allocator, &map);
     for (pairs) |pair| {
-        try map.put(allocator, allocator, pair[0], pair[1]);
+        try map.put(allocator, pair[0], pair[1]);
     }
     return map;
 }
@@ -441,9 +441,9 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         for (out[0..count]) |r| {
             var map: json.ObjectMap = .empty;
             errdefer deinitObject(allocator, &map);
-            try map.put("line", .{ .integer = @intCast(r.line) });
-            try map.put("col", .{ .integer = @intCast(r.col) });
-            try map.put("text", try dupStr(allocator, query));
+            try map.put(allocator, "line", .{ .integer = @intCast(r.line) });
+            try map.put(allocator, "col", .{ .integer = @intCast(r.col) });
+            try map.put(allocator, "text", try dupStr(allocator, query));
             try arr.append(.{ .object = map });
         }
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
@@ -532,9 +532,9 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         for (regions) |r| {
             var map = json.ObjectMap.init(allocator);
             errdefer deinitObject(allocator, &map);
-            try map.put("line", .{ .integer = @intCast(r.line) });
-            try map.put("kind", try dupStr(allocator, @tagName(r.kind)));
-            try map.put("count", .{ .integer = @intCast(r.count) });
+            try map.put(allocator, "line", .{ .integer = @intCast(r.line) });
+            try map.put(allocator, "kind", try dupStr(allocator, @tagName(r.kind)));
+            try map.put(allocator, "count", .{ .integer = @intCast(r.count) });
             try arr.append(.{ .object = map });
         }
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
@@ -569,10 +569,10 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         for (hits) |hit| {
             var map = json.ObjectMap.init(allocator);
             errdefer deinitObject(allocator, &map);
-            try map.put("path", try dupStr(allocator, hit.path));
-            try map.put("line", .{ .integer = @intCast(hit.line) });
-            try map.put("col", .{ .integer = @intCast(hit.col) });
-            try map.put("text", try dupStr(allocator, hit.text));
+            try map.put(allocator, "path", try dupStr(allocator, hit.path));
+            try map.put(allocator, "line", .{ .integer = @intCast(hit.line) });
+            try map.put(allocator, "col", .{ .integer = @intCast(hit.col) });
+            try map.put(allocator, "text", try dupStr(allocator, hit.text));
             try arr.append(.{ .object = map });
         }
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
@@ -606,10 +606,10 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         for (entries) |e| {
             var map = json.ObjectMap.init(allocator);
             errdefer deinitObject(allocator, &map);
-            try map.put("name", try dupStr(allocator, e.name));
-            try map.put("path", try dupStr(allocator, e.path));
-            try map.put("kind", try dupStr(allocator, if (e.kind == .directory) "directory" else "file"));
-            try map.put("size", .{ .integer = @intCast(@min(e.size, std.math.maxInt(i64))) });
+            try map.put(allocator, "name", try dupStr(allocator, e.name));
+            try map.put(allocator, "path", try dupStr(allocator, e.path));
+            try map.put(allocator, "kind", try dupStr(allocator, if (e.kind == .directory) "directory" else "file"));
+            try map.put(allocator, "size", .{ .integer = @intCast(@min(e.size, std.math.maxInt(i64))) });
             try arr.append(.{ .object = map });
         }
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
