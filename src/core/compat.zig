@@ -412,7 +412,7 @@ pub fn runCommandWithTimeout(
         var env_ptrs: [256:null]?[*:0]const u8 = undefined;
         var env_count: usize = 0;
         const env_fd = linux.open("/proc/self/environ", .{ .ACCMODE = .RDONLY }, 0);
-        if (linux.errno(env_fd) == .SUCCESS) {
+        if (env_fd >= 0) {
             defer _ = linux.close(@intCast(env_fd));
             var env_total: usize = 0;
             while (env_total < env_buf.len) {
@@ -439,36 +439,10 @@ pub fn runCommandWithTimeout(
         env_ptrs[env_count] = null;
 
         var path_iter = std.mem.splitScalar(u8, path_env, ':');
-
+        while (path_iter.next()) |dir| {
             const full_path = std.fs.path.join(std.heap.page_allocator, &.{ dir, argv[0] }) catch continue;
             defer std.heap.page_allocator.free(full_path);
             const path_z = std.heap.page_allocator.dupeSentinel(u8, full_path, 0) catch continue;
-
-            var env_buf: [32768]u8 = undefined;
-            const env_fd = linux.open("/proc/self/environ", .{ .ACCMODE = .RDONLY }, 0);
-            var env_total: usize = 0;
-            if (env_fd >= 0) {
-                defer _ = linux.close(@intCast(env_fd));
-                while (env_total < env_buf.len) {
-                    const n = linux.read(@intCast(env_fd), env_buf[env_total..].ptr, env_buf.len - env_total);
-                    if (n <= 0 or n > env_buf.len - env_total) break;
-                    env_total += n;
-                }
-            }
-
-            var env_ptrs: [256:null]?[*:0]const u8 = undefined;
-            var env_count: usize = 0;
-            var pos: usize = 0;
-            while (pos < env_total and env_count < env_ptrs.len - 1) {
-                const end = std.mem.indexOfScalarPos(u8, env_buf[0..env_total], pos, 0) orelse env_total;
-                if (end > pos) {
-                    env_ptrs[env_count] = @ptrCast(&env_buf[pos]);
-                    env_count += 1;
-                }
-                pos = @min(end + 1, env_total);
-            }
-            env_ptrs[env_count] = null;
-
             _ = linux.execve(path_z.ptr, &ptrs, &env_ptrs);
             std.heap.page_allocator.free(path_z);
         }
