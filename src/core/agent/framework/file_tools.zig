@@ -180,7 +180,6 @@ pub fn listFilesTool() tool_mod.Tool {
             const allocator = ctx.allocator;
             const path = if (input.len == 0 or std.mem.eql(u8, input, ".")) try allocator.dupe(u8, ".") else try resolvePathInput(ctx, input);
             defer allocator.free(path);
-            const io = std.Io.Threaded.global_single_threaded.io();
             var dir = compat.cwd().openDir(io, path, .{ .iterate = true }) catch return ToolResult.failure("directory not found inside workspace");
             defer dir.close(io);
             var entries = compat.ManagedArrayList(Entry).init(allocator);
