@@ -2,6 +2,7 @@
 /// Fast smoke-test harness for the Groq provider.
 const std = @import("std");
 const hiide = @import("hiide");
+const compat = @import("core/compat.zig");
 
 pub fn main(init: std.process.Init) !void {
     const allocator = init.gpa;
@@ -22,10 +23,10 @@ pub fn main(init: std.process.Init) !void {
         }
     }
 
-    var client = try hiide.provider.groq.Client.init(allocator);
+    var client = try hiide.provider.groq.Client.init(allocator, init.io);
     defer client.deinit();
 
-    const t0 = std.time.nanoTimestamp();
+    const t0 = compat.milliTimestamp();
     var resp = try client.complete(.{
         .model = model,
         .messages = &[_]hiide.provider.groq.Message{
@@ -36,10 +37,13 @@ pub fn main(init: std.process.Init) !void {
         .max_tokens = 512,
     });
     defer resp.deinit();
-    const t1 = std.time.nanoTimestamp();
-    const ms = @divTrunc(t1 - t0, std.time.ns_per_ms);
+    const t1 = compat.milliTimestamp();
+    const ms = t1 - t0;
 
-    const out = std.io.getStdOut().writer();
+    var stdout_buf: [4096]u8 = undefined;
+    var stdout_writer = std.Io.File.stdout().writerStreaming(init.io, &stdout_buf);
+    const out = &stdout_writer.interface;
+    defer out.flush() catch {};
     try out.print("model={s} tokens={d} latency_ms={d}\n", .{ resp.model, resp.total_tokens, ms });
     try out.print("{s}\n", .{resp.content});
 }
