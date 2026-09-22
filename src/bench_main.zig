@@ -7,7 +7,10 @@ const bench = hiide.bench.runner;
 pub fn main(init: std.process.Init) !void {
     const alloc = init.gpa;
 
-    const stdout = std.io.getStdOut().writer();
+    var stdout_buf: [4096]u8 = undefined;
+    var stdout_writer = std.Io.File.stdout().writerStreaming(init.io, &stdout_buf);
+    const stdout = &stdout_writer.interface;
+    defer stdout.flush() catch {};
     try stdout.print("hiide benchmark suite — build: 0.1.0-dev\n\n", .{});
 
     // ── §1 Scheduler enqueue/dequeue latency target: <2 µs p99 ──────────────
