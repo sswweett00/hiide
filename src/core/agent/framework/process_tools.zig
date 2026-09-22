@@ -31,7 +31,11 @@ pub fn processRunTool() tool_mod.Tool {
             // Use compat.runCommand which handles fork/exec/pipe/wait via raw
             // Linux syscalls, avoiding the std.process.Child API that changed
             // in Zig 0.17.
-            var result = compat.runCommand(allocator, &.{ "bash", "-c", parsed.value.command }) catch |err| {
+            const requested_timeout = parsed.value.timeout_ms orelse default_timeout_ms;
+            const timeout_ms = @min(requested_timeout, 10 * 60 * 1000);
+            if (timeout_ms == 0) return tool_mod.ToolResult.failure("timeout_ms must be greater than zero");
+
+            var result = compat.runCommandWithTimeout(allocator, &.{ "bash", "-c", parsed.value.command }, timeout_ms) catch |err| {
                 return tool_mod.ToolResult.failure(@errorName(err));
             };
             defer result.deinit(allocator);
@@ -52,6 +56,9 @@ pub fn processRunTool() tool_mod.Tool {
             }
 
             const output = try combined.toOwnedSlice();
+            if (result.timed_out) {
+                return .{ .ok = false, .output = output, .error_message = "command timed out" };
+            }
             if (!result.success) {
                 return .{ .ok = false, .output = output, .error_message = "command failed" };
             }
@@ -64,6 +71,7 @@ pub fn processRunTool() tool_mod.Tool {
         .side_effect = .process_exec,
         .input_schema = "{\"type\":\"object\",\"properties\":{\"command\":{\"type\":\"string\"}}}",
         .timeout_ms = default_timeout_ms,
+        .input_schema = "{\"type\":\"object\",\"required\":[\"command\"],\"properties\":{\"command\":{\"type\":\"string\"},\"timeout_ms\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":600000}}}",
         .owner = "core",
     }, Impl.invoke);
 }
@@ -111,4 +119,32 @@ test "process.run: reports failure for bad commands" {
 
     const result = try tool.invoke(&tool_ctx, "{\"command\":\"exit 1\"}");
     try std.testing.expect(!result.ok);
+}
+
+
+test "process.run: enforces the execution timeout" {
+    const allocator = std.testing.allocator;
+    const tool = processRunTool();
+
+    var arena = std.heap.ArenaAllocator.init(allocator);
+    defer arena.deinit();
+
+    var token = @import("cancel.zig").Token.init(null);
+    var sys = @import("clock.zig").SystemClock{};
+    var tool_ctx = tool_mod.ToolContext{
+        .allocator = arena.allocator(),
+        .task_id = 1,
+        .agent_id = "test",
+        .cancel = &token,
+        .clock = sys.clock(),
+        .workspace_root = ".",
+    };
+
+    const started = compat.milliTimestamp();
+    const result = try tool.invoke(&tool_ctx, "{\"command\":\"sleep 1\",\"timeout_ms\":20}");
+    const elapsed = compat.milliTimestamp() - started;
+
+    try std.testing.expect(!result.ok);
+    try std.testing.expectEqualStrings("command timed out", result.error_message);
+    try std.testing.expect(elapsed < 900);
 }
