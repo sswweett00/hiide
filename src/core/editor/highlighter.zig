@@ -37,7 +37,7 @@ const builtins = "@import|@This|@typeInfo|@field|@intCast|@floatCast|@ptrCast|@a
 
 /// Writes the opening `<span class="...">` tag for [t] directly into [out]
 /// without any intermediate allocation.
-fn writeSpanOpen(out: *std.ArrayList(u8), t: TokenType) !void {
+fn writeSpanOpen(out: *compat.ManagedArrayList(u8), t: TokenType) !void {
     try out.appendSlice("<span class=\"");
     try out.appendSlice(switch (t) {
         .comment => "tok-comment",
