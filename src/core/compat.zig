@@ -456,13 +456,13 @@ pub fn runCommandWithTimeout(
 
     if (timeout_ms > 0) {
         const pid: i32 = @intCast(pid_result);
-        watchdog = .{
+        watchdog_state = .{
             .done = &done,
             .timed_out = &timed_out,
             .pid = pid,
             .timeout_ms = timeout_ms,
         };
-        watchdog_thread = std.Thread.spawn(.{}, Watchdog.run, .{&watchdog.?}) catch {
+        watchdog_thread = std.Thread.spawn(.{}, Watchdog.run, .{&watchdog_state}) catch {
             _ = linux.kill(pid, 9);
             var dummy: u32 = 0;
             _ = linux.waitpid(pid, &dummy, 0);
