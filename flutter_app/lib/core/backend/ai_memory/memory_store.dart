@@ -129,8 +129,9 @@ class AiMemoryStore {
     await init();
     final patterns = await getCodePatterns(workspaceRoot);
     // Deduplicate
-    if (patterns.any((p) =>
-        p['pattern']?.toString() == pattern)) return;
+    if (patterns.any((p) => p['pattern']?.toString() == pattern)) {
+      return;
+    }
     patterns.add({
       'pattern': pattern,
       'example': _truncate(example, _maxTokensPerEntry),
