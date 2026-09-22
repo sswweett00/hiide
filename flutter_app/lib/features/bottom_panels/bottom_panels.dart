@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/design_system/tokens.dart';
 import '../problems/todo_panel.dart';
 import '../terminal/terminal_screen.dart';
-import '../output/output_screen.dart';
-import '../debug/debug_screen.dart';
 import '../chat/ai_chat_sidebar.dart';
 
 final selectedBottomPanelProvider = StateProvider<String?>((ref) => null);
