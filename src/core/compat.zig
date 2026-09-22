@@ -199,6 +199,18 @@ pub fn ManagedArrayList(comptime T: type) type {
             for (slice) |item| try self.append(item);
         }
 
+        pub fn clearRetainingCapacity(self: *@This()) void {
+            self.items = self.items.ptr[0..0];
+        }
+
+        pub fn pop(self: *@This()) T {
+            std.debug.assert(self.items.len > 0);
+            const index = self.items.len - 1;
+            const value = self.items[index];
+            self.items = self.items.ptr[0..index];
+            return value;
+        }
+
         pub fn toOwnedSlice(self: *@This()) ![]T {
             const result = try self.allocator_.alloc(T, self.items.len);
             @memcpy(result, self.items);
