@@ -2,7 +2,7 @@
 /// Fast smoke-test harness for the Groq provider.
 const std = @import("std");
 const hiide = @import("hiide");
-const compat = @import("core/compat.zig");
+const compat = hiide.compat;
 
 pub fn main(init: std.process.Init) !void {
     const allocator = init.gpa;
