@@ -83,7 +83,7 @@ void main() {
     // Save an API key → live /models fetch → dropdown swaps to the live list.
     await tester.enterText(find.byType(TextField).first, 'gsk_live');
     await tester.pump(); // let onChanged → setState enable the Save button
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.byKey(const Key('groq-save-button')));
     await tester.pumpAndSettle();
 
     expect(find.text('API key saved!'), findsOneWidget,
@@ -116,7 +116,7 @@ void main() {
 
     await tester.enterText(find.byType(TextField).first, 'gsk_live');
     await tester.pump(); // let onChanged → setState enable the Save button
-    await tester.tap(find.text('Save'));
+    await tester.tap(find.byKey(const Key('groq-save-button')));
     await tester.pumpAndSettle();
 
     // The stored model is gone from the live list → corrected + persisted.
