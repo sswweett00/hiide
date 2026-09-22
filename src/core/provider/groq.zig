@@ -91,7 +91,7 @@ pub const Client = struct {
 
     /// Loads key from GROQ_API_KEY or `groq-api-key` file candidates.
     pub fn init(allocator: std.mem.Allocator, io: std.Io) GroqError!Client {
-        const key = try loadApiKey(allocator);
+        const key = try loadApiKey(allocator, io);
         return .{
             .allocator = allocator,
             .api_key = key,
@@ -106,7 +106,8 @@ pub const Client = struct {
         return .{
             .allocator = allocator,
             .api_key = owned,
-            .http = .{ .allocator = allocator },
+            .http = .{ .allocator = allocator, .io = io },
+            .io = io,
             .owns_key = true,
         };
     }
