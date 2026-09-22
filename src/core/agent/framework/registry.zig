@@ -12,6 +12,7 @@ pub const RegistryError = error{
     AgentNotRegistered,
     AgentAlreadyRegistered,
     OutOfMemory,
+    SingletonNotConcurrencySafe,
 };
 
 /// Creates agent instances on demand. Stateless agents can be registered as
@@ -89,6 +90,7 @@ pub const Registry = struct {
         holder: *SingletonHolder,
         instance: agent_mod.Agent,
     ) RegistryError!void {
+        if (!instance.descriptor.concurrency_safe) return RegistryError.SingletonNotConcurrencySafe;
         holder.* = .{ .instance = instance };
         try self.register(.{
             .descriptor = instance.descriptor,
@@ -400,5 +402,23 @@ test "registry: creating an unregistered kind fails" {
     try std.testing.expectError(
         RegistryError.AgentNotRegistered,
         registry.create(std.testing.allocator, .security_auditor),
+    );
+}
+
+
+test "registry: singleton rejects non-concurrency-safe agents" {
+    var registry = Registry.init(std.testing.allocator);
+    defer registry.deinit();
+
+    var impl = NoopAgent{};
+    var holder: SingletonHolder = undefined;
+    const instance = agent_mod.fromImpl(NoopAgent, &impl, .{
+        .id = "core.unsafe-singleton.v1",
+        .kind = .planner,
+        .concurrency_safe = false,
+    });
+    try std.testing.expectError(
+        RegistryError.SingletonNotConcurrencySafe,
+        registry.registerSingleton(&holder, instance),
     );
 }
