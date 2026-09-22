@@ -157,8 +157,8 @@ class _SourceControlScreenState extends ConsumerState<SourceControlScreen> {
 
     return Container(
       color: cs.surface,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
           AiPageHeader(
             icon: Icons.source,
@@ -185,16 +185,15 @@ class _SourceControlScreenState extends ConsumerState<SourceControlScreen> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
-            child: Row(
+            child: Wrap(
+              spacing: DesignTokens.space2,
+              runSpacing: DesignTokens.space2,
               children: [
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: loading ? null : _commit,
-                    icon: const Icon(Icons.check, size: DesignTokens.iconSM),
-                    label: const Text('Commit'),
-                  ),
+                FilledButton.icon(
+                  onPressed: loading ? null : _commit,
+                  icon: const Icon(Icons.check, size: DesignTokens.iconSM),
+                  label: const Text('Commit'),
                 ),
-                const SizedBox(width: DesignTokens.space2),
                 OutlinedButton.icon(
                   onPressed: loading ? null : _fetchGitStatus,
                   icon: const Icon(Icons.refresh, size: DesignTokens.iconSM),
@@ -207,36 +206,17 @@ class _SourceControlScreenState extends ConsumerState<SourceControlScreen> {
           if (error != null)
             Padding(
               padding: const EdgeInsets.all(DesignTokens.space4),
-              child: Text(
-                error,
-                style: TextStyle(color: cs.error, fontSize: DesignTokens.fontSizeSM),
-              ),
+              child: Text(error, style: TextStyle(color: cs.error, fontSize: DesignTokens.fontSizeSM)),
             ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              DesignTokens.space4,
-              DesignTokens.space3,
-              DesignTokens.space4,
-              DesignTokens.space2,
-            ),
-            child: Text(
-              '${items.length} changed files',
-              style: TextStyle(color: cs.onSurfaceVariant, fontSize: DesignTokens.fontSizeSM),
-            ),
+            padding: const EdgeInsets.fromLTRB(DesignTokens.space4, DesignTokens.space3, DesignTokens.space4, DesignTokens.space2),
+            child: Text('${items.length} changed files', style: TextStyle(color: cs.onSurfaceVariant, fontSize: DesignTokens.fontSizeSM)),
           ),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return _SCMItem(
-                  label: item['status'] ?? '??',
-                  file: item['file'] ?? '',
-                );
-              },
-            ),
-          ),
+          ...items.map((item) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
+                child: _SCMItem(label: item['status'] ?? '??', file: item['file'] ?? ''),
+              )),
+          const SizedBox(height: DesignTokens.space4),
         ],
       ),
     );
