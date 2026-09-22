@@ -16,7 +16,7 @@ pub fn main(init: std.process.Init) !void {
     // ── §1 Scheduler enqueue/dequeue latency target: <2 µs p99 ──────────────
     {
         var rng_source: std.Random.IoSource = .{ .io = init.io };
-        const rng = rng_source.interface();
+        const random = rng_source.interface();
 
         const SchedulerBench = struct {
             var g_scheduler: ?hiide.agent.scheduler.Scheduler = null;
@@ -27,7 +27,7 @@ pub fn main(init: std.process.Init) !void {
                 g_scheduler = hiide.agent.scheduler.Scheduler.init(a);
             }
 
-            fn run(random: std.Random) anyerror!void {
+            fn run(rng: std.Random) anyerror!void {
                 const budget = hiide.agent.types.TokenBudget.defaultPlanning();
                 const mem_ref = hiide.agent.types.WorkingMemoryRef{
                     .symbol_snapshot_id = 0,
@@ -36,7 +36,7 @@ pub fn main(init: std.process.Init) !void {
                     .artifact_set_id = 0,
                 };
                 const task = hiide.agent.types.AgentTask{
-                    .id = hiide.agent.types.nextTaskId(random),
+                    .id = hiide.agent.types.nextTaskId(rng),
                     .parent_id = null,
                     .kind = .coder,
                     .mode = .sequential,
@@ -63,7 +63,7 @@ pub fn main(init: std.process.Init) !void {
         defer alloc.free(samples);
         for (samples) |*s| {
             const t = bench.Timer.start();
-            try SchedulerBench.run(rng);
+            try SchedulerBench.run(random);
             s.* = t.elapsedUs();
         }
         const pct = bench.Percentiles.compute(samples);
