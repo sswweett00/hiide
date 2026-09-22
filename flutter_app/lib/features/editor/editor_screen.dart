@@ -1269,6 +1269,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                   ),
                                 Positioned.fill(
                                   child: TextField(
+                                    key: const Key('editor-code-text-field'),
                                     controller: session.controller,
                                     scrollController: _textScrollController,
                                     onChanged: (value) =>
