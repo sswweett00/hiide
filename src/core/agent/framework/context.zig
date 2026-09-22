@@ -342,7 +342,8 @@ pub const AgentContext = struct {
             const classification = try classifier.ContentClassifier.classify(input, self.allocator);
             const verdict = policy.evaluate(.{
                 .user_id = self.services.identity.user_id,
-                .action = side_effect.policyAction(),                .provider_id = if (self.model) |m| m.provider_id else "local",
+                .action = side_effect.policyAction(),
+                .provider_id = if (self.model) |m| m.provider_id else "local",
                 .model_id = if (self.model) |m| m.model_id else "local",
                 .classifications = &[_]classifier.Classification{classification.max_class},
                 .workspace_id = self.services.identity.workspace_id,
