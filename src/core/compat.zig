@@ -316,7 +316,8 @@ pub fn cwd() std.Io.Dir {
     return std.Io.Dir.cwd();
 }
 
-pub fn realpathAlloc(allocator: std.mem.Allocator, rel_path: []const u8) ![:0]u8 {    if (builtin.os.tag == .linux) {
+pub fn realpathAlloc(allocator: std.mem.Allocator, rel_path: []const u8) ![:0]u8 {
+    if (builtin.os.tag == .linux) {
         var buf: [4096]u8 = undefined;
         const len = linux.getcwd(&buf, buf.len);
         if (len == 0) return error.NotFound;
