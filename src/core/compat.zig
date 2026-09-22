@@ -383,8 +383,7 @@ pub fn runCommandWithTimeout(
     }
 
     if (pid_result == 0) {
-        _ = linux.syscall2(.setpgid, 0, 0);
-        _ = linux.close(stdout_pipe[0]);
+                _ = linux.close(stdout_pipe[0]);
         _ = linux.close(stderr_pipe[0]);
         _ = linux.close(stderr_pipe[1]);
         _ = linux.dup2(stdout_pipe[1], 1);
@@ -477,8 +476,7 @@ pub fn runCommandWithTimeout(
         linux.exit(127);
     }
 
-    _ = linux.syscall2(.setpgid, @intCast(pid_result), @intCast(pid_result));
-    _ = linux.close(stdout_pipe[1]);
+        _ = linux.close(stdout_pipe[1]);
     _ = linux.close(stderr_pipe[0]);
     _ = linux.close(stderr_pipe[1]);
 
@@ -512,7 +510,7 @@ pub fn runCommandWithTimeout(
                 const elapsed = nanoTimestamp() - self.started_ns;
                 if (elapsed >= timeout_ns) {
                     self.timed_out.store(true, .release);
-                    _ = linux.kill(-self.pid, 9);
+                    _ = linux.kill(self.pid, 9);
                     return;
                 }
                 const remaining_ns = @max(@as(i64, 0), timeout_ns - elapsed);
