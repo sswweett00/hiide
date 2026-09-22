@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../shared/models/editor_tab.dart';
 import '../../shared/providers/editor_providers.dart';
