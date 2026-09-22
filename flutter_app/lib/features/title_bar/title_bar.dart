@@ -4,11 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/backend/settings_service.dart';
 import '../../core/design_system/tokens.dart';
-import '../../core/routing/router.dart';
 import '../../shared/models/editor_tab.dart';
 import '../../shared/providers/editor_providers.dart';
 import '../../features/bottom_panels/bottom_panels.dart';
-import '../../features/chat/ai_chat_sidebar.dart';
 
 class TitleBar extends ConsumerWidget {
   const TitleBar({super.key});
