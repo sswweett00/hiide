@@ -1,4 +1,4 @@
-/// Compatibility shims for APIs removed in Zig 0.16/0.17.
+/// Compatibility shims for small APIs that the engine keeps Linux-native.
 ///
 /// Zig 0.17 moved all I/O and synchronization behind the `std.Io` vtable.
 /// The agent framework uses simple in-process mutexes, timestamps, and
@@ -287,7 +287,7 @@ pub fn sleep(ms: u64) void {
 pub fn getEnvAlloc(allocator: std.mem.Allocator, name: []const u8) ?[]u8 {
     if (builtin.os.tag != .linux) return null;
     const fd = linux.open("/proc/self/environ", .{ .ACCMODE = .RDONLY }, 0);
-    if (fd == 0) return null;
+    if (fd < 0) return null;
     defer _ = linux.close(@intCast(fd));
 
     var buf: [32768]u8 = undefined;
