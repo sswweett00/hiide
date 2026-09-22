@@ -32,6 +32,7 @@ pub const ContextError = error{
     PolicyDenied,
     ApprovalRejected,
     ApprovalTimeout,
+    SpeculativeMutationDenied,
     ToolFailed,
     ToolTimeout,
     BudgetExhausted,
@@ -167,8 +168,7 @@ pub const Services = struct {
 /// Per-invocation statistics surfaced to the executor and telemetry.
 pub const RunStats = struct {
     tool_calls: u32 = 0,
-    tool_failures: u32 = 0,
-    approvals_requested: u32 = 0,
+    tool_failures: u32 = 0,    approvals_requested: u32 = 0,
     redactions: u32 = 0,
     policy_denials: u32 = 0,
     artifacts_published: u32 = 0,
@@ -292,7 +292,7 @@ pub const AgentContext = struct {
         detail: []const u8,
         side_effect: tool_mod.SideEffectClass,
     ) !approval_mod.Decision {
-        const gate = self.services.approvals orelse return approval_mod.Decision.approved;
+        const gate = self.services.approvals orelse return ContextError.ApprovalRejected;
         self.stats.approvals_requested += 1;
         return gate.requestAndWait(.{
             .task_id = self.task.id,
@@ -314,6 +314,11 @@ pub const AgentContext = struct {
         if (!tool_mod.isAllowed(self.allowed_tools, tool_id)) return ContextError.CapabilityViolation;
 
         const side_effect = tool.spec.side_effect;
+        if (self.speculative and side_effect.isMutating()) {
+            self.stats.tool_failures += 1;
+            self.finishToolEvent(tool_id, side_effect, false, 0, 0, ContextError.SpeculativeMutationDenied);
+            return ContextError.SpeculativeMutationDenied;
+        }
         self.stats.tool_calls += 1;
 
         if (self.services.middleware) |pipeline| {
@@ -337,8 +342,7 @@ pub const AgentContext = struct {
             const classification = try classifier.ContentClassifier.classify(input, self.allocator);
             const verdict = policy.evaluate(.{
                 .user_id = self.services.identity.user_id,
-                .action = side_effect.policyAction(),
-                .provider_id = if (self.model) |m| m.provider_id else "local",
+                .action = side_effect.policyAction(),                .provider_id = if (self.model) |m| m.provider_id else "local",
                 .model_id = if (self.model) |m| m.model_id else "local",
                 .classifications = &[_]classifier.Classification{classification.max_class},
                 .workspace_id = self.services.identity.workspace_id,
@@ -507,8 +511,7 @@ pub const AgentContext = struct {
 fn hashOf(bytes: []const u8) [32]u8 {
     var out: [32]u8 = undefined;
     std.crypto.hash.sha2.Sha256.hash(bytes, &out, .{});
-    return out;
-}
+    return out;}
 
 fn truncate(bytes: []const u8, max_len: usize) []const u8 {
     return bytes[0..@min(bytes.len, max_len)];
@@ -677,8 +680,7 @@ test "context: mutating tools are journalled and approved on success" {
     var ctx = h.context();
     _ = try ctx.invokeTool("vcs.commit", "chore: update");
 
-    try std.testing.expectEqual(@as(usize, 1), h.journal.countByState(.approved));
-    try std.testing.expectEqual(@as(u32, 1), ctx.stats.approvals_requested);
+    try std.testing.expectEqual(@as(usize, 1), h.journal.countByState(.approved));    try std.testing.expectEqual(@as(u32, 1), ctx.stats.approvals_requested);
     try std.testing.expect(h.ledger.verifyChain());
     try std.testing.expectEqual(@as(usize, 1), h.ledger.len());
 }
