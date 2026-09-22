@@ -36,6 +36,9 @@ jobs:
         run: |
           test "$(zig version)" = "0.16.0"
 
+      - name: Check changed Zig formatting
+        run: zig fmt --check build.zig src/core/ipc/server.zig src/core/agent/framework/process_tools.zig
+
       - name: Run unit tests
         run: zig build test --summary all
 
@@ -63,14 +66,49 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.44.0'
           cache: true
 
       - name: Restore packages
         run: flutter pub get
+
+      - name: Check Dart formatting
+        run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Analyze
         run: flutter analyze
 
       - name: Run Flutter tests
         run: flutter test --reporter expanded
+
+      - name: Build Linux desktop
+        run: flutter build linux --debug
+
+  integration:
+    name: Flutter ⇄ Zig integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Zig
+        uses: xyzzylabs/setup-zig@v1
+        with:
+          version: 0.16.0
+
+      - name: Verify Zig version
+        run: test "$(zig version)" = "0.16.0"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.0'
+          cache: true
+
+      - name: Build engine
+        run: zig build -Doptimize=Debug --summary all
+
+      - name: Run real IPC integration suite
+        working-directory: flutter_app
+        run: flutter pub get && flutter test test/hiide_backend_integration_test.dart --reporter expanded

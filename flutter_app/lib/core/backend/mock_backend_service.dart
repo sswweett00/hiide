@@ -196,8 +196,63 @@ class MockBackendService implements BackendService {
     int maxResults = 200,
   }) async {
     await Future.delayed(const Duration(milliseconds: 50));
-    // Mock: no real filesystem scan.
-    return [];
+    final needle = query.toLowerCase();
+    if (needle.isEmpty || maxResults <= 0) return const [];
+    final results = <WorkspaceSearchResult>[];
+    final rootDir = Directory(root);
+    if (!await rootDir.exists()) return const [];
+
+    const ignored = {
+      '.git', '.hg', '.svn', 'node_modules', '.dart_tool',
+      '.zig-cache', 'zig-out', 'build', 'dist', 'target',
+      '.idea', '.vscode',
+    };
+    final absRoot = rootDir.absolute.path;
+
+    Future<void> walk(Directory dir) async {
+      if (results.length >= maxResults) return;
+      List<FileSystemEntity> entities;
+      try {
+        entities = await dir.list(followLinks: false).toList();
+      } catch (_) {
+        return;
+      }
+      for (final entity in entities) {
+        if (results.length >= maxResults) return;
+        final name = entity.path.split(Platform.pathSeparator).last;
+        if (ignored.contains(name)) continue;
+        if (entity is Directory) {
+          await walk(entity);
+          continue;
+        }
+        if (entity is! File) continue;
+
+        try {
+          if (await entity.length() > 8 * 1024 * 1024) continue;
+          final content = await entity.readAsString();
+          if (content.contains('\u0000')) continue;
+          final rel = entity.path.startsWith('$absRoot/')
+              ? entity.path.substring(absRoot.length + 1)
+              : name;
+          final lines = content.split('\n');
+          for (var i = 0; i < lines.length; i++) {
+            final line = lines[i];
+            final col = line.toLowerCase().indexOf(needle);
+            if (col < 0) continue;
+            results.add(WorkspaceSearchResult(
+              path: rel,
+              line: i + 1,
+              col: col + 1,
+              text: line.trim(),
+            ));
+            if (results.length >= maxResults) return;
+          }
+        } catch (_) {}
+      }
+    }
+
+    await walk(rootDir);
+    return results;
   }
 
   @override
@@ -218,15 +273,24 @@ class MockBackendService implements BackendService {
             return AgentToolResult(
                 ok: false, output: '', error: 'file not found: $path');
           }
+          final size = await file.length();
+          if (size > 10 * 1024 * 1024) {
+            return const AgentToolResult(
+                ok: false, output: '', error: 'file exceeds 10 MiB limit');
+          }
           return AgentToolResult(ok: true, output: await file.readAsString());
 
         case 'file.write':
           final path = _resolve(root, input['path']?.toString() ?? '');
           final content = input['content']?.toString() ?? '';
+          if (content.length > 10 * 1024 * 1024) {
+            return const AgentToolResult(
+                ok: false, output: '', error: 'file content exceeds 10 MiB limit');
+          }
           await File(path).parent.create(recursive: true);
           await File(path).writeAsString(content);
           return AgentToolResult(
-              ok: true, output: '{"written":true,"size":${content.length}}');
+              ok: true, output: '{"written":true,"size":' + content.length.toString() + '}');
 
         case 'file.delete':
           final path = _resolve(root, input['path']?.toString() ?? '');
@@ -291,30 +355,43 @@ class MockBackendService implements BackendService {
             return const AgentToolResult(
                 ok: false, output: '', error: 'no command provided');
           }
-          final result = await Process.run(
+          final process = await Process.start(
             'bash',
             ['-c', command],
             workingDirectory: root,
             runInShell: false,
-          ).timeout(delay);
-          final stdout = result.stdout.toString().trimRight();
-          final stderr = result.stderr.toString().trimRight();
-          final combined = [
-            if (stdout.isNotEmpty) stdout,
-            if (stderr.isNotEmpty) stderr,
-          ].join('\n');
-          final isSuccess = result.exitCode == 0;
-          return AgentToolResult(
-            ok: isSuccess,
-            output: isSuccess
-                ? (combined.isEmpty ? '(command completed with no output)' : combined)
-                : stdout,
-            error: isSuccess
-                ? ''
-                : (stderr.isNotEmpty
-                    ? stderr
-                    : 'process exited with code ${result.exitCode}'),
           );
+          final stdoutFuture = process.stdout.transform(utf8.decoder).join();
+          final stderrFuture = process.stderr.transform(utf8.decoder).join();
+          try {
+            final exitCode = await process.exitCode.timeout(delay);
+            final stdout = await stdoutFuture;
+            final stderr = await stderrFuture;
+            final combined = [
+              if (stdout.trimRight().isNotEmpty) stdout.trimRight(),
+              if (stderr.trimRight().isNotEmpty) stderr.trimRight(),
+            ].join('\n');
+            final isSuccess = exitCode == 0;
+            return AgentToolResult(
+              ok: isSuccess,
+              output: isSuccess
+                  ? (combined.isEmpty ? '(command completed with no output)' : combined)
+                  : stdout.trimRight(),
+              error: isSuccess
+                  ? ''
+                  : (stderr.trimRight().isNotEmpty
+                      ? stderr.trimRight()
+                      : 'process exited with code ' + exitCode.toString()),
+            );
+          } on TimeoutException {
+            process.kill(ProcessSignal.sigkill);
+            await process.exitCode;
+            return AgentToolResult(
+              ok: false,
+              output: '',
+              error: 'command timed out after ' + delay.inSeconds.toString() + 's',
+            );
+          }
 
         case 'workspace.search':
           // Engine-less fallback: empty result — the caller falls back to a
@@ -336,11 +413,18 @@ class MockBackendService implements BackendService {
   }
 
   String _resolve(String root, String raw) {
-    var p = raw.trim();
+    final p = raw.trim();
     if (p.isEmpty) return root;
     final isAbsolute =
         p.startsWith('/') || RegExp(r'^[A-Za-z]:[\\/]').hasMatch(p);
-    return isAbsolute ? p : '$root/$p';
+    if (isAbsolute) {
+      throw StateError('absolute paths are not allowed in the workspace sandbox');
+    }
+    final segments = p.split(RegExp(r'[/\\]'));
+    if (segments.any((segment) => segment == '..')) {
+      throw StateError('path escapes workspace');
+    }
+    return root + '/' + p.replaceAll('\\', '/');
   }
 
   /// Engine-less mode has no native watcher; a no-op stream keeps the
