@@ -12,11 +12,12 @@ const ScriptedFactory = framework.testing.ScriptedFactory;
 const makeTask = framework.testing.makeTask;
 const types = hiide.agent.types;
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
-    const out = std.io.getStdOut().writer();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
+    var stdout_buf: [4096]u8 = undefined;
+    var stdout_writer = std.Io.File.stdout().writerStreaming(init.io, &stdout_buf);
+    const out = &stdout_writer.interface;
+    defer out.flush() catch {};
 
     var engine = try Orchestrator.init(allocator, .{ .manual_clock = true });
     defer engine.deinit();
