@@ -156,7 +156,6 @@ pub fn applyDiffTool() tool_mod.Tool {
             @memcpy(new_content[idx .. idx + parsed.value.replacement.len], parsed.value.replacement);
             @memcpy(new_content[idx + parsed.value.replacement.len ..], content[idx + parsed.value.target.len ..]);
 
-            const io = std.Io.Threaded.global_single_threaded.io();
             var file = compat.cwd().createFile(io, path, .{ .truncate = true }) catch return ToolResult.failure("unable to open workspace file for patch");
             defer file.close(io);
             try file.writeAll(io, new_content);
@@ -180,6 +179,7 @@ pub fn listFilesTool() tool_mod.Tool {
             const allocator = ctx.allocator;
             const path = if (input.len == 0 or std.mem.eql(u8, input, ".")) try allocator.dupe(u8, ".") else try resolvePathInput(ctx, input);
             defer allocator.free(path);
+            const io = std.Io.Threaded.global_single_threaded.io();
             var dir = compat.cwd().openDir(io, path, .{ .iterate = true }) catch return ToolResult.failure("directory not found inside workspace");
             defer dir.close(io);
             var entries = compat.ManagedArrayList(Entry).init(allocator);
