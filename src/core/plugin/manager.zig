@@ -306,7 +306,7 @@ test "plugin bus: quota exceeded" {
         .signature = "sig",
         .entrypoint = "main",
     };
-    const handle = try mgr.load(manifest, &.{});
+    const handle = try mgr.load(manifest, "signed");
     var bus = PluginBus.init(&mgr);
 
     const msg = PluginMessage{ .event = .{ .kind = "e", .payload = "" } };
