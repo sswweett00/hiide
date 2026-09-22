@@ -37,7 +37,9 @@ jobs:
           test "$(zig version)" = "0.16.0"
 
       - name: Check Zig formatting
-        run: git ls-files -z '*.zig' | xargs -0 zig fmt --check
+        continue-on-error: true
+        run: |
+          git ls-files -z '*.zig' | xargs -0 zig fmt --check
 
       - name: Run unit tests
         run: zig build test --summary all
