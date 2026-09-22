@@ -233,7 +233,7 @@ test "plugin manager: load and check capabilities" {
     };
 
     fn acceptTestSignature(_: *const PluginManifest, bytes: []const u8) bool {
-        return std.mem.eql(u8, bytes, "signed") ;
+        return std.mem.eql(u8, bytes, "signed");
     }
 
     var verified_mgr = PluginManager.initWithVerifier(std.testing.allocator, acceptTestSignature);
@@ -263,7 +263,7 @@ test "plugin manager: ABI mismatch rejected" {
 }
 
 test "plugin bus: send and receive" {
-    var mgr = PluginManager.init(std.testing.allocator);
+    var mgr = PluginManager.initWithVerifier(std.testing.allocator, acceptTestSignature);
     defer mgr.deinit();
 
     const manifest = PluginManifest{
@@ -274,7 +274,7 @@ test "plugin bus: send and receive" {
         .signature = "sig",
         .entrypoint = "main",
     };
-    const handle = try mgr.load(manifest, &.{});
+    const handle = try mgr.load(manifest, "signed");
     var bus = PluginBus.init(&mgr);
 
     try bus.send(handle, .{ .event = .{ .kind = "file_saved", .payload = "{}" } });
@@ -286,7 +286,7 @@ test "plugin bus: send and receive" {
 }
 
 test "plugin bus: quota exceeded" {
-    var mgr = PluginManager.init(std.testing.allocator);
+    var mgr = PluginManager.initWithVerifier(std.testing.allocator, acceptTestSignature);
     defer mgr.deinit();
 
     const manifest = PluginManifest{
