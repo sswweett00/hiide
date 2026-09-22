@@ -100,22 +100,26 @@ fn freePluginMessage(allocator: std.mem.Allocator, msg: *PluginMessage) void {
 }
 
 fn clonePluginMessage(allocator: std.mem.Allocator, msg: PluginMessage) !PluginMessage {
-    return switch (msg) {
-        .request => |m| .{ .request = .{
-            .id = m.id,
-            .method = try allocator.dupe(u8, m.method),
-            .payload = try allocator.dupe(u8, m.payload),
-        } },
-        .response => |m| .{ .response = .{
-            .request_id = m.request_id,
-            .ok = m.ok,
-            .payload = try allocator.dupe(u8, m.payload),
-        } },
-        .event => |m| .{ .event = .{
-            .kind = try allocator.dupe(u8, m.kind),
-            .payload = try allocator.dupe(u8, m.payload),
-        } },
-    };
+    switch (msg) {
+        .request => |m| {
+            const method = try allocator.dupe(u8, m.method);
+            errdefer allocator.free(method);
+            const payload = try allocator.dupe(u8, m.payload);
+            errdefer allocator.free(payload);
+            return .{ .request = .{ .id = m.id, .method = method, .payload = payload } };
+        },
+        .response => |m| {
+            const payload = try allocator.dupe(u8, m.payload);
+            return .{ .response = .{ .request_id = m.request_id, .ok = m.ok, .payload = payload } };
+        },
+        .event => |m| {
+            const kind = try allocator.dupe(u8, m.kind);
+            errdefer allocator.free(kind);
+            const payload = try allocator.dupe(u8, m.payload);
+            errdefer allocator.free(payload);
+            return .{ .event = .{ .kind = kind, .payload = payload } };
+        },
+    }
 }
 
 fn freeManifest(allocator: std.mem.Allocator, manifest: *PluginManifest) void {
