@@ -3,6 +3,9 @@
 /// and role-based access control for collaborative agent sessions.
 const std = @import("std");
 
+const MAX_OP_CONTENT_BYTES: usize = 4 * 1024 * 1024;
+const MAX_OP_LOG_ENTRIES: usize = 100_000;
+
 pub const Role = enum(u8) {
     observer,
     commenter,
@@ -182,6 +185,7 @@ pub const CollabEngine = struct {
         sess: CollaborationSession,
         op: CrdtOp,
     ) CollabError!void {
+        if (op.content.len > MAX_OP_CONTENT_BYTES) return CollabError.OutOfMemory;
         const stored = self.sessions.get(sess.session_id) orelse return CollabError.SessionNotFound;
         if (!std.mem.eql(u8, stored.doc_id, sess.doc_id)) return CollabError.SessionNotFound;
         if (stored.role != .executor and op.kind != .retain) return CollabError.PermissionDenied;
@@ -193,6 +197,7 @@ pub const CollabEngine = struct {
                 return CollabError.DuplicateOperation;
             }
         }
+        if (doc.op_log.items.len >= MAX_OP_LOG_ENTRIES) return CollabError.OutOfMemory;
 
         switch (op.kind) {
             .insert => {
