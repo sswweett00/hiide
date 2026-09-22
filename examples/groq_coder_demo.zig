@@ -1,7 +1,7 @@
 /// Fast demo of real LLM-based coder agent using Groq.
 /// Build/run with: `zig build groq-coder-demo -- "instruction"`
 const std = @import("std");
-const compat = @import("../src/core/compat.zig");
+const compat = hiide.compat;
 const hiide = @import("hiide");
 
 const framework = hiide.agent.framework;
