@@ -9,6 +9,9 @@ pub fn main(init: std.process.Init) !void {
     defer app.deinit();
 
     const receipt = try app.bootstrapPlanningTask("Initialize workspace orchestration runtime");
-    const stdout = std.io.getStdOut().writer();
+    var stdout_buf: [1024]u8 = undefined;
+    var stdout_writer = std.Io.File.stdout().writerStreaming(init.io, &stdout_buf);
+    const stdout = &stdout_writer.interface;
+    defer stdout.flush() catch {};
     try stdout.print("hiide engine bootstrapped task={x}\n", .{receipt.task_id});
 }
