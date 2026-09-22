@@ -344,6 +344,7 @@ class _FolderBrowserDialogState extends State<FolderBrowserDialog> {
           ],
         ),
       ),
+    ),
     );
   }
 
