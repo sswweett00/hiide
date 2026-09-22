@@ -157,52 +157,77 @@ class _FolderBrowserDialogState extends State<FolderBrowserDialog> {
               ],
             ),
             const Divider(),
+            // Path Navigation Header
             LayoutBuilder(
               builder: (context, constraints) {
                 final compact = constraints.maxWidth < 430;
-                final controls = Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(icon: const Icon(Icons.arrow_upward), onPressed: _goUp, tooltip: 'Üst Klasör'),
-                    IconButton(icon: const Icon(Icons.home_outlined), onPressed: _goHome, tooltip: 'Ana Klasör'),
-                    IconButton(
-                      icon: Icon(_showHidden ? Icons.visibility : Icons.visibility_off, size: DesignTokens.iconSM),
+                final pathBox = Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    currentPath,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: cs.onSurface,
+                      fontFamily: 'JetBrains Mono',
+                      fontSize: DesignTokens.fontSizeSM,
+                    ),
+                  ),
+                );
+
+                Widget visibilityButton() => IconButton(
+                      icon: Icon(
+                        _showHidden ? Icons.visibility : Icons.visibility_off,
+                        size: DesignTokens.iconSM,
+                      ),
                       tooltip: 'Gizli dosyalar',
                       onPressed: () {
                         setState(() => _showHidden = !_showHidden);
                         _reload();
                       },
-                    ),
-                  ],
-                );
-                final pathBox = Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(color: cs.surfaceContainerHighest, borderRadius: BorderRadius.circular(6)),
-                  child: Text(
-                    currentPath,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: cs.onSurface, fontFamily: 'JetBrains Mono', fontSize: DesignTokens.fontSizeSM),
-                  ),
-                );
+                    );
+
                 return compact
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [controls, const SizedBox(height: DesignTokens.space1), pathBox],
+                        children: [
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.arrow_upward),
+                                onPressed: _goUp,
+                                tooltip: 'Üst Klasör',
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.home_outlined),
+                                onPressed: _goHome,
+                                tooltip: 'Ana Klasör',
+                              ),
+                              const Spacer(),
+                              visibilityButton(),
+                            ],
+                          ),
+                          pathBox,
+                        ],
                       )
                     : Row(
                         children: [
-                          IconButton(icon: const Icon(Icons.arrow_upward), onPressed: _goUp, tooltip: 'Üst Klasör'),
-                          IconButton(icon: const Icon(Icons.home_outlined), onPressed: _goHome, tooltip: 'Ana Klasör'),
-                          Expanded(child: pathBox),
                           IconButton(
-                            icon: Icon(_showHidden ? Icons.visibility : Icons.visibility_off, size: DesignTokens.iconSM),
-                            tooltip: 'Gizli dosyalar',
-                            onPressed: () {
-                              setState(() => _showHidden = !_showHidden);
-                              _reload();
-                            },
+                            icon: const Icon(Icons.arrow_upward),
+                            onPressed: _goUp,
+                            tooltip: 'Üst Klasör',
                           ),
+                          IconButton(
+                            icon: const Icon(Icons.home_outlined),
+                            onPressed: _goHome,
+                            tooltip: 'Ana Klasör',
+                          ),
+                          Expanded(child: pathBox),
+                          visibilityButton(),
                         ],
                       );
               },
@@ -267,11 +292,16 @@ class _FolderBrowserDialogState extends State<FolderBrowserDialog> {
                                   ? OutlinedButton.icon(
                                       style: OutlinedButton.styleFrom(
                                         visualDensity: VisualDensity.compact,
-                                        padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space2),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: DesignTokens.space2),
                                       ),
-                                      icon: const Icon(Icons.check, size: DesignTokens.iconXS),
-                                      label: const Text('Seç', style: TextStyle(fontSize: DesignTokens.fontSizeXS)),
-                                      onPressed: () => Navigator.pop(context, item.path),
+                                      icon: const Icon(Icons.check,
+                                          size: DesignTokens.iconXS),
+                                      label: const Text('Seç',
+                                          style: TextStyle(
+                                              fontSize: DesignTokens.fontSizeXS)),
+                                      onPressed: () =>
+                                          Navigator.pop(context, item.path),
                                     )
                                   : null,
                               onTap: () {
