@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import '../ai_chat_client.dart';
-import '../backend_service.dart';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -34,15 +33,9 @@ class ErrorFix {
 class ErrorFixAgent {
   ErrorFixAgent({
     required AiChatClient ai,
-    required BackendService backend,
-    required String workspaceRoot,
-  })  : _ai = ai,
-        _backend = backend,
-        _workspaceRoot = workspaceRoot;
+  }) : _ai = ai;
 
   final AiChatClient _ai;
-  final BackendService _backend;
-  final String _workspaceRoot;
 
   /// Analyzes an error and suggests a fix for the given file.
   Future<ErrorFix?> fixError({
