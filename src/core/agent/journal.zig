@@ -4,6 +4,9 @@
 const std = @import("std");
 const compat = @import("../compat.zig");
 
+const MAX_JOURNAL_ENTRIES: usize = 100_000;
+const MAX_JOURNAL_PAYLOAD_BYTES: usize = 8 * 1024 * 1024;
+
 pub const JournalEntryKind = enum(u8) {
     file_write,
     file_delete,
@@ -38,6 +41,8 @@ pub const JournalError = error{
     EntryNotFound,
     AlreadyCommitted,
     OutOfMemory,
+    EntryLimitExceeded,
+    PayloadTooLarge,
 };
 
 /// Append-only side-effect journal for one task execution.
@@ -76,6 +81,8 @@ pub const SideEffectJournal = struct {
         task_id: u128,
         payload: []const u8,
     ) !u64 {
+        if (payload.len > MAX_JOURNAL_PAYLOAD_BYTES) return JournalError.PayloadTooLarge;
+        if (self.entries.items.len >= MAX_JOURNAL_ENTRIES) return JournalError.EntryLimitExceeded;
         const owned = try self.allocator.dupe(u8, payload);
         errdefer self.allocator.free(owned);
 
@@ -177,4 +184,20 @@ test "journal: rollback discards pending and approved" {
 
     journal.rollbackAll();
     try std.testing.expectEqual(@as(usize, 2), journal.countByState(.rolled_back));
+}
+
+
+test "journal: enforces bounded entry and payload sizes" {
+    var journal = SideEffectJournal.init(std.testing.allocator);
+    defer journal.deinit();
+
+    const oversized = try std.testing.allocator.alloc(u8, MAX_JOURNAL_PAYLOAD_BYTES + 1);
+    defer std.testing.allocator.free(oversized);
+    try std.testing.expectError(JournalError.PayloadTooLarge, journal.record(.file_write, 1, oversized));
+
+    var i: usize = 0;
+    while (i < MAX_JOURNAL_ENTRIES) : (i += 1) {
+        _ = try journal.record(.file_write, 2, "x");
+    }
+    try std.testing.expectError(JournalError.EntryLimitExceeded, journal.record(.file_write, 2, "y"));
 }
