@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import '../ai_chat_client.dart';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
