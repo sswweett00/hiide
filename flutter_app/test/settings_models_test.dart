@@ -54,7 +54,7 @@ Future<void> _pumpSettings(WidgetTester tester) async {
 /// Opens the AI Model dropdown (the first DropdownButton in the tree) and
 /// closes it afterwards, leaving the UI in a settled state.
 Future<void> _openModelMenu(WidgetTester tester) async {
-  await tester.tap(find.byType(DropdownButton<String>).first);
+  await tester.tap(find.byKey(const Key('groq-model-dropdown')));
   await tester.pumpAndSettle();
 }
 
@@ -111,7 +111,7 @@ void main() {
     // Before the key is saved the curated list contains the stored model.
     DropdownButton<String> modelDropdown() =>
         tester.widget<DropdownButton<String>>(
-            find.byType(DropdownButton<String>).first);
+            find.byKey(const Key('groq-model-dropdown')));
     expect(modelDropdown().value, 'openai/gpt-oss-20b');
 
     await tester.enterText(find.byType(TextField).first, 'gsk_live');
