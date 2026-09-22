@@ -69,7 +69,6 @@ pub fn processRunTool() tool_mod.Tool {
         .id = "process.run",
         .description = "Run a shell command in the workspace and return its output",
         .side_effect = .process_exec,
-        .input_schema = "{\"type\":\"object\",\"properties\":{\"command\":{\"type\":\"string\"}}}",
         .timeout_ms = default_timeout_ms,
         .input_schema = "{\"type\":\"object\",\"required\":[\"command\"],\"properties\":{\"command\":{\"type\":\"string\"},\"timeout_ms\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":600000}}}",
         .owner = "core",
