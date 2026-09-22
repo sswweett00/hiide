@@ -303,7 +303,7 @@ pub const PluginBus = struct {
             return PluginError.BusQuotaExceeded;
         }
 
-        const owned = clonePluginMessage(self.manager.allocator, msg) catch return PluginError.OutOfMemory;
+        var owned = clonePluginMessage(self.manager.allocator, msg) catch return PluginError.OutOfMemory;
         errdefer freePluginMessage(self.manager.allocator, &owned);
         state.message_queue.append(self.manager.allocator, owned) catch return PluginError.OutOfMemory;
     }
