@@ -24,6 +24,74 @@ pub const IpcResponse = struct {
     err: ?[]const u8 = null,
 };
 
+const max_connections: u32 = 64;
+var active_connections: std.atomic.Value(u32) = std.atomic.Value(u32).init(0);
+
+const EditorRecord = struct {
+    owner: u64,
+    handle: ipc_c_api.EditorHandle,
+};
+
+const EditorRegistry = struct {
+    mutex: compat.Mutex = .init,
+    next_id: std.atomic.Value(u64) = std.atomic.Value(u64).init(1),
+    handles: std.AutoHashMapUnmanaged(u64, EditorRecord) = .{},
+
+    fn create(self: *EditorRegistry, owner: u64, text: []const u8) !u64 {
+        const handle = ipc_c_api.hiide_editor_create() orelse return error.EditorCreateFailed;
+        errdefer ipc_c_api.hiide_editor_destroy(handle);
+        ipc_c_api.hiide_editor_load(handle, text.ptr, text.len);
+
+        const id = self.next_id.fetchAdd(1, .monotonic);
+        if (id == 0) return error.EditorHandleExhausted;
+
+        self.mutex.lock();
+        defer self.mutex.unlock();
+        try self.handles.put(std.heap.c_allocator, id, .{ .owner = owner, .handle = handle });
+        return id;
+    }
+
+    fn get(self: *EditorRegistry, owner: u64, id: u64) !ipc_c_api.EditorHandle {
+        self.mutex.lock();
+        defer self.mutex.unlock();
+        const record = self.handles.get(id) orelse return error.InvalidHandle;
+        if (owner != 0 and record.owner != owner) return error.InvalidHandle;
+        return record.handle;
+    }
+
+    fn destroy(self: *EditorRegistry, owner: u64, id: u64) !void {
+        self.mutex.lock();
+        defer self.mutex.unlock();
+        const kv = self.handles.fetchRemove(id) orelse return error.InvalidHandle;
+        if (owner != 0 and kv.value.owner != owner) {
+            try self.handles.put(std.heap.c_allocator, id, kv.value);
+            return error.InvalidHandle;
+        }
+        ipc_c_api.hiide_editor_destroy(kv.value.handle);
+    }
+
+    fn destroyOwner(self: *EditorRegistry, owner: u64) void {
+        self.mutex.lock();
+        defer self.mutex.unlock();
+        while (true) {
+            var victim: ?u64 = null;
+            var it = self.handles.iterator();
+            while (it.next()) |entry| {
+                if (entry.value_ptr.owner == owner) {
+                    victim = entry.key_ptr.*;
+                    break;
+                }
+            }
+            const id = victim orelse break;
+            if (self.handles.fetchRemove(id)) |kv| {
+                ipc_c_api.hiide_editor_destroy(kv.value.handle);
+            } else break;
+        }
+    }
+};
+
+var editor_registry = EditorRegistry{};
+
 /// Wire protocol: newline-delimited JSON.
 /// The client writes exactly one JSON object per line; the server replies with
 /// one JSON object per line. `err` strings are always static (never freed);
@@ -56,21 +124,35 @@ pub const IpcServer = struct {
                 if (err == error.AcceptFailed) continue;
                 return err;
             };
+
+            const previous = active_connections.fetchAdd(1, .acq_rel);
+            if (previous >= max_connections) {
+                _ = active_connections.fetchSub(1, .acq_rel);
+                connection.stream.close();
+                continue;
+            }
+
             const allocator = self.allocator;
             std.debug.print("IPC: accepted connection\n", .{});
-            const thread = try std.Thread.spawn(.{}, handleConnection, .{ connection, allocator });
+            const thread = std.Thread.spawn(.{}, handleConnection, .{ connection, allocator }) catch {
+                _ = active_connections.fetchSub(1, .acq_rel);
+                connection.stream.close();
+                continue;
+            };
             thread.detach();
         }
     }
 };
 
 fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator) void {
+    defer _ = active_connections.fetchSub(1, .acq_rel);
     defer conn.stream.close();
 
     // File-watcher pushes share this socket: every write (responses and fs
     // events) goes through this mutex so lines never interleave.
     var write_mutex: compat.Mutex = .init;
     const conn_id = fs_watch.newConnectionId();
+    defer editor_registry.destroyOwner(conn_id);
     defer fs_watch.unsubscribeAll(conn_id);
 
     var buf: [65536]u8 = undefined;
@@ -196,24 +278,51 @@ fn buildObj(allocator: std.mem.Allocator, pairs: []const struct { []const u8, js
 
 fn objParams(req: IpcMessage) !json.ObjectMap {
     const params = req.params orelse return error.MissingParams;
-    return params.object;
+    return switch (params) {
+        .object => |obj| obj,
+        else => error.InvalidParams,
+    };
 }
 
-fn paramHandle(obj: json.ObjectMap, key: []const u8) !ipc_c_api.EditorHandle {
+fn intValue(value: json.Value) !i64 {
+    return switch (value) {
+        .integer => |n| n,
+        else => error.InvalidParam,
+    };
+}
+
+fn stringValue(value: json.Value) ![]const u8 {
+    return switch (value) {
+        .string => |s| s,
+        else => error.InvalidParam,
+    };
+}
+
+fn ownerId(ctx: ?*DispatchContext) u64 {
+    return if (ctx) |dctx| dctx.conn_id else 0;
+}
+
+fn handleValue(ctx: ?*DispatchContext, value: json.Value) !ipc_c_api.EditorHandle {
+    const raw = try intValue(value);
+    if (raw < 1) return error.InvalidHandle;
+    return editor_registry.get(ownerId(ctx), @intCast(raw));
+}
+
+fn paramHandle(ctx: ?*DispatchContext, obj: json.ObjectMap, key: []const u8) !ipc_c_api.EditorHandle {
     const value = obj.get(key) orelse return error.MissingHandle;
-    if (value.integer < 0) return error.InvalidHandle;
-    return @ptrFromInt(@as(usize, @intCast(value.integer)));
+    return handleValue(ctx, value);
 }
 
 fn paramUint(obj: json.ObjectMap, key: []const u8) !usize {
     const value = obj.get(key) orelse return error.MissingParam;
-    if (value.integer < 0) return error.InvalidParam;
-    return @intCast(value.integer);
+    const raw = try intValue(value);
+    if (raw < 0) return error.InvalidParam;
+    return @intCast(raw);
 }
 
 fn paramStr(obj: json.ObjectMap, key: []const u8) ![]const u8 {
     const value = obj.get(key) orelse return error.MissingParam;
-    return value.string;
+    return stringValue(value);
 }
 
 fn dupStr(allocator: std.mem.Allocator, s: []const u8) !json.Value {
@@ -235,20 +344,20 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
     }
 
     if (std.mem.eql(u8, req.method, "editor.load")) {
-        const text = (req.params orelse return errResp(req.id, "missing text")).string;
-        const handle = ipc_c_api.hiide_editor_create() orelse return errResp(req.id, "editor create failed");
-        ipc_c_api.hiide_editor_load(handle, text.ptr, text.len);
+        const raw = req.params orelse return errResp(req.id, "missing text");
+        const text = stringValue(raw) catch return errResp(req.id, "text must be a string");
+        const handle_id = editor_registry.create(ownerId(ctx), text) catch return errResp(req.id, "editor create failed");
+        const handle = editor_registry.get(ownerId(ctx), handle_id) catch return errResp(req.id, "editor create failed");
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "handle", .{ .integer = @intCast(@intFromPtr(handle)) } },
+            .{ "handle", .{ .integer = @intCast(handle_id) } },
             .{ "size", .{ .integer = @intCast(ipc_c_api.hiide_editor_size(handle)) } },
             .{ "lines", .{ .integer = @intCast(ipc_c_api.hiide_editor_line_count(handle)) } },
         }) });
     }
 
     if (std.mem.eql(u8, req.method, "editor.get_text")) {
-        const raw = (req.params orelse return errResp(req.id, "missing handle")).integer;
-        if (raw < 0) return errResp(req.id, "invalid handle");
-        const handle: ipc_c_api.EditorHandle = @ptrFromInt(@as(usize, @intCast(raw)));
+        const raw = req.params orelse return errResp(req.id, "missing handle");
+        const handle = handleValue(ctx, raw) catch return errResp(req.id, "invalid handle");
         const text_ptr = ipc_c_api.hiide_editor_get_text(handle) orelse return errResp(req.id, "get text failed");
         const text = std.mem.span(text_ptr);
         defer ipc_c_api.hiide_editor_free(@constCast(text_ptr));
@@ -260,7 +369,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "editor.insert")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         const pos = try paramUint(params, "pos");
         const text = try paramStr(params, "text");
         ipc_c_api.hiide_editor_insert(handle, pos, text.ptr, text.len);
@@ -271,7 +380,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "editor.delete")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         const pos = try paramUint(params, "pos");
         const len = try paramUint(params, "len");
         ipc_c_api.hiide_editor_delete(handle, pos, len);
@@ -282,21 +391,21 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "editor.undo")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         ipc_c_api.hiide_editor_undo(handle);
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{}) });
     }
 
     if (std.mem.eql(u8, req.method, "editor.redo")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         ipc_c_api.hiide_editor_redo(handle);
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{}) });
     }
 
     if (std.mem.eql(u8, req.method, "editor.line_count")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
             .{ "lines", .{ .integer = @intCast(ipc_c_api.hiide_editor_line_count(handle)) } },
         }) });
@@ -304,7 +413,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "editor.size")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
             .{ "size", .{ .integer = @intCast(ipc_c_api.hiide_editor_size(handle)) } },
         }) });
@@ -312,7 +421,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "editor.search")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         const query = try paramStr(params, "query");
         const max = 10000;
         const out = try allocator.alloc(ipc_c_api.SearchResult, max);
@@ -339,7 +448,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "editor.highlight")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         const lang = try paramStr(params, "lang");
         const html_ptr = ipc_c_api.hiide_editor_highlight(handle, lang.ptr, lang.len) orelse return errResp(req.id, "highlight failed");
         const html = std.mem.span(html_ptr);
@@ -351,8 +460,10 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "editor.destroy")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
-        ipc_c_api.hiide_editor_destroy(handle);
+        const value = params.get("handle") orelse return errResp(req.id, "missing handle");
+        const raw = intValue(value) catch return errResp(req.id, "invalid handle");
+        if (raw < 1) return errResp(req.id, "invalid handle");
+        editor_registry.destroy(ownerId(ctx), @intCast(raw)) catch return errResp(req.id, "invalid handle");
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
             .{ "ok", .{ .bool = true } },
         }) });
@@ -360,7 +471,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "editor.apply_text")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         const new_text = try paramStr(params, "text");
 
         // Minimal single-region edit computed natively in bytes: longest
@@ -394,7 +505,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "editor.diff_lines")) {
         const params = try objParams(req);
-        const handle = try paramHandle(params, "handle");
+        const handle = try paramHandle(ctx, params, "handle");
         const disk_text = try paramStr(params, "disk_text");
 
         const old_ptr = ipc_c_api.hiide_editor_get_text(handle);
@@ -526,8 +637,9 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         const workspace_root = try paramStr(params, "workspace_root");
         const timeout_ms: ?u32 = blk: {
             const value = params.get("timeout_ms") orelse break :blk null;
-            if (value.integer <= 0) break :blk null;
-            break :blk @intCast(value.integer);
+            const raw = intValue(value) catch return errResp(req.id, "timeout_ms must be an integer");
+            if (raw <= 0) break :blk null;
+            break :blk @intCast(@min(raw, 600_000));
         };
 
         // Tool-level failures are NOT transport errors: the model must see the
@@ -564,6 +676,22 @@ fn expectNoErr(resp: IpcResponse) !void {
         std.debug.print("unexpected error: {s}\n", .{e});
         return error.UnexpectedError;
     }
+}
+
+test "dispatch: malformed params are rejected without crashing" {
+    var bad = try runDispatch(testing.allocator, "editor.load", .{ .integer = 42 });
+    defer cleanupResponse(testing.allocator, &bad);
+    try testing.expectEqualStrings("text must be a string", bad.err.?);
+
+    var badParams = try runDispatch(testing.allocator, "editor.insert", .{ .string = "not-an-object" });
+    defer cleanupResponse(testing.allocator, &badParams);
+    try testing.expectEqualStrings("InvalidParams", badParams.err.?);
+}
+
+test "dispatch: forged editor handles are rejected" {
+    var response = try runDispatch(testing.allocator, "editor.get_text", .{ .integer = 42 });
+    defer cleanupResponse(testing.allocator, &response);
+    try testing.expectEqualStrings("invalid handle", response.err.?);
 }
 
 test "dispatch: hello and ping" {
