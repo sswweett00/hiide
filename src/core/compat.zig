@@ -261,6 +261,16 @@ pub fn jsonStringifyAlloc(
     return out.toOwnedSlice();
 }
 
+pub fn nanoTimestamp() i64 {
+    if (builtin.os.tag == .linux) {
+        var ts: linux.timespec = undefined;
+        const rc = linux.clock_gettime(linux.CLOCK.MONOTONIC, &ts);
+        if (rc != 0) return 0;
+        return @as(i64, @intCast(ts.sec)) * std.time.ns_per_s + @as(i64, @intCast(ts.nsec));
+    }
+    return 0;
+}
+
 pub fn milliTimestamp() i64 {
     if (builtin.os.tag == .linux) {
         var ts: linux.timespec = undefined;
