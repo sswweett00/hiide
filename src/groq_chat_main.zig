@@ -3,13 +3,12 @@
 const std = @import("std");
 const hiide = @import("hiide");
 
-pub fn main() !void {
+pub fn main(init: std.process.Init.Minimal) !void {
     var gpa = std.heap.DebugAllocator(.{}){};
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
     // Zig 0.16 exposes argv through process.Init.Minimal.
-    const init = std.process.initMinimal();
     var args = init.args.iterate();
     _ = args.next(); // exe
 
