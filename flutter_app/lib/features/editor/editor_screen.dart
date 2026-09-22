@@ -131,13 +131,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
     if (selectedPath != null && selectedPath.isNotEmpty && mounted) {
       await activateWorkspace(ref, selectedPath);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Çalışma alanı açıldı: $selectedPath'),
-          duration: const Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-        ));
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Çalışma alanı açıldı: $selectedPath'),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ));
     }
   }
 
