@@ -1,6 +1,7 @@
 /// hiide — AI-native IDE engine root module.
 /// Re-exports all subsystems implementing the Enterprise IDE Specification.
 const std = @import("std");
+pub const compat = @import("core/compat.zig");
 
 // §1 Multi-Agent Orchestration Engine
 pub const agent = struct {
