@@ -509,7 +509,7 @@ pub fn runCommandWithTimeout(
             .started_ns = nanoTimestamp(),
         };
         watchdog_thread = std.Thread.spawn(.{}, Watchdog.run, .{&watchdog_state}) catch {
-            _ = linux.kill(pid, 9);
+            _ = linux.kill(pid, .KILL);
             var dummy: u32 = 0;
             _ = linux.waitpid(pid, &dummy, 0);
             _ = linux.close(stdout_pipe[0]);
