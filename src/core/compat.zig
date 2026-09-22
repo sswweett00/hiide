@@ -342,6 +342,7 @@ pub const ChildResult = struct {
     stdout: []u8,
     stderr: []u8,
     success: bool,
+    timed_out: bool = false,
 
     pub fn deinit(self: *ChildResult, allocator: std.mem.Allocator) void {
         allocator.free(self.stdout);
@@ -407,8 +408,39 @@ pub fn runCommandWithTimeout(
         const default_path = "/usr/bin:/bin";
         const path_env = getEnvAlloc(std.heap.page_allocator, "PATH") orelse default_path;
         defer if (path_env.ptr != default_path.ptr) std.heap.page_allocator.free(path_env);
+
+        var env_buf: [32768]u8 = undefined;
+        var env_ptrs: [256:null]?[*:0]const u8 = undefined;
+        var env_count: usize = 0;
+        const env_fd = linux.open("/proc/self/environ", .{ .ACCMODE = .RDONLY }, 0);
+        if (linux.errno(env_fd) == .SUCCESS) {
+            defer _ = linux.close(@intCast(env_fd));
+            var env_total: usize = 0;
+            while (env_total < env_buf.len) {
+                const n = linux.read(@intCast(env_fd), env_buf[env_total..].ptr, env_buf.len - env_total);
+                if (n == 0 or n > env_buf.len - env_total) break;
+                env_total += n;
+            }
+
+            var pos: usize = 0;
+            while (pos < env_total and env_count < env_ptrs.len - 1) {
+                const end = std.mem.indexOfScalarPos(u8, env_buf[0..env_total], pos, 0) orelse env_total;
+                if (end > pos) {
+                    env_ptrs[env_count] = @ptrCast(&env_buf[pos]);
+                    env_count += 1;
+                }
+                pos = @min(end + 1, env_total);
+            }
+        }
+
+        if (env_count == 0) {
+            env_ptrs[0] = "PATH=/usr/bin:/bin";
+            env_count = 1;
+        }
+        env_ptrs[env_count] = null;
+
         var path_iter = std.mem.splitScalar(u8, path_env, ':');
-        while (path_iter.next()) |dir| {
+
             const full_path = std.fs.path.join(std.heap.page_allocator, &.{ dir, argv[0] }) catch continue;
             defer std.heap.page_allocator.free(full_path);
             const path_z = std.heap.page_allocator.dupeSentinel(u8, full_path, 0) catch continue;
@@ -472,18 +504,20 @@ pub fn runCommandWithTimeout(
         timed_out: *std.atomic.Value(bool),
         pid: i32,
         timeout_ms: u32,
-        started_ms: i64,
+        started_ns: i64,
 
         fn run(self: *@This()) void {
+            const timeout_ns = @as(i64, @intCast(self.timeout_ms)) * std.time.ns_per_ms;
             while (!self.done.load(.acquire)) {
-                const elapsed = milliTimestamp() - self.started_ms;
-                if (elapsed >= @as(i64, @intCast(self.timeout_ms))) {
+                const elapsed = nanoTimestamp() - self.started_ns;
+                if (elapsed >= timeout_ns) {
                     self.timed_out.store(true, .release);
                     _ = linux.kill(-self.pid, 9);
                     return;
                 }
-                const remaining = @as(u64, @intCast(@max(@as(i64, 0), @as(i64, @intCast(self.timeout_ms)) - elapsed)));
-                sleep(@min(remaining, 5));
+                const remaining_ns = @max(@as(i64, 0), timeout_ns - elapsed);
+                const remaining_ms = @as(u64, @intCast(@divTrunc(remaining_ns, std.time.ns_per_ms)));
+                sleep(@min(remaining_ms, 5));
             }
         }
     };
@@ -500,7 +534,7 @@ pub fn runCommandWithTimeout(
             .timed_out = &timed_out,
             .pid = pid,
             .timeout_ms = timeout_ms,
-            .started_ms = milliTimestamp(),
+            .started_ns = nanoTimestamp(),
         };
         watchdog_thread = std.Thread.spawn(.{}, Watchdog.run, .{&watchdog_state}) catch {
             _ = linux.kill(-pid, 9);
