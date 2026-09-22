@@ -20,5 +20,4 @@ linter:
     prefer_initializing_formals: false
     prefer_interpolation_to_compose_strings: false
     unnecessary_brace_in_string_interps: false
-    unnecessary_import: false
     prefer_single_quotes: false
