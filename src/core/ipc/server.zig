@@ -271,7 +271,7 @@ fn buildObj(allocator: std.mem.Allocator, pairs: []const struct { []const u8, js
     var map = try json.ObjectMap.init(allocator, &.{}, &.{});
     errdefer deinitObject(allocator, &map);
     for (pairs) |pair| {
-        try map.put(pair[0], pair[1]);
+        try map.put(allocator, pair[0], pair[1]);
     }
     return map;
 }
