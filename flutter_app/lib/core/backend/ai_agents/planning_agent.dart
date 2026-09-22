@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import '../ai_chat_client.dart';
-import '../backend_service.dart';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -68,16 +67,10 @@ class PlanErrorEvent extends PlanningEvent {
 class PlanningAgent {
   PlanningAgent({
     required AiChatClient ai,
-    required BackendService backend,
-    required String workspaceRoot,
     this.maxSteps = 20,
-  })  : _ai = ai,
-        _backend = backend,
-        _workspaceRoot = workspaceRoot;
+  }) : _ai = ai;
 
   final AiChatClient _ai;
-  final BackendService _backend;
-  final String _workspaceRoot;
   final int maxSteps;
 
   bool _stopRequested = false;
