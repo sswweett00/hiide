@@ -383,7 +383,7 @@ pub fn runCommandWithTimeout(
     }
 
     if (pid_result == 0) {
-        _ = linux.setpgid(0, 0);
+        _ = linux.syscall2(.setpgid, 0, 0);
         _ = linux.close(stdout_pipe[0]);
         _ = linux.close(stderr_pipe[0]);
         _ = linux.close(stderr_pipe[1]);
@@ -477,7 +477,7 @@ pub fn runCommandWithTimeout(
         linux.exit(127);
     }
 
-    _ = linux.setpgid(@intCast(pid_result), @intCast(pid_result));
+    _ = linux.syscall2(.setpgid, @intCast(pid_result), @intCast(pid_result));
     _ = linux.close(stdout_pipe[1]);
     _ = linux.close(stderr_pipe[0]);
     _ = linux.close(stderr_pipe[1]);
