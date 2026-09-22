@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,7 +9,6 @@ import 'openai_provider.dart';
 import 'anthropic_provider.dart';
 import 'ollama_provider.dart';
 import '../ai_chat_client.dart';
-import '../settings_service.dart';
 
 /// Manages the active AI provider and handles fallback through a chain
 /// when the primary provider is unavailable. Exposes a single
