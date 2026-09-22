@@ -11,9 +11,9 @@ the UI and communicates with the engine over a local JSON-RPC socket.
 
 ## Requirements
 
-- **Zig ≥ 0.14.0** (the build uses `b.addLibrary` which was introduced in 0.14)
-- **Flutter ≥ 3.44.0** / Dart ≥ 3.12.0
-- Linux (native file watcher uses inotify; other platforms use a polling fallback)
+- **Zig 0.16.0** (the CI and engine compatibility layer are validated against this version)
+- **Flutter 3.44.0** / Dart ≥ 3.12.0
+- Linux for the full native engine path (inotify watcher + native process execution)
 
 ## Layout
 
@@ -248,13 +248,14 @@ Enable with feature `hiditor-ui`.
 
 ## Current Vertical Slice
 
-This scaffold includes:
+The active, implemented product surface is the Zig engine + Flutter IDE:
 
-- Enterprise agent framework (`src/core/agent/framework/`) — 115 tests, fully wired orchestrator + planner + executor + harness
-- Zig core engine with C ABI exports
-- Tauri desktop shell scaffold
-- Hiditor custom editor architecture (Rust + egui)
-- egui UI design spec with custom editor architecture
+- Native Zig engine with editor C ABI, JSON-RPC IPC server, workspace search/tree, and file watching
+- Flutter IDE frontend with real engine integration plus a hardened offline/mock backend
+- Agent tool framework with workspace sandboxing, process execution limits, tool metadata, policy/approval primitives, journaling, telemetry, and cancellation
+- Unit, widget, and real Flutter ⇄ Zig IPC integration tests wired into CI
+
+The Tauri/Hiditor material under the design-spec sections is architectural documentation only; those directories are not part of the active checkout.
 
 ## Local Commands
 
