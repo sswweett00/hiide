@@ -141,7 +141,9 @@ pub const ContentClassifier = struct {
         for (sorted) |span| {
             const s = @min(span.start, content.len);
             const e = @min(span.end, content.len);
-            if (s > cursor) try out.appendSlice(alloc, content[cursor..s]);
+            if (e <= cursor) continue;
+            const redact_start = @max(s, cursor);
+            if (redact_start > cursor) try out.appendSlice(alloc, content[cursor..redact_start]);
             try out.appendSlice(alloc, "[REDACTED]");
             cursor = e;
         }
@@ -296,4 +298,17 @@ test "classifier: entropy-only detections are actually redacted" {
         defer alloc.free(redacted);
         try std.testing.expectEqualStrings("[REDACTED]", redacted);
     }
+}
+
+
+test "classifier: overlapping spans never expose uncovered bytes" {
+    const alloc = std.testing.allocator;
+    const content = "password=abc123";
+    const spans = [_]ClassificationSpan{
+        .{ .start = 0, .end = 11, .class = .secret, .label = "password" },
+        .{ .start = 5, .end = 15, .class = .secret, .label = "overlap" },
+    };
+    const redacted = try ContentClassifier.redact(content, &spans, alloc);
+    defer alloc.free(redacted);
+    try std.testing.expect(std.mem.indexOf(u8, redacted, "abc123") == null);
 }
