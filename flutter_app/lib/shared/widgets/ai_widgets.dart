@@ -247,58 +247,94 @@ class AiPageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.6)),
-        ),
-      ),
-      child: Row(
-        children: [
-          AiOrb(
-            icon: icon,
-            size: DesignTokens.space7,
-            iconSize: DesignTokens.iconMD,
-          ),
-          const SizedBox(width: DesignTokens.space3),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: cs.onSurface,
-                    fontSize: DesignTokens.fontSizeLG,
-                    fontWeight: DesignTokens.fontWeightSemibold,
-                  ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 560;
+        final title = Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                this.title,
+                maxLines: compact ? 2 : 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: cs.onSurface,
+                  fontSize: DesignTokens.fontSizeLG,
+                  fontWeight: DesignTokens.fontWeightSemibold,
                 ),
-                if (subtitle != null)
-                  Text(
-                    subtitle!,
-                    style: TextStyle(
-                      color: cs.onSurfaceVariant,
-                      fontSize: DesignTokens.fontSizeXS,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+              ),
+              if (subtitle != null)
+                Text(
+                  subtitle!,
+                  maxLines: compact ? 2 : 1,
+                  style: TextStyle(
+                    color: cs.onSurfaceVariant,
+                    fontSize: DesignTokens.fontSizeXS,
                   ),
-              ],
+                  overflow: TextOverflow.ellipsis,
+                ),
+            ],
+          ),
+        );
+
+        final headerContent = compact
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      AiOrb(
+                        icon: icon,
+                        size: DesignTokens.space7,
+                        iconSize: DesignTokens.iconMD,
+                      ),
+                      const SizedBox(width: DesignTokens.space3),
+                      title,
+                    ],
+                  ),
+                  if (actions.isNotEmpty) ...[
+                    const SizedBox(height: DesignTokens.space2),
+                    Wrap(
+                      spacing: DesignTokens.space1,
+                      runSpacing: DesignTokens.space1,
+                      children: actions,
+                    ),
+                  ],
+                ],
+              )
+            : Row(
+                children: [
+                  AiOrb(
+                    icon: icon,
+                    size: DesignTokens.space7,
+                    iconSize: DesignTokens.iconMD,
+                  ),
+                  const SizedBox(width: DesignTokens.space3),
+                  title,
+                  if (actions.isNotEmpty) ...[
+                    const SizedBox(width: DesignTokens.space3),
+                    Wrap(
+                      spacing: DesignTokens.space1,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: actions,
+                    ),
+                  ],
+                ],
+              );
+
+        return Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.6)),
             ),
           ),
-          if (actions.isNotEmpty) ...[
-            const SizedBox(width: DesignTokens.space3),
-            Wrap(
-              spacing: DesignTokens.space1,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: actions,
-            ),
-          ],
-        ],
-      ),
+          child: headerContent,
+        );
+      },
     );
-  }
-}
+  }}
 
 /// Section label with a small gradient accent bar — used to group settings,
 /// dashboard sections and other content blocks.
