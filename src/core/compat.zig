@@ -349,10 +349,11 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     if (pid_result == 0) {
         _ = linux.close(stdout_pipe[0]);
         _ = linux.close(stderr_pipe[0]);
-        _ = linux.dup2(stdout_pipe[1], 1);
-        _ = linux.dup2(stderr_pipe[1], 2);
-        _ = linux.close(stdout_pipe[1]);
         _ = linux.close(stderr_pipe[1]);
+        _ = linux.dup2(stdout_pipe[1], 1);
+        // Merge stderr into stdout so a child cannot deadlock on two full pipes.
+        _ = linux.dup2(stdout_pipe[1], 2);
+        _ = linux.close(stdout_pipe[1]);
 
         var args_buf: [64][]const u8 = undefined;
         const argc = @min(argv.len, args_buf.len);
@@ -389,8 +390,10 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     }
 
     _ = linux.close(stdout_pipe[1]);
+    _ = linux.close(stderr_pipe[0]);
     _ = linux.close(stderr_pipe[1]);
 
+    const max_output_bytes: usize = 4 * 1024 * 1024;
     var stdout_list = std.ArrayList(u8).initCapacity(allocator, 4096) catch {
         var dummy: u32 = 0;
         _ = linux.close(stdout_pipe[0]);
@@ -413,7 +416,10 @@ pub fn runCommand(allocator: std.mem.Allocator, argv: []const []const u8) !Child
     while (true) {
         const n = linux.read(stdout_pipe[0], &buf, buf.len);
         if (n == 0 or n > buf.len) break;
-        stdout_list.appendSlice(allocator, buf[0..n]) catch break;
+        if (stdout_list.items.len < max_output_bytes) {
+            const remaining = max_output_bytes - stdout_list.items.len;
+            stdout_list.appendSlice(allocator, buf[0..@min(n, remaining)]) catch break;
+        }
     }
     _ = linux.close(stdout_pipe[0]);
 
