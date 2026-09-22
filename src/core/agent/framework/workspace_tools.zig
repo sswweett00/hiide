@@ -6,6 +6,9 @@ const std = @import("std");
 const compat = @import("../../compat.zig");
 const tool_mod = @import("tool.zig");
 
+const MAX_SEARCH_RESULTS: usize = 1_000;
+const MAX_TREE_ENTRIES: usize = 50_000;
+
 pub const WorkspaceHit = struct {
     path: []const u8, // owned by caller
     line: usize,
@@ -181,7 +184,7 @@ pub fn searchWorkspaceTool() tool_mod.Tool {
             }, allocator, input, .{ .ignore_unknown_fields = true });
             defer parsed.deinit();
 
-            const max_results = parsed.value.max_results orelse 50;
+            const max_results = @min(parsed.value.max_results orelse 50, MAX_SEARCH_RESULTS);
             const hits = workspaceSearch(allocator, ctx.workspace_root, parsed.value.query, max_results, true) catch |err| {
                 return tool_mod.ToolResult.failure(@errorName(err));
             };
