@@ -76,6 +76,10 @@ const ABI_MAX: u32 = 1;
 /// Maximum queued messages per plugin before backpressure kicks in.
 const BUS_QUOTA: usize = 128;
 
+fn acceptTestSignature(_: *const PluginManifest, bytes: []const u8) bool {
+    return std.mem.eql(u8, bytes, "signed");
+}
+
 pub const PluginState = struct {
     handle: PluginHandle,
     manifest: PluginManifest,
@@ -108,9 +112,9 @@ pub const PluginManager = struct {
         self.* = undefined;
     }
 
-    /// Loads a plugin after ABI and capability validation.
-    /// Signature is verified as non-empty (real cryptographic check is a TODO
-    /// for integration with an OS keychain or certificate store).
+    /// Loads a plugin after ABI and cryptographic signature verification.
+    /// A manager created with `init` has no trust root and rejects packages;
+    /// production code must inject an actual verifier.
     /// @example
     /// const handle = try mgr.load(manifest, bytes);
     pub fn load(
@@ -231,10 +235,6 @@ test "plugin manager: load and check capabilities" {
         .signature = "fake-sig",
         .entrypoint = "main",
     };
-
-    fn acceptTestSignature(_: *const PluginManifest, bytes: []const u8) bool {
-        return std.mem.eql(u8, bytes, "signed");
-    }
 
     var verified_mgr = PluginManager.initWithVerifier(std.testing.allocator, acceptTestSignature);
     defer verified_mgr.deinit();
