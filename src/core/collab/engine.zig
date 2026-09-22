@@ -386,3 +386,22 @@ test "collab: commenter cannot mutate and session identity is enforced" {
     };
     try std.testing.expectError(CollabError.SessionNotFound, engine.applyRemote(forged, insert));
 }
+
+
+test "collab: duplicate operations are rejected" {
+    var engine = CollabEngine.init(std.testing.allocator);
+    defer engine.deinit();
+
+    const sess = CollaborationSession{
+        .session_id = "dup",
+        .doc_id = "dup.zig",
+        .role = .executor,
+        .shared_index_key_id = "k",
+    };
+    try engine.createSession(sess, "a");
+
+    const op = CrdtOp{ .seq = 7, .author = "alice", .kind = .insert, .offset = 1, .content = "b", .length = 0, .ts_unix_ms = 0 };
+    try engine.applyRemote(sess, op);
+    try std.testing.expectError(CollabError.DuplicateOperation, engine.applyRemote(sess, op));
+    try std.testing.expectEqualStrings("ab", engine.getContent("dup.zig").?);
+}
