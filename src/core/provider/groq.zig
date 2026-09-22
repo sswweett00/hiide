@@ -86,20 +86,22 @@ pub const Client = struct {
     allocator: std.mem.Allocator,
     api_key: []u8,
     http: std.http.Client,
+    io: std.Io,
     owns_key: bool,
 
     /// Loads key from GROQ_API_KEY or `groq-api-key` file candidates.
-    pub fn init(allocator: std.mem.Allocator) GroqError!Client {
+    pub fn init(allocator: std.mem.Allocator, io: std.Io) GroqError!Client {
         const key = try loadApiKey(allocator);
         return .{
             .allocator = allocator,
             .api_key = key,
-            .http = .{ .allocator = allocator },
+            .http = .{ .allocator = allocator, .io = io },
+            .io = io,
             .owns_key = true,
         };
     }
 
-    pub fn initWithKey(allocator: std.mem.Allocator, key: []const u8) GroqError!Client {
+    pub fn initWithKey(allocator: std.mem.Allocator, io: std.Io, key: []const u8) GroqError!Client {
         const owned = allocator.dupe(u8, key) catch return GroqError.OutOfMemory;
         return .{
             .allocator = allocator,
@@ -123,8 +125,8 @@ pub const Client = struct {
         const body = try buildRequestJson(self.allocator, req);
         defer self.allocator.free(body);
 
-        var response_body = compat.ManagedArrayList(u8).init(self.allocator);
-        defer response_body.deinit();
+        var response_body: std.ArrayList(u8) = .empty;
+        defer response_body.deinit(self.allocator);
 
         const auth_value = std.fmt.allocPrint(self.allocator, "Bearer {s}", .{self.api_key}) catch
             return GroqError.OutOfMemory;
@@ -160,8 +162,8 @@ pub const system_prompt =
     \\When reviewing or explaining code, focus on correctness, performance, and idioms.
 ;
 
-pub fn loadApiKey(allocator: std.mem.Allocator) GroqError![]u8 {
-    if (std.process.getEnvVarOwned(allocator, "GROQ_API_KEY")) |env_key| {
+pub fn loadApiKey(allocator: std.mem.Allocator, io: std.Io) GroqError![]u8 {
+    if (compat.getEnvAlloc(allocator, "GROQ_API_KEY")) |env_key| {
         const trimmed = std.mem.trim(u8, env_key, " \t\r\n");
         if (trimmed.len > 0) {
             const out = allocator.dupe(u8, trimmed) catch {
@@ -172,7 +174,7 @@ pub fn loadApiKey(allocator: std.mem.Allocator) GroqError![]u8 {
             return out;
         }
         allocator.free(env_key);
-    } else |_| {}
+    }
 
     const candidates = [_][]const u8{
         "groq-api-key",
@@ -180,9 +182,8 @@ pub fn loadApiKey(allocator: std.mem.Allocator) GroqError![]u8 {
         "../../groq-api-key",
     };
     for (candidates) |path| {
-        const file = std.fs.cwd().openFile(path, .{}) catch continue;
-        defer file.close();
-        const raw = file.readToEndAlloc(allocator, 4096) catch continue;
+        var dir = std.Io.Dir.cwd();
+        const raw = dir.readFileAlloc(io, path, allocator, .limited(4096)) catch continue;
         const trimmed = std.mem.trim(u8, raw, " \t\r\n");
         if (trimmed.len == 0) {
             allocator.free(raw);
