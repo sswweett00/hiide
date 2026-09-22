@@ -82,6 +82,14 @@ fn acceptTestSignature(_: *const PluginManifest, bytes: []const u8) bool {
     return std.mem.eql(u8, bytes, "signed");
 }
 
+fn freeManifest(allocator: std.mem.Allocator, manifest: *PluginManifest) void {
+    allocator.free(manifest.id);
+    allocator.free(manifest.version);
+    allocator.free(manifest.capabilities);
+    allocator.free(manifest.signature);
+    allocator.free(manifest.entrypoint);
+}
+
 pub const PluginState = struct {
     handle: PluginHandle,
     manifest: PluginManifest,
@@ -109,6 +117,7 @@ pub const PluginManager = struct {
     pub fn deinit(self: *PluginManager) void {
         for (self.plugins.items) |*p| {
             p.message_queue.deinit(self.allocator);
+            freeManifest(self.allocator, &p.manifest);
         }
         self.plugins.deinit(self.allocator);
         self.* = undefined;
@@ -141,20 +150,45 @@ pub const PluginManager = struct {
             return PluginError.InvalidSignature;
         }
 
+        const owned_id = self.allocator.dupe(u8, manifest.id) catch return PluginError.OutOfMemory;
+        errdefer self.allocator.free(owned_id);
+        const owned_version = self.allocator.dupe(u8, manifest.version) catch return PluginError.OutOfMemory;
+        errdefer self.allocator.free(owned_version);
+        const owned_caps = self.allocator.alloc(Capability, manifest.capabilities.len) catch return PluginError.OutOfMemory;
+        errdefer self.allocator.free(owned_caps);
+        @memcpy(owned_caps, manifest.capabilities);
+        const owned_signature = self.allocator.dupe(u8, manifest.signature) catch return PluginError.OutOfMemory;
+        errdefer self.allocator.free(owned_signature);
+        const owned_entrypoint = self.allocator.dupe(u8, manifest.entrypoint) catch return PluginError.OutOfMemory;
+        errdefer self.allocator.free(owned_entrypoint);
+
+        const owned_manifest = PluginManifest{
+            .id = owned_id,
+            .version = owned_version,
+            .abi_version = manifest.abi_version,
+            .capabilities = owned_caps,
+            .signature = owned_signature,
+            .entrypoint = owned_entrypoint,
+        };
+
         const id = self.next_id;
         self.next_id += 1;
 
         const handle = PluginHandle{
             .id = id,
-            .manifest_id = manifest.id,
+            .manifest_id = owned_manifest.id,
             .status = .loaded,
         };
 
         self.plugins.append(self.allocator, .{
             .handle = handle,
-            .manifest = manifest,
+            .manifest = owned_manifest,
             .message_queue = .empty,
-        }) catch return PluginError.OutOfMemory;
+        }) catch {
+            var cleanup = owned_manifest;
+            freeManifest(self.allocator, &cleanup);
+            return PluginError.OutOfMemory;
+        };
 
         return handle;
     }
@@ -164,6 +198,7 @@ pub const PluginManager = struct {
         for (self.plugins.items, 0..) |*p, i| {
             if (p.handle.id == handle_id) {
                 p.message_queue.deinit(self.allocator);
+                freeManifest(self.allocator, &p.manifest);
                 _ = self.plugins.swapRemove(i);
                 return;
             }
@@ -332,4 +367,30 @@ test "plugin manager: rejects unverifiable packages" {
         .entrypoint = "main",
     };
     try std.testing.expectError(PluginError.InvalidSignature, mgr.load(manifest, "payload"));
+}
+
+
+test "plugin manager: owns manifest memory after load" {
+    var mgr = PluginManager.initWithVerifier(std.testing.allocator, acceptTestSignature);
+    defer mgr.deinit();
+
+    var id = try std.testing.allocator.dupe(u8, "owned-plugin");
+    defer std.testing.allocator.free(id);
+    const caps = [_]Capability{.read_workspace};
+    const manifest = PluginManifest{
+        .id = id,
+        .version = "1.0.0",
+        .abi_version = 1,
+        .capabilities = &caps,
+        .signature = "sig",
+        .entrypoint = "main",
+    };
+
+    const handle = try mgr.load(manifest, "signed");
+    // Mutating/replacing the caller-owned id must not alter manager state.
+    id[0] = 'X';
+    try std.testing.expectEqualStrings("owned-plugin", handle.manifest_id);
+    try std.testing.expect(mgr.hasCapability(handle.id, .read_workspace));
+
+    try mgr.unload(handle.id);
 }
