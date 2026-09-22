@@ -67,6 +67,7 @@ pub const PluginError = error{
     CapabilityViolation,
     PluginNotFound,
     BusQuotaExceeded,
+    MessageTooLarge,
     OutOfMemory,
 };
 
@@ -75,6 +76,7 @@ const ABI_MIN: u32 = 1;
 const ABI_MAX: u32 = 1;
 /// Maximum queued messages per plugin before backpressure kicks in.
 const BUS_QUOTA: usize = 128;
+const MAX_PLUGIN_PAYLOAD_BYTES: usize = 1 * 1024 * 1024;
 
 fn acceptTestSignature(_: *const PluginManifest, bytes: []const u8) bool {
     return std.mem.eql(u8, bytes, "signed");
@@ -208,6 +210,13 @@ pub const PluginBus = struct {
         msg: PluginMessage,
     ) PluginError!void {
         const state = self.manager.findPlugin(handle.id) orelse return PluginError.PluginNotFound;
+
+        const payload_len = switch (msg) {
+            .request => |m| m.payload.len + m.method.len,
+            .response => |m| m.payload.len,
+            .event => |m| m.payload.len + m.kind.len,
+        };
+        if (payload_len > MAX_PLUGIN_PAYLOAD_BYTES) return PluginError.MessageTooLarge;
 
         if (state.message_queue.items.len >= BUS_QUOTA) {
             return PluginError.BusQuotaExceeded;
