@@ -4,22 +4,25 @@ const std = @import("std");
 const hiide = @import("hiide");
 
 const groq_mod = hiide.provider.groq;
+const compat = @import("../src/core/compat.zig");
 
 pub fn main(init: std.process.Init) !void {
     const allocator = init.gpa;
-    const out = std.io.getStdOut().writer();
+    var stdout_buf: [4096]u8 = undefined;
+    var stdout_writer = std.Io.File.stdout().writerStreaming(init.io, &stdout_buf);
+    const out = &stdout_writer.interface;
+    defer out.flush() catch {};
 
     // Parse instruction from command line
-    var args = try std.process.argsWithAllocator(allocator);
-    defer args.deinit();
-    _ = args.skip(); // exe
+    var args = init.minimal.args.iterate();
+    _ = args.next(); // exe
     
     const instruction = args.next() orelse "Create a Python file that adds two numbers";
     
     try out.print("Instruction: {s}\n", .{instruction});
     
     // Create Groq client
-    var client = try groq_mod.Client.init(allocator);
+    var client = try groq_mod.Client.init(allocator, init.io);
     defer client.deinit();
     
     // System prompt for the coder
@@ -31,7 +34,7 @@ pub fn main(init: std.process.Init) !void {
     ;
     
     // Build messages
-    var messages = std.ArrayList(groq_mod.Message).init(allocator);
+    var messages = compat.ManagedArrayList(groq_mod.Message).init(allocator);
     defer messages.deinit();
     
     try messages.append(.{ .role = .system, .content = system_prompt });
@@ -40,7 +43,7 @@ pub fn main(init: std.process.Init) !void {
     try out.print("Calling Groq API...\n", .{});
     
     // Call Groq API
-    const start = std.time.nanoTimestamp();
+    const start = compat.milliTimestamp();
     var resp = try client.complete(.{
         .model = groq_mod.default_model,
         .messages = messages.items,
@@ -48,8 +51,8 @@ pub fn main(init: std.process.Init) !void {
         .max_tokens = 4096,
     });
     defer resp.deinit();
-    const end = std.time.nanoTimestamp();
-    const elapsed_ms = @divTrunc(end - start, std.time.ns_per_ms);
+    const end = compat.milliTimestamp();
+    const elapsed_ms = end - start;
     
     try out.print("Model: {s}\n", .{resp.model});
     try out.print("Tokens: {d}\n", .{resp.total_tokens});
