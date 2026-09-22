@@ -36,8 +36,8 @@ jobs:
         run: |
           test "$(zig version)" = "0.16.0"
 
-      - name: Check changed Zig formatting
-        run: zig fmt --check build.zig src/core/ipc/server.zig src/core/agent/framework/process_tools.zig
+      - name: Check Zig formatting
+        run: git ls-files -z '*.zig' | xargs -0 zig fmt --check
 
       - name: Run unit tests
         run: zig build test --summary all
