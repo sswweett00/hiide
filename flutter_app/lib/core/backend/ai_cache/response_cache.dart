@@ -55,7 +55,7 @@ class AiResponseCache {
 
     final responseBytes = utf8.encode(response);
     if (responseBytes.length > _maxResponseBytes) {
-      throw ArgumentError.value(response.length, 'response', 'AI response exceeds cache size limit');
+      throw ArgumentError.value(responseBytes.length, 'response', 'AI response exceeds cache size limit');
     }
 
     // Evict expired entries first, then oldest entries deterministically.
