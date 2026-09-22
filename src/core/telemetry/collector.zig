@@ -124,17 +124,20 @@ pub const AggregateEntry = struct {
 pub const DpUploader = struct {
     allocator: std.mem.Allocator,
     sink: *const TelemetrySink,
+    io: std.Io,
     /// DP epsilon: lower = more private, higher = more accurate.
     epsilon: f64,
 
-    pub fn init(alloc: std.mem.Allocator, sink: *const TelemetrySink, epsilon: f64) DpUploader {
-        return .{ .allocator = alloc, .sink = sink, .epsilon = epsilon };
+    pub fn init(alloc: std.mem.Allocator, sink: *const TelemetrySink, epsilon: f64, io: std.Io) DpUploader {
+        return .{ .allocator = alloc, .sink = sink, .io = io, .epsilon = epsilon };
     }
 
     /// Produces differentially-private aggregates for upload.
     /// @example
     /// const batch = try uploader.prepareBatch(alloc);
     pub fn prepareBatch(self: *const DpUploader, alloc: std.mem.Allocator) !UploadBatch {
+        if (!(self.epsilon > 0.0) or !std.math.isFinite(self.epsilon)) return error.InvalidEpsilon;
+
         // Build frequency map from ring.
         var freq = std.AutoHashMapUnmanaged(u64, u64){};
         defer freq.deinit(self.allocator);
@@ -153,7 +156,7 @@ pub const DpUploader = struct {
         var it = freq.iterator();
         while (it.next()) |entry| {
             // Add Laplace noise: scale = 1 / epsilon.
-            const noise = laplaceSample(1.0 / self.epsilon);
+            const noise = try self.laplaceSample(1.0 / self.epsilon);
             entries[j] = .{
                 .name_hash = entry.key_ptr.*,
                 .noisy_count = @as(f64, @floatFromInt(entry.value_ptr.*)) + noise,
@@ -164,11 +167,15 @@ pub const DpUploader = struct {
         return .{ .metric_count = @intCast(count), .aggregates = entries };
     }
 
-    /// Laplace noise via the inversion method.
-    fn laplaceSample(scale: f64) f64 {
-        // Deterministic for tests — replace with CSPRNG in production.
-        _ = scale;
-        return 0.0;
+    /// Samples Laplace noise from fresh Io entropy using the inverse CDF.
+    fn laplaceSample(self: *const DpUploader, scale: f64) !f64 {
+        var source: std.Random.IoSource = .{ .io = self.io };
+        const rng = source.interface();
+        const raw = rng.uintLessThan(u64, @as(u64, 1) << 53);
+        const unit = (@as(f64, @floatFromInt(raw)) + 0.5) / 9007199254740992.0;
+        const centered = unit - 0.5;
+        const magnitude = -scale * @log(1.0 - 2.0 * @abs(centered));
+        return if (centered < 0.0) -magnitude else magnitude;
     }
 };
 
@@ -228,9 +235,18 @@ test "dp uploader: produces batch" {
     try sink.record(.{ .name = "a", .ts_unix_ms = 1, .attrs = &.{}, .value = .{ .u64 = 2 } });
     try sink.record(.{ .name = "b", .ts_unix_ms = 2, .attrs = &.{}, .value = .{ .u64 = 3 } });
 
-    const uploader = DpUploader.init(std.testing.allocator, &sink, 1.0);
+    const uploader = DpUploader.init(std.testing.allocator, &sink, 1.0, std.testing.io);
     const batch = try uploader.prepareBatch(std.testing.allocator);
     defer std.testing.allocator.free(batch.aggregates);
 
     try std.testing.expect(batch.aggregates.len >= 1);
+}
+
+
+test "dp uploader: rejects invalid epsilon" {
+    var sink = TelemetrySink.init(std.testing.allocator, .basic);
+    defer sink.deinit();
+
+    const uploader = DpUploader.init(std.testing.allocator, &sink, 0.0, std.testing.io);
+    try std.testing.expectError(error.InvalidEpsilon, uploader.prepareBatch(std.testing.allocator));
 }
