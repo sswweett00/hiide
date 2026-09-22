@@ -70,11 +70,23 @@ pub const ContentClassifier = struct {
             var search_start: usize = 0;
             while (true) {
                 const idx = indexOfCaseInsensitive(content, pat.needle, search_start) orelse break;
+                var start = idx;
                 var end = @min(idx + pat.needle.len, content.len);
-                if (pat.value_bearing) end = extendOverValue(content, end);
+                if (std.mem.eql(u8, pat.label, "pii_email")) {
+                    const email = expandEmailSpan(content, idx);
+                    if (email) |span| {
+                        start = span.start;
+                        end = span.end;
+                    } else {
+                        search_start = end;
+                        continue;
+                    }
+                } else if (pat.value_bearing) {
+                    end = extendOverValue(content, end);
+                }
 
                 try spans.append(alloc, .{
-                    .start = @intCast(idx),
+                    .start = @intCast(start),
                     .end = @intCast(end),
                     .class = pat.class,
                     .label = pat.label,
@@ -87,8 +99,14 @@ pub const ContentClassifier = struct {
             }
         }
 
-        // Entropy-based secret heuristic: look for long base64-ish tokens.
-        max_class = @enumFromInt(@max(@intFromEnum(max_class), @intFromEnum(entropyHeuristic(content))));
+        // Entropy-based secret heuristic: when content is suspicious and no
+        // stronger span detector found it, redact the whole payload rather than
+        // claiming confidentiality without actually removing the suspect bytes.
+        const entropy_class = entropyHeuristic(content);
+        if (@intFromEnum(entropy_class) > @intFromEnum(max_class)) {
+            max_class = entropy_class;
+            try spans.append(alloc, .{ .start = 0, .end = @intCast(content.len), .class = entropy_class, .label = "entropy" });
+        }
 
         return .{
             .max_class = max_class,
@@ -133,6 +151,32 @@ pub const ContentClassifier = struct {
 
     /// Extends a detected span over the secret value that follows the label so
     /// that redaction removes the value itself (e.g. `password=hunter2`).
+    fn expandEmailSpan(content: []const u8, at_index: usize) ?struct { start: usize, end: usize } {
+        if (at_index == 0 or at_index + 1 >= content.len) return null;
+
+        var start = at_index;
+        while (start > 0 and isEmailLocalChar(content[start - 1])) : (start -= 1) {}
+
+        var end = at_index + 1;
+        while (end < content.len and isEmailDomainChar(content[end])) : (end += 1) {}
+
+        if (start == at_index or end == at_index + 1) return null;
+        if (std.mem.indexOfScalar(u8, content[at_index + 1 .. end], '.') == null) return null;
+
+        return .{ .start = start, .end = end };
+    }
+
+    fn isEmailLocalChar(c: u8) bool {
+        return std.ascii.isAlphanumeric(c) or switch (c) {
+            '.', '_', '%', '+', '-' => true,
+            else => false,
+        };
+    }
+
+    fn isEmailDomainChar(c: u8) bool {
+        return std.ascii.isAlphanumeric(c) or c == '.' or c == '-';
+    }
+
     fn extendOverValue(content: []const u8, needle_end: usize) usize {
         var i = needle_end;
         // Skip the separator run between the label and the value.
@@ -224,4 +268,32 @@ test "classifier: public content stays public" {
     defer alloc.free(result.spans);
 
     try std.testing.expectEqual(Classification.public, result.max_class);
+}
+
+
+test "classifier: redacts complete email addresses" {
+    const alloc = std.testing.allocator;
+    const content = "contact alice.smith+ops@example.com now";
+    const result = try ContentClassifier.classify(content, alloc);
+    defer alloc.free(result.spans);
+
+    const redacted = try ContentClassifier.redact(content, result.spans, alloc);
+    defer alloc.free(redacted);
+
+    try std.testing.expect(std.mem.indexOf(u8, redacted, "alice.smith") == null);
+    try std.testing.expect(std.mem.indexOf(u8, redacted, "@example.com") == null);
+}
+
+test "classifier: entropy-only detections are actually redacted" {
+    const alloc = std.testing.allocator;
+    const content = "9f4d8b2ac761e8f5bb26d0c47a91e3f6e8b1a7c3";
+    const result = try ContentClassifier.classify(content, alloc);
+    defer alloc.free(result.spans);
+
+    if (result.max_class == .confidential) {
+        try std.testing.expect(result.spans.len > 0);
+        const redacted = try ContentClassifier.redact(content, result.spans, alloc);
+        defer alloc.free(redacted);
+        try std.testing.expectEqualStrings("[REDACTED]", redacted);
+    }
 }
