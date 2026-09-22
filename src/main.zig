@@ -1,11 +1,8 @@
 const std = @import("std");
 const hiide = @import("hiide");
 
-pub fn main() !void {
-    var gpa = std.heap.DebugAllocator(.{}){};
-    defer _ = gpa.deinit();
-
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
 
     const cfg = hiide.runtime.config.AppConfig.default();
     var app = try hiide.runtime.app.App.init(allocator, cfg);
