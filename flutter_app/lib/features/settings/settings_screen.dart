@@ -258,6 +258,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ),
                                 const SizedBox(width: DesignTokens.space2),
                                 ElevatedButton(
+                                  key: const Key('groq-save-button'),
                                   onPressed: _apiKeyDirty
                                       ? () async {
                                           final key = _apiKeyCtrl.text.trim();
