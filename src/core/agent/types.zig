@@ -88,6 +88,6 @@ pub fn AgentRegistry(comptime defs: anytype) type {
     };
 }
 
-pub fn nextTaskId(rng: std.rand.Random) u128 {
+pub fn nextTaskId(rng: std.Random) u128 {
     return rng.int(u128);
 }
