@@ -237,7 +237,6 @@ pub fn createDirectoryTool() tool_mod.Tool {
             const allocator = ctx.allocator;
             const path = try resolvePathInput(ctx, input);
             defer allocator.free(path);
-            const io = std.Io.Threaded.global_single_threaded.io();
             std.fs.cwd().makePath(path) catch |err| return ToolResult.failure(try std.fmt.allocPrint(allocator, "failed to create workspace directory: {s}", .{@errorName(err)}));
             return ToolResult.success("{\"created\":true}");
         }
