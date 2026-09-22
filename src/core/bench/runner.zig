@@ -1,6 +1,9 @@
 /// Cross-platform benchmark runner and regression gate per spec §8.
 /// Captures p50/p95/p99 latency, peak memory, and CI-gated regression detection.
 const std = @import("std");
+const compat = @import("../compat.zig");
+const linux = std.os.linux;
+const builtin = @import("builtin");
 
 pub const BenchmarkKind = enum(u8) {
     cold_start,
@@ -49,15 +52,16 @@ pub const RegressionError = error{
 
 /// Monotonic timer wrapper for pinned-core benchmark measurements.
 pub const Timer = struct {
-    start_ns: u64,
+    start_ns: i64,
 
     pub fn start() Timer {
-        return .{ .start_ns = @intCast(std.time.nanoTimestamp()) };
+        return .{ .start_ns = compat.nanoTimestamp() };
     }
 
     pub fn elapsedNs(self: Timer) u64 {
-        const now: u64 = @intCast(std.time.nanoTimestamp());
-        return now - self.start_ns;
+        const now = compat.nanoTimestamp();
+        if (now <= self.start_ns) return 0;
+        return @intCast(now - self.start_ns);
     }
 
     pub fn elapsedMs(self: Timer) f64 {
@@ -140,15 +144,21 @@ pub const BenchmarkRunner = struct {
     fn currentRss() u64 {
         // On Linux, read /proc/self/statm for RSS pages.
         // Returns 0 on failure (non-Linux platforms or permission errors).
-        const f = std.fs.openFileAbsolute("/proc/self/statm", .{}) catch return 0;
-        defer f.close();
+        if (builtin.os.tag != .linux) return 0;
+
+        const fd = linux.open("/proc/self/statm", .{ .ACCMODE = .RDONLY }, 0);
+        if (linux.errno(fd) != .SUCCESS) return 0;
+        defer _ = linux.close(@intCast(fd));
+
         var buf: [64]u8 = undefined;
-        const n = f.read(&buf) catch return 0;
+        const n = linux.read(@intCast(fd), &buf, buf.len);
+        if (n == 0 or n > buf.len) return 0;
+
         var it = std.mem.splitScalar(u8, buf[0..n], ' ');
-        _ = it.next(); // vmsize
+        _ = it.next();
         const rss_str = it.next() orelse return 0;
         const pages = std.fmt.parseInt(u64, std.mem.trimRight(u8, rss_str, "\n\r "), 10) catch return 0;
-        return pages * 4096; // 4K page size assumption.
+        return pages * 4096;
     }
 };
 
