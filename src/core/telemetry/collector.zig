@@ -97,14 +97,16 @@ pub const TelemetrySink = struct {
             self.ring[idx] = stored;
             self.ring_count += 1;
         } else {
-            // Ring full: overflow to heap list.
-            try self.overflow.append(self.allocator, stored);
+            // Keep storage bounded: evict the oldest sample rather than
+            // growing an unbounded overflow list.
+            self.ring[self.ring_head] = stored;
+            self.ring_head = (self.ring_head + 1) % RING_SIZE;
         }
     }
 
     /// Returns the total number of stored events.
     pub fn storedCount(self: *const TelemetrySink) usize {
-        return self.ring_count + self.overflow.items.len;
+        return self.ring_count;
     }
 };
 
