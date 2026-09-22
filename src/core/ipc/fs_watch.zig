@@ -27,6 +27,8 @@ const is_linux = builtin.os.tag == .linux;
 
 const allocator = std.heap.c_allocator;
 const max_entries: usize = 50_000;
+const max_subscribers: usize = 32;
+const max_roots_per_connection: usize = 2;
 
 pub const ChangeKind = enum { created, modified, deleted };
 
@@ -135,8 +137,29 @@ pub fn subscribe(
     conn: compat.TcpConnection,
     write_mutex: *compat.Mutex,
 ) !void {
+    // Validate the root before retaining it. This also rejects files and
+    // vanished paths instead of letting the watcher silently spin forever.
+    const probe = workspace_tools.workspaceTree(allocator, root, 1) catch return error.InvalidWatchRoot;
+    defer {
+        for (probe) |entry| {
+            allocator.free(entry.name);
+            allocator.free(entry.path);
+        }
+        allocator.free(probe);
+    }
+
     registry_mutex.lock();
     defer registry_mutex.unlock();
+
+    var roots_for_connection: usize = 0;
+    for (registry.items) |sub| {
+        if (sub.id != id) continue;
+        if (std.mem.eql(u8, sub.root, root)) return; // already subscribed
+        roots_for_connection += 1;
+    }
+
+    if (roots_for_connection >= max_roots_per_connection) return error.TooManyWatchRoots;
+    if (registry.items.len >= max_subscribers) return error.TooManyWatchers;
 
     try registry.append(allocator, .{
         .id = id,
