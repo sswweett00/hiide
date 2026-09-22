@@ -267,16 +267,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                               .state = key;
                                           ref.invalidate(groqAiServiceProvider);
                                           setState(() => _apiKeyDirty = false);
-                                          if (mounted) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                  content:
-                                                      Text('API key saved!'),
-                                                  duration:
-                                                      Duration(seconds: 2)),
-                                            );
-                                          }
+                                          if (!context.mounted) return;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                                content: Text('API key saved!'),
+                                                duration: Duration(seconds: 2)),
+                                          );
                                         }
                                       : null,
                                   child: const Text('Save'),
@@ -419,11 +416,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     final key = _openaiKeyCtrl.text.trim();
                                     await settingsService.setOpenaiApiKey(key);
                                     ref.read(openaiApiKeyProvider.notifier).state = key;
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('OpenAI key saved!'), duration: Duration(seconds: 2)),
-                                      );
-                                    }
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('OpenAI key saved!'), duration: Duration(seconds: 2)),
+                                    );
                                   },
                                   child: const Text('Save'),
                                 ),
@@ -479,11 +475,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     final key = _anthropicKeyCtrl.text.trim();
                                     await settingsService.setAnthropicApiKey(key);
                                     ref.read(anthropicApiKeyProvider.notifier).state = key;
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Anthropic key saved!'), duration: Duration(seconds: 2)),
-                                      );
-                                    }
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Anthropic key saved!'), duration: Duration(seconds: 2)),
+                                    );
                                   },
                                   child: const Text('Save'),
                                 ),
@@ -538,11 +533,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     final url = _ollamaUrlCtrl.text.trim();
                                     await settingsService.setOllamaUrl(url);
                                     ref.read(ollamaUrlProvider.notifier).state = url;
-                                    if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Ollama URL saved!'), duration: Duration(seconds: 2)),
-                                      );
-                                    }
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Ollama URL saved!'), duration: Duration(seconds: 2)),
+                                    );
                                   },
                                   child: const Text('Save'),
                                 ),
