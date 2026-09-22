@@ -82,6 +82,42 @@ fn acceptTestSignature(_: *const PluginManifest, bytes: []const u8) bool {
     return std.mem.eql(u8, bytes, "signed");
 }
 
+
+fn freePluginMessage(allocator: std.mem.Allocator, msg: *PluginMessage) void {
+    switch (msg.*) {
+        .request => |*m| {
+            allocator.free(m.method);
+            allocator.free(m.payload);
+        },
+        .response => |*m| {
+            allocator.free(m.payload);
+        },
+        .event => |*m| {
+            allocator.free(m.kind);
+            allocator.free(m.payload);
+        },
+    }
+}
+
+fn clonePluginMessage(allocator: std.mem.Allocator, msg: PluginMessage) !PluginMessage {
+    return switch (msg) {
+        .request => |m| .{ .request = .{
+            .id = m.id,
+            .method = try allocator.dupe(u8, m.method),
+            .payload = try allocator.dupe(u8, m.payload),
+        } },
+        .response => |m| .{ .response = .{
+            .request_id = m.request_id,
+            .ok = m.ok,
+            .payload = try allocator.dupe(u8, m.payload),
+        } },
+        .event => |m| .{ .event = .{
+            .kind = try allocator.dupe(u8, m.kind),
+            .payload = try allocator.dupe(u8, m.payload),
+        } },
+    };
+}
+
 fn freeManifest(allocator: std.mem.Allocator, manifest: *PluginManifest) void {
     allocator.free(manifest.id);
     allocator.free(manifest.version);
@@ -116,6 +152,9 @@ pub const PluginManager = struct {
 
     pub fn deinit(self: *PluginManager) void {
         for (self.plugins.items) |*p| {
+            for (p.message_queue.items) |*msg| {
+                freePluginMessage(self.allocator, msg);
+            }
             p.message_queue.deinit(self.allocator);
             freeManifest(self.allocator, &p.manifest);
         }
@@ -197,6 +236,9 @@ pub const PluginManager = struct {
     pub fn unload(self: *PluginManager, handle_id: u32) PluginError!void {
         for (self.plugins.items, 0..) |*p, i| {
             if (p.handle.id == handle_id) {
+                for (p.message_queue.items) |*msg| {
+                    freePluginMessage(self.allocator, msg);
+                }
                 p.message_queue.deinit(self.allocator);
                 freeManifest(self.allocator, &p.manifest);
                 _ = self.plugins.swapRemove(i);
@@ -257,7 +299,9 @@ pub const PluginBus = struct {
             return PluginError.BusQuotaExceeded;
         }
 
-        state.message_queue.append(self.manager.allocator, msg) catch return PluginError.OutOfMemory;
+        const owned = clonePluginMessage(self.manager.allocator, msg) catch return PluginError.OutOfMemory;
+        errdefer freePluginMessage(self.manager.allocator, &owned);
+        state.message_queue.append(self.manager.allocator, owned) catch return PluginError.OutOfMemory;
     }
 
     /// Pops the next message from a plugin's queue. Returns null if empty.
@@ -393,4 +437,31 @@ test "plugin manager: owns manifest memory after load" {
     try std.testing.expect(mgr.hasCapability(handle.id, .read_workspace));
 
     try mgr.unload(handle.id);
+}
+
+
+test "plugin bus: owns queued message memory" {
+    var mgr = PluginManager.initWithVerifier(std.testing.allocator, acceptTestSignature);
+    defer mgr.deinit();
+
+    const manifest = PluginManifest{
+        .id = "ownership-test",
+        .version = "1.0.0",
+        .abi_version = 1,
+        .capabilities = &.{},
+        .signature = "sig",
+        .entrypoint = "main",
+    };
+    const handle = try mgr.load(manifest, "signed");
+    var bus = PluginBus.init(&mgr);
+
+    var mutable_payload = try std.testing.allocator.dupe(u8, "original");
+    defer std.testing.allocator.free(mutable_payload);
+    try bus.send(handle, .{ .event = .{ .kind = "test", .payload = mutable_payload } });
+    mutable_payload[0] = 'X';
+
+    const received = bus.receive(handle) orelse return error.TestExpectedValue;
+    try std.testing.expectEqualStrings("original", received.event.payload);
+    var owned_received = received;
+    freePluginMessage(std.testing.allocator, &owned_received);
 }
