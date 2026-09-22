@@ -103,7 +103,7 @@ void main() {
         find.byWidgetPredicate((w) => _isMarker(_addedColor, w)), findsNothing);
 
     // Edit the middle line: 'beta' → 'BETA' (one modified region).
-    await tester.enterText(find.byType(TextField), 'alpha\nBETA\ngamma\n');
+    await tester.enterText(find.byKey(const Key('editor-code-text-field')), 'alpha\nBETA\ngamma\n');
     await tester.pump(const Duration(milliseconds: 300)); // debounce fires
     await tester.pump(const Duration(milliseconds: 100)); // diff completes
 
@@ -112,7 +112,7 @@ void main() {
 
     // Appending a line is an added marker, not modified.
     await tester.enterText(
-        find.byType(TextField), 'alpha\nBETA\ngamma\ndelta\n');
+        find.byKey(const Key('editor-code-text-field')), 'alpha\nBETA\ngamma\ndelta\n');
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pump(const Duration(milliseconds: 100));
 
