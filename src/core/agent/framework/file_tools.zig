@@ -108,7 +108,8 @@ pub fn writeFileTool() tool_mod.Tool {
             var file = compat.cwd().createFile(path, .{}) catch return ToolResult.failure("unable to open workspace file for write");
             defer file.close();
             try file.writeAll(parsed.value.content);
-            return ToolResult.success("{\"written\":true}");
+            const response = try std.fmt.allocPrint(allocator, "{{\"written\":true,\"size\":{d}}}", .{parsed.value.content.len});
+            return ToolResult.success(response);
         }
     };
     return tool_mod.fromFn(.{
