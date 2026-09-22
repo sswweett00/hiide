@@ -77,7 +77,7 @@ fn writeEscaped(out: *std.ArrayList(u8), text: []const u8) !void {
 
 /// Writes a complete highlighted token (span-wrapped, HTML-escaped) directly
 /// into [out], avoiding the per-token heap allocation that `wrapToken` imposed.
-fn writeToken(out: *std.ArrayList(u8), t: TokenType, text: []const u8) !void {
+fn writeToken(out: *compat.ManagedArrayList(u8), t: TokenType, text: []const u8) !void {
     try writeSpanOpen(out, t);
     try writeEscaped(out, text);
     try out.appendSlice("</span>");
