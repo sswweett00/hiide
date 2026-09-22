@@ -90,7 +90,7 @@ void main() {
     expect(find.text('25'), findsNothing);
 
     // Scrolling the text field scrolls the gutter (shared 28px rows).
-    await tester.drag(find.byType(TextField), const Offset(0, -300));
+    await tester.drag(find.byKey(const Key('editor-code-text-field')), const Offset(0, -300));
     await tester.pump();
 
     expect(find.text('1'), findsNothing);
