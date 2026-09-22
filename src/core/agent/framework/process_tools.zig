@@ -1,9 +1,8 @@
-/// Process execution tool for agents: runs a shell command in the workspace
-/// and returns its combined stdout + stderr so the agent can react to output.
+/// Process execution tool for agents: runs a shell command and returns its
+/// combined stdout + stderr so the agent can react to output.
 ///
-/// The command runs under `bash -c` with the workspace root as the working
-/// directory. Uses raw Linux syscalls via `compat.runCommand` to avoid the
-/// `std.process.Child` API that changed in Zig 0.17.
+/// The command runs under `bash -c`. The framework enforces a bounded timeout
+/// so a tool call cannot block the agent indefinitely.
 const std = @import("std");
 const compat = @import("../../compat.zig");
 const tool_mod = @import("tool.zig");
@@ -28,9 +27,8 @@ pub fn processRunTool() tool_mod.Tool {
                 return tool_mod.ToolResult.failure("no command provided");
             }
 
-            // Use compat.runCommand which handles fork/exec/pipe/wait via raw
-            // Linux syscalls, avoiding the std.process.Child API that changed
-            // in Zig 0.17.
+            // Use the bounded compatibility runner rather than the removed
+            // std.process.Child API from older Zig releases.
             const requested_timeout = parsed.value.timeout_ms orelse default_timeout_ms;
             const timeout_ms = @min(requested_timeout, 10 * 60 * 1000);
             if (timeout_ms == 0) return tool_mod.ToolResult.failure("timeout_ms must be greater than zero");
