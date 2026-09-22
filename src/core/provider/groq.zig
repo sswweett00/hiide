@@ -205,7 +205,7 @@ fn buildRequestJson(allocator: std.mem.Allocator, req: ChatRequest) GroqError![]
     var w = list.writer();
 
     w.writeAll("{\"model\":\"") catch return GroqError.OutOfMemory;
-    try writeJsonString(w, req.model);
+    try writeJsonString(&w, req.model);
     w.writeAll("\",\"temperature\":") catch return GroqError.OutOfMemory;
     w.print("{d:.2}", .{req.temperature}) catch return GroqError.OutOfMemory;
     w.writeAll(",\"max_tokens\":") catch return GroqError.OutOfMemory;
@@ -219,14 +219,14 @@ fn buildRequestJson(allocator: std.mem.Allocator, req: ChatRequest) GroqError![]
         w.writeAll("{\"role\":\"") catch return GroqError.OutOfMemory;
         w.writeAll(msg.role.name()) catch return GroqError.OutOfMemory;
         w.writeAll("\",\"content\":\"") catch return GroqError.OutOfMemory;
-        try writeJsonString(w, msg.content);
+        try writeJsonString(&w, msg.content);
         w.writeAll("\"}") catch return GroqError.OutOfMemory;
     }
     w.writeAll("]}") catch return GroqError.OutOfMemory;
     return list.toOwnedSlice() catch return GroqError.OutOfMemory;
 }
 
-fn writeJsonString(w: anytype, s: []const u8) GroqError!void {
+fn writeJsonString(w: *compat.ManagedArrayList(u8).Writer, s: []const u8) GroqError!void {
     for (s) |c| {
         switch (c) {
             '"' => w.writeAll("\\\"") catch return GroqError.OutOfMemory,
