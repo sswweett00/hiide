@@ -59,6 +59,8 @@ pub const PluginMessage = union(enum) {
     event: EventFrame,
 };
 
+pub const SignatureVerifier = *const fn (manifest: *const PluginManifest, bytes: []const u8) bool;
+
 pub const PluginError = error{
     AbiMismatch,
     InvalidSignature,
@@ -88,9 +90,14 @@ pub const PluginManager = struct {
     allocator: std.mem.Allocator,
     plugins: std.ArrayListUnmanaged(PluginState),
     next_id: u32,
+    signature_verifier: ?SignatureVerifier,
 
     pub fn init(alloc: std.mem.Allocator) PluginManager {
-        return .{ .allocator = alloc, .plugins = .empty, .next_id = 1 };
+        return .{ .allocator = alloc, .plugins = .empty, .next_id = 1, .signature_verifier = null };
+    }
+
+    pub fn initWithVerifier(alloc: std.mem.Allocator, verifier: SignatureVerifier) PluginManager {
+        return .{ .allocator = alloc, .plugins = .empty, .next_id = 1, .signature_verifier = verifier };
     }
 
     pub fn deinit(self: *PluginManager) void {
@@ -111,15 +118,20 @@ pub const PluginManager = struct {
         manifest: PluginManifest,
         bytes: []const u8,
     ) PluginError!PluginHandle {
-        _ = bytes;
+        if (manifest.id.len == 0 or manifest.version.len == 0 or manifest.entrypoint.len == 0) {
+            return PluginError.InvalidSignature;
+        }
 
         // ABI compatibility check.
         if (manifest.abi_version < ABI_MIN or manifest.abi_version > ABI_MAX) {
             return PluginError.AbiMismatch;
         }
 
-        // Basic signature presence check (placeholder for real verify).
-        if (manifest.signature.len == 0) {
+        // Never treat a non-empty signature string as proof of authenticity.
+        // Production callers must inject an actual verifier (for example,
+        // Ed25519 over the canonical manifest + package bytes).
+        const verifier = self.signature_verifier orelse return PluginError.InvalidSignature;
+        if (manifest.signature.len == 0 or !verifier(&manifest, bytes)) {
             return PluginError.InvalidSignature;
         }
 
@@ -211,9 +223,6 @@ pub const PluginBus = struct {
 };
 
 test "plugin manager: load and check capabilities" {
-    var mgr = PluginManager.init(std.testing.allocator);
-    defer mgr.deinit();
-
     const manifest = PluginManifest{
         .id = "test-plugin",
         .version = "1.0.0",
@@ -223,10 +232,17 @@ test "plugin manager: load and check capabilities" {
         .entrypoint = "main",
     };
 
-    const handle = try mgr.load(manifest, &.{});
+    fn acceptTestSignature(_: *const PluginManifest, bytes: []const u8) bool {
+        return std.mem.eql(u8, bytes, "signed") ;
+    }
+
+    var verified_mgr = PluginManager.initWithVerifier(std.testing.allocator, acceptTestSignature);
+    defer verified_mgr.deinit();
+
+    const handle = try verified_mgr.load(manifest, "signed");
     try std.testing.expectEqual(PluginStatus.loaded, handle.status);
-    try std.testing.expect(mgr.hasCapability(handle.id, .read_workspace));
-    try std.testing.expect(!mgr.hasCapability(handle.id, .network_egress));
+    try std.testing.expect(verified_mgr.hasCapability(handle.id, .read_workspace));
+    try std.testing.expect(!verified_mgr.hasCapability(handle.id, .network_egress));
 }
 
 test "plugin manager: ABI mismatch rejected" {
@@ -291,4 +307,20 @@ test "plugin bus: quota exceeded" {
     }
     const overflow = bus.send(handle, msg);
     try std.testing.expectError(PluginError.BusQuotaExceeded, overflow);
+}
+
+
+test "plugin manager: rejects unverifiable packages" {
+    var mgr = PluginManager.init(std.testing.allocator);
+    defer mgr.deinit();
+
+    const manifest = PluginManifest{
+        .id = "unsigned",
+        .version = "1.0.0",
+        .abi_version = 1,
+        .capabilities = &.{},
+        .signature = "anything",
+        .entrypoint = "main",
+    };
+    try std.testing.expectError(PluginError.InvalidSignature, mgr.load(manifest, "payload"));
 }
