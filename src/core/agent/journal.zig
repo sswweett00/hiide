@@ -55,12 +55,30 @@ pub const SideEffectJournal = struct {
     allocator: std.mem.Allocator,
     entries: std.ArrayListUnmanaged(JournalEntry),
     next_id: u64,
+    max_entries: usize,
+    max_payload_bytes: usize,
 
     pub fn init(alloc: std.mem.Allocator) SideEffectJournal {
         return .{
             .allocator = alloc,
             .entries = .empty,
             .next_id = 1,
+            .max_entries = MAX_JOURNAL_ENTRIES,
+            .max_payload_bytes = MAX_JOURNAL_PAYLOAD_BYTES,
+        };
+    }
+
+    pub fn initWithLimits(
+        alloc: std.mem.Allocator,
+        max_entries: usize,
+        max_payload_bytes: usize,
+    ) SideEffectJournal {
+        return .{
+            .allocator = alloc,
+            .entries = .empty,
+            .next_id = 1,
+            .max_entries = max_entries,
+            .max_payload_bytes = max_payload_bytes,
         };
     }
 
@@ -81,8 +99,8 @@ pub const SideEffectJournal = struct {
         task_id: u128,
         payload: []const u8,
     ) !u64 {
-        if (payload.len > MAX_JOURNAL_PAYLOAD_BYTES) return JournalError.PayloadTooLarge;
-        if (self.entries.items.len >= MAX_JOURNAL_ENTRIES) return JournalError.EntryLimitExceeded;
+        if (payload.len > self.max_payload_bytes) return JournalError.PayloadTooLarge;
+        if (self.entries.items.len >= self.max_entries) return JournalError.EntryLimitExceeded;
         const owned = try self.allocator.dupe(u8, payload);
         errdefer self.allocator.free(owned);
 
@@ -188,15 +206,15 @@ test "journal: rollback discards pending and approved" {
 
 
 test "journal: enforces bounded entry and payload sizes" {
-    var journal = SideEffectJournal.init(std.testing.allocator);
+    var journal = SideEffectJournal.initWithLimits(std.testing.allocator, 8, 16);
     defer journal.deinit();
 
-    const oversized = try std.testing.allocator.alloc(u8, MAX_JOURNAL_PAYLOAD_BYTES + 1);
+    const oversized = try std.testing.allocator.alloc(u8, 17);
     defer std.testing.allocator.free(oversized);
     try std.testing.expectError(JournalError.PayloadTooLarge, journal.record(.file_write, 1, oversized));
 
     var i: usize = 0;
-    while (i < MAX_JOURNAL_ENTRIES) : (i += 1) {
+    while (i < 8) : (i += 1) {
         _ = try journal.record(.file_write, 2, "x");
     }
     try std.testing.expectError(JournalError.EntryLimitExceeded, journal.record(.file_write, 2, "y"));
