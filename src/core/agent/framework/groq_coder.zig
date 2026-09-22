@@ -11,6 +11,7 @@ pub const GroqCoder = struct {
     model: []const u8 = groq_mod.default_model,
     temperature: f32 = 0.3,
     max_tokens: u32 = 4096,
+    io: std.Io,
     
     /// System prompt for the coder agent
     const system_prompt = 
@@ -23,8 +24,8 @@ pub const GroqCoder = struct {
         \\Be concise and focus on the task at hand.
     ;
     
-    pub fn init(allocator: std.mem.Allocator) !GroqCoder {
-        return .{ .allocator = allocator };
+    pub fn init(allocator: std.mem.Allocator, io: std.Io) !GroqCoder {
+        return .{ .allocator = allocator, .io = io };
     }
     
     pub fn deinit(self: *GroqCoder, allocator: std.mem.Allocator) void {
@@ -37,7 +38,7 @@ pub const GroqCoder = struct {
         const instruction = ctx.task.title;
         
         // Create Groq client
-        var client = try groq_mod.Client.init(self.allocator);
+        var client = try groq_mod.Client.init(self.allocator, self.io);
         defer client.deinit();
         
         // Build messages with system prompt and user instruction
