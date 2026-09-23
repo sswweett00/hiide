@@ -47,7 +47,7 @@ void main() {
       verificationCommands: const ['flutter test'],
       toolCalls: 3,
     );
-    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await store.flush();
 
     final restored = await AgentTaskStore.load();
     final saved = restored.byId(task.id);
@@ -71,7 +71,7 @@ void main() {
       mode: 'code',
     );
     store.update(task.id, status: AgentTaskStatus.executing);
-    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await store.flush();
 
     final restored = await AgentTaskStore.load();
     final recovered = restored.byId(task.id);
@@ -94,7 +94,7 @@ void main() {
       status: AgentTaskStatus.succeeded,
       summary: 'Plan complete',
     );
-    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await store.flush();
 
     final restored = await AgentTaskStore.load();
     expect(restored.byId(task.id)!.status, AgentTaskStatus.succeeded);
