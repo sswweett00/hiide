@@ -225,7 +225,7 @@ class SettingsService {
     return switch (stored) {
       'aiNative' => UiMode.aiNative,
       'ide' => UiMode.ide,
-      _ => UiMode.ide,
+      _ => UiMode.aiNative,
     };
   }
 
