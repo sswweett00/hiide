@@ -1,65 +1,209 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'ai_provider.dart';
-import 'groq_provider.dart';
-import 'openai_provider.dart';
 import 'anthropic_provider.dart';
-import 'ollama_provider.dart';
+import 'openai_compatible_provider.dart';
 import '../ai_chat_client.dart';
 
-/// Manages the active AI provider and handles fallback through a chain
-/// when the primary provider is unavailable. Exposes a single
-/// [AiChatClient] interface so the rest of the app doesn't care which
-/// provider is active.
+/// Runtime catalog entry for a hosted or local provider.
+class BuiltInAiProviderSpec {
+  const BuiltInAiProviderSpec({
+    required this.id,
+    required this.displayName,
+    required this.baseUrl,
+    required this.defaultModel,
+    this.requiresApiKey = true,
+    this.envKey,
+  });
+
+  final String id;
+  final String displayName;
+  final String baseUrl;
+  final String defaultModel;
+  final bool requiresApiKey;
+  final String? envKey;
+}
+
+/// Providers shipped with Hiide. OpenAI-compatible services all share the same
+/// transport, so adding another compatible endpoint does not require changing
+/// the agent runtime.
+class AiProviderCatalog {
+  static const specs = <BuiltInAiProviderSpec>[
+    BuiltInAiProviderSpec(
+      id: 'groq',
+      displayName: 'Groq',
+      baseUrl: 'https://api.groq.com/openai/v1',
+      defaultModel: 'llama-3.3-70b-versatile',
+      envKey: 'GROQ_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'openai',
+      displayName: 'OpenAI',
+      baseUrl: 'https://api.openai.com/v1',
+      defaultModel: 'gpt-4o-mini',
+      envKey: 'OPENAI_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'openrouter',
+      displayName: 'OpenRouter',
+      baseUrl: 'https://openrouter.ai/api/v1',
+      defaultModel: 'openai/gpt-4o-mini',
+      envKey: 'OPENROUTER_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'deepseek',
+      displayName: 'DeepSeek',
+      baseUrl: 'https://api.deepseek.com',
+      defaultModel: 'deepseek-flash',
+      envKey: 'DEEPSEEK_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'mistral',
+      displayName: 'Mistral',
+      baseUrl: 'https://api.mistral.ai/v1',
+      defaultModel: 'mistral-large-latest',
+      envKey: 'MISTRAL_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'together',
+      displayName: 'Together AI',
+      baseUrl: 'https://api.together.xyz/v1',
+      defaultModel: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
+      envKey: 'TOGETHER_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'fireworks',
+      displayName: 'Fireworks AI',
+      baseUrl: 'https://api.fireworks.ai/inference/v1',
+      defaultModel: 'accounts/fireworks/models/llama-v3p1-70b-instruct',
+      envKey: 'FIREWORKS_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'perplexity',
+      displayName: 'Perplexity',
+      baseUrl: 'https://api.perplexity.ai',
+      defaultModel: 'sonar-pro',
+      envKey: 'PERPLEXITY_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'xai',
+      displayName: 'xAI (Grok)',
+      baseUrl: 'https://api.x.ai/v1',
+      defaultModel: 'grok-4.7',
+      envKey: 'XAI_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'gemini',
+      displayName: 'Google Gemini',
+      baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+      defaultModel: 'gemini-3.8-flash',
+      envKey: 'GEMINI_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'cerebras',
+      displayName: 'Cerebras',
+      baseUrl: 'https://api.cerebras.ai/v1',
+      defaultModel: 'llama-3.3-70b',
+      envKey: 'CEREBRAS_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'ollama',
+      displayName: 'Ollama (Local)',
+      baseUrl: 'http://127.0.0.1:11434/v1',
+      defaultModel: 'llama3.2',
+      requiresApiKey: false,
+    ),
+  ];
+
+  static BuiltInAiProviderSpec? byId(String id) {
+    for (final spec in specs) {
+      if (spec.id == id) return spec;
+    }
+    return null;
+  }
+
+  static String displayNameFor(String id) {
+    return byId(id)?.displayName ?? id;
+  }
+}
+
+/// Manages all configured providers and provides one stable AI contract to the
+/// rest of Hiide. Fallback happens at request time: a broken primary endpoint
+/// does not make the agent runtime unusable when another configured endpoint is
+/// available.
 class ProviderManager implements AiChatClient {
+  ProviderManager(
+    this._providers, {
+    required String activeProviderId,
+    required Map<String, String> selectedModels,
+  })  : _activeProviderId = activeProviderId,
+        _selectedModels = Map<String, String>.from(selectedModels);
+
   final List<AiProvider> _providers;
-  int _activeIndex;
+  String _activeProviderId;
+  final Map<String, String> _selectedModels;
 
-  ProviderManager(this._providers) : _activeIndex = 0;
+  AiProvider get active =>
+      _providers.firstWhere((p) => p.id == _activeProviderId, orElse: () => _providers.first);
 
-  /// The currently selected provider.
-  AiProvider get active => _providers[_activeIndex];
+  String get activeProviderId => active.id;
 
-  /// All registered providers (for the settings dropdown).
+  String get activeModel {
+    final selected = _selectedModels[active.id]?.trim();
+    return selected == null || selected.isEmpty ? active.defaultModel : selected;
+  }
+
   List<AiProvider> get available => List.unmodifiable(_providers);
 
-  /// Try each provider, prioritizing the user's selected active provider.
   Future<AiProvider> _resolve() async {
     if (_providers.isEmpty) {
       throw StateError('No AI providers registered');
     }
-    // Prioritize the user's selected provider if it is available.
-    if (_activeIndex >= 0 && _activeIndex < _providers.length) {
+
+    final preferred = _providers.where((p) => p.id == _activeProviderId).firstOrNull;
+    if (preferred != null) {
       try {
-        if (await _providers[_activeIndex].isAvailable) {
-          return _providers[_activeIndex];
+        if (await preferred.isAvailable) return preferred;
+      } catch (_) {}
+    }
+
+    for (final provider in _providers) {
+      if (preferred != null && identical(provider, preferred)) continue;
+      try {
+        if (await provider.isAvailable) {
+          _activeProviderId = provider.id;
+          return provider;
         }
       } catch (_) {}
     }
-    // Fall back to the first available provider.
-    for (var i = 0; i < _providers.length; i++) {
-      if (i == _activeIndex) continue;
-      try {
-        if (await _providers[i].isAvailable) {
-          _activeIndex = i;
-          return _providers[i];
-        }
-      } catch (_) {}
-    }
-    // Fall back to the selected active provider even if unavailable
-    // (the specific provider error will surface naturally).
-    return active;
+
+    return preferred ?? _providers.first;
   }
 
-  /// Switch the active provider by id.
   void switchTo(String providerId) {
-    final idx = _providers.indexWhere((p) => p.id == providerId);
-    if (idx >= 0) _activeIndex = idx;
+    if (_providers.any((p) => p.id == providerId)) {
+      _activeProviderId = providerId;
+    }
   }
 
-  // ─── AiChatClient implementation ──────────────────────────────────────────
+  void setModel(String providerId, String model) {
+    final value = model.trim();
+    if (value.isEmpty) {
+      _selectedModels.remove(providerId);
+    } else {
+      _selectedModels[providerId] = value;
+    }
+  }
+
+  Future<List<String>> fetchModels([String? providerId]) async {
+    final provider = providerId == null
+        ? active
+        : _providers.firstWhere(
+            (p) => p.id == providerId,
+            orElse: () => active,
+          );
+    return provider.fetchAvailableModels();
+  }
 
   @override
   Future<Map<String, dynamic>> chatCompletion({
@@ -72,7 +216,9 @@ class ProviderManager implements AiChatClient {
     return provider.chatCompletion(
       messages: messages,
       tools: tools,
-      model: model,
+      model: (model == null || model.trim().isEmpty)
+          ? (_selectedModels[provider.id] ?? provider.defaultModel)
+          : model,
       temperature: temperature,
     );
   }
@@ -83,54 +229,117 @@ class ProviderManager implements AiChatClient {
     String? model,
   }) async* {
     final provider = await _resolve();
-    yield* provider.chatCompletionStream(messages: messages, model: model);
+    yield* provider.chatCompletionStream(
+      messages: messages,
+      model: (model == null || model.trim().isEmpty)
+          ? (_selectedModels[provider.id] ?? provider.defaultModel)
+          : model,
+    );
   }
+
+  @override
+  Future<String?> completeCode(String prompt, {String? model}) async {
+    final provider = await _resolve();
+    return provider.completeCode(
+      prompt,
+      model: model ?? _selectedModels[provider.id] ?? provider.defaultModel,
+    );
+  }
+
+  /// There is deliberately no write-side API for secrets here. Credentials
+  /// enter via SettingsService/Riverpod and are passed to providers by value.
 }
 
-// ─── Riverpod providers ──────────────────────────────────────────────────────
+final aiProviderIdProvider = StateProvider<String>((ref) => 'groq');
 
-/// The active provider type, persisted in settings.
+/// Kept for compatibility with older settings/tests. New code should prefer
+/// [aiProviderIdProvider] because it also supports custom providers.
 final aiProviderTypeProvider = StateProvider<AiProviderType>((ref) {
   return AiProviderType.groq;
 });
 
-/// Groq API key.
-final groqApiKeyProvider = StateProvider<String>((ref) => '');
+final aiProviderKeysProvider =
+    StateProvider<Map<String, String>>((ref) => const <String, String>{});
 
-/// OpenAI API key.
-final openaiApiKeyProvider = StateProvider<String>((ref) => '');
+final aiProviderModelsProvider =
+    StateProvider<Map<String, String>>((ref) => const <String, String>{});
 
-/// Anthropic API key.
-final anthropicApiKeyProvider = StateProvider<String>((ref) => '');
+/// Custom OpenAI-compatible endpoints. Each map must contain at least id,
+/// name, baseUrl, and model. The API key is kept in [aiProviderKeysProvider].
+final customAiProvidersProvider =
+    StateProvider<List<Map<String, String>>>((ref) => const []);
 
-/// Ollama base URL.
+final groqApiKeyProvider = StateProvider<String>((ref) {
+  return ref.watch(aiProviderKeysProvider)['groq'] ?? '';
+});
+final openaiApiKeyProvider = StateProvider<String>((ref) {
+  return ref.watch(aiProviderKeysProvider)['openai'] ?? '';
+});
+final anthropicApiKeyProvider = StateProvider<String>((ref) {
+  return ref.watch(aiProviderKeysProvider)['anthropic'] ?? '';
+});
 final ollamaUrlProvider =
     StateProvider<String>((ref) => 'http://127.0.0.1:11434');
 
-/// Selected model per provider.
 final selectedModelProvider = StateProvider<String>((ref) => '');
 
-/// Creates the provider manager with all registered providers.
 final providerManagerProvider = Provider<ProviderManager>((ref) {
-  final groqKey = ref.watch(groqApiKeyProvider);
-  final openaiKey = ref.watch(openaiApiKeyProvider);
-  final anthropicKey = ref.watch(anthropicApiKeyProvider);
-  final ollamaUrl = ref.watch(ollamaUrlProvider);
-  final type = ref.watch(aiProviderTypeProvider);
+  final keys = ref.watch(aiProviderKeysProvider);
+  final custom = ref.watch(customAiProvidersProvider);
+  final activeId = ref.watch(aiProviderIdProvider);
+  final models = ref.watch(aiProviderModelsProvider);
 
-  final providers = <AiProvider>[
-    GroqProvider(apiKey: groqKey),
-    OpenAiProvider(apiKey: openaiKey),
-    AnthropicProvider(apiKey: anthropicKey),
-    OllamaProvider(baseUrl: ollamaUrl),
-  ];
+  final providers = <AiProvider>[];
 
-  final manager = ProviderManager(providers);
-  manager.switchTo(type.name);
+  for (final spec in AiProviderCatalog.specs) {
+    final key = keys[spec.id] ?? '';
+    providers.add(
+      OpenAiCompatibleProvider(
+        id: spec.id,
+        displayName: spec.displayName,
+        baseUrl: spec.baseUrl,
+        apiKey: key,
+        defaultModel: spec.defaultModel,
+        requiresApiKey: spec.requiresApiKey,
+      ),
+    );
+  }
+
+  if ((keys['anthropic'] ?? '').isNotEmpty) {
+    providers.add(
+      AnthropicProvider(apiKey: keys['anthropic']!),
+    );
+  } else {
+    providers.add(AnthropicProvider(apiKey: ''));
+  }
+
+  for (final raw in custom) {
+    final id = raw['id']?.trim() ?? '';
+    final name = raw['name']?.trim() ?? '';
+    final baseUrl = raw['baseUrl']?.trim() ?? '';
+    final model = raw['model']?.trim() ?? '';
+    if (id.isEmpty || name.isEmpty || baseUrl.isEmpty || model.isEmpty) {
+      continue;
+    }
+    providers.add(
+      OpenAiCompatibleProvider(
+        id: id,
+        displayName: name,
+        baseUrl: baseUrl,
+        apiKey: keys[id] ?? '',
+        defaultModel: model,
+      ),
+    );
+  }
+
+  final manager = ProviderManager(
+    providers,
+    activeProviderId: activeId,
+    selectedModels: models,
+  );
   return manager;
 });
 
-/// The unified AI chat client used by the agent controller and editor.
 final unifiedAiClientProvider = Provider<AiChatClient>((ref) {
   return ref.watch(providerManagerProvider);
 });
