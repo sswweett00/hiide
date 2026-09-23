@@ -229,7 +229,17 @@ class AgentTaskStore {
               .where((e) => e.id.isNotEmpty).toList()
           : <AgentTaskRecord>[];
       tasks.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-      return AgentTaskStore._(prefs, tasks.take(_maxTasks).toList());
+      final recovered = tasks.take(_maxTasks).map((task) {
+        if (task.status.terminal) return task;
+        return task.copyWith(
+          status: AgentTaskStatus.canceled,
+          error: 'Application restarted before this task reached a terminal state.',
+          summary: task.summary ?? 'Interrupted by application restart.',
+        );
+      }).toList();
+      final store = AgentTaskStore._(prefs, recovered);
+      await store._persist();
+      return store;
     } catch (_) {
       return AgentTaskStore._(prefs, <AgentTaskRecord>[]);
     }
