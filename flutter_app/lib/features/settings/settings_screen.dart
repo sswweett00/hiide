@@ -22,10 +22,6 @@ final settingsProvider = StateProvider<Map<String, dynamic>>((ref) => {
       'formatOnSave': true,
     });
 
-final groqApiKeyProvider = StateProvider<String>((ref) => '');
-final groqModelProvider =
-    StateProvider<String>((ref) => SettingsService.availableModels.first);
-
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key, this.standalone = false});
 
@@ -43,6 +39,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _openaiKeyCtrl;
   late final TextEditingController _anthropicKeyCtrl;
   late final TextEditingController _ollamaUrlCtrl;
+  late final TextEditingController _modelCtrl;
+  late final TextEditingController _customNameCtrl;
+  late final TextEditingController _customUrlCtrl;
+  late final TextEditingController _customModelCtrl;
+  late final TextEditingController _customKeyCtrl;
   bool _apiKeyObscured = true;
   bool _apiKeyDirty = false;
 
@@ -53,36 +54,44 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _openaiKeyCtrl = TextEditingController();
     _anthropicKeyCtrl = TextEditingController();
     _ollamaUrlCtrl = TextEditingController();
-    // Load stored keys
-    settingsService.getApiKey().then((key) {
+    _modelCtrl = TextEditingController();
+    _customNameCtrl = TextEditingController();
+    _customUrlCtrl = TextEditingController();
+    _customModelCtrl = TextEditingController();
+    _customKeyCtrl = TextEditingController();
+    // Restore the full provider registry state.
+    settingsService.getAiApiKeys().then((keys) {
       if (mounted) {
-        _apiKeyCtrl.text = key;
-        ref.read(groqApiKeyProvider.notifier).state = key;
+        ref.read(aiProviderKeysProvider.notifier).state = keys;
+        final id = ref.read(aiProviderIdProvider);
+        _apiKeyCtrl.text = keys[id] ?? '';
       }
     });
-    settingsService.getModel().then((model) {
+    settingsService.getAiProviderModels().then((models) {
       if (mounted) {
-        ref.read(groqModelProvider.notifier).state = model;
+        ref.read(aiProviderModelsProvider.notifier).state = models;
+        final id = ref.read(aiProviderIdProvider);
+        final fallback = ref.read(providerManagerProvider).active.defaultModel;
+        _modelCtrl.text = models[id] ?? fallback;
       }
     });
-    settingsService.getOpenaiApiKey().then((key) {
+    settingsService.getAiProvider().then((id) {
       if (mounted) {
-        _openaiKeyCtrl.text = key;
-        ref.read(openaiApiKeyProvider.notifier).state = key;
+        ref.read(aiProviderIdProvider.notifier).state = id;
+        ref.read(aiProviderTypeProvider.notifier).state =
+            aiProviderTypeFromId(id);
+        _apiKeyCtrl.text = ref.read(aiProviderKeysProvider)[id] ?? '';
+        final models = ref.read(aiProviderModelsProvider);
+        _modelCtrl.text =
+            models[id] ?? ref.read(providerManagerProvider).active.defaultModel;
       }
     });
-    settingsService.getAnthropicApiKey().then((key) {
+    settingsService.getCustomAiProviders().then((custom) {
       if (mounted) {
-        _anthropicKeyCtrl.text = key;
-        ref.read(anthropicApiKeyProvider.notifier).state = key;
+        ref.read(customAiProvidersProvider.notifier).state = custom;
       }
     });
-    settingsService.getOllamaUrl().then((url) {
-      if (mounted) {
-        _ollamaUrlCtrl.text = url;
-        ref.read(ollamaUrlProvider.notifier).state = url;
-      }
-    });
+
   }
 
   @override
@@ -91,6 +100,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _openaiKeyCtrl.dispose();
     _anthropicKeyCtrl.dispose();
     _ollamaUrlCtrl.dispose();
+    _modelCtrl.dispose();
+    _customNameCtrl.dispose();
+    _customUrlCtrl.dispose();
+    _customModelCtrl.dispose();
+    _customKeyCtrl.dispose();
     super.dispose();
   }
 
@@ -99,23 +113,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final cs = Theme.of(context).colorScheme;
     final settings = ref.watch(settingsProvider);
 
-    // When the live /models list arrives and the persisted model is no longer
-    // served (e.g. it was retired since it was chosen), switch to the first
-    // live model and persist the correction so the chat never sends a dead id.
-    // Only fires on an actual value change, so the service invalidation below
-    // cannot loop: a refetch returning the same list is treated as unchanged.
-    ref.listen(groqLiveModelsProvider, (previous, next) {
-      next.whenData((models) {
-        if (models.isEmpty) return;
-        final current = ref.read(groqModelProvider);
-        if (!models.contains(current)) {
-          final fallback = models.first;
-          ref.read(groqModelProvider.notifier).state = fallback;
-          settingsService.setModel(fallback);
-          ref.invalidate(groqAiServiceProvider);
-        }
-      });
-    });
 
     final content = Container(
       color: cs.surface,
@@ -141,413 +138,542 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
               children: [
-                // ── AI Provider ──────────────────────────────────────────
+                // ── Unified agent provider runtime ─────────────────────────
                 _SettingsSection(
-                    title: 'AI Provider',
-                    highlight: true,
-                    children: [
-                      // Provider Selector
-                      Container(
-                        padding: const EdgeInsets.all(DesignTokens.space4),
-                        decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: cs.outlineVariant,
-                                  width: DesignTokens.borderWidthThin)),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
+                  title: 'AI Agent Runtime',
+                  highlight: true,
+                  children: [
+                    Builder(builder: (context) {
+                      final manager = ref.watch(providerManagerProvider);
+                      final activeId = ref.watch(aiProviderIdProvider);
+                      final keys = ref.watch(aiProviderKeysProvider);
+                      final models = ref.watch(aiProviderModelsProvider);
+                      final active = manager.active;
+                      final configured = !active.requiresApiKey ||
+                          (keys[active.id] ?? '').trim().isNotEmpty;
+                      final model = models[active.id]?.trim().isNotEmpty == true
+                          ? models[active.id]!
+                          : active.defaultModel;
+                      if (_modelCtrl.text.isEmpty) _modelCtrl.text = model;
+                      if (_apiKeyCtrl.text != (keys[active.id] ?? '')) {
+                        _apiKeyCtrl.text = keys[active.id] ?? '';
+                      }
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(DesignTokens.space4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Active provider',
+                                  style: TextStyle(
+                                    color: cs.onSurface,
+                                    fontWeight:
+                                        DesignTokens.fontWeightMedium,
+                                    fontSize: DesignTokens.fontSizeMD,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Aynı agent runtime; farklı sağlayıcılar ve yerel modeller.',
+                                  style: TextStyle(
+                                    color: cs.onSurfaceVariant,
+                                    fontSize: DesignTokens.fontSizeSM,
+                                  ),
+                                ),
+                                const SizedBox(height: DesignTokens.space3),
+                                DropdownButton<String>(
+                                  value: manager.available.any(
+                                          (provider) => provider.id == activeId)
+                                      ? activeId
+                                      : manager.available.first.id,
+                                  isExpanded: true,
+                                  items: manager.available
+                                      .map(
+                                        (provider) => DropdownMenuItem<String>(
+                                          value: provider.id,
+                                          child: Text(
+                                            provider.displayName,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: (value) async {
+                                    if (value == null) return;
+                                    ref
+                                        .read(aiProviderIdProvider.notifier)
+                                        .state = value;
+                                    ref
+                                        .read(aiProviderTypeProvider.notifier)
+                                        .state = aiProviderTypeFromId(value);
+                                    await settingsService.setAiProvider(value);
+                                    final nextKeys =
+                                        ref.read(aiProviderKeysProvider);
+                                    final nextModels =
+                                        ref.read(aiProviderModelsProvider);
+                                    _apiKeyCtrl.text = nextKeys[value] ?? '';
+                                    _modelCtrl.text = nextModels[value] ??
+                                        manager.available
+                                            .firstWhere(
+                                              (p) => p.id == value,
+                                              orElse: () => active,
+                                            )
+                                            .defaultModel;
+                                    if (mounted) setState(() {});
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (active.requiresApiKey)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                DesignTokens.space4,
+                                0,
+                                DesignTokens.space4,
+                                DesignTokens.space4,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Active Provider',
-                                      style: TextStyle(
-                                          color: cs.onSurface,
-                                          fontWeight: DesignTokens.fontWeightMedium,
-                                          fontSize: DesignTokens.fontSizeMD)),
-                                  const SizedBox(height: 4),
-                                  Text('Choose which AI service to use',
-                                      style: TextStyle(
-                                          color: cs.onSurfaceVariant,
-                                          fontSize: DesignTokens.fontSizeSM)),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: DesignTokens.space3),
-                            SizedBox(
-                              width: 180,
-                              child: DropdownButton<String>(
-                                value: ref.watch(aiProviderTypeProvider).name,
-                                isExpanded: true,
-                                items: const [
-                                  DropdownMenuItem(value: 'groq', child: Text('Groq')),
-                                  DropdownMenuItem(value: 'openai', child: Text('OpenAI')),
-                                  DropdownMenuItem(value: 'anthropic', child: Text('Anthropic')),
-                                  DropdownMenuItem(value: 'ollama', child: Text('Ollama (Local)')),
-                                ],
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    ref.read(aiProviderTypeProvider.notifier).state =
-                                        aiProviderTypeFromId(value);
-                                    settingsService.setAiProvider(value);
-                                  }
-                                },
-                                style: TextStyle(
-                                    color: cs.onSurface,
-                                    fontSize: DesignTokens.fontSizeMD),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Groq API Key
-                      Container(
-                        padding: const EdgeInsets.all(DesignTokens.space4),
-                        decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: cs.outlineVariant,
-                                  width: DesignTokens.borderWidthThin)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Groq API Key',
-                                style: TextStyle(
-                                    color: cs.onSurface,
-                                    fontWeight: DesignTokens.fontWeightMedium,
-                                    fontSize: DesignTokens.fontSizeMD)),
-                            const SizedBox(height: 4),
-                            Text(
-                                'Fast inference. Get your key at console.groq.com',
-                                style: TextStyle(
-                                    color: cs.onSurfaceVariant,
-                                    fontSize: DesignTokens.fontSizeSM)),
-                            const SizedBox(height: DesignTokens.space3),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _apiKeyCtrl,
-                                    obscureText: _apiKeyObscured,
+                                  Text(
+                                    active.displayName + ' API key',
                                     style: TextStyle(
-                                        color: cs.onSurface,
-                                        fontFamily: 'JetBrains Mono',
-                                        fontSize: DesignTokens.fontSizeSM),
-                                    decoration: InputDecoration(
-                                      hintText: 'gsk_...',
-                                      hintStyle:
-                                          TextStyle(color: cs.onSurfaceVariant),
-                                      suffixIcon: IconButton(
-                                        icon: Icon(
-                                            _apiKeyObscured
-                                                ? Icons.visibility
-                                                : Icons.visibility_off,
-                                            size: 18),
-                                        onPressed: () => setState(() =>
-                                            _apiKeyObscured = !_apiKeyObscured),
-                                      ),
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
+                                      color: cs.onSurface,
+                                      fontWeight:
+                                          DesignTokens.fontWeightMedium,
+                                      fontSize: DesignTokens.fontSizeMD,
                                     ),
-                                    onChanged: (_) =>
-                                        setState(() => _apiKeyDirty = true),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    configured
+                                        ? 'Kimlik bilgisi yerel ayarlarda kayıtlı.'
+                                        : 'Bu sağlayıcıyı kullanmak için anahtar ekleyin.',
+                                    style: TextStyle(
+                                      color: cs.onSurfaceVariant,
+                                      fontSize: DesignTokens.fontSizeSM,
+                                    ),
+                                  ),
+                                  const SizedBox(height: DesignTokens.space3),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _apiKeyCtrl,
+                                          obscureText: _apiKeyObscured,
+                                          decoration: InputDecoration(
+                                            hintText: 'API key',
+                                            suffixIcon: IconButton(
+                                              icon: Icon(
+                                                _apiKeyObscured
+                                                    ? Icons.visibility
+                                                    : Icons.visibility_off,
+                                              ),
+                                              onPressed: () => setState(
+                                                () => _apiKeyObscured =
+                                                    !_apiKeyObscured,
+                                              ),
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          onChanged: (_) => setState(() {}),
+                                        ),
+                                      ),
+                                      const SizedBox(width: DesignTokens.space2),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          final value = _apiKeyCtrl.text.trim();
+                                          final next = {
+                                            ...ref.read(aiProviderKeysProvider),
+                                            active.id: value,
+                                          };
+                                          if (value.isEmpty) {
+                                            next.remove(active.id);
+                                          }
+                                          ref
+                                              .read(aiProviderKeysProvider
+                                                  .notifier)
+                                              .state = next;
+                                          await settingsService.setAiApiKey(
+                                            active.id,
+                                            value,
+                                          );
+                                          if (mounted) setState(() {});
+                                        },
+                                        child: const Text('Save'),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              DesignTokens.space4,
+                              0,
+                              DesignTokens.space4,
+                              DesignTokens.space4,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Model',
+                                  style: TextStyle(
+                                    color: cs.onSurface,
+                                    fontWeight:
+                                        DesignTokens.fontWeightMedium,
+                                    fontSize: DesignTokens.fontSizeMD,
                                   ),
                                 ),
-                                const SizedBox(width: DesignTokens.space2),
-                                ElevatedButton(
-                                  key: const Key('groq-save-button'),
-                                  onPressed: _apiKeyDirty
-                                      ? () async {
-                                          final key = _apiKeyCtrl.text.trim();
-                                          await settingsService.setApiKey(key);
-                                          ref
-                                              .read(groqApiKeyProvider.notifier)
-                                              .state = key;
-                                          ref.invalidate(groqAiServiceProvider);
-                                          setState(() => _apiKeyDirty = false);
-                                          if (!context.mounted) return;
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text('API key saved!'),
-                                                duration: Duration(seconds: 2)),
-                                          );
-                                        }
-                                      : null,
-                                  child: const Text('Save'),
+                                const SizedBox(height: 4),
+                                Text(
+                                  active.defaultModel +
+                                      ' · ' +
+                                      (configured ? 'configured' : 'waiting for credentials'),
+                                  style: TextStyle(
+                                    color: cs.onSurfaceVariant,
+                                    fontSize: DesignTokens.fontSizeSM,
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Model selection — prefers the models the Groq API
-                      // actually serves for the configured key; falls back to
-                      // the curated list while no key is set or while the
-                      // live fetch is loading/failing.
-                      Builder(builder: (context) {
-                        final modelsAsync = ref.watch(groqLiveModelsProvider);
-                        final liveModels =
-                            modelsAsync.valueOrNull ?? const <String>[];
-                        final models = liveModels.isNotEmpty
-                            ? liveModels
-                            : SettingsService.availableModels;
-                        final currentModel = ref.watch(groqModelProvider);
-                        final apiKey = ref.watch(groqApiKeyProvider);
-
-                        String status;
-                        if (modelsAsync.isLoading && apiKey.isNotEmpty) {
-                          status = 'Fetching models from Groq…';
-                        } else if (liveModels.isNotEmpty) {
-                          status =
-                              '${liveModels.length} models from the Groq API';
-                        } else if (modelsAsync.hasError) {
-                          status =
-                              'Could not reach Groq — using the default list';
-                        } else {
-                          status =
-                              'Default list — save an API key to sync with Groq';
-                        }
-
-                        return Container(
-                          padding: const EdgeInsets.all(DesignTokens.space4),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                const SizedBox(height: DesignTokens.space3),
+                                Row(
                                   children: [
-                                    Text('AI Model',
-                                        style: TextStyle(
-                                            color: cs.onSurface,
-                                            fontWeight:
-                                                DesignTokens.fontWeightMedium,
-                                            fontSize: DesignTokens.fontSizeMD)),
-                                    const SizedBox(height: 2),
-                                    Text(status,
-                                        style: TextStyle(
-                                            color: cs.onSurfaceVariant,
-                                            fontSize: DesignTokens.fontSizeSM)),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: _modelCtrl,
+                                        decoration: InputDecoration(
+                                          hintText: active.defaultModel,
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: DesignTokens.space2),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        await settingsService
+                                            .setAiProviderModel(
+                                          active.id,
+                                          _modelCtrl.text,
+                                        );
+                                        ref
+                                            .read(aiProviderModelsProvider
+                                                .notifier)
+                                            .state = {
+                                          ...ref.read(
+                                            aiProviderModelsProvider,
+                                          ),
+                                          active.id: _modelCtrl.text.trim(),
+                                        };
+                                        if (mounted) setState(() {});
+                                      },
+                                      child: const Text('Use'),
+                                    ),
                                   ],
                                 ),
-                              ),
-                              const SizedBox(width: DesignTokens.space3),
-                              SizedBox(
-                                width: 220,
-                                child: Material(
-                                  child: DropdownButton<String>(
-                                    key: const Key('groq-model-dropdown'),
-                                    value: models.contains(currentModel)
-                                        ? currentModel
-                                        : models.first,
-                                    isExpanded: true,
-                                    items: models
-                                        .map((m) => DropdownMenuItem(
-                                            value: m,
-                                            child: Text(m,
-                                                overflow: TextOverflow.ellipsis,
-                                                style:
-                                                    TextStyle(fontSize: 12))))
-                                        .toList(),
-                                    onChanged: (value) async {
-                                      if (value != null) {
-                                        await settingsService.setModel(value);
-                                        ref
-                                            .read(groqModelProvider.notifier)
-                                            .state = value;
-                                        ref.invalidate(groqAiServiceProvider);
-                                      }
-                                    },
-                                    style: TextStyle(
-                                        color: cs.onSurface,
-                                        fontSize: DesignTokens.fontSizeMD),
-                                  ),
+                                const SizedBox(height: DesignTokens.space2),
+                                Wrap(
+                                  spacing: DesignTokens.space2,
+                                  runSpacing: DesignTokens.space2,
+                                  children: [
+                                    OutlinedButton.icon(
+                                      icon: const Icon(Icons.sync, size: 16),
+                                      label: const Text('Discover models'),
+                                      onPressed: configured ||
+                                              !active.requiresApiKey
+                                          ? () async {
+                                              final models =
+                                                  await manager.fetchModels();
+                                              if (!context.mounted) return;
+                                              if (models.isEmpty) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Model endpoint returned no models.',
+                                                    ),
+                                                  ),
+                                                );
+                                                return;
+                                              }
+                                              await showDialog<void>(
+                                                context: context,
+                                                builder: (dialogContext) =>
+                                                    AlertDialog(
+                                                  title: Text(
+                                                      active.displayName +
+                                                          ' models'),
+                                                  content: SizedBox(
+                                                    width: 520,
+                                                    height: 420,
+                                                    child: ListView.builder(
+                                                      itemCount: models.length,
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        final item = models[index];
+                                                        return ListTile(
+                                                          title: Text(item),
+                                                          onTap: () async {
+                                                            Navigator.of(
+                                                                    dialogContext)
+                                                                .pop();
+                                                            _modelCtrl.text =
+                                                                item;
+                                                            await settingsService
+                                                                .setAiProviderModel(
+                                                              active.id,
+                                                              item,
+                                                            );
+                                                            ref
+                                                                .read(
+                                                                  aiProviderModelsProvider
+                                                                      .notifier,
+                                                                )
+                                                                .state = {
+                                                              ...ref.read(
+                                                                aiProviderModelsProvider,
+                                                              ),
+                                                              active.id: item,
+                                                            };
+                                                            if (mounted) {
+                                                              setState(() {});
+                                                            }
+                                                          },
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          : null,
+                                    ),
+                                    OutlinedButton.icon(
+                                      icon:
+                                          const Icon(Icons.network_check, size: 16),
+                                      label: const Text('Probe'),
+                                      onPressed: configured ||
+                                              !active.requiresApiKey
+                                          ? () async {
+                                              final ok =
+                                                  await active.isAvailable;
+                                              if (!context.mounted) return;
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    active.displayName +
+                                                        (ok
+                                                            ? ' erişilebilir.'
+                                                            : ' /models probe başarısız.'),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          : null,
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        );
-                      }),
-                      // OpenAI API Key
-                      Container(
-                        padding: const EdgeInsets.all(DesignTokens.space4),
-                        decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: cs.outlineVariant,
-                                  width: DesignTokens.borderWidthThin)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('OpenAI API Key',
-                                style: TextStyle(
-                                    color: cs.onSurface,
-                                    fontWeight: DesignTokens.fontWeightMedium,
-                                    fontSize: DesignTokens.fontSizeMD)),
-                            const SizedBox(height: 4),
-                            Text('For GPT-4o and other OpenAI models',
-                                style: TextStyle(
-                                    color: cs.onSurfaceVariant,
-                                    fontSize: DesignTokens.fontSizeSM)),
-                            const SizedBox(height: DesignTokens.space3),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _openaiKeyCtrl,
-                                    obscureText: true,
-                                    style: TextStyle(
-                                        color: cs.onSurface,
-                                        fontFamily: 'JetBrains Mono',
-                                        fontSize: DesignTokens.fontSizeSM),
-                                    decoration: InputDecoration(
-                                      hintText: 'sk-...',
-                                      hintStyle: TextStyle(color: cs.onSurfaceVariant),
-                                      border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8)),
-                                    ),
+                        ],
+                      );
+                    }),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        DesignTokens.space4,
+                        0,
+                        DesignTokens.space4,
+                        DesignTokens.space4,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Custom OpenAI-compatible endpoint',
+                            style: TextStyle(
+                              color: cs.onSurface,
+                              fontWeight: DesignTokens.fontWeightMedium,
+                              fontSize: DesignTokens.fontSizeMD,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'OpenAI-compatible /chat/completions sunan herhangi bir servis eklenebilir.',
+                            style: TextStyle(
+                              color: cs.onSurfaceVariant,
+                              fontSize: DesignTokens.fontSizeSM,
+                            ),
+                          ),
+                          const SizedBox(height: DesignTokens.space3),
+                          TextField(
+                            controller: _customNameCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'Name',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: DesignTokens.space2),
+                          TextField(
+                            controller: _customUrlCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'Base URL',
+                              hintText: 'https://example.com/v1',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: DesignTokens.space2),
+                          TextField(
+                            controller: _customModelCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'Default model',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: DesignTokens.space2),
+                          TextField(
+                            controller: _customKeyCtrl,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              labelText: 'API key',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: DesignTokens.space3),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.add),
+                            label: const Text('Add endpoint'),
+                            onPressed: () async {
+                              final name = _customNameCtrl.text.trim();
+                              final baseUrl = _customUrlCtrl.text.trim();
+                              final model = _customModelCtrl.text.trim();
+                              if (name.isEmpty || baseUrl.isEmpty || model.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text('Name, Base URL ve model gerekli.'),
+                                  ),
+                                );
+                                return;
+                              }
+                              var id = name
+                                  .toLowerCase()
+                                  .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+                                  .replaceAll(RegExp(r'^-+|-+$'), '');
+                              if (id.isEmpty) {
+                                id = 'custom-' +
+                                    DateTime.now().millisecondsSinceEpoch
+                                        .toString();
+                              }
+                              final existing =
+                                  ref.read(customAiProvidersProvider);
+                              var uniqueId = id;
+                              var n = 2;
+                              while (existing.any((p) => p['id'] == uniqueId)) {
+                                uniqueId = '$id-$n';
+                                n++;
+                              }
+                              final next = [
+                                ...existing,
+                                {
+                                  'id': uniqueId,
+                                  'name': name,
+                                  'baseUrl': baseUrl,
+                                  'model': model,
+                                },
+                              ];
+                              ref
+                                  .read(customAiProvidersProvider.notifier)
+                                  .state = next;
+                              final keys = {
+                                ...ref.read(aiProviderKeysProvider),
+                                uniqueId: _customKeyCtrl.text.trim(),
+                              };
+                              ref
+                                  .read(aiProviderKeysProvider.notifier)
+                                  .state = keys;
+                              await settingsService.setCustomAiProviders(next);
+                              await settingsService.setAiApiKey(
+                                uniqueId,
+                                _customKeyCtrl.text.trim(),
+                              );
+                              await settingsService.setAiProvider(uniqueId);
+                              ref
+                                  .read(aiProviderIdProvider.notifier)
+                                  .state = uniqueId;
+                              _customNameCtrl.clear();
+                              _customUrlCtrl.clear();
+                              _customModelCtrl.clear();
+                              _customKeyCtrl.clear();
+                              _apiKeyCtrl.text = keys[uniqueId] ?? '';
+                              _modelCtrl.text = model;
+                              if (mounted) setState(() {});
+                            },
+                          ),
+                          const SizedBox(height: DesignTokens.space4),
+                          ...ref.watch(customAiProvidersProvider).map(
+                                (provider) => ListTile(
+                                  dense: true,
+                                  title: Text(provider['name'] ?? provider['id'] ?? ''),
+                                  subtitle: Text(
+                                    (provider['baseUrl'] ?? '') +
+                                        ' · ' +
+                                        (provider['model'] ?? ''),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.delete_outline),
+                                    tooltip: 'Remove endpoint',
+                                    onPressed: () async {
+                                      final id = provider['id'] ?? '';
+                                      final next = ref
+                                          .read(customAiProvidersProvider)
+                                          .where((p) => p['id'] != id)
+                                          .toList();
+                                      ref
+                                          .read(customAiProvidersProvider
+                                              .notifier)
+                                          .state = next;
+                                      final keys = {
+                                        ...ref.read(aiProviderKeysProvider),
+                                      }..remove(id);
+                                      ref
+                                          .read(aiProviderKeysProvider.notifier)
+                                          .state = keys;
+                                      await settingsService
+                                          .setCustomAiProviders(next);
+                                      await settingsService.setAiApiKey(id, '');
+                                      if (ref.read(aiProviderIdProvider) == id) {
+                                        const fallback = 'groq';
+                                        ref
+                                            .read(aiProviderIdProvider.notifier)
+                                            .state = fallback;
+                                        await settingsService
+                                            .setAiProvider(fallback);
+                                      }
+                                      if (mounted) setState(() {});
+                                    },
                                   ),
                                 ),
-                                const SizedBox(width: DesignTokens.space2),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    final key = _openaiKeyCtrl.text.trim();
-                                    await settingsService.setOpenaiApiKey(key);
-                                    ref.read(openaiApiKeyProvider.notifier).state = key;
-                                    if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('OpenAI key saved!'), duration: Duration(seconds: 2)),
-                                    );
-                                  },
-                                  child: const Text('Save'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                        ],
                       ),
-                      // Anthropic API Key
-                      Container(
-                        padding: const EdgeInsets.all(DesignTokens.space4),
-                        decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: cs.outlineVariant,
-                                  width: DesignTokens.borderWidthThin)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Anthropic API Key',
-                                style: TextStyle(
-                                    color: cs.onSurface,
-                                    fontWeight: DesignTokens.fontWeightMedium,
-                                    fontSize: DesignTokens.fontSizeMD)),
-                            const SizedBox(height: 4),
-                            Text('For Claude models (Sonnet, Haiku, Opus)',
-                                style: TextStyle(
-                                    color: cs.onSurfaceVariant,
-                                    fontSize: DesignTokens.fontSizeSM)),
-                            const SizedBox(height: DesignTokens.space3),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _anthropicKeyCtrl,
-                                    obscureText: true,
-                                    style: TextStyle(
-                                        color: cs.onSurface,
-                                        fontFamily: 'JetBrains Mono',
-                                        fontSize: DesignTokens.fontSizeSM),
-                                    decoration: InputDecoration(
-                                      hintText: 'sk-ant-...',
-                                      hintStyle: TextStyle(color: cs.onSurfaceVariant),
-                                      border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8)),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: DesignTokens.space2),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    final key = _anthropicKeyCtrl.text.trim();
-                                    await settingsService.setAnthropicApiKey(key);
-                                    ref.read(anthropicApiKeyProvider.notifier).state = key;
-                                    if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Anthropic key saved!'), duration: Duration(seconds: 2)),
-                                    );
-                                  },
-                                  child: const Text('Save'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Ollama URL
-                      Container(
-                        padding: const EdgeInsets.all(DesignTokens.space4),
-                        decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: cs.outlineVariant,
-                                  width: DesignTokens.borderWidthThin)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Ollama URL (Local)',
-                                style: TextStyle(
-                                    color: cs.onSurface,
-                                    fontWeight: DesignTokens.fontWeightMedium,
-                                    fontSize: DesignTokens.fontSizeMD)),
-                            const SizedBox(height: 4),
-                            Text('Connect to a local Ollama instance — no API key needed',
-                                style: TextStyle(
-                                    color: cs.onSurfaceVariant,
-                                    fontSize: DesignTokens.fontSizeSM)),
-                            const SizedBox(height: DesignTokens.space3),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _ollamaUrlCtrl,
-                                    style: TextStyle(
-                                        color: cs.onSurface,
-                                        fontFamily: 'JetBrains Mono',
-                                        fontSize: DesignTokens.fontSizeSM),
-                                    decoration: InputDecoration(
-                                      hintText: 'http://127.0.0.1:11434',
-                                      hintStyle: TextStyle(color: cs.onSurfaceVariant),
-                                      border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8)),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: DesignTokens.space2),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    final url = _ollamaUrlCtrl.text.trim();
-                                    await settingsService.setOllamaUrl(url);
-                                    ref.read(ollamaUrlProvider.notifier).state = url;
-                                    if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Ollama URL saved!'), duration: Duration(seconds: 2)),
-                                    );
-                                  },
-                                  child: const Text('Save'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ]),
+                    ),
+                  ],
+                ),
                 _SettingsSection(title: 'Appearance', children: [
                   _SettingsItem(
                     title: 'Theme',
