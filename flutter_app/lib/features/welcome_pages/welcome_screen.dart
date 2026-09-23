@@ -74,7 +74,7 @@ class WelcomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: DesignTokens.space8),
                   AiGradientButton(
-                    onPressed: () => context.go('/editor'),
+                    onPressed: () => context.go('/agent'),
                     label: 'Get Started',
                     icon: Icons.bolt,
                     expand: true,
