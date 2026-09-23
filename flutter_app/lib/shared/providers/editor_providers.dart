@@ -8,7 +8,6 @@ import '../../core/backend/backend_service.dart';
 import '../../core/backend/groq_ai_service.dart';
 import '../../core/backend/workspace_service.dart';
 import '../../core/backend/settings_service.dart';
-import '../../core/backend/agent_mode.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../shared/models/editor_tab.dart';
 import '../../shared/models/file_tree_item.dart';
