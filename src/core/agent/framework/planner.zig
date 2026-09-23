@@ -213,6 +213,7 @@ pub fn plan(
             .prompt_template_id = step.template_id,
             .rollback_journal_id = 0,
             .title = step.title,
+            .objective = instruction,
         };
     }
     return tasks;
@@ -234,7 +235,8 @@ pub const PlannerAgent = struct {
     /// const out = try agent.run(&ctx);
     pub fn run(self: *PlannerAgent, ctx: *agent_mod.AgentContext) anyerror!agent_mod.AgentOutput {
         try ctx.checkCancel();
-        const intent = self.hint orelse classifyIntent(self.instruction);
+        const objective = if (ctx.task.objective.len > 0) ctx.task.objective else self.instruction;
+        const intent = self.hint orelse classifyIntent(objective);
         const t = templateFor(intent);
         const summary = try std.fmt.bufPrint(
             &self.summary_buf,
