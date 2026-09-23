@@ -33,6 +33,9 @@ class AnthropicProvider implements AiProvider {
   bool get requiresApiKey => true;
 
   @override
+  bool get isConfigured => apiKey.trim().isNotEmpty;
+
+  @override
   Future<bool> get isAvailable async {
     if (apiKey.isEmpty) return false;
     try {
