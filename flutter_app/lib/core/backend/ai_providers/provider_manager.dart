@@ -353,6 +353,9 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
     if (id.isEmpty || name.isEmpty || baseUrl.isEmpty || model.isEmpty) {
       continue;
     }
+    if (AiProviderCatalog.byId(id) != null) {
+      continue;
+    }
     providers.add(
       OpenAiCompatibleProvider(
         id: id,
