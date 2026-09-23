@@ -26,6 +26,9 @@ class OpenAiProvider implements AiProvider {
   String get displayName => 'OpenAI';
 
   @override
+  String get defaultModel => _selectedModel;
+
+  @override
   String get id => 'openai';
 
   @override
