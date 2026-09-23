@@ -25,6 +25,9 @@ class _FakeProvider implements AiProvider {
   bool get requiresApiKey => true;
 
   @override
+  bool get isConfigured => true;
+
+  @override
   String get defaultModel => models.first;
 
   @override
