@@ -34,7 +34,7 @@ class WelcomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: DesignTokens.space2),
                   Text(
-                    'The AI-native IDE for modern development',
+                    'An agent-native development workspace built around tasks, plans, execution and verification',
                     style: TextStyle(
                       color: cs.onSurfaceVariant,
                       fontSize: DesignTokens.fontSizeLG,
