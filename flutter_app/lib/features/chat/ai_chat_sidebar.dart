@@ -339,6 +339,19 @@ At the end report changed areas, verification commands, unresolved failures, and
               changedFiles: changed,
               verificationCommands: verifications,
             );
+            if (command.isNotEmpty && _isVerificationCommand(command)) {
+              store.addArtifact(
+                taskId,
+                AgentArtifact(
+                  id: 'artifact_verification_' + DateTime.now().microsecondsSinceEpoch.toString(),
+                  type: AgentArtifactType.verification,
+                  title: 'Verification: ' + command,
+                  content: (event.toolCall.status == AgentToolStatus.success ? 'PASS' : 'FAIL') +
+                      '\n\n' + _truncateTaskDetail(event.toolCall.result ?? 'No output'),
+                  createdAt: DateTime.now(),
+                ),
+              );
+            }
             store.addEvent(
               taskId,
               kind: event.toolCall.name == 'run_command' && _isVerificationCommand(command)
@@ -412,10 +425,6 @@ At the end report changed areas, verification commands, unresolved failures, and
       store.replaceTranscript(taskId, controller.workingMessages);
       ref.read(agentTaskVersionProvider.notifier).state++;
     }
-  }
-
-  void _touchTaskStore() {
-    ref.read(agentTaskVersionProvider.notifier).state++;
   }
 
   bool _isVerificationCommand(String command) {
