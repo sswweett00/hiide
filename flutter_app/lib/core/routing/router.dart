@@ -18,6 +18,7 @@ import '../../features/problems/problems_screen.dart';
 import '../../features/output/output_screen.dart';
 import '../../features/terminal/terminal_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
+import '../../features/agent_workspace/agent_workspace_screen.dart';
 import '../../features/welcome_pages/welcome_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/plugin_manager/plugin_manager_screen.dart';
@@ -33,6 +34,7 @@ enum RoutePath {
   welcome('/welcome'),
   workspacePicker('/workspace-picker'),
   dashboard('/dashboard'),
+  agent('/agent'),
   editor('/editor'),
   explorer('/explorer'),
   search('/search'),
@@ -75,6 +77,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/dashboard',
         builder: (context, state) => DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/agent',
+        builder: (context, state) => const AgentWorkspaceScreen(),
       ),
       GoRoute(
         path: '/editor',
@@ -214,7 +220,7 @@ class WorkspacePickerScreen extends ConsumerWidget {
       final ws = await pickWebDirectory();
       if (!context.mounted || ws == null) return;
       await activateWorkspace(ref, ws.rootPath);
-      if (context.mounted) context.go('/editor');
+      if (context.mounted) context.go('/agent');
       return;
     }
     final current = ref.read(workspaceRootProvider);
