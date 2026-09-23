@@ -94,7 +94,7 @@ Future<void> main() async {
     debugPrint('Could not restore recent workspaces: $e');
   }
 
-  var uiMode = UiMode.ide;
+  var uiMode = UiMode.aiNative;
   try {
     uiMode = await settingsService.getUiMode();
   } catch (e) {
@@ -126,11 +126,23 @@ Future<void> main() async {
   } catch (_) {}
 
   String aiProviderId = 'groq';
+  Map<String, String> aiProviderKeys = const <String, String>{};
+  Map<String, String> aiProviderModels = const <String, String>{};
+  List<Map<String, String>> customAiProviders = const <Map<String, String>>[];
   String openaiKey = '';
   String anthropicKey = '';
   String ollamaUrl = 'http://127.0.0.1:11434';
   try {
     aiProviderId = await settingsService.getAiProvider();
+  } catch (_) {}
+  try {
+    aiProviderKeys = await settingsService.getAiApiKeys();
+  } catch (_) {}
+  try {
+    aiProviderModels = await settingsService.getAiProviderModels();
+  } catch (_) {}
+  try {
+    customAiProviders = await settingsService.getCustomAiProviders();
   } catch (_) {}
   try {
     openaiKey = await settingsService.getOpenaiApiKey();
@@ -171,11 +183,19 @@ Future<void> main() async {
           'autoSave': autoSave,
           'formatOnSave': true,
         }),
+        aiProviderIdProvider.overrideWith((ref) => aiProviderId),
         aiProviderTypeProvider.overrideWith(
           (ref) => aiProviderTypeFromId(aiProviderId),
         ),
-        openaiApiKeyProvider.overrideWith((ref) => openaiKey),
-        anthropicApiKeyProvider.overrideWith((ref) => anthropicKey),
+        aiProviderKeysProvider.overrideWith((ref) => aiProviderKeys),
+        aiProviderModelsProvider.overrideWith((ref) => aiProviderModels),
+        customAiProvidersProvider.overrideWith((ref) => customAiProviders),
+        openaiApiKeyProvider.overrideWith(
+          (ref) => aiProviderKeys['openai'] ?? openaiKey,
+        ),
+        anthropicApiKeyProvider.overrideWith(
+          (ref) => aiProviderKeys['anthropic'] ?? anthropicKey,
+        ),
         ollamaUrlProvider.overrideWith((ref) => ollamaUrl),
       ],
       child: HiideApp(backendService: backendService),
