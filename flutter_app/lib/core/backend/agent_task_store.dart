@@ -213,9 +213,12 @@ class AgentTaskStore {
   static const _maxTasks = 50;
   static const _maxTimeline = 120;
   static const _maxTranscript = 80;
+  static const _maxArtifacts = 16;
+  static const _maxArtifactChars = 16000;
 
   final SharedPreferences _prefs;
   List<AgentTaskRecord> _tasks;
+  Future<void> _writeQueue = Future<void>.value();
   List<AgentTaskRecord> get tasks => List.unmodifiable(_tasks);
 
   static Future<AgentTaskStore> load() async {
@@ -291,8 +294,22 @@ class AgentTaskStore {
   AgentTaskRecord? addArtifact(String id, AgentArtifact artifact) {
     final task = _find(id);
     if (task == null) return null;
+    final content = artifact.content.length > _maxArtifactChars
+        ? artifact.content.substring(0, _maxArtifactChars) + '\n…[truncated]'
+        : artifact.content;
+    final safe = AgentArtifact(
+      id: artifact.id,
+      type: artifact.type,
+      title: artifact.title.length > 240
+          ? artifact.title.substring(0, 240)
+          : artifact.title,
+      content: content,
+      createdAt: artifact.createdAt,
+    );
     return _replace(task.copyWith(
-      artifacts: <AgentArtifact>[...task.artifacts, artifact].take(20).toList(),
+      artifacts: <AgentArtifact>[...task.artifacts, safe]
+          .take(_maxArtifacts)
+          .toList(),
     ));
   }
 
@@ -326,14 +343,19 @@ class AgentTaskStore {
     return _replace(task.copyWith(transcript: safe.sublist(start)));
   }
 
-  Future<void> _persist() async {
-    try {
-      await _prefs.setString(
-        _prefsKey,
-        jsonEncode(_tasks.map((e) => e.toJson()).toList()),
-      );
-    } catch (_) {}
+  Future<void> _persist() {
+    final snapshot = jsonEncode(
+      _tasks.map((e) => e.toJson()).toList(),
+    );
+    _writeQueue = _writeQueue.then((_) async {
+      try {
+        await _prefs.setString(_prefsKey, snapshot);
+      } catch (_) {}
+    });
+    return _writeQueue;
   }
+
+  Future<void> flush() => _writeQueue;
 
   AgentTaskRecord? _find(String id) {
     for (final task in _tasks) {
@@ -349,6 +371,11 @@ class AgentTaskStore {
     _tasks.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     _persist();
     return next;
+  }
+
+  static String _clip(String value, int max) {
+    if (value.length <= max) return value;
+    return value.substring(0, max) + '\n…[truncated]';
   }
 
   Map<String, dynamic> _sanitizeMessage(Map<String, dynamic> message) {
