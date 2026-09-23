@@ -54,7 +54,7 @@ pub const PlanTemplate = struct {
 };
 
 /// One prebuilt template.
-pub const TEMPLATES: [6]PlanTemplate = .{
+pub const TEMPLATES: [8]PlanTemplate = .{
     .{
         .id = "codegen",
         .intent = .codegen,
