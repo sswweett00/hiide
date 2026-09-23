@@ -383,11 +383,6 @@ class AgentTaskStore {
     return next;
   }
 
-  static String _clip(String value, int max) {
-    if (value.length <= max) return value;
-    return value.substring(0, max) + '\n…[truncated]';
-  }
-
   Map<String, dynamic> _sanitizeMessage(Map<String, dynamic> message) {
     final copy = <String, dynamic>{};
     for (final entry in message.entries) {
