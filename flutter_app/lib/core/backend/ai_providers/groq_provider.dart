@@ -16,6 +16,9 @@ class GroqProvider implements AiProvider {
   String get displayName => 'Groq';
 
   @override
+  String get defaultModel => 'llama-3.3-70b-versatile';
+
+  @override
   String get id => 'groq';
 
   @override
