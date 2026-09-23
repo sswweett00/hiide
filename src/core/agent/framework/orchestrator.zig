@@ -41,12 +41,10 @@ fn planBudget() types.TokenBudget {
 /// the chosen template for the current objective.
 const PlannerFactory = struct {
     desc: agent_mod.AgentDescriptor = .{ .id = "planner", .kind = .planner },
-    instruction: []const u8 = "",
-
     fn create(ptr: *anyopaque, allocator: std.mem.Allocator) anyerror!agent_mod.Agent {
         const self: *PlannerFactory = @ptrCast(@alignCast(ptr));
         const inst = try allocator.create(planner_mod.PlannerAgent);
-        inst.* = .{ .instruction = self.instruction, .hint = null };
+        inst.* = .{ .instruction = "", .hint = null };
         return agent_mod.fromImpl(planner_mod.PlannerAgent, inst, self.desc);
     }
 
@@ -198,7 +196,6 @@ pub const Orchestrator = struct {
     /// var report = try engine.submit("implement the login form", null);
     pub fn submit(self: *Orchestrator, instruction: []const u8, hint: ?planner_mod.IntentKind) !executor_mod.RunReport {
         const intent = hint orelse planner_mod.classifyIntent(instruction);
-        self.planner_factory.instruction = instruction;
         const id_base = self.next_plan_id.fetchAdd(1000, .acq_rel);
         const tasks = try planner_mod.plan(self.allocator, instruction, intent, id_base);
         defer self.allocator.free(tasks);
