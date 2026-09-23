@@ -117,4 +117,26 @@ void main() {
     expect(await manager.fetchModels('other'), ['x', 'y']);
     expect(manager.activeProviderId, 'primary');
   });
+
+  test('does not leak the primary provider model into fallback provider', () async {
+    final manager = ProviderManager(
+      [
+        _FakeProvider(id: 'primary', available: false, models: ['primary-model']),
+        _FakeProvider(id: 'fallback', available: true, models: ['fallback-model']),
+      ],
+      activeProviderId: 'primary',
+      selectedModels: const {'fallback': 'fallback-selected'},
+    );
+
+    final result = await manager.chatCompletion(
+      messages: const [
+        {'role': 'user', 'content': 'hi'}
+      ],
+      model: 'primary-model',
+    );
+
+    expect(result['provider'], 'fallback');
+    expect(result['model'], 'fallback-selected');
+  });
+
 }
