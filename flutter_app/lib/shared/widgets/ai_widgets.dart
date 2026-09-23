@@ -196,11 +196,15 @@ class AiGradientButton extends StatelessWidget {
             Icon(icon, size: DesignTokens.iconMD),
             const SizedBox(width: DesignTokens.space2),
           ],
-          Text(
-            label,
-            style: TextStyle(
-                fontSize: DesignTokens.fontSizeLG,
-                fontWeight: DesignTokens.fontWeightSemibold),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  fontSize: DesignTokens.fontSizeLG,
+                  fontWeight: DesignTokens.fontWeightSemibold),
+            ),
           ),
         ],
       ),
