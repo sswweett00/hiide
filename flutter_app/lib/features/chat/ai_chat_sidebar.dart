@@ -38,6 +38,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   AgentController? _agentController;
+  VoidCallback? _stopActiveAgent;
 
   @override
   void dispose() {
@@ -109,6 +110,8 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + e.toString(), timestamp: DateTime.now()));
     } finally {
       _agentController = null;
+      _stopActiveAgent = null;
+      ref.read(streamingMessageProvider.notifier).state = '';
       if (mounted) ref.read(isAiThinkingProvider.notifier).state = false;
     }
   }
@@ -119,6 +122,8 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     final backend = ref.read(backendServiceProvider);
     final userContent = _buildUserPrompt(text, _activeTabNow());
     final planner = PlanningAgent(ai: ai, backend: backend, workspaceRoot: workspace.rootPath);
+    _stopActiveAgent = planner.stop;
+    String? createdPlan;
     final history = <Map<String, dynamic>>[
       ...ref.read(agentMessagesProvider),
       {'role': 'user', 'content': userContent},
@@ -143,6 +148,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
           _scrollToBottom();
         case PlanDoneEvent(:final summary):
           ref.read(streamingMessageProvider.notifier).state = '';
+          createdPlan = summary;
           ref.read(lastPlanProvider.notifier).state = summary;
           _addMessage(ChatMessage(role: ChatRole.assistant, content: summary, timestamp: DateTime.now()));
         case PlanErrorEvent(:final message):
@@ -151,11 +157,10 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       }
     }
 
-    final plan = ref.read(lastPlanProvider);
     ref.read(agentMessagesProvider.notifier).state = [
       ...history,
-      if (plan != null && plan.trim().isNotEmpty)
-        {'role': 'assistant', 'content': plan},
+      if (createdPlan != null && createdPlan!.trim().isNotEmpty)
+        {'role': 'assistant', 'content': createdPlan},
     ];
   }
 
@@ -194,6 +199,7 @@ At the end report changed areas, verification commands, unresolved failures, and
       systemPrompt: codeSystemPrompt,
     );
     _agentController = controller;
+    _stopActiveAgent = controller.stop;
     await for (final event in controller.run(history)) {
       if (!mounted) break;
       switch (event) {
@@ -236,7 +242,7 @@ At the end report changed areas, verification commands, unresolved failures, and
     return markers.any(lower.contains);
   }
   void _stopAgent() {
-    _agentController?.stop();
+    _stopActiveAgent?.call();
   }
 
   // ─── Tool call bubbles ────────────────────────────────────────────────────
