@@ -123,11 +123,11 @@ void main() {
 
   // ─── UI mode (AI native / IDE) persistence ────────────────────────────────
 
-  test('getUiMode defaults to the IDE layout when nothing is stored', () async {
+  test('getUiMode defaults to the agent-native layout when nothing is stored', () async {
     settingsService.resetForTesting();
     SharedPreferences.setMockInitialValues({});
 
-    expect(await settingsService.getUiMode(), UiMode.ide);
+    expect(await settingsService.getUiMode(), UiMode.aiNative);
   });
 
   test('getUiMode restores a persisted AI-native choice', () async {
@@ -148,10 +148,10 @@ void main() {
     expect(await settingsService.getUiMode(), UiMode.ide);
   });
 
-  test('getUiMode tolerates a corrupt stored value', () async {
+  test('getUiMode tolerates a corrupt stored value and stays agent-native', () async {
     settingsService.resetForTesting();
     SharedPreferences.setMockInitialValues({'ui_mode': 'quantum'});
 
-    expect(await settingsService.getUiMode(), UiMode.ide);
+    expect(await settingsService.getUiMode(), UiMode.aiNative);
   });
 }
