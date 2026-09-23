@@ -99,6 +99,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     _addMessage(ChatMessage(role: ChatRole.user, content: text, timestamp: DateTime.now()));
 
     final mode = ref.read(agentModeProvider);
+    _approveCommandsForSession = false;
     final workspace = ref.read(workspaceServiceProvider).rootPath;
     final store = ref.read(agentTaskStoreProvider);
     final task = store.create(
