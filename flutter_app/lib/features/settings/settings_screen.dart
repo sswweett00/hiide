@@ -584,7 +584,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               }
                               final existing =
                                   ref.read(customAiProvidersProvider);
-                              var uniqueId = id;
+                              var uniqueId = id.startsWith('custom-') ? id : 'custom-' + id;
                               var n = 2;
                               while (existing.any((p) => p['id'] == uniqueId)) {
                                 uniqueId = '$id-$n';
