@@ -84,16 +84,16 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
-    expect(find.text('Explorer'), findsNothing);
-    expect(find.byType(StatusBar), findsNothing);
+    expect(find.text('Explorer'), findsOneWidget);
+    expect(find.byType(StatusBar), findsOneWidget);
     expect(find.byType(AiChatSidebar), findsOneWidget);
 
     await tester.tap(find.text('AI'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
-    expect(find.text('Explorer'), findsOneWidget);
-    expect(find.byType(StatusBar), findsOneWidget);
+    expect(find.text('Explorer'), findsNothing);
+    expect(find.byType(StatusBar), findsNothing);
   });
 
 
