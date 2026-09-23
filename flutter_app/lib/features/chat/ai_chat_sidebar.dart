@@ -11,7 +11,6 @@ import '../../shared/widgets/ai_widgets.dart';
 
 final chatMessagesProvider = StateProvider<List<ChatMessage>>((ref) => []);
 final chatInputProvider = StateProvider<String>((ref) => '');
-final isAiThinkingProvider = StateProvider<bool>((ref) => false);
 final streamingMessageProvider = StateProvider<String>((ref) => '');
 
 /// Canonical conversation history in OpenAI chat format. Persisted across
