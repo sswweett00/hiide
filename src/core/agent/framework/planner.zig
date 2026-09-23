@@ -8,6 +8,7 @@
 const std = @import("std");
 const types = @import("../types.zig");
 const agent_mod = @import("agent.zig");
+const prompt_mod = @import("prompt.zig");
 
 /// High-level intent buckets derived from the instruction text.
 pub const IntentKind = enum {
@@ -16,6 +17,8 @@ pub const IntentKind = enum {
     review,
     research,
     debate,
+    security_audit,
+    refactor,
     generic,
 
     pub fn name(self: IntentKind) []const u8 {
@@ -25,6 +28,8 @@ pub const IntentKind = enum {
             .review => "review",
             .research => "research",
             .debate => "debate",
+            .security_audit => "security_audit",
+            .refactor => "refactor",
             .generic => "generic",
         };
     }
@@ -99,6 +104,25 @@ pub const TEMPLATES: [6]PlanTemplate = .{
         },
     },
     .{
+        .id = "security_audit",
+        .intent = .security_audit,
+        .budget = defaultBudget(),
+        .steps = &.{
+            .{ .kind = .security_auditor, .title = "audit security", .template_id = prompt_mod.builtin_id.security_auditor },
+            .{ .kind = .tester, .title = "validate controls", .template_id = prompt_mod.builtin_id.tester, .depends_on = &.{0} },
+        },
+    },
+    .{
+        .id = "refactor",
+        .intent = .refactor,
+        .budget = defaultBudget(),
+        .steps = &.{
+            .{ .kind = .refactor_specialist, .title = "design refactor", .template_id = prompt_mod.builtin_id.refactor_specialist },
+            .{ .kind = .coder, .title = "apply refactor", .template_id = prompt_mod.builtin_id.coder, .depends_on = &.{0} },
+            .{ .kind = .reviewer, .title = "verify invariants", .template_id = prompt_mod.builtin_id.reviewer, .depends_on = &.{1} },
+        },
+    },
+    .{
         .id = "generic",
         .intent = .generic,
         .budget = defaultBudget(),
@@ -131,10 +155,15 @@ pub fn classifyIntent(instruction: []const u8) IntentKind {
     const rules = [_]struct { kw: []const u8, intent: IntentKind }{
         .{ .kw = "review", .intent = .review },
         .{ .kw = "audit", .intent = .review },
+        .{ .kw = "security", .intent = .security_audit },
+        .{ .kw = "vulnerability", .intent = .security_audit },
+        .{ .kw = "exploit", .intent = .security_audit },
         .{ .kw = "research", .intent = .research },
         .{ .kw = "investigate", .intent = .research },
         .{ .kw = "debate", .intent = .debate },
         .{ .kw = "deliberate", .intent = .debate },
+        .{ .kw = "refactor", .intent = .refactor },
+        .{ .kw = "cleanup", .intent = .refactor },
         .{ .kw = "multi", .intent = .multi_edit },
         .{ .kw = "parallel", .intent = .multi_edit },
         .{ .kw = "implement", .intent = .codegen },
@@ -150,6 +179,8 @@ pub fn classifyIntent(instruction: []const u8) IntentKind {
 
 fn classifyIntentFallback(instruction: []const u8) IntentKind {
     const rules = [_]struct { kw: []const u8, intent: IntentKind }{
+        .{ .kw = "security", .intent = .security_audit },
+        .{ .kw = "refactor", .intent = .refactor },
         .{ .kw = "review", .intent = .review },
         .{ .kw = "research", .intent = .research },
         .{ .kw = "debate", .intent = .debate },
@@ -176,6 +207,19 @@ pub fn templateFor(intent: IntentKind) PlanTemplate {
 /// sequentially starting at `id_base + 1` and are unique within the plan.
 /// @example
 /// const tasks = try plan(alloc, "implement feature X", null, 0);
+fn promptTemplateForKind(kind: types.AgentKind) u32 {
+    return switch (kind) {
+        .planner => prompt_mod.builtin_id.planner,
+        .coder => prompt_mod.builtin_id.coder,
+        .reviewer => prompt_mod.builtin_id.reviewer,
+        .tester => prompt_mod.builtin_id.tester,
+        .researcher => prompt_mod.builtin_id.researcher,
+        .security_auditor => prompt_mod.builtin_id.security_auditor,
+        .documentation_writer => prompt_mod.builtin_id.documentation_writer,
+        .refactor_specialist => prompt_mod.builtin_id.refactor_specialist,
+    };
+}
+
 pub fn plan(
     allocator: std.mem.Allocator,
     instruction: []const u8,
@@ -210,7 +254,7 @@ pub fn plan(
                 .policy_snapshot_id = 0,
                 .artifact_set_id = 0,
             },
-            .prompt_template_id = step.template_id,
+            .prompt_template_id = if (step.template_id != 0) step.template_id else promptTemplateForKind(step.kind),
             .rollback_journal_id = 0,
             .title = step.title,
             .objective = instruction,
@@ -278,6 +322,30 @@ test "planner: plan produces a valid DAG with parent links" {
     try std.testing.expectEqual(@as(?u128, null), tasks[0].parent_id);
     try std.testing.expectEqual(@as(u128, 1), tasks[1].parent_id.?);
     try std.testing.expectEqual(@as(u128, 2), tasks[2].parent_id.?);
+}
+
+test "planner: every generated node resolves to a built-in prompt" {
+    const tasks = try plan(std.testing.allocator, "implement feature", null, 0);
+    defer std.testing.allocator.free(tasks);
+    for (tasks) |task| {
+        try std.testing.expect(task.prompt_template_id > 0);
+    }
+}
+
+test "planner: objective is propagated to every node" {
+    const objective = "fix authentication race in session store";
+    const tasks = try plan(std.testing.allocator, objective, null, 0);
+    defer std.testing.allocator.free(tasks);
+    for (tasks) |task| {
+        try std.testing.expectEqualStrings(objective, task.objective);
+    }
+}
+
+test "planner: security and refactor intents select specialised pipelines" {
+    try std.testing.expectEqual(IntentKind.security_audit, classifyIntent("security audit the IPC surface"));
+    try std.testing.expectEqual(IntentKind.refactor, classifyIntent("refactor the provider router"));
+    try std.testing.expectEqual(@as(types.AgentKind, .security_auditor), templateFor(.security_audit).steps[0].kind);
+    try std.testing.expectEqual(@as(types.AgentKind, .refactor_specialist), templateFor(.refactor).steps[0].kind);
 }
 
 test "planner: multi_edit fans out two coders" {
