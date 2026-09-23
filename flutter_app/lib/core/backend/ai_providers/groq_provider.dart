@@ -16,7 +16,7 @@ class GroqProvider implements AiProvider {
   String get displayName => 'Groq';
 
   @override
-  String get defaultModel => 'llama-3.3-70b-versatile';
+  String get defaultModel => 'openai/gpt-oss-120b';
 
   @override
   String get id => 'groq';
