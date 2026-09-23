@@ -224,6 +224,30 @@ pub const Tree = struct {
         return &node.token;
     }
 
+    /// Removes one task token after its run has fully completed.
+    /// This prevents long-lived orchestrators from retaining every historical
+    /// task id forever. Callers must ensure no worker still references the token.
+    pub fn unregister(self: *Tree, task_id: u128) bool {
+        self.mutex.lock();
+        defer self.mutex.unlock();
+
+        const node = self.nodes.fetchRemove(task_id) orelse return false;
+        if (node.value.parent_id) |pid| {
+            if (self.nodes.get(pid)) |parent| {
+                var i: usize = 0;
+                while (i < parent.children.items.len) : (i += 1) {
+                    if (parent.children.items[i] == task_id) {
+                        _ = parent.children.orderedRemove(i);
+                        break;
+                    }
+                }
+            }
+        }
+        node.value.children.deinit(self.allocator);
+        self.allocator.destroy(node.value);
+        return true;
+    }
+
     /// Cancels `root_task_id` and every transitive descendant.
     /// Returns the number of tokens transitioned to cancelled.
     /// @example
