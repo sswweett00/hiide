@@ -71,6 +71,12 @@ Future<void> main() async {
   // directory on desktop; the normal workspace picker can immediately replace
   // it with an explicit project folder.
   final fallbackWorkspace = kIsWeb ? '/' : Directory.current.path;
+  var recentWorkspaces = <String>[];
+  try {
+    recentWorkspaces = await settingsService.getRecentWorkspaces();
+  } catch (e) {
+    debugPrint('Could not restore recent workspaces: $e');
+  }
 
   var uiMode = UiMode.ide;
   try {
@@ -127,6 +133,7 @@ Future<void> main() async {
         workspaceRootProvider.overrideWith(
           (ref) => workspaceRoot ?? fallbackWorkspace,
         ),
+        recentWorkspacesProvider.overrideWith((ref) => recentWorkspaces),
         workspaceRestoredProvider.overrideWith((ref) => restoredWorkspace),
         uiModeProvider.overrideWith((ref) => uiMode),
         autoSaveEnabledProvider.overrideWith((ref) => autoSave),
