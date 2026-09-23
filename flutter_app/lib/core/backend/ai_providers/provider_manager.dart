@@ -211,6 +211,21 @@ class ProviderManager implements AiChatClient {
     return provider.fetchAvailableModels();
   }
 
+  String _modelFor(
+    AiProvider provider, {
+    String? requestedModel,
+    required String requestedProviderId,
+  }) {
+    // A model id belongs to its provider. When runtime fallback selects a
+    // different provider, never forward the previous provider's id.
+    if (provider.id == requestedProviderId &&
+        requestedModel != null &&
+        requestedModel.trim().isNotEmpty) {
+      return requestedModel.trim();
+    }
+    return _selectedModels[provider.id] ?? provider.defaultModel;
+  }
+
   @override
   Future<Map<String, dynamic>> chatCompletion({
     required List<Map<String, dynamic>> messages,
@@ -218,13 +233,16 @@ class ProviderManager implements AiChatClient {
     String? model,
     double temperature = 0.2,
   }) async {
+    final requestedProviderId = _activeProviderId;
     final provider = await _resolve();
     return provider.chatCompletion(
       messages: messages,
       tools: tools,
-      model: (model == null || model.trim().isEmpty)
-          ? (_selectedModels[provider.id] ?? provider.defaultModel)
-          : model,
+      model: _modelFor(
+        provider,
+        requestedModel: model,
+        requestedProviderId: requestedProviderId,
+      ),
       temperature: temperature,
     );
   }
@@ -234,21 +252,29 @@ class ProviderManager implements AiChatClient {
     required List<Map<String, dynamic>> messages,
     String? model,
   }) async* {
+    final requestedProviderId = _activeProviderId;
     final provider = await _resolve();
     yield* provider.chatCompletionStream(
       messages: messages,
-      model: (model == null || model.trim().isEmpty)
-          ? (_selectedModels[provider.id] ?? provider.defaultModel)
-          : model,
+      model: _modelFor(
+        provider,
+        requestedModel: model,
+        requestedProviderId: requestedProviderId,
+      ),
     );
   }
 
   @override
   Future<String?> completeCode(String prompt, {String? model}) async {
+    final requestedProviderId = _activeProviderId;
     final provider = await _resolve();
     return provider.completeCode(
       prompt,
-      model: model ?? _selectedModels[provider.id] ?? provider.defaultModel,
+      model: _modelFor(
+        provider,
+        requestedModel: model,
+        requestedProviderId: requestedProviderId,
+      ),
     );
   }
 
