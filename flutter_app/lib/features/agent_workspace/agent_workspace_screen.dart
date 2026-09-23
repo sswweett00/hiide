@@ -323,7 +323,7 @@ class _MissionRail extends StatelessWidget {
                       final selected = task.id == activeTaskId;
                       return InkWell(
                         borderRadius: BorderRadius.circular(12),
-                        onTap: () => onSelect(task),
+                        onTap: isThinking ? null : () => onSelect(task),
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -435,6 +435,15 @@ class _AgentContextRail extends StatelessWidget {
           _InfoCard(icon: Icons.flag_outlined, title: 'Task status', value: current?.status.label ?? 'No task selected'),
           const SizedBox(height: 8),
           _InfoCard(icon: Icons.build_circle_outlined, title: 'Tool activity', value: (current?.toolCalls ?? toolCount).toString() + ' calls'),
+          if (current?.verificationPassed != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: _InfoCard(
+                icon: current!.verificationPassed! ? Icons.verified_outlined : Icons.warning_amber_rounded,
+                title: 'Verification',
+                value: current.verificationPassed! ? 'Last check passed' : 'Last check failed',
+              ),
+            ),
           if (current != null) ...[
             const SizedBox(height: 16),
             Text('OBJECTIVE', style: TextStyle(color: cs.onSurfaceVariant, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1)),
