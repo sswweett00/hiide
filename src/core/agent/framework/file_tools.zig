@@ -116,7 +116,7 @@ pub fn writeFileTool() tool_mod.Tool {
             try rejectUnsafePath(ctx, parsed.value.path);
             var file = compat.cwd().createFile(io, path, .{}) catch return ToolResult.failure("unable to open workspace file for write");
             defer file.close(io);
-            try file.writeAll(io, parsed.value.content);
+            try file.writeStreamingAll(io, parsed.value.content);
             const response = try std.fmt.allocPrint(allocator, "{{\"written\":true,\"size\":{d}}}", .{parsed.value.content.len});
             return ToolResult.success(response);
         }
