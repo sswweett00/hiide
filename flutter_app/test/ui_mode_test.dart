@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:hiide_flutter/core/backend/agent_mode.dart';
 import 'package:hiide_flutter/core/backend/groq_ai_service.dart';
 import 'package:hiide_flutter/core/backend/mock_backend_service.dart';
 import 'package:hiide_flutter/core/providers/backend_provider.dart';
@@ -101,6 +102,20 @@ void main() {
 
     expect(find.text('Explorer'), findsOneWidget);
     expect(find.byType(StatusBar), findsOneWidget);
+  });
+
+
+  testWidgets('AI sidebar exposes independent Plan and Code modes', (tester) async {
+    await pumpShell(tester);
+
+    expect(find.text('Plan'), findsOneWidget);
+    expect(find.text('Code'), findsOneWidget);
+
+    await tester.tap(find.text('Plan'));
+    await tester.pump();
+
+    expect(find.textContaining('dosya değiştirmez'), findsOneWidget);
+    expect(find.text('Son planı uygula'), findsNothing);
   });
 
   testWidgets('uiModeProvider drives the shell directly', (tester) async {
