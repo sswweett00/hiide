@@ -388,7 +388,7 @@ failure paths, security/performance implications and rollback. Match the user's 
   }
   Future<String> _workspaceSnapshot() async {
     try {
-      final entries = await _backend.workspaceTree(_workspaceRoot, maxEntries: maxWorkspaceEntries.clamp(1, 300));
+      final entries = await _backend.workspaceTree(_workspaceRoot, maxEntries: maxWorkspaceEntries.clamp(1, 300).toInt());
       if (entries.isEmpty) return '(workspace tree unavailable or empty)';
       final b = StringBuffer();
       for (final entry in entries) {
@@ -434,7 +434,14 @@ failure paths, security/performance implications and rollback. Match the user's 
       final description = _string(raw['description']);
       if (id.isEmpty || title.isEmpty || description.isEmpty) throw FormatException('Step ' + (i + 1).toString() + ' requires id, title and description.');
       if (!ids.add(id)) throw FormatException('Duplicate plan step id: ' + id);
-      steps.add(PlanStep(id: id, title: title, description: description, rationale: _string(raw['rationale']), agent: _string(raw['agent']).isEmpty ? 'coder' : _string(raw['agent']), files: _strings(raw['files']), dependsOn: _strings(raw['depends_on']), verification: _strings(raw['verification']), risk: _string(raw['risk']), raw: Map<String, dynamic>.from(raw)));
+      final agent = _string(raw['agent']).isEmpty ? 'coder' : _string(raw['agent']);
+      const allowedAgents = <String>{'planner', 'researcher', 'coder', 'reviewer', 'tester', 'security'};
+      if (!allowedAgents.contains(agent)) throw FormatException('Unsupported plan agent: ' + agent);
+      final files = _strings(raw['files']);
+      if (files.length > 32) throw FormatException('Step ' + id + ' references too many files.');
+      final dependencies = _strings(raw['depends_on']);
+      if (dependencies.length > rawSteps.length) throw FormatException('Step ' + id + ' has too many dependencies.');
+      steps.add(PlanStep(id: id, title: title, description: description, rationale: _string(raw['rationale']), agent: agent, files: files, dependsOn: dependencies, verification: _strings(raw['verification']), risk: _string(raw['risk']), raw: Map<String, dynamic>.from(raw)));
     }
     for (final step in steps) {
       for (final dependency in step.dependsOn) {
