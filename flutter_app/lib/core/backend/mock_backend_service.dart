@@ -350,6 +350,13 @@ class MockBackendService implements BackendService {
           return AgentToolResult(ok: true, output: jsonEncode(entries));
 
         case 'process.run':
+          if (input['approved'] != true) {
+            return const AgentToolResult(
+              ok: false,
+              output: '',
+              error: 'approval_required',
+            );
+          }
           final command = input['command']?.toString() ?? '';
           if (command.isEmpty) {
             return const AgentToolResult(
