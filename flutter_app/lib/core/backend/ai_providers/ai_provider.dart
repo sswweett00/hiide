@@ -13,6 +13,9 @@ abstract class AiProvider {
   /// Whether this provider needs an API key (Ollama does not).
   bool get requiresApiKey;
 
+  /// Default model used when the UI has not selected a provider-specific model.
+  String get defaultModel;
+
   /// Whether the provider is reachable right now.
   Future<bool> get isAvailable;
 
@@ -44,6 +47,15 @@ enum AiProviderType {
   openai,
   anthropic,
   ollama,
+  openrouter,
+  deepseek,
+  mistral,
+  together,
+  fireworks,
+  perplexity,
+  xai,
+  gemini,
+  cerebras,
 }
 
 /// Parses a string id into an [AiProviderType], defaulting to Groq.
