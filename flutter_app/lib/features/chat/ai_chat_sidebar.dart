@@ -40,6 +40,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
   final ScrollController _scrollController = ScrollController();
   AgentController? _agentController;
   VoidCallback? _stopActiveAgent;
+  bool _approveCommandsForSession = false;
 
   @override
   void dispose() {
@@ -206,7 +207,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
         case PlanDoneEvent(:final summary, :final document):
           ref.read(streamingMessageProvider.notifier).state = '';
           createdPlan = summary;
-          ref.read(lastPlanProvider.notifier).state = summary;
+          ref.read(lastPlanProvider.notifier).state = document.toMarkdown();
           if (taskId != null) {
             store.update(taskId, status: AgentTaskStatus.succeeded, summary: summary, plan: document.toMarkdown());
             store.addArtifact(
@@ -286,6 +287,7 @@ At the end report changed areas, verification commands, unresolved failures, and
       workspaceRoot: workspace.rootPath,
       model: ai.defaultModel,
       systemPrompt: codeSystemPrompt,
+      approvalHandler: _requestAgentApproval,
     );
     _agentController = controller;
     _stopActiveAgent = controller.stop;
@@ -405,6 +407,10 @@ At the end report changed areas, verification commands, unresolved failures, and
       }
     }
     ref.read(agentMessagesProvider.notifier).state = List<Map<String, dynamic>>.from(controller.workingMessages);
+    if (taskId != null) {
+      store.replaceTranscript(taskId, controller.workingMessages);
+      ref.read(agentTaskVersionProvider.notifier).state++;
+    }
   }
 
   void _touchTaskStore() {
@@ -453,6 +459,109 @@ At the end report changed areas, verification commands, unresolved failures, and
     ];
     return markers.any(lower.contains);
   }
+  Future<bool> _requestAgentApproval(
+      String toolName, Map<String, dynamic> arguments) async {
+    if (toolName != 'run_command') return true;
+    if (_approveCommandsForSession) return true;
+    if (!mounted) return false;
+    final command = arguments['command']?.toString() ?? '';
+    final approved = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        final cs = Theme.of(dialogContext).colorScheme;
+        var approveSession = false;
+        return AlertDialog(
+          title: const Text('Agent command approval'),
+          content: SizedBox(
+            width: 520,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Agent wants to execute a shell command in the active workspace.',
+                  style: TextStyle(color: cs.onSurfaceVariant, height: 1.4),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: cs.outlineVariant),
+                  ),
+                  child: SelectableText(
+                    command,
+                    style: const TextStyle(
+                      fontFamily: 'JetBrains Mono',
+                      fontSize: 12,
+                      height: 1.45,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                StatefulBuilder(
+                  builder: (context, setState) => CheckboxListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    value: approveSession,
+                    onChanged: (value) =>
+                        setState(() => approveSession = value ?? false),
+                    title: const Text('Approve commands for this task'),
+                    subtitle: const Text('Future shell commands will not ask again until this task ends.'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Reject'),
+            ),
+            FilledButton.icon(
+              onPressed: () {
+                if (approveSession) _approveCommandsForSession = true;
+                Navigator.of(dialogContext).pop(true);
+              },
+              icon: const Icon(Icons.play_arrow_rounded, size: 18),
+              label: const Text('Run command'),
+            ),
+          ],
+        );
+      },
+    );
+    if (approved == true) {
+      final taskId = ref.read(activeAgentTaskIdProvider);
+      if (taskId != null) {
+        final store = ref.read(agentTaskStoreProvider);
+        store.addEvent(
+          taskId,
+          kind: 'approval',
+          title: 'Shell command approved',
+          detail: command,
+        );
+        ref.read(agentTaskVersionProvider.notifier).state++;
+      }
+    } else {
+      final taskId = ref.read(activeAgentTaskIdProvider);
+      if (taskId != null) {
+        final store = ref.read(agentTaskStoreProvider);
+        store.addEvent(
+          taskId,
+          kind: 'approval',
+          title: 'Shell command rejected',
+          detail: command,
+          success: false,
+        );
+        ref.read(agentTaskVersionProvider.notifier).state++;
+      }
+    }
+    return approved == true;
+  }
+
   void _stopAgent() {
     _stopActiveAgent?.call();
   }
