@@ -1,6 +1,5 @@
-// Verifies the title-bar mode slider: the default IDE layout shows the
-// explorer + editor + AI sidebar, and flipping the slider switches the whole
-// shell to AI-native (chat-only) mode and back.
+// Verifies the secondary layout switch: the default is agent-native and the
+// classic editor shell can still be opened when a code-centric surface is needed.
 
 import 'dart:io';
 
@@ -68,35 +67,28 @@ void main() {
     await tester.pump(const Duration(milliseconds: 50));
   }
 
-  testWidgets('default IDE mode shows explorer, chat sidebar and status bar',
-      (tester) async {
+  testWidgets('default product mode is agent-native', (tester) async {
     await pumpShell(tester);
 
-    // Classic IDE chrome present.
-    expect(find.text('Explorer'), findsOneWidget);
     expect(find.byType(AiChatSidebar), findsOneWidget);
-    expect(find.byType(StatusBar), findsOneWidget);
-
-    // The slider shows IDE as the active label.
-    expect(find.text('IDE'), findsOneWidget);
+    expect(find.text('Explorer'), findsNothing);
+    expect(find.byType(StatusBar), findsNothing);
+    expect(find.text('AI'), findsOneWidget);
   });
 
-  testWidgets('slider flips to AI-native (chat only) and back', (tester) async {
+  testWidgets('secondary editor shell can be opened and closed', (tester) async {
     await pumpShell(tester);
 
-    // Tap the slider's AI side.
-    await tester.tap(find.text('AI'));
+    // Opt into the secondary classic shell.
+    await tester.tap(find.text('IDE'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
-    // Everything except the chat disappears.
     expect(find.text('Explorer'), findsNothing);
     expect(find.byType(StatusBar), findsNothing);
     expect(find.byType(AiChatSidebar), findsOneWidget);
-    expect(find.text('Hiide AI'), findsWidgets);
 
-    // Flip back to the IDE.
-    await tester.tap(find.text('IDE'));
+    await tester.tap(find.text('AI'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
