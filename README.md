@@ -143,6 +143,25 @@ cd flutter_app && flutter test                                  # widget + rende
 cd flutter_app && flutter test test/hiide_backend_integration_test.dart   # real e2e: Dart ⇄ Zig
 ```
 
+### Multi-provider AI runtime
+
+Hiide uses one provider-neutral agent contract. The same tool-calling loop can
+run against Groq, OpenAI, Anthropic, OpenRouter, DeepSeek, Mistral, Together AI,
+Fireworks AI, Perplexity, xAI, Google Gemini, Cerebras, or a local Ollama
+instance. OpenAI-compatible providers share one transport layer, while
+Anthropic is translated into the same canonical tool-call history.
+
+Provider credentials and per-provider models are persisted separately. Models
+can be discovered from a provider's `/models` endpoint when available, and
+users can register multiple custom OpenAI-compatible endpoints without
+changing agent code. A provider fallback never reuses another provider's model
+ID.
+
+The current built-in endpoints follow the providers' documented OpenAI
+compatibility interfaces; for example Gemini exposes
+`https://generativelanguage.googleapis.com/v1beta/openai/` and Mistral exposes
+`https://api.mistral.ai/v1`.
+
 ## Agent-native execution
 
 The Agent Workspace runs a function-calling agent loop with explicit task state.
