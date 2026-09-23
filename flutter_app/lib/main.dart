@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -9,6 +10,7 @@ import 'core/providers/backend_provider.dart';
 import 'core/routing/router.dart';
 import 'core/backend/backend_service.dart';
 import 'core/backend/hiide_backend_service.dart';
+import 'core/backend/native_engine_supervisor.dart';
 import 'core/backend/mock_backend_service.dart';
 import 'core/backend/settings_service.dart';
 import 'core/backend/agent_task_store.dart';
@@ -27,23 +29,37 @@ ThemeData _resolveDarkTheme(AppThemePreference preference) {
   };
 }
 
-/// Connects to the native Zig engine (hiide-ipc-server on 127.0.0.1:4879).
-/// Falls back to the in-memory mock when the engine is not running so the IDE
-/// stays usable without the native process.
+/// Connects to the native Zig engine and starts a bundled/local engine when
+/// the server is not already running. The in-memory mock remains the final
+/// fallback for tests and engine-less environments.
+Process? _spawnedEngineProcess;
 Future<BackendService> _createBackendService() async {
   if (kIsWeb) return MockBackendService();
 
-  final backend = HiideBackendService();
-  try {
-    await backend.connect();
-    debugPrint(
-        'Connected to Hiide Zig engine at ${backend.host}:${backend.port}');
-    return backend;
-  } catch (e) {
-    debugPrint(
-        'Zig engine not reachable (${backend.host}:${backend.port}); using mock backend: $e');
-    return MockBackendService();
+  final launch = await NativeEngineSupervisor().connectOrStart();
+  final process = launch.process;
+  if (process != null) {
+    _spawnedEngineProcess = process;
+    process.exitCode.then((_) {
+      if (identical(_spawnedEngineProcess, process)) {
+        _spawnedEngineProcess = null;
+      }
+    });
+    debugPrint('Started managed Hiide Zig engine (pid ${process.pid})');
   }
+  if (launch.backend is HiideBackendService) {
+    final backend = launch.backend as HiideBackendService;
+    debugPrint('Connected to Hiide Zig engine at ${backend.host}:${backend.port}');
+  } else {
+    debugPrint('Native engine unavailable; using mock backend.');
+  }
+  return launch.backend;
+}
+
+void _cleanupManagedEngine() {
+  final process = _spawnedEngineProcess;
+  _spawnedEngineProcess = null;
+  process?.kill();
 }
 
 Future<void> main() async {
@@ -125,6 +141,11 @@ Future<void> main() async {
   try {
     ollamaUrl = await settingsService.getOllamaUrl();
   } catch (_) {}
+
+  if (_spawnedEngineProcess != null && !kIsWeb) {
+    ProcessSignal.sigint.watch().listen((_) => _cleanupManagedEngine());
+    ProcessSignal.sigterm.watch().listen((_) => _cleanupManagedEngine());
+  }
 
   runApp(
     ProviderScope(
