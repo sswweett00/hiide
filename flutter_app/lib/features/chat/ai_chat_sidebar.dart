@@ -465,6 +465,12 @@ At the end report changed areas, verification commands, unresolved failures, and
     if (_approveCommandsForSession) return true;
     if (!mounted) return false;
     final command = arguments['command']?.toString() ?? '';
+    final taskId = ref.read(activeAgentTaskIdProvider);
+    if (taskId != null) {
+      ref.read(agentTaskStoreProvider).update(taskId, status: AgentTaskStatus.waitingApproval);
+      ref.read(agentTaskStoreProvider).addEvent(taskId, kind: 'approval', title: 'Kullanıcı onayı bekleniyor', detail: command);
+      ref.read(agentTaskVersionProvider.notifier).state++;
+    }
     final approved = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -534,7 +540,9 @@ At the end report changed areas, verification commands, unresolved failures, and
       },
     );
     if (approved == true) {
-      final taskId = ref.read(activeAgentTaskIdProvider);
+      if (taskId != null) {
+        ref.read(agentTaskStoreProvider).update(taskId, status: AgentTaskStatus.executing);
+      }
       if (taskId != null) {
         final store = ref.read(agentTaskStoreProvider);
         store.addEvent(
@@ -546,7 +554,9 @@ At the end report changed areas, verification commands, unresolved failures, and
         ref.read(agentTaskVersionProvider.notifier).state++;
       }
     } else {
-      final taskId = ref.read(activeAgentTaskIdProvider);
+      if (taskId != null) {
+        ref.read(agentTaskStoreProvider).update(taskId, status: AgentTaskStatus.executing);
+      }
       if (taskId != null) {
         final store = ref.read(agentTaskStoreProvider);
         store.addEvent(
