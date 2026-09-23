@@ -442,7 +442,6 @@ final todoScanProvider = FutureProvider<List<TodoIssue>>((ref) async {
 
 // ─── UI layout mode ──────────────────────────────────────────────────────────
 
-/// Active UI style, flipped by the slider in the title bar. Defaults to the
-/// classic IDE layout; `main()` overrides it with the persisted value so the
-/// user's last choice survives a restart.
-final uiModeProvider = StateProvider<UiMode>((ref) => UiMode.ide);
+/// Active UI style. Agent-native is the default product surface; the classic
+/// editor shell remains available as a secondary working surface.
+final uiModeProvider = StateProvider<UiMode>((ref) => UiMode.aiNative);
