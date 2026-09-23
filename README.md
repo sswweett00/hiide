@@ -116,15 +116,22 @@ How it fits together:
 
 ### Run the full stack
 
+The desktop app first tries the native engine on `127.0.0.1:4879`. When no
+engine is listening, it searches well-known locations and starts
+`hiide-ipc-server` itself. Set `HIIDE_ENGINE_PATH` to an explicit binary path
+for packaged or custom deployments.
+
+For development, the helper script remains the fastest full-stack path:
+
 ```sh
-scripts/dev.sh          # build engine + start IPC server + flutter run
+scripts/dev.sh
 ```
 
-Or manually:
+Manual startup is also supported:
 
 ```sh
 zig build
-./zig-out/bin/hiide-ipc-server &   # listens on 127.0.0.1:4879
+./zig-out/bin/hiide-ipc-server &
 cd flutter_app && flutter run -d linux
 ```
 
