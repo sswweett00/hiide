@@ -226,6 +226,20 @@ class ProviderManager implements AiChatClient {
     return _selectedModels[provider.id] ?? provider.defaultModel;
   }
 
+  List<AiProvider> _orderedProviders() {
+    if (_providers.isEmpty) return const [];
+
+    final ordered = <AiProvider>[];
+    for (final provider in _providers) {
+      if (provider.id == _activeProviderId) {
+        ordered.insert(0, provider);
+        continue;
+      }
+      ordered.add(provider);
+    }
+    return ordered;
+  }
+
   @override
   Future<Map<String, dynamic>> chatCompletion({
     required List<Map<String, dynamic>> messages,
@@ -234,17 +248,41 @@ class ProviderManager implements AiChatClient {
     double temperature = 0.2,
   }) async {
     final requestedProviderId = _activeProviderId;
-    final provider = await _resolve();
-    return provider.chatCompletion(
-      messages: messages,
-      tools: tools,
-      model: _modelFor(
+    Object? lastError;
+
+    for (final provider in _orderedProviders()) {
+      if (!provider.isConfigured) continue;
+
+      // Availability probes are advisory. A provider can omit /models while
+      // still supporting chat completions, so the real request is authoritative.
+      final requestModel = _modelFor(
         provider,
         requestedModel: model,
         requestedProviderId: requestedProviderId,
-      ),
-      temperature: temperature,
-    );
+      );
+
+      try {
+        final result = await provider.chatCompletion(
+          messages: messages,
+          tools: tools,
+          model: requestModel,
+          temperature: temperature,
+        );
+        final error = result['error']?.toString().trim() ?? '';
+        if (error.isEmpty) {
+          _activeProviderId = provider.id;
+          return result;
+        }
+        lastError = error;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    return {
+      'error': lastError?.toString() ??
+          'No configured AI provider could complete the request.',
+    };
   }
 
   @override
@@ -267,15 +305,24 @@ class ProviderManager implements AiChatClient {
   @override
   Future<String?> completeCode(String prompt, {String? model}) async {
     final requestedProviderId = _activeProviderId;
-    final provider = await _resolve();
-    return provider.completeCode(
-      prompt,
-      model: _modelFor(
-        provider,
-        requestedModel: model,
-        requestedProviderId: requestedProviderId,
-      ),
-    );
+    for (final provider in _orderedProviders()) {
+      if (!provider.isConfigured) continue;
+      try {
+        final value = await provider.completeCode(
+          prompt,
+          model: _modelFor(
+            provider,
+            requestedModel: model,
+            requestedProviderId: requestedProviderId,
+          ),
+        );
+        if (value != null && value.trim().isNotEmpty) {
+          _activeProviderId = provider.id;
+          return value;
+        }
+      } catch (_) {}
+    }
+    return null;
   }
 
   /// There is deliberately no write-side API for secrets here. Credentials
