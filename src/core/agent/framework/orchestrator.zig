@@ -87,9 +87,10 @@ pub const Orchestrator = struct {
     agents: registry_mod.Registry,
     services: context_mod.Services,
     executor: executor_mod.Executor,
-    plan_meter: budget_mod.Meter,
+    plan_budget: types.TokenBudget,
     planner_factory: PlannerFactory,
     next_plan_id: std.atomic.Value(u128) = std.atomic.Value(u128).init(1),
+    next_graph_id: std.atomic.Value(u64) = std.atomic.Value(u64).init(1),
 
     /// Constructs and wires the engine. Heap-allocated because `services`
     /// points at sibling fields.
@@ -127,7 +128,8 @@ pub const Orchestrator = struct {
         self.tracer = TracingMiddleware.init(allocator);
         self.cancel_tree = cancel_mod.Tree.init(allocator);
         self.agents = registry_mod.Registry.init(allocator);
-        self.plan_meter = budget_mod.Meter.init(options.plan_budget);
+        self.plan_budget = options.plan_budget;
+        self.next_graph_id = std.atomic.Value(u64).init(1);
 
         try self.pipeline.use(self.tracer.middleware());
         try self.policy.loadDefaults();
@@ -206,9 +208,17 @@ pub const Orchestrator = struct {
     /// @example
     /// var report = try engine.submitTasks(&tasks);
     pub fn submitTasks(self: *Orchestrator, tasks: []const types.AgentTask) !executor_mod.RunReport {
-        var plan = try executor_mod.Plan.compile(self.allocator, tasks, 1);
+        const graph_id = self.next_graph_id.fetchAdd(1, .acq_rel);
+        if (graph_id == 0) return error.GraphIdExhausted;
+
+        var plan = try executor_mod.Plan.compile(self.allocator, tasks, graph_id);
         defer plan.deinit();
-        return self.executor.run(&plan, &self.plan_meter);
+
+        // Budgets are per submission/plan. Reusing a single meter would make
+        // historical token usage leak into unrelated future requests and could
+        // unexpectedly downgrade or exhaust them.
+        var plan_meter = budget_mod.Meter.init(self.plan_budget);
+        return self.executor.run(&plan, &plan_meter);
     }
 
     /// Cancels a task and its subtree by node id.
