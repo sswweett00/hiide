@@ -7,6 +7,7 @@ class _FakeProvider implements AiProvider {
     required this.id,
     required this.available,
     this.models = const ['model'],
+    this.responseError,
   });
 
   @override
@@ -17,6 +18,7 @@ class _FakeProvider implements AiProvider {
 
   @override
   final List<String> models;
+  final String? responseError;
 
   @override
   String get displayName => id;
@@ -40,6 +42,9 @@ class _FakeProvider implements AiProvider {
     String? model,
     double temperature = 0.2,
   }) async {
+    if (responseError != null) {
+      return {'error': responseError!};
+    }
     return {
       'provider': id,
       'model': model ?? defaultModel,
@@ -140,6 +145,38 @@ void main() {
 
     expect(result['provider'], 'fallback');
     expect(result['model'], 'fallback-selected');
+  });
+
+
+  test('falls back after an actual provider request error', () async {
+    final manager = ProviderManager(
+      [
+        _FakeProvider(
+          id: 'primary',
+          available: true,
+          models: ['primary-model'],
+          responseError: 'temporary outage',
+        ),
+        _FakeProvider(
+          id: 'fallback',
+          available: true,
+          models: ['fallback-model'],
+        ),
+      ],
+      activeProviderId: 'primary',
+      selectedModels: const {},
+    );
+
+    final result = await manager.chatCompletion(
+      messages: const [
+        {'role': 'user', 'content': 'continue the task'}
+      ],
+      model: 'primary-model',
+    );
+
+    expect(result['provider'], 'fallback');
+    expect(result['model'], 'fallback-model');
+    expect(manager.activeProviderId, 'fallback');
   });
 
 }
