@@ -19,6 +19,7 @@ class NativeEngineSupervisor {
 
   final String host;
   final int port;
+  static const Duration _startupTimeout = Duration(seconds: 4);
 
   Future<NativeEngineLaunch> connectOrStart() async {
     final existing = HiideBackendService(host: host, port: port);
@@ -42,13 +43,13 @@ class NativeEngineSupervisor {
         unawaited(process.stderr.drain<void>());
 
         final backend = HiideBackendService(host: host, port: port);
-        for (var attempt = 0; attempt < 20; attempt++) {
+        final deadline = DateTime.now().add(_startupTimeout);
+        for (var attempt = 0; attempt < 20 && DateTime.now().isBefore(deadline); attempt++) {
           try {
             await backend.connect();
             return NativeEngineLaunch(backend: backend, process: process);
           } catch (_) {
             await backend.disconnect();
-            if (process.exitCode != null) break;
             await Future<void>.delayed(const Duration(milliseconds: 150));
           }
         }
