@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/agent_controller.dart';
 import '../../core/backend/ai_agents/planning_agent.dart';
 import '../../core/backend/agent_mode.dart';
+import '../../core/backend/agent_task_store.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../features/terminal/terminal_screen.dart';
@@ -97,6 +98,21 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     _addMessage(ChatMessage(role: ChatRole.user, content: text, timestamp: DateTime.now()));
 
     final mode = ref.read(agentModeProvider);
+    final workspace = ref.read(workspaceServiceProvider).rootPath;
+    final store = ref.read(agentTaskStoreProvider);
+    final task = store.create(
+      objective: text,
+      workspace: workspace,
+      mode: mode.name,
+    );
+    ref.read(activeAgentTaskIdProvider.notifier).state = task.id;
+    store.addEvent(
+      task.id,
+      kind: 'task',
+      title: 'Görev kabul edildi',
+      detail: text,
+    );
+    ref.read(agentTaskVersionProvider.notifier).state++;
     ref.read(isAiThinkingProvider.notifier).state = true;
     ref.read(streamingMessageProvider.notifier).state = '';
     try {
@@ -107,6 +123,13 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       }
     } catch (e) {
       ref.read(streamingMessageProvider.notifier).state = '';
+      final taskId = ref.read(activeAgentTaskIdProvider);
+      if (taskId != null) {
+        final store = ref.read(agentTaskStoreProvider);
+        store.update(taskId, status: AgentTaskStatus.failed, error: e.toString());
+        store.addEvent(taskId, kind: 'error', title: 'Görev beklenmeyen hata ile sonlandı', detail: e.toString(), success: false);
+        ref.read(agentTaskVersionProvider.notifier).state++;
+      }
       _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + e.toString(), timestamp: DateTime.now()));
     } finally {
       _agentController = null;
@@ -117,6 +140,13 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
   }
 
   Future<void> _runPlanMode(String text) async {
+    final taskId = ref.read(activeAgentTaskIdProvider);
+    final store = ref.read(agentTaskStoreProvider);
+    if (taskId != null) {
+      store.update(taskId, status: AgentTaskStatus.planning, clearError: true);
+      store.addEvent(taskId, kind: 'planning', title: 'Workspace inceleniyor ve plan oluşturuluyor');
+      ref.read(agentTaskVersionProvider.notifier).state++;
+    }
     final ai = await ref.read(groqAiServiceProvider.future);
     final workspace = ref.read(workspaceServiceProvider);
     final backend = ref.read(backendServiceProvider);
@@ -132,39 +162,98 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     await for (final event in planner.run(userContent)) {
       if (!mounted) break;
       switch (event) {
-        case PlanCreatedEvent(:final steps):
+        case PlanCreatedEvent(:final steps, :final document):
+          if (taskId != null) {
+            store.update(taskId, status: AgentTaskStatus.planning, plan: document.toMarkdown());
+            store.addArtifact(
+              taskId,
+              AgentArtifact(
+                id: 'artifact_plan_' + DateTime.now().microsecondsSinceEpoch.toString(),
+                type: AgentArtifactType.plan,
+                title: document.title.isEmpty ? 'Implementation plan' : document.title,
+                content: document.toMarkdown(),
+                createdAt: DateTime.now(),
+              ),
+            );
+            store.addEvent(
+              taskId,
+              kind: 'plan',
+              title: 'Plan oluşturuldu',
+              detail: steps.length.toString() + ' adım',
+            );
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
           _addMessage(ChatMessage(
             role: ChatRole.system,
             content: 'Plan hazırlandı: ' + steps.length.toString() +
                 ' bağımlı adım. Plan modu hiçbir dosyayı değiştirmez.',
             timestamp: DateTime.now(),
           ));
-        case PlanStepStartedEvent():
-        case PlanStepCompletedEvent():
-          break;
+        case PlanStepStartedEvent(:final step):
+          if (taskId != null) {
+            store.addEvent(taskId, kind: 'plan.step', title: step.title, detail: 'Adım başladı');
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
+        case PlanStepCompletedEvent(:final step):
+          if (taskId != null) {
+            store.addEvent(taskId, kind: 'plan.step', title: step.title, detail: step.result ?? 'Adım tamamlandı', success: step.error == null);
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
         case PlanTextTokenEvent(:final token):
           ref.read(streamingMessageProvider.notifier).state =
               ref.read(streamingMessageProvider) + token;
           _scrollToBottom();
-        case PlanDoneEvent(:final summary):
+        case PlanDoneEvent(:final summary, :final document):
           ref.read(streamingMessageProvider.notifier).state = '';
           createdPlan = summary;
           ref.read(lastPlanProvider.notifier).state = summary;
+          if (taskId != null) {
+            store.update(taskId, status: AgentTaskStatus.succeeded, summary: summary, plan: document.toMarkdown());
+            store.addArtifact(
+              taskId,
+              AgentArtifact(
+                id: 'artifact_plan_final_' + DateTime.now().microsecondsSinceEpoch.toString(),
+                type: AgentArtifactType.report,
+                title: 'Plan result',
+                content: summary,
+                createdAt: DateTime.now(),
+              ),
+            );
+            store.addEvent(taskId, kind: 'completed', title: 'Plan hazır ve doğrulandı');
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
           _addMessage(ChatMessage(role: ChatRole.assistant, content: summary, timestamp: DateTime.now()));
         case PlanErrorEvent(:final message):
           ref.read(streamingMessageProvider.notifier).state = '';
+          if (taskId != null) {
+            store.update(taskId, status: AgentTaskStatus.failed, error: message);
+            store.addEvent(taskId, kind: 'error', title: 'Plan oluşturulamadı', detail: message, success: false);
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
           _addMessage(ChatMessage(role: ChatRole.error, content: 'Plan oluşturulamadı: ' + message, timestamp: DateTime.now()));
       }
     }
 
-    ref.read(agentMessagesProvider.notifier).state = [
+    final planHistory = <Map<String, dynamic>>[
       ...history,
       if (createdPlan != null && createdPlan!.trim().isNotEmpty)
         {'role': 'assistant', 'content': createdPlan},
     ];
+    ref.read(agentMessagesProvider.notifier).state = planHistory;
+    if (taskId != null) {
+      store.replaceTranscript(taskId, planHistory);
+      ref.read(agentTaskVersionProvider.notifier).state++;
+    }
   }
 
   Future<void> _runCodeMode(String text) async {
+    final taskId = ref.read(activeAgentTaskIdProvider);
+    final store = ref.read(agentTaskStoreProvider);
+    if (taskId != null) {
+      store.update(taskId, status: AgentTaskStatus.executing, clearError: true);
+      store.addEvent(taskId, kind: 'execution', title: 'Agent workspace üzerinde çalışmaya başladı');
+      ref.read(agentTaskVersionProvider.notifier).state++;
+    }
     final ai = await ref.read(groqAiServiceProvider.future);
     final workspace = ref.read(workspaceServiceProvider);
     final backend = ref.read(backendServiceProvider);
@@ -208,28 +297,151 @@ At the end report changed areas, verification commands, unresolved failures, and
           _scrollToBottom();
         case AgentToolStartedEvent():
           _addToolBubble(event.toolCall);
+          if (taskId != null) {
+            store.addEvent(
+              taskId,
+              kind: 'tool.start',
+              title: event.toolCall.name,
+              detail: _toolDetail(event.toolCall.arguments),
+            );
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
         case AgentToolFinishedEvent():
           _updateToolBubble(event.toolCall);
           _refreshOpenTabAfterTool(event.toolCall);
+          if (taskId != null) {
+            final current = store.byId(taskId);
+            final count = (current?.toolCalls ?? 0) + 1;
+            final path = event.toolCall.arguments['path']?.toString();
+            final changed = <String>[...(current?.changedFiles ?? const [])];
+            if (event.toolCall.status == AgentToolStatus.success &&
+                path != null &&
+                path.isNotEmpty &&
+                (event.toolCall.name == 'write_file' ||
+                    event.toolCall.name == 'apply_diff' ||
+                    event.toolCall.name == 'delete_file')) {
+              if (!changed.contains(path)) changed.add(path);
+            }
+            final command = event.toolCall.name == 'run_command'
+                ? event.toolCall.arguments['command']?.toString() ?? ''
+                : '';
+            final verifications = <String>[...(current?.verificationCommands ?? const [])];
+            if (command.isNotEmpty && _isVerificationCommand(command) && !verifications.contains(command)) {
+              verifications.add(command);
+              store.update(taskId, status: AgentTaskStatus.verifying);
+            }
+            store.update(
+              taskId,
+              toolCalls: count,
+              changedFiles: changed,
+              verificationCommands: verifications,
+            );
+            store.addEvent(
+              taskId,
+              kind: event.toolCall.name == 'run_command' && _isVerificationCommand(command)
+                  ? 'verification'
+                  : 'tool.finish',
+              title: event.toolCall.name,
+              detail: _truncateTaskDetail(event.toolCall.result ?? 'No output'),
+              success: event.toolCall.status == AgentToolStatus.success,
+            );
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
           if (event.toolCall.name == 'run_command') {
             final command = event.toolCall.arguments['command']?.toString() ?? '';
             if (command.isNotEmpty) ref.read(terminalServiceProvider).logAgentRun(command, event.toolCall.result ?? '');
           }
         case AgentDoneEvent():
           ref.read(streamingMessageProvider.notifier).state = '';
+          if (taskId != null) {
+            final current = store.byId(taskId);
+            final report = [
+              'Objective: ' + (current?.objective ?? text),
+              'Changed files: ' + ((current?.changedFiles ?? const []).isEmpty ? 'none' : current!.changedFiles.join(', ')),
+              'Verification: ' + ((current?.verificationCommands ?? const []).isEmpty ? 'none recorded' : current!.verificationCommands.join(' | ')),
+              '',
+              event.text.trim(),
+            ].join('\n');
+            store.update(taskId, status: AgentTaskStatus.succeeded, summary: event.text);
+            store.addArtifact(
+              taskId,
+              AgentArtifact(
+                id: 'artifact_report_' + DateTime.now().microsecondsSinceEpoch.toString(),
+                type: AgentArtifactType.report,
+                title: 'Execution report',
+                content: report,
+                createdAt: DateTime.now(),
+              ),
+            );
+            store.addEvent(taskId, kind: 'completed', title: 'Görev tamamlandı');
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
           if (event.text.trim().isNotEmpty) _addMessage(ChatMessage(role: ChatRole.assistant, content: event.text, timestamp: DateTime.now()));
         case AgentErrorEvent(:final message):
           ref.read(streamingMessageProvider.notifier).state = '';
+          if (taskId != null) {
+            store.update(taskId, status: AgentTaskStatus.failed, error: message, summary: 'Agent execution failed');
+            store.addEvent(taskId, kind: 'error', title: 'Agent hatası', detail: message, success: false);
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
           _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + message, timestamp: DateTime.now()));
         case AgentStoppedEvent():
           ref.read(streamingMessageProvider.notifier).state = '';
+          if (taskId != null) {
+            store.update(taskId, status: AgentTaskStatus.canceled, summary: 'Kullanıcı tarafından durduruldu.');
+            store.addEvent(taskId, kind: 'canceled', title: 'Görev durduruldu', detail: 'Kullanıcı durdurdu.');
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
           _addMessage(ChatMessage(role: ChatRole.system, content: '⏹ Stopped by user.', timestamp: DateTime.now()));
         case AgentIterationLimitEvent(:final iterations):
           ref.read(streamingMessageProvider.notifier).state = '';
+          if (taskId != null) {
+            final message = 'Stopped after ' + iterations.toString() + ' tool rounds.';
+            store.update(taskId, status: AgentTaskStatus.failed, error: message, summary: 'Iteration limit reached');
+            store.addEvent(taskId, kind: 'limit', title: 'Iteration limit', detail: message, success: false);
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
           _addMessage(ChatMessage(role: ChatRole.error, content: 'Stopped after ' + iterations.toString() + ' tool rounds. Task may need a more specific instruction.', timestamp: DateTime.now()));
       }
     }
     ref.read(agentMessagesProvider.notifier).state = List<Map<String, dynamic>>.from(controller.workingMessages);
+  }
+
+  void _touchTaskStore() {
+    ref.read(agentTaskVersionProvider.notifier).state++;
+  }
+
+  bool _isVerificationCommand(String command) {
+    final lower = command.toLowerCase();
+    const markers = <String>[
+      'test',
+      'build',
+      'analyze',
+      'lint',
+      'typecheck',
+      'type-check',
+      'check',
+      'verify',
+      'compile',
+      'fmt',
+    ];
+    return markers.any(lower.contains);
+  }
+
+  String _toolDetail(Map<String, dynamic> args) {
+    final path = args['path']?.toString();
+    final command = args['command']?.toString();
+    final query = args['query']?.toString();
+    if (path != null && path.isNotEmpty) return path;
+    if (command != null && command.isNotEmpty) return command;
+    if (query != null && query.isNotEmpty) return query;
+    return '';
+  }
+
+  String _truncateTaskDetail(String value) {
+    const max = 500;
+    if (value.length <= max) return value;
+    return value.substring(0, max) + '\n…[truncated]';
   }
 
   bool _looksLikePlanExecutionRequest(String text) {
