@@ -374,6 +374,13 @@ pub const Executor = struct {
             for (threads[0..spawned]) |t| t.join();
         }
 
+        // Workers are fully joined at this point, so all token pointers are
+        // dead. Release this run's registrations from a shared tree to avoid
+        // unbounded memory growth across long-lived orchestrator sessions.
+        for (plan.tasks) |task| {
+            _ = tree.unregister(task.id);
+        }
+
         // ── build the report ────────────────────────────────────────────────
         var report = RunReport{
             .allocator = self.allocator,
@@ -458,23 +465,32 @@ fn executeNode(state: *RunState, idx: usize) void {
         return;
     };
 
+    // A zero executor override means "inherit the agent's declared timeout".
+    // Install it after factory resolution so every execution mode gets the same
+    // deadline contract, including debate replicas.
+    if (self.options.node_timeout_ms == 0 and
+        node.token.deadline_ms == null and
+        factory.descriptor.timeout_ms > 0)
+    {
+        node.token.deadline_ms = services.clock.deadlineIn(factory.descriptor.timeout_ms);
+    }
+
     var arena = std.heap.ArenaAllocator.init(self.allocator);
     defer arena.deinit();
     const node_alloc = arena.allocator();
-
-    const instance = factory.create(node_alloc) catch |err| {
-        node.result.status = .failed;
-        node.result.err = err;
-        return;
-    };
-    defer factory.destroy(node_alloc, instance);
 
     const sw = clock_mod.Stopwatch.start(services.clock);
     const speculative = task.mode == .speculative or task.mode == .approval_gated;
 
     const outcome = switch (task.mode) {
-        .debate_consensus => runDebate(state, idx, instance, node_alloc, speculative),
-        else => runWithRetry(state, idx, instance, node_alloc, speculative, 0),
+        .debate_consensus => runDebate(state, idx, factory, node_alloc, speculative),
+        else => blk: {
+            const instance = factory.create(node_alloc) catch |err| {
+                break :blk Outcome{ .err = err };
+            };
+            defer factory.destroy(node_alloc, instance);
+            break :blk runWithRetry(state, idx, instance, node_alloc, speculative, 0);
+        },
     };
 
     node.result.latency_ms = sw.elapsedMs();
@@ -631,10 +647,28 @@ fn runWithRetry(
                 self.options.retry_base_backoff_ms,
                 self.options.retry_max_backoff_ms,
             );
-            services.clock.sleepMs(backoff);
+            if (!sleepRetryBackoff(node.token, services.clock, backoff)) {
+                outcome.err = error.Canceled;
+                return outcome;
+            }
         }
     }
     return outcome;
+}
+
+fn sleepRetryBackoff(
+    token: *cancel_mod.Token,
+    clock: clock_mod.Clock,
+    ms: u32,
+) bool {
+    var remaining: u64 = ms;
+    while (remaining > 0) {
+        token.check(clock) catch return false;
+        const step = @min(remaining, 25);
+        clock.sleepMs(step);
+        remaining -= step;
+    }
+    return true;
 }
 
 fn tokenDelta(now: u64, before: u64) u32 {
@@ -645,7 +679,7 @@ fn tokenDelta(now: u64, before: u64) u32 {
 fn runDebate(
     state: *RunState,
     idx: usize,
-    instance: agent_mod.Agent,
+    factory: registry_mod.Factory,
     node_alloc: std.mem.Allocator,
     speculative: bool,
 ) Outcome {
@@ -658,6 +692,13 @@ fn runDebate(
     var aggregate = Outcome{};
     var replica: u8 = 0;
     while (replica < replicas) : (replica += 1) {
+        const instance = factory.create(node_alloc) catch |err| {
+            aggregate.err = err;
+            replica += 1;
+            continue;
+        };
+        defer factory.destroy(node_alloc, instance);
+
         const attempt_outcome = runWithRetry(state, idx, instance, node_alloc, speculative, replica);
         aggregate.attempts +|= attempt_outcome.attempts;
         aggregate.tokens_in +|= attempt_outcome.tokens_in;
@@ -673,8 +714,10 @@ fn runDebate(
             }
             continue;
         }
-        outputs.append(node_alloc, attempt_outcome.output) catch break;
-        instance.reset();
+        outputs.append(node_alloc, attempt_outcome.output) catch {
+            aggregate.err = error.OutOfMemory;
+            return aggregate;
+        };
     }
 
     if (outputs.items.len == 0) {
