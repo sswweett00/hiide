@@ -368,3 +368,4 @@ final agentTaskStoreProvider = Provider<AgentTaskStore>((ref) {
   throw UnimplementedError('agentTaskStoreProvider must be overridden in main');
 });
 final activeAgentTaskIdProvider = StateProvider<String?>((ref) => null);
+final agentTaskVersionProvider = StateProvider<int>((ref) => 0);
