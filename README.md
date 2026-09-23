@@ -1,9 +1,17 @@
 # hiide
 
-AI-native IDE built around a Zig core engine and a Flutter frontend. The Zig
-engine handles all performance-critical work (gap buffer editor, Myers diff,
-workspace grep, file watching, agent tool execution); the Flutter IDE renders
-the UI and communicates with the engine over a local JSON-RPC socket.
+Hiide is an **agent-native software development workspace** built around a Zig
+engine and a Flutter desktop UI.
+
+The primary product is not a traditional editor chrome with an AI sidebar.
+Users give Hiide a goal, the agent inspects the workspace, plans or executes
+changes, asks for approval before shell commands, runs verification, and
+records the task as a durable history of artifacts, changes and timeline events.
+
+The editor, terminal, file tree, search and diagnostics are working surfaces
+that the agent can use to complete a task. The Zig engine owns the
+performance-critical editor/workspace primitives and the security-sensitive
+tool boundary; Flutter owns the product experience and the model conversation.
 
 > **Note:** The README also documents the Tauri desktop shell (`apps/`) and
 > Hiditor Rust editor (`frontend/`) as planned components. Those directories
@@ -14,6 +22,54 @@ the UI and communicates with the engine over a local JSON-RPC socket.
 - **Zig 0.16.0** (the CI and engine compatibility layer are validated against this version)
 - **Flutter 3.44.0** / Dart ≥ 3.12.0
 - Linux for the full native engine path (inotify watcher + native process execution)
+
+## Product architecture
+
+| Layer | Responsibility |
+|---|---|
+| **Agent Workspace** | Task-first UX: missions, task history, artifacts, verification and context |
+| **Agent loop** | Native function-calling conversation, iterative tool use, retries, cancellation and final reporting |
+| **Task journal** | Persistent task records with lifecycle state, transcript, changed files, verification commands, artifacts and timeline |
+| **Planning** | Read-only workspace inspection followed by a validated dependency-aware implementation plan |
+| **Execution** | File read/write/diff/delete/mkdir, workspace search and controlled shell execution |
+| **Approval** | Shell commands require explicit user approval; approval state is visible in the active task |
+| **Zig engine** | Editor buffers, workspace tree/search, file watching, tool registry, sandboxing and native execution |
+| **Secondary surfaces** | Traditional editor/terminal/explorer screens remain available, but are not the primary product flow |
+
+### Agent task lifecycle
+
+A task moves through a visible state machine:
+
+`queued → planning → executing → verifying → succeeded`
+
+Failures and user stops terminate the task as `failed` or `canceled`. A shell
+command temporarily moves the active task to `waitingApproval` until the user
+accepts or rejects it.
+
+Tasks are stored locally so a restart does not silently erase history. Any
+non-terminal task found after an application restart is marked canceled with an
+explicit interruption reason rather than being presented as successful.
+
+### Artifacts and evidence
+
+A task can retain:
+
+- implementation plans
+- execution reports
+- verification results
+- changed-file lists
+- a bounded tool/LLM transcript
+- a chronological timeline of planning, tool activity, approvals and verification
+
+This gives the user an inspectable record instead of relying on the final model
+message as the only source of truth.
+
+### Security boundary
+
+The Flutter agent may request work, but the native IPC tool boundary remains the
+final local enforcement point. Workspace paths are sandboxed and traversal is
+rejected. Tools with dangerous side effects, including process execution,
+require an explicit approval token at the IPC boundary.
 
 ## Layout
 
@@ -80,12 +136,11 @@ cd flutter_app && flutter test                                  # widget + rende
 cd flutter_app && flutter test test/hiide_backend_integration_test.dart   # real e2e: Dart ⇄ Zig
 ```
 
-## AI-Native Agent (chat + editor)
+## Agent-native execution
 
-The Flutter chat sidebar runs a **real agentic loop** over Groq's native
-function calling — no prompt-hacking, no ` ```tool_call``` ` marker parsing.
-The loop (LLM calls + message history) lives in Dart, but **every tool call is
-executed inside the Zig engine** through the agent framework's `Tool` registry:
+The Agent Workspace runs a function-calling agent loop with explicit task state.
+The current desktop flow keeps LLM conversation orchestration in Dart while all
+workspace tool execution goes through the Zig engine's registered tool boundary:
 
 - The model calls tools (`read_file`, `write_file`, `apply_diff`,
   `list_directory`, `run_command`, `search_workspace`) and the engine executes
@@ -102,6 +157,11 @@ executed inside the Zig engine** through the agent framework's `Tool` registry:
   fallback.
 - Live tool cards show each call as it runs (spinner → result); files the
   agent edits refresh open editor tabs automatically.
+- `flutter_app/lib/core/backend/agent_task_store.dart` persists task lifecycle,
+  artifacts, verification evidence and a bounded transcript so the workspace
+  has durable task history.
+- Shell execution is approval-gated in the UI and enforced again by the native
+  IPC boundary.
 - The editor toolbar has **Ask AI** actions — *Explain selection*,
   *Improve selection*, *Find problems in file* — which inject the current
   selection into the agent loop.
