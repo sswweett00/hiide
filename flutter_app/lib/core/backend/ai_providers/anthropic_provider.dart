@@ -75,13 +75,65 @@ class AnthropicProvider implements AiProvider {
     // Extract system message (Anthropic uses a top-level system param)
     String? systemPrompt;
     final userMessages = <Map<String, dynamic>>[];
+    final pendingToolResults = <Map<String, dynamic>>[];
+
+    void flushToolResults() {
+      if (pendingToolResults.isEmpty) return;
+      userMessages.add({
+        'role': 'user',
+        'content': List<Map<String, dynamic>>.from(pendingToolResults),
+      });
+      pendingToolResults.clear();
+    }
+
     for (final msg in messages) {
-      if (msg['role'] == 'system') {
-        systemPrompt = msg['content']?.toString();
+      final role = msg['role']?.toString();
+      if (role == 'system') continue;
+
+      if (role == 'tool') {
+        final toolId = msg['tool_call_id']?.toString() ?? '';
+        pendingToolResults.add({
+          'type': 'tool_result',
+          'tool_use_id': toolId,
+          'content': msg['content']?.toString() ?? '',
+        });
+        continue;
+      }
+
+      flushToolResults();
+
+      if (role == 'assistant' && msg['tool_calls'] is List) {
+        final content = <Map<String, dynamic>>[];
+        final text = msg['content']?.toString() ?? '';
+        if (text.isNotEmpty) {
+          content.add({'type': 'text', 'text': text});
+        }
+        for (final raw in (msg['tool_calls'] as List)) {
+          if (raw is! Map) continue;
+          final fn = raw['function'];
+          if (fn is! Map) continue;
+          Map<String, dynamic> input = const <String, dynamic>{};
+          final args = fn['arguments']?.toString() ?? '{}';
+          try {
+            final decoded = jsonDecode(args);
+            if (decoded is Map<String, dynamic>) input = decoded;
+          } catch (_) {}
+          content.add({
+            'type': 'tool_use',
+            'id': raw['id']?.toString() ?? '',
+            'name': fn['name']?.toString() ?? '',
+            'input': input,
+          });
+        }
+        userMessages.add({'role': 'assistant', 'content': content});
       } else {
-        userMessages.add(msg);
+        userMessages.add({
+          'role': role == 'assistant' ? 'assistant' : 'user',
+          'content': msg['content']?.toString() ?? '',
+        });
       }
     }
+    flushToolResults();
 
     final body = <String, dynamic>{
       'model': model ?? _selectedModel,
