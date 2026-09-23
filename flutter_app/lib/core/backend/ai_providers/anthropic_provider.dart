@@ -88,7 +88,10 @@ class AnthropicProvider implements AiProvider {
 
     for (final msg in messages) {
       final role = msg['role']?.toString();
-      if (role == 'system') continue;
+      if (role == 'system') {
+        systemPrompt = msg['content']?.toString();
+        continue;
+      }
 
       if (role == 'tool') {
         final toolId = msg['tool_call_id']?.toString() ?? '';
