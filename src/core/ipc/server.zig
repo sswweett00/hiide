@@ -530,7 +530,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
             arr.deinit();
         }
         for (regions) |r| {
-            var map = json.ObjectMap.init(allocator);
+            var map = json.ObjectMap.empty;
             errdefer deinitObject(allocator, &map);
             try map.put(allocator, "line", .{ .integer = @intCast(r.line) });
             try map.put(allocator, "kind", try dupStr(allocator, @tagName(r.kind)));
@@ -567,7 +567,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
             arr.deinit();
         }
         for (hits) |hit| {
-            var map = json.ObjectMap.init(allocator);
+            var map = json.ObjectMap.empty;
             errdefer deinitObject(allocator, &map);
             try map.put(allocator, "path", try dupStr(allocator, hit.path));
             try map.put(allocator, "line", .{ .integer = @intCast(hit.line) });
@@ -604,7 +604,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
             arr.deinit();
         }
         for (entries) |e| {
-            var map = json.ObjectMap.init(allocator);
+            var map = json.ObjectMap.empty;
             errdefer deinitObject(allocator, &map);
             try map.put(allocator, "name", try dupStr(allocator, e.name));
             try map.put(allocator, "path", try dupStr(allocator, e.path));
