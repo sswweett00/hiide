@@ -24,20 +24,21 @@ class SettingsService {
   static const _keyCustomAiProviders = 'ai_custom_providers_v1';
 
   static const List<String> availableModels = [
-    'llama-3.1-8b-instant',
-    'llama-3.3-70b-versatile',
-    'openai/gpt-oss-20b',
     'openai/gpt-oss-120b',
-    'qwen/qwen3.6-27b',
-    'groq/compound',
-    'allam-2-7b',
+    'openai/gpt-oss-20b',
+    'qwen/qwen3.8-27b',
+    'minimaxai/minimax-m2.7',
   ];
 
   static const Set<String> excludedModels = {
+    'groq/compound',
+    'groq/compound-mini',
+    'qwen/qwen3.6-27b',
+    'llama-3.1-8b-instant',
+    'llama-3.3-70b-versatile',
     'gemma2-9b-it',
     'mixtral-8x7b-32768',
     'llama3-70b-8192',
-    'groq/compound-mini',
   };
 
   static List<String> filterLiveModels(List<String> ids) =>
