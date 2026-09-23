@@ -34,8 +34,10 @@ pub const GroqCoder = struct {
     }
     
     pub fn run(self: *GroqCoder, ctx: *agent_mod.AgentContext) anyerror!agent_mod.AgentOutput {
-        // Get the user's instruction from task title
-        const instruction = ctx.task.title;
+        // Every planned node carries the immutable original objective. Keep the
+        // step title as a compatibility fallback for manually constructed tasks.
+        const instruction = if (ctx.task.objective.len > 0) ctx.task.objective else ctx.task.title;
+        try ctx.checkCancel();
         
         // Create Groq client
         var client = try groq_mod.Client.init(self.allocator, self.io);
