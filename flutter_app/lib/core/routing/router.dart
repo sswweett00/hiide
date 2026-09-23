@@ -355,7 +355,7 @@ class WorkspacePickerScreen extends ConsumerWidget {
                           onTap: () async {
                             await activateWorkspace(ref, path);
                             if (context.mounted) {
-                              context.go('/editor');
+                              context.go('/agent');
                             }
                           },
                         )),
