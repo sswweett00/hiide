@@ -4,8 +4,6 @@ import '../../core/providers/backend_provider.dart';
 import '../../shared/models/editor_tab.dart';
 import '../../shared/providers/editor_providers.dart';
 
-final statusAiThinkingProvider = StateProvider<bool>((ref) => false);
-
 class StatusBar extends ConsumerWidget {
   const StatusBar({super.key});
 
@@ -14,7 +12,7 @@ class StatusBar extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final cursorLine = ref.watch(cursorLineProvider);
     final cursorColumn = ref.watch(cursorColumnProvider);
-    final isThinking = ref.watch(statusAiThinkingProvider);
+    final isThinking = ref.watch(isAiThinkingProvider);
     final activeId = ref.watch(activeTabIdProvider);
     final tabs = ref.watch(openTabsProvider);
     EditorTab? active;
@@ -42,10 +40,11 @@ class StatusBar extends ConsumerWidget {
             final w = constraints.maxWidth;
             final showFile = w >= 1000;
             final showStats = w >= 1000;
+            final compact = w < 600;
             final showAi = true;
             return Row(
               children: [
-                _StatusItem(icon: connected ? Icons.cloud_done_outlined : Icons.cloud_off_outlined, label: connected ? 'Engine' : 'Fallback', tone: connected ? const Color(0xFF3FB950) : Colors.amber),
+                _StatusItem(icon: connected ? Icons.cloud_done_outlined : Icons.cloud_off_outlined, label: compact ? '' : (connected ? 'Engine' : 'Fallback'), tone: connected ? const Color(0xFF3FB950) : Colors.amber),
                 const SizedBox(width: 4),
                 if (showFile && active != null) ...[
                   _StatusItem(icon: Icons.description_outlined, label: active.title),
@@ -55,7 +54,7 @@ class StatusBar extends ConsumerWidget {
                 if (showStats)
                   _StatusItem(icon: Icons.data_object, label: '$lineCount lines · $wordCount words · $charCount chars'),
                 if (showStats) const SizedBox(width: 6),
-                _StatusItem(icon: Icons.code, label: language),
+                _StatusItem(icon: Icons.code, label: compact ? '' : language),
                 const SizedBox(width: 6),
                 if (showAi) ...[
                   _AiStatusItem(isThinking: isThinking),
@@ -102,8 +101,8 @@ class _AiStatusItem extends ConsumerWidget {
           SizedBox(width: 10, height: 10, child: CircularProgressIndicator(strokeWidth: 1.5, color: tone))
         else
           Icon(Icons.auto_awesome, size: 12, color: tone),
-        const SizedBox(width: 4),
-        Text(label, style: TextStyle(color: tone, fontSize: 10, fontWeight: FontWeight.w600)),
+        if (label.isNotEmpty) const SizedBox(width: 4),
+        if (label.isNotEmpty) Text(label, style: TextStyle(color: tone, fontSize: 10, fontWeight: FontWeight.w600)),
       ],
     );
   }
