@@ -160,7 +160,13 @@ class ProviderManager implements AiChatClient {
       throw StateError('No AI providers registered');
     }
 
-    final preferred = _providers.where((p) => p.id == _activeProviderId).firstOrNull;
+    AiProvider? preferred;
+    for (final provider in _providers) {
+      if (provider.id == _activeProviderId) {
+        preferred = provider;
+        break;
+      }
+    }
     if (preferred != null) {
       try {
         if (await preferred.isAvailable) return preferred;
