@@ -17,8 +17,7 @@ import '../../shared/models/todo_issue.dart';
 /// that the settings layer owns the enum (and its persistence).
 export '../../core/backend/settings_service.dart' show UiMode;
 
-final workspaceRootProvider =
-    StateProvider<String>((ref) => '/home/kaan/projeler/hiide');
+final workspaceRootProvider = StateProvider<String>((ref) => '');
 
 /// Set by `main()` after a persisted workspace was restored. When false (first
 /// launch, or restore failed), the editor opens the folder browser once so
@@ -258,17 +257,11 @@ final fileTreeProvider = FutureProvider<List<FileTreeItem>>((ref) async {
   return await service.loadTree(engine: _backendOrNull(ref));
 });
 
-final expandedPathsProvider = StateProvider<Set<String>>((ref) => {
-      '/home/kaan/projeler/hiide',
-      '/home/kaan/projeler/hiide/flutter_app',
-      '/home/kaan/projeler/hiide/src',
-    });
+final expandedPathsProvider = StateProvider<Set<String>>((ref) => <String>{});
 
 // ─── Recent workspaces ────────────────────────────────────────────────────────
 
-final recentWorkspacesProvider = StateProvider<List<String>>((ref) => [
-      '/home/kaan/projeler/hiide',
-    ]);
+final recentWorkspacesProvider = StateProvider<List<String>>((ref) => <String>[]);
 
 // ─── Editor font size (reactive) ─────────────────────────────────────────────
 
