@@ -19,6 +19,9 @@ class SettingsService {
   static const _keyOpenaiApiKey = 'openai_api_key';
   static const _keyAnthropicApiKey = 'anthropic_api_key';
   static const _keyOllamaUrl = 'ollama_url';
+  static const _keyAiApiKeys = 'ai_api_keys_v2';
+  static const _keyAiModels = 'ai_provider_models_v2';
+  static const _keyCustomAiProviders = 'ai_custom_providers_v1';
 
   static const List<String> availableModels = [
     'llama-3.1-8b-instant',
@@ -84,35 +87,88 @@ class SettingsService {
   }
 
   Future<String> getApiKey() async {
+    return getAiApiKey('groq');
+  }
+
+  Future<Map<String, String>> getAiApiKeys() async {
     await init();
-    final stored = _safeGetString(_keyApiKey);
-    if (stored != null && stored.trim().isNotEmpty) return stored.trim();
+    final values = <String, String>{};
 
-    try {
-      final envKey = Platform.environment['GROQ_API_KEY'];
-      if (envKey != null && envKey.trim().isNotEmpty) return envKey.trim();
-    } catch (_) {}
-
-    final home = Platform.environment['HOME'] ?? '';
-    final candidates = [
-      'groq-api-key',
-      '../groq-api-key',
-      '../../groq-api-key',
-      if (home.isNotEmpty) '$home/.groq-api-key',
-    ];
-    for (final path in candidates) {
+    final raw = _safeGetString(_keyAiApiKeys);
+    if (raw != null && raw.isNotEmpty) {
       try {
-        final file = File(path);
-        if (await file.exists()) {
-          final content = (await file.readAsString()).trim();
-          if (content.isNotEmpty) return content;
+        final decoded = jsonDecode(raw);
+        if (decoded is Map) {
+          for (final entry in decoded.entries) {
+            final id = entry.key.toString().trim().toLowerCase();
+            final value = entry.value?.toString().trim() ?? '';
+            if (id.isNotEmpty && value.isNotEmpty) values[id] = value;
+          }
         }
       } catch (_) {}
     }
-    return '';
+
+    final legacy = <String, String?>{
+      'groq': _safeGetString(_keyApiKey),
+      'openai': _safeGetString(_keyOpenaiApiKey),
+      'anthropic': _safeGetString(_keyAnthropicApiKey),
+    };
+    for (final entry in legacy.entries) {
+      if ((values[entry.key] ?? '').isEmpty &&
+          entry.value != null &&
+          entry.value!.trim().isNotEmpty) {
+        values[entry.key] = entry.value!.trim();
+      }
+    }
+
+    try {
+      const envNames = <String, String>{
+        'groq': 'GROQ_API_KEY',
+        'openai': 'OPENAI_API_KEY',
+        'openrouter': 'OPENROUTER_API_KEY',
+        'deepseek': 'DEEPSEEK_API_KEY',
+        'mistral': 'MISTRAL_API_KEY',
+        'together': 'TOGETHER_API_KEY',
+        'fireworks': 'FIREWORKS_API_KEY',
+        'perplexity': 'PERPLEXITY_API_KEY',
+        'xai': 'XAI_API_KEY',
+        'gemini': 'GEMINI_API_KEY',
+        'cerebras': 'CEREBRAS_API_KEY',
+      };
+      for (final entry in envNames.entries) {
+        if ((values[entry.key] ?? '').isNotEmpty) continue;
+        final key = Platform.environment[entry.value]?.trim() ?? '';
+        if (key.isNotEmpty) values[entry.key] = key;
+      }
+    } catch (_) {}
+
+    return values;
   }
 
+  Future<String> getAiApiKey(String providerId) async {
+    final id = providerId.trim().toLowerCase();
+    if (id.isEmpty) return '';
+    final values = await getAiApiKeys();
+    return values[id] ?? '';
+  }
+
+  Future<void> setAiApiKey(String providerId, String key) async {
+    await init();
+    final id = providerId.trim().toLowerCase();
+    if (id.isEmpty) return;
+    final values = await getAiApiKeys();
+    final normalized = key.trim();
+    if (normalized.isEmpty) {
+      values.remove(id);
+    } else {
+      values[id] = normalized;
+    }
+    await _prefs.setString(_keyAiApiKeys, jsonEncode(values));
+  }
+
+
   Future<void> setApiKey(String key) async {
+    await setAiApiKey('groq', key);
     await init();
     await _prefs.setString(_keyApiKey, key.trim());
   }
@@ -237,41 +293,107 @@ class SettingsService {
   Future<String> getAiProvider() async {
     await init();
     final provider = _safeGetString(_keyAiProvider)?.trim().toLowerCase();
-    return switch (provider) {
-      'groq' => 'groq',
-      'openai' => 'openai',
-      'anthropic' => 'anthropic',
-      'ollama' => 'ollama',
-      _ => 'groq',
-    };
+    return provider == null || provider.isEmpty ? 'groq' : provider;
   }
 
   Future<void> setAiProvider(String provider) async {
     await init();
     final normalized = provider.trim().toLowerCase();
-    final safe = const {'groq', 'openai', 'anthropic', 'ollama'};
-    await _prefs.setString(_keyAiProvider, safe.contains(normalized) ? normalized : 'groq');
+    if (normalized.isEmpty || normalized.length > 128) return;
+    await _prefs.setString(_keyAiProvider, normalized);
   }
 
-  Future<String> getOpenaiApiKey() async {
+  Future<Map<String, String>> getAiProviderModels() async {
     await init();
-    return _safeGetString(_keyOpenaiApiKey)?.trim() ?? '';
+    final raw = _safeGetString(_keyAiModels);
+    if (raw == null || raw.isEmpty) return <String, String>{};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return <String, String>{};
+      return {
+        for (final entry in decoded.entries)
+          if (entry.key.toString().trim().isNotEmpty &&
+              entry.value?.toString().trim().isNotEmpty)
+            entry.key.toString().trim().toLowerCase():
+                entry.value.toString().trim(),
+      };
+    } catch (_) {
+      return <String, String>{};
+    }
   }
 
-  Future<void> setOpenaiApiKey(String key) async {
+  Future<void> setAiProviderModel(String providerId, String model) async {
     await init();
-    await _prefs.setString(_keyOpenaiApiKey, key.trim());
+    final id = providerId.trim().toLowerCase();
+    if (id.isEmpty) return;
+    final values = await getAiProviderModels();
+    final normalized = model.trim();
+    if (normalized.isEmpty) {
+      values.remove(id);
+    } else {
+      values[id] = normalized;
+    }
+    await _prefs.setString(_keyAiModels, jsonEncode(values));
   }
 
-  Future<String> getAnthropicApiKey() async {
+  Future<List<Map<String, String>>> getCustomAiProviders() async {
     await init();
-    return _safeGetString(_keyAnthropicApiKey)?.trim() ?? '';
+    final raw = _safeGetString(_keyCustomAiProviders);
+    if (raw == null || raw.isEmpty) return const [];
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return const [];
+      final result = <Map<String, String>>[];
+      final seen = <String>{};
+      for (final item in decoded) {
+        if (item is! Map) continue;
+        final id = item['id']?.toString().trim() ?? '';
+        final name = item['name']?.toString().trim() ?? '';
+        final baseUrl = item['baseUrl']?.toString().trim() ?? '';
+        final model = item['model']?.toString().trim() ?? '';
+        if (id.isEmpty || name.isEmpty || baseUrl.isEmpty || model.isEmpty) continue;
+        if (!seen.add(id)) continue;
+        result.add({
+          'id': id,
+          'name': name,
+          'baseUrl': baseUrl,
+          'model': model,
+        });
+      }
+      return result;
+    } catch (_) {
+      return const [];
+    }
   }
 
-  Future<void> setAnthropicApiKey(String key) async {
+  Future<void> setCustomAiProviders(
+      List<Map<String, String>> providers) async {
     await init();
-    await _prefs.setString(_keyAnthropicApiKey, key.trim());
+    final clean = <Map<String, String>>[];
+    final seen = <String>{};
+    for (final raw in providers) {
+      final id = raw['id']?.trim() ?? '';
+      final name = raw['name']?.trim() ?? '';
+      final baseUrl = raw['baseUrl']?.trim() ?? '';
+      final model = raw['model']?.trim() ?? '';
+      if (id.isEmpty || name.isEmpty || baseUrl.isEmpty || model.isEmpty) continue;
+      if (id.length > 128 || name.length > 120 ||
+          baseUrl.length > 512 || model.length > 256) {
+        continue;
+      }
+      final normalizedId = id.toLowerCase();
+      if (!seen.add(normalizedId)) continue;
+      clean.add({
+        'id': normalizedId,
+        'name': name,
+        'baseUrl': baseUrl,
+        'model': model,
+      });
+      if (clean.length >= 32) break;
+    }
+    await _prefs.setString(_keyCustomAiProviders, jsonEncode(clean));
   }
+
 
   Future<String> getOllamaUrl() async {
     await init();
