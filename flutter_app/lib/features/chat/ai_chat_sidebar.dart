@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/agent_controller.dart';
+import '../../core/backend/ai_agents/planning_agent.dart';
+import '../../core/backend/agent_mode.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../features/terminal/terminal_screen.dart';
@@ -89,118 +91,150 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
 
   Future<void> _sendMessage([String? preset]) async {
     final text = (preset ?? _inputController.text).trim();
-    if (text.isEmpty) return;
-    if (ref.read(isAiThinkingProvider)) return;
-
+    if (text.isEmpty || ref.read(isAiThinkingProvider)) return;
     _inputController.clear();
-    _addMessage(ChatMessage(
-      role: ChatRole.user,
-      content: text,
-      timestamp: DateTime.now(),
-    ));
+    _addMessage(ChatMessage(role: ChatRole.user, content: text, timestamp: DateTime.now()));
 
+    final mode = ref.read(agentModeProvider);
     ref.read(isAiThinkingProvider.notifier).state = true;
     ref.read(streamingMessageProvider.notifier).state = '';
-
     try {
-      final groqAsync = await ref.read(groqAiServiceProvider.future);
-      final workspaceService = ref.read(workspaceServiceProvider);
-      final backend = ref.read(backendServiceProvider);
-
-      final userContent = _buildUserPrompt(text, _activeTabNow());
-      final history =
-          List<Map<String, dynamic>>.from(ref.read(agentMessagesProvider));
-      history.add({'role': 'user', 'content': userContent});
-
-      final controller = AgentController(
-        ai: groqAsync,
-        backend: backend,
-        workspaceRoot: workspaceService.rootPath,
-        model: groqAsync.defaultModel,
-      );
-      _agentController = controller;
-
-      await for (final event in controller.run(history)) {
-        if (!mounted) break;
-        switch (event) {
-          case AgentTextTokenEvent():
-            ref.read(streamingMessageProvider.notifier).state =
-                ref.read(streamingMessageProvider) + event.token;
-            _scrollToBottom();
-
-          case AgentToolStartedEvent():
-            _addToolBubble(event.toolCall);
-
-          case AgentToolFinishedEvent():
-            _updateToolBubble(event.toolCall);
-            _refreshOpenTabAfterTool(event.toolCall);
-            // Mirror engine-executed commands into the terminal panel.
-            if (event.toolCall.name == 'run_command') {
-              final command =
-                  event.toolCall.arguments['command']?.toString() ?? '';
-              if (command.isNotEmpty) {
-                ref
-                    .read(terminalServiceProvider)
-                    .logAgentRun(command, event.toolCall.result ?? '');
-              }
-            }
-
-          case AgentDoneEvent():
-            ref.read(streamingMessageProvider.notifier).state = '';
-            if (event.text.trim().isNotEmpty) {
-              _addMessage(ChatMessage(
-                role: ChatRole.assistant,
-                content: event.text,
-                timestamp: DateTime.now(),
-              ));
-            }
-
-          case AgentErrorEvent():
-            ref.read(streamingMessageProvider.notifier).state = '';
-            _addMessage(ChatMessage(
-              role: ChatRole.error,
-              content: 'Error: ${event.message}',
-              timestamp: DateTime.now(),
-            ));
-
-          case AgentStoppedEvent():
-            ref.read(streamingMessageProvider.notifier).state = '';
-            _addMessage(ChatMessage(
-              role: ChatRole.system,
-              content: '⏹ Stopped by user.',
-              timestamp: DateTime.now(),
-            ));
-
-          case AgentIterationLimitEvent():
-            ref.read(streamingMessageProvider.notifier).state = '';
-            _addMessage(ChatMessage(
-              role: ChatRole.error,
-              content:
-                  'Stopped after ${event.iterations} tool rounds. The task '
-                  'may need a more specific instruction.',
-              timestamp: DateTime.now(),
-            ));
-        }
+      if (mode == AgentMode.plan) {
+        await _runPlanMode(text);
+      } else {
+        await _runCodeMode(text);
       }
-
-      // Persist the canonical API history for the next turn.
-      ref.read(agentMessagesProvider.notifier).state =
-          List<Map<String, dynamic>>.from(controller.workingMessages);
     } catch (e) {
       ref.read(streamingMessageProvider.notifier).state = '';
-      _addMessage(ChatMessage(
-        role: ChatRole.error,
-        content: 'Error: $e',
-        timestamp: DateTime.now(),
-      ));
+      _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + e.toString(), timestamp: DateTime.now()));
     } finally {
       _agentController = null;
-      if (mounted) {
-        ref.read(isAiThinkingProvider.notifier).state = false;
-      }
+      if (mounted) ref.read(isAiThinkingProvider.notifier).state = false;
     }
   }
 
+  Future<void> _runPlanMode(String text) async {
+    final ai = await ref.read(groqAiServiceProvider.future);
+    final workspace = ref.read(workspaceServiceProvider);
+    final backend = ref.read(backendServiceProvider);
+    final userContent = _buildUserPrompt(text, _activeTabNow());
+    final planner = PlanningAgent(ai: ai, backend: backend, workspaceRoot: workspace.rootPath);
+    final history = <Map<String, dynamic>>[
+      ...ref.read(agentMessagesProvider),
+      {'role': 'user', 'content': userContent},
+    ];
+
+    await for (final event in planner.run(userContent)) {
+      if (!mounted) break;
+      switch (event) {
+        case PlanCreatedEvent(:final steps):
+          _addMessage(ChatMessage(
+            role: ChatRole.system,
+            content: 'Plan hazırlandı: ' + steps.length.toString() +
+                ' bağımlı adım. Plan modu hiçbir dosyayı değiştirmez.',
+            timestamp: DateTime.now(),
+          ));
+        case PlanStepStartedEvent():
+        case PlanStepCompletedEvent():
+          break;
+        case PlanTextTokenEvent(:final token):
+          ref.read(streamingMessageProvider.notifier).state =
+              ref.read(streamingMessageProvider) + token;
+          _scrollToBottom();
+        case PlanDoneEvent(:final summary):
+          ref.read(streamingMessageProvider.notifier).state = '';
+          ref.read(lastPlanProvider.notifier).state = summary;
+          _addMessage(ChatMessage(role: ChatRole.assistant, content: summary, timestamp: DateTime.now()));
+        case PlanErrorEvent(:final message):
+          ref.read(streamingMessageProvider.notifier).state = '';
+          _addMessage(ChatMessage(role: ChatRole.error, content: 'Plan oluşturulamadı: ' + message, timestamp: DateTime.now()));
+      }
+    }
+
+    final plan = ref.read(lastPlanProvider);
+    ref.read(agentMessagesProvider.notifier).state = [
+      ...history,
+      if (plan != null && plan.trim().isNotEmpty)
+        {'role': 'assistant', 'content': plan},
+    ];
+  }
+
+  Future<void> _runCodeMode(String text) async {
+    final ai = await ref.read(groqAiServiceProvider.future);
+    final workspace = ref.read(workspaceServiceProvider);
+    final backend = ref.read(backendServiceProvider);
+    var userContent = _buildUserPrompt(text, _activeTabNow());
+    final lastPlan = ref.read(lastPlanProvider);
+    if (lastPlan != null && lastPlan.trim().isNotEmpty && _looksLikePlanExecutionRequest(text)) {
+      userContent += '\n\n--- Latest Hiide Plan ---\n' + lastPlan + '\n--- End Latest Hiide Plan ---';
+    }
+    final history = <Map<String, dynamic>>[
+      ...ref.read(agentMessagesProvider),
+      {'role': 'user', 'content': userContent},
+    ];
+
+    const codeSystemPrompt = '''
+You are Hiide Code Mode, an autonomous senior software engineer.
+
+Execute the request in the actual workspace, not only as prose.
+First inspect the relevant files and diagnostics. Then make the smallest safe changes.
+After every meaningful edit, re-read or otherwise verify the affected state.
+Run focused tests/build/lint/type-check commands and react to failures until the root cause is resolved.
+Do not claim success when verification is missing or failing.
+Keep unrelated files untouched. Prefer apply_diff for surgical edits.
+Never escape the workspace. Preserve compatibility unless a breaking change is requested.
+At the end report changed areas, verification commands, unresolved failures, and assumptions.
+''';
+
+    final controller = AgentController(
+      ai: ai,
+      backend: backend,
+      workspaceRoot: workspace.rootPath,
+      model: ai.defaultModel,
+      systemPrompt: codeSystemPrompt,
+    );
+    _agentController = controller;
+    await for (final event in controller.run(history)) {
+      if (!mounted) break;
+      switch (event) {
+        case AgentTextTokenEvent():
+          ref.read(streamingMessageProvider.notifier).state = ref.read(streamingMessageProvider) + event.token;
+          _scrollToBottom();
+        case AgentToolStartedEvent():
+          _addToolBubble(event.toolCall);
+        case AgentToolFinishedEvent():
+          _updateToolBubble(event.toolCall);
+          _refreshOpenTabAfterTool(event.toolCall);
+          if (event.toolCall.name == 'run_command') {
+            final command = event.toolCall.arguments['command']?.toString() ?? '';
+            if (command.isNotEmpty) ref.read(terminalServiceProvider).logAgentRun(command, event.toolCall.result ?? '');
+          }
+        case AgentDoneEvent():
+          ref.read(streamingMessageProvider.notifier).state = '';
+          if (event.text.trim().isNotEmpty) _addMessage(ChatMessage(role: ChatRole.assistant, content: event.text, timestamp: DateTime.now()));
+        case AgentErrorEvent(:final message):
+          ref.read(streamingMessageProvider.notifier).state = '';
+          _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + message, timestamp: DateTime.now()));
+        case AgentStoppedEvent():
+          ref.read(streamingMessageProvider.notifier).state = '';
+          _addMessage(ChatMessage(role: ChatRole.system, content: '⏹ Stopped by user.', timestamp: DateTime.now()));
+        case AgentIterationLimitEvent(:final iterations):
+          ref.read(streamingMessageProvider.notifier).state = '';
+          _addMessage(ChatMessage(role: ChatRole.error, content: 'Stopped after ' + iterations.toString() + ' tool rounds. Task may need a more specific instruction.', timestamp: DateTime.now()));
+      }
+    }
+    ref.read(agentMessagesProvider.notifier).state = List<Map<String, dynamic>>.from(controller.workingMessages);
+  }
+
+  bool _looksLikePlanExecutionRequest(String text) {
+    final lower = text.toLowerCase();
+    const markers = <String>[
+      'planı uygula', 'plani uygula', 'planı gerçekleştir', 'plani gerceklestir',
+      'execute plan', 'apply plan', 'implement plan', 'do the plan',
+      'uygula', 'gerçekleştir', 'gerceklestir',
+    ];
+    return markers.any(lower.contains);
+  }
   void _stopAgent() {
     _agentController?.stop();
   }
@@ -389,6 +423,8 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     final messages = ref.watch(chatMessagesProvider);
     final isThinking = ref.watch(isAiThinkingProvider);
     final streamingText = ref.watch(streamingMessageProvider);
+    final agentMode = ref.watch(agentModeProvider);
+    final lastPlan = ref.watch(lastPlanProvider);
     final cs = Theme.of(context).colorScheme;
 
     // Editor "Ask AI" actions inject a one-shot prompt here.
@@ -514,6 +550,34 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
             ),
           ),
 
+          Container(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+            decoration: BoxDecoration(
+              color: cs.surfaceContainerLow,
+              border: Border(bottom: BorderSide(color: cs.outlineVariant)),
+            ),
+            child: SegmentedButton<AgentMode>(
+              segments: AgentMode.values.map((mode) => ButtonSegment<AgentMode>(
+                value: mode, icon: Icon(mode.icon, size: 16), label: Text(mode.label),
+              )).toList(),
+              selected: {agentMode},
+              onSelectionChanged: isThinking ? null : (selection) {
+                if (selection.isNotEmpty) ref.read(agentModeProvider.notifier).state = selection.first;
+              },
+              showSelectedIcon: false,
+              style: const ButtonStyle(visualDensity: VisualDensity.compact),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+            child: Row(children: [
+              Icon(agentMode.icon, size: 16, color: cs.primary),
+              const SizedBox(width: 8),
+              Expanded(child: Text(agentMode.description, maxLines: 2, overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: cs.onSurfaceVariant, fontSize: DesignTokens.fontSizeXS))),
+            ]),
+          ),
+
           // ─── Messages (or welcome panel on first run) ─────────────────────
           Expanded(
             child: messages.isEmpty && streamingText.isEmpty
@@ -559,6 +623,19 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
               onRetry: () => ref.invalidate(groqConnectionProvider),
             ),
 
+          if (!isThinking && agentMode == AgentMode.code && lastPlan != null && lastPlan.trim().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 2, 12, 0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: () => _sendMessage('Son oluşturulan planı uygula ve doğrula.'),
+                  icon: const Icon(Icons.play_arrow_rounded, size: 16),
+                  label: const Text('Son planı uygula'),
+                ),
+              ),
+            ),
+
           // ─── Input Bar ────────────────────────────────────────────────────
           Container(
             padding: const EdgeInsets.all(DesignTokens.space3),
@@ -587,7 +664,9 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                           color: cs.onSurface,
                           fontSize: DesignTokens.fontSizeMD),
                       decoration: InputDecoration(
-                        hintText: 'Ask Hiide AI to build, fix or explain…',
+                        hintText: agentMode == AgentMode.plan
+    ? 'Plan modu: kapsamı, adımları, riskleri ve doğrulamayı çıkar…'
+    : 'Code modu: geliştir, düzelt, test et veya planı uygula…',
                         hintStyle: TextStyle(color: cs.onSurfaceVariant),
                         border: InputBorder.none,
                         contentPadding:
