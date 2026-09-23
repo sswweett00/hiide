@@ -559,14 +559,21 @@ Guidelines:
             return const _ToolResult('(error) No command provided.',
                 success: false);
           }
-          if (approvalHandler != null) {
-            final approved = await approvalHandler!(name, args);
-            if (!approved) {
-              return const _ToolResult(
-                '(approval rejected) The user did not approve this command.',
-                success: false,
-              );
-            }
+          // Never execute shell commands without an explicit approval
+          // policy. The UI normally supplies the handler; headless callers
+          // must opt in explicitly in the same way.
+          if (approvalHandler == null) {
+            return const _ToolResult(
+              '(approval required) No command approval handler is configured.',
+              success: false,
+            );
+          }
+          final approved = await approvalHandler!(name, args);
+          if (!approved) {
+            return const _ToolResult(
+              '(approval rejected) The user did not approve this command.',
+              success: false,
+            );
           }
           final result = await _backend.executeAgentTool(
             'process.run',
