@@ -46,6 +46,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _customKeyCtrl;
   bool _apiKeyObscured = true;
   bool _apiKeyDirty = false;
+  String? _formProviderId;
 
   @override
   void initState() {
@@ -154,9 +155,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       final model = models[active.id]?.trim().isNotEmpty == true
                           ? models[active.id]!
                           : active.defaultModel;
-                      if (_modelCtrl.text.isEmpty) _modelCtrl.text = model;
-                      if (_apiKeyCtrl.text != (keys[active.id] ?? '')) {
+                      if (_formProviderId != active.id) {
+                        _formProviderId = active.id;
+                        _modelCtrl.text = model;
                         _apiKeyCtrl.text = keys[active.id] ?? '';
+                        _apiKeyDirty = false;
+                      } else if (_modelCtrl.text.isEmpty) {
+                        _modelCtrl.text = model;
                       }
 
                       return Column(
