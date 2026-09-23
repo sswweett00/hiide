@@ -296,6 +296,25 @@ pub const Tree = struct {
     }
 };
 
+test "cancel: unregister removes completed task without retaining parent links" {
+    var tree = Tree.init(std.testing.allocator);
+    defer tree.deinit();
+
+    _ = try tree.register(1, null, null);
+    _ = try tree.register(2, 1, null);
+    _ = try tree.register(3, 1, null);
+    try std.testing.expectEqual(@as(usize, 3), tree.count());
+
+    try std.testing.expect(tree.unregister(2));
+    try std.testing.expectEqual(@as(usize, 2), tree.count());
+    try std.testing.expectEqual(@as(usize, 1), tree.nodes.get(1).?.children.items.len);
+
+    try std.testing.expect(tree.unregister(1));
+    try std.testing.expectEqual(@as(usize, 1), tree.count());
+    try std.testing.expect(tree.nodes.get(3) != null);
+    try std.testing.expect(!tree.unregister(1));
+}
+
 test "cancel: parent cancellation propagates to child tokens" {
     var root = Token.init(null);
     var child = Token.child(&root, null);
