@@ -6,6 +6,7 @@ import '../../core/backend/agent_mode.dart';
 import '../../core/backend/agent_task_store.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
+import '../../core/backend/ai_providers/provider_manager.dart';
 import '../../features/terminal/terminal_screen.dart';
 import '../../shared/models/chat_message.dart';
 import '../../shared/models/editor_tab.dart';
@@ -149,7 +150,9 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       store.addEvent(taskId, kind: 'planning', title: 'Workspace inceleniyor ve plan oluşturuluyor');
       ref.read(agentTaskVersionProvider.notifier).state++;
     }
-    final ai = await ref.read(groqAiServiceProvider.future);
+    final providerManager = ref.read(providerManagerProvider);
+    final ai = providerManager;
+    final model = providerManager.activeModel;
     final workspace = ref.read(workspaceServiceProvider);
     final backend = ref.read(backendServiceProvider);
     final userContent = _buildUserPrompt(text, _activeTabNow());
@@ -286,7 +289,7 @@ At the end report changed areas, verification commands, unresolved failures, and
       ai: ai,
       backend: backend,
       workspaceRoot: workspace.rootPath,
-      model: ai.defaultModel,
+      model: model,
       systemPrompt: codeSystemPrompt,
       approvalHandler: _requestAgentApproval,
     );
@@ -792,22 +795,12 @@ At the end report changed areas, verification commands, unresolved failures, and
       if (mounted) _sendMessage(next);
     });
 
-    final modelLabel =
-        ref.read(groqAiServiceProvider).valueOrNull?.defaultModel ?? '…';
-
-    // Live Groq connectivity (probed against the API, not assumed).
-    final connection = ref.watch(groqConnectionProvider);
-    final (dotColor, statusLabel) = switch (connection) {
-      AsyncData(:final value) => value.ok
-          ? (const Color(0xFF3FB950), isThinking ? 'Working' : 'Live')
-          : (cs.error, 'Offline'),
-      AsyncError() => (cs.error, 'Offline'),
-      _ => (Colors.amber, 'Checking…'),
-    };
-    final offlineReason = switch (connection) {
-      AsyncData(:final value) when !value.ok => value.message,
-      _ => null,
-    };
+    final providerManager = ref.watch(providerManagerProvider);
+    final modelLabel = providerManager.active.displayName +
+        ' · ' + providerManager.activeModel;
+    final providerConfigured = !providerManager.active.requiresApiKey ||
+        providerManager.active.apiKey.trim().isNotEmpty;
+    final statusLabel = providerConfigured ? 'Ready' : 'API key required';
 
     return Container(
       color: cs.surface,
@@ -844,7 +837,7 @@ At the end report changed areas, verification commands, unresolved failures, and
                         ),
                       ),
                       Text(
-                        'Groq · $modelLabel',
+                        '$modelLabel · $statusLabel',
                         style: TextStyle(
                           color: cs.onSurfaceVariant,
                           fontSize: DesignTokens.fontSizeXS,
@@ -972,13 +965,6 @@ At the end report changed areas, verification commands, unresolved failures, and
                   ),
                 ],
               ),
-            ),
-
-          // ─── Offline banner (Groq unreachable) ────────────────────────────
-          if (offlineReason != null)
-            _OfflineBanner(
-              message: offlineReason,
-              onRetry: () => ref.invalidate(groqConnectionProvider),
             ),
 
           if (!isThinking && agentMode == AgentMode.code && lastPlan != null && lastPlan.trim().isNotEmpty)
