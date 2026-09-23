@@ -338,6 +338,9 @@ At the end report changed areas, verification commands, unresolved failures, and
               toolCalls: count,
               changedFiles: changed,
               verificationCommands: verifications,
+              verificationPassed: command.isNotEmpty && _isVerificationCommand(command)
+                  ? event.toolCall.status == AgentToolStatus.success
+                  : current?.verificationPassed,
             );
             if (command.isNotEmpty && _isVerificationCommand(command)) {
               store.addArtifact(
@@ -371,14 +374,22 @@ At the end report changed areas, verification commands, unresolved failures, and
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
             final current = store.byId(taskId);
+            final verificationFailed = current?.verificationPassed == false;
+            final finalStatus = verificationFailed
+                ? AgentTaskStatus.failed
+                : AgentTaskStatus.succeeded;
+            final finalSummary = verificationFailed
+                ? 'Agent completed the conversation, but the latest recorded verification failed.'
+                : event.text;
             final report = [
               'Objective: ' + (current?.objective ?? text),
               'Changed files: ' + ((current?.changedFiles ?? const []).isEmpty ? 'none' : current!.changedFiles.join(', ')),
               'Verification: ' + ((current?.verificationCommands ?? const []).isEmpty ? 'none recorded' : current!.verificationCommands.join(' | ')),
+              'Verification result: ' + (current?.verificationPassed == null ? 'not recorded' : (current!.verificationPassed! ? 'passed' : 'failed')),
               '',
               event.text.trim(),
             ].join('\n');
-            store.update(taskId, status: AgentTaskStatus.succeeded, summary: event.text);
+            store.update(taskId, status: finalStatus, summary: finalSummary);
             store.addArtifact(
               taskId,
               AgentArtifact(
@@ -389,7 +400,7 @@ At the end report changed areas, verification commands, unresolved failures, and
                 createdAt: DateTime.now(),
               ),
             );
-            store.addEvent(taskId, kind: 'completed', title: 'Görev tamamlandı');
+            store.addEvent(taskId, kind: verificationFailed ? 'completed_with_failure' : 'completed', title: verificationFailed ? 'Görev doğrulama hatasıyla sonlandı' : 'Görev tamamlandı', success: !verificationFailed);
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
           if (event.text.trim().isNotEmpty) _addMessage(ChatMessage(role: ChatRole.assistant, content: event.text, timestamp: DateTime.now()));
