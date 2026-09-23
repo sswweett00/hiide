@@ -94,6 +94,7 @@ class AgentController {
     String? systemPrompt,
     this.maxIterations = 15,
     this.toolResultMaxChars = 8000,
+    this.approvalHandler,
   })  : _ai = ai,
         _backend = backend,
         _workspaceRoot = workspaceRoot,
@@ -107,6 +108,7 @@ class AgentController {
   final String _systemPrompt;
   final int maxIterations;
   final int toolResultMaxChars;
+  final Future<bool> Function(String toolName, Map<String, dynamic> arguments)? approvalHandler;
 
   bool _stopRequested = false;
   List<Map<String, dynamic>> _workingMessages = [];
@@ -557,9 +559,18 @@ Guidelines:
             return const _ToolResult('(error) No command provided.',
                 success: false);
           }
+          if (approvalHandler != null) {
+            final approved = await approvalHandler!(name, args);
+            if (!approved) {
+              return const _ToolResult(
+                '(approval rejected) The user did not approve this command.',
+                success: false,
+              );
+            }
+          }
           final result = await _backend.executeAgentTool(
             'process.run',
-            {'command': command},
+            {'command': command, 'approved': true},
             workspaceRoot: _workspaceRoot,
             timeout: _agentToolTimeout,
           );
