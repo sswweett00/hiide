@@ -24,6 +24,9 @@ class AnthropicProvider implements AiProvider {
   String get displayName => 'Anthropic (Claude)';
 
   @override
+  String get defaultModel => _selectedModel;
+
+  @override
   String get id => 'anthropic';
 
   @override
