@@ -41,7 +41,7 @@ fn approvalGranted(allocator: std.mem.Allocator, input: []const u8) bool {
     defer parsed.deinit();
     if (parsed.value != .object) return false;
     const value = parsed.value.object.get("approved") orelse return false;
-    return value == .bool and value.bool;
+    return switch (value) { .bool => |flag| flag, else => false };
 }
 
 /// Executes `tool_id` with the JSON-encoded `input` against `workspace_root`.
