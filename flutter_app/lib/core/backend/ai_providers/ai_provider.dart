@@ -16,6 +16,9 @@ abstract class AiProvider {
   /// Default model used when the UI has not selected a provider-specific model.
   String get defaultModel;
 
+  /// Whether this provider has enough credentials/configuration to be used.
+  bool get isConfigured => !requiresApiKey;
+
   /// Whether the provider is reachable right now.
   Future<bool> get isAvailable;
 
