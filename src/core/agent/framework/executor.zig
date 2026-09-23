@@ -659,7 +659,7 @@ fn runWithRetry(
 fn sleepRetryBackoff(
     token: *cancel_mod.Token,
     clock: clock_mod.Clock,
-    ms: u32,
+    ms: u64,
 ) bool {
     var remaining: u64 = ms;
     while (remaining > 0) {
