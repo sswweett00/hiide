@@ -177,7 +177,9 @@ final activeTabIdProvider = StateProvider<String?>((ref) => null);
 final cursorLineProvider = StateProvider<int>((ref) => 1);
 final cursorColumnProvider = StateProvider<int>((ref) => 1);
 
-/// Shared AI agent activity state surfaced by the status bar.\nfinal isAiThinkingProvider = StateProvider<bool>((ref) => false);\n
+/// Shared AI agent activity state surfaced by the status bar.
+final isAiThinkingProvider = StateProvider<bool>((ref) => false);
+
 /// The active backend, or null when it is not overridden (tests / early boot)
 /// so the tree falls back to the Dart walk.
 BackendService? _backendOrNull(Ref ref) {
