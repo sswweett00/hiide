@@ -110,7 +110,7 @@ pub fn writeFileTool() tool_mod.Tool {
             defer allocator.free(path);
             const io = std.Io.Threaded.global_single_threaded.io();
             if (std.fs.path.dirname(path)) |dir_path| {
-                compat.cwd().makePath(std.Io.Threaded.global_single_threaded.io(), dir_path) catch return ToolResult.failure("unable to create workspace parent directory");
+                compat.cwd().createDirPath(std.Io.Threaded.global_single_threaded.io(), dir_path) catch return ToolResult.failure("unable to create workspace parent directory");
             }
             // Re-check before writing to reduce symlink TOCTOU risk.
             try rejectUnsafePath(ctx, parsed.value.path);
@@ -237,7 +237,7 @@ pub fn createDirectoryTool() tool_mod.Tool {
             const allocator = ctx.allocator;
             const path = try resolvePathInput(ctx, input);
             defer allocator.free(path);
-            compat.cwd().makePath(std.Io.Threaded.global_single_threaded.io(), path) catch |err| return ToolResult.failure(try std.fmt.allocPrint(allocator, "failed to create workspace directory: {s}", .{@errorName(err)}));
+            compat.cwd().createDirPath(std.Io.Threaded.global_single_threaded.io(), path) catch |err| return ToolResult.failure(try std.fmt.allocPrint(allocator, "failed to create workspace directory: {s}", .{@errorName(err)}));
             return ToolResult.success("{\"created\":true}");
         }
     };
