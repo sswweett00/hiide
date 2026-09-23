@@ -1,5 +1,5 @@
 name: hiide_flutter
-description: AI-Native IDE Frontend built with Flutter
+description: Agent-native software development workspace built with Flutter and a Zig engine
 publish_to: 'none'
 version: 1.0.0+1
 
