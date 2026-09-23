@@ -153,6 +153,37 @@ void main() {
     expect(ai.lastMessages.any((m) => m['role'] == 'tool'), isTrue);
   });
 
+  test('command approval handler can veto shell execution', () async {
+    var calls = 0;
+    final ai = FakeAiClient([
+      _toolResponse('call_1', 'run_command', {'command': 'printf should-not-run'}),
+      _textResponse('done'),
+    ]);
+
+    final controller = AgentController(
+      ai: ai,
+      backend: backend,
+      workspaceRoot: tempDir.path,
+      model: 'test-model',
+      approvalHandler: (toolName, arguments) async {
+        calls++;
+        expect(toolName, 'run_command');
+        expect(arguments['command'], 'printf should-not-run');
+        return false;
+      },
+    );
+
+    final events = await controller.run([
+      {'role': 'user', 'content': 'run a command'},
+    ]).toList();
+
+    expect(calls, 1);
+    final finished = events.whereType<AgentToolFinishedEvent>().single;
+    expect(finished.toolCall.status, AgentToolStatus.error);
+    expect(finished.toolCall.result, contains('approval rejected'));
+    expect(events.last, isA<AgentDoneEvent>());
+  });
+
   test('write_file creates the file on disk with relative path resolution',
       () async {
     final ai = FakeAiClient([
