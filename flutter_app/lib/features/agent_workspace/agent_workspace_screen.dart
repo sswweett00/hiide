@@ -51,38 +51,48 @@ class AgentWorkspaceScreen extends ConsumerWidget {
               onWorkspace: () => context.go('/workspace-picker'),
             ),
             Expanded(
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 250,
-                    child: _MissionRail(
-                      mode: mode,
-                      isThinking: isThinking,
-                      tasks: userTasks,
-                      toolCount: toolCount,
-                      completedAssistant: completedAssistant,
-                    ),
-                  ),
-                  const VerticalDivider(width: 1),
-                  const Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: AiChatSidebar(),
-                    ),
-                  ),
-                  const VerticalDivider(width: 1),
-                  SizedBox(
-                    width: 300,
-                    child: _AgentContextRail(
-                      mode: mode,
-                      workspace: workspace,
-                      isThinking: isThinking,
-                      lastPlan: lastPlan,
-                      activeTab: _activeTab(ref),
-                      toolCount: toolCount,
-                    ),
-                  ),
-                ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final compact = constraints.maxWidth < 1080;
+                  final minimal = constraints.maxWidth < 820;
+                  return Row(
+                    children: [
+                      if (!minimal) ...[
+                        SizedBox(
+                          width: compact ? 210 : 250,
+                          child: _MissionRail(
+                            mode: mode,
+                            isThinking: isThinking,
+                            tasks: userTasks,
+                            toolCount: toolCount,
+                            completedAssistant: completedAssistant,
+                          ),
+                        ),
+                        const VerticalDivider(width: 1),
+                      ],
+                      const Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: AiChatSidebar(),
+                        ),
+                      ),
+                      if (!compact) ...[
+                        const VerticalDivider(width: 1),
+                        SizedBox(
+                          width: 300,
+                          child: _AgentContextRail(
+                            mode: mode,
+                            workspace: workspace,
+                            isThinking: isThinking,
+                            lastPlan: lastPlan,
+                            activeTab: _activeTab(ref),
+                            toolCount: toolCount,
+                          ),
+                        ),
+                      ],
+                    ],
+                  );
+                },
               ),
             ),
           ],
