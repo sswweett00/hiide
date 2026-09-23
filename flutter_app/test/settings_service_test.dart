@@ -154,4 +154,67 @@ void main() {
 
     expect(await settingsService.getUiMode(), UiMode.aiNative);
   });
+
+  test('AI provider keyring round-trips multiple providers', () async {
+    settingsService.resetForTesting();
+    SharedPreferences.setMockInitialValues({});
+
+    await settingsService.setAiApiKey('openrouter', 'router-secret');
+    await settingsService.setAiApiKey('deepseek', 'deep-secret');
+
+    expect(await settingsService.getAiApiKey('openrouter'), 'router-secret');
+    expect(await settingsService.getAiApiKey('deepseek'), 'deep-secret');
+    expect(await settingsService.getAiApiKey('missing'), isEmpty);
+  });
+
+  test('AI provider model selections round-trip and tolerate corrupt data',
+      () async {
+    settingsService.resetForTesting();
+    SharedPreferences.setMockInitialValues({
+      'ai_provider_models_v2': {'openrouter': 'model-x'},
+    });
+
+    expect(await settingsService.getAiProviderModels(), {'openrouter': 'model-x'});
+
+    await settingsService.setAiProviderModel('openrouter', 'model-y');
+    expect(
+        await settingsService.getAiProviderModels(), {'openrouter': 'model-y'});
+  });
+
+  test('custom OpenAI-compatible endpoints are persisted and sanitized',
+      () async {
+    settingsService.resetForTesting();
+    SharedPreferences.setMockInitialValues({});
+
+    await settingsService.setCustomAiProviders([
+      {
+        'id': 'local-vllm',
+        'name': 'Local vLLM',
+        'baseUrl': 'http://127.0.0.1:8000/v1',
+        'model': 'Qwen3-Coder',
+      },
+      {
+        'id': 'local-vllm',
+        'name': 'duplicate',
+        'baseUrl': 'http://bad',
+        'model': 'bad',
+      },
+      {
+        'id': '',
+        'name': 'invalid',
+        'baseUrl': 'http://bad',
+        'model': 'bad',
+      },
+    ]);
+
+    expect(await settingsService.getCustomAiProviders(), [
+      {
+        'id': 'local-vllm',
+        'name': 'Local vLLM',
+        'baseUrl': 'http://127.0.0.1:8000/v1',
+        'model': 'Qwen3-Coder',
+      },
+    ]);
+  });
+
 }
