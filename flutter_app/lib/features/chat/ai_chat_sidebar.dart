@@ -259,7 +259,9 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       store.addEvent(taskId, kind: 'execution', title: 'Agent workspace üzerinde çalışmaya başladı');
       ref.read(agentTaskVersionProvider.notifier).state++;
     }
-    final ai = await ref.read(groqAiServiceProvider.future);
+    final providerManager = ref.read(providerManagerProvider);
+    final ai = providerManager;
+    final model = providerManager.activeModel;
     final workspace = ref.read(workspaceServiceProvider);
     final backend = ref.read(backendServiceProvider);
     var userContent = _buildUserPrompt(text, _activeTabNow());
@@ -798,8 +800,9 @@ At the end report changed areas, verification commands, unresolved failures, and
     final providerManager = ref.watch(providerManagerProvider);
     final modelLabel = providerManager.active.displayName +
         ' · ' + providerManager.activeModel;
+    final providerKey = ref.read(aiProviderKeysProvider)[providerManager.active.id] ?? '';
     final providerConfigured = !providerManager.active.requiresApiKey ||
-        providerManager.active.apiKey.trim().isNotEmpty;
+        providerKey.trim().isNotEmpty;
     final statusLabel = providerConfigured ? 'Ready' : 'API key required';
 
     return Container(
