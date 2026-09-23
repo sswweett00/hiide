@@ -185,7 +185,7 @@ class SplashScreen extends StatelessWidget {
               ),
               const SizedBox(height: DesignTokens.space2),
               Text(
-                'The AI-native IDE for modern development',
+                'Agent-native workspace for autonomous software development',
                 style: TextStyle(
                   color: cs.onSurfaceVariant,
                   fontSize: DesignTokens.fontSizeLG,
