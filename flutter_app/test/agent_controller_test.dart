@@ -100,6 +100,7 @@ void main() {
       workspaceRoot: tempDir.path,
       model: 'test-model',
       maxIterations: maxIterations,
+      approvalHandler: (toolName, arguments) async => true,
     );
   }
 
