@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'backend_service.dart';
 import 'hiide_backend_service.dart';
+import 'mock_backend_service.dart';
 
 class NativeEngineLaunch {
   final BackendService backend;
