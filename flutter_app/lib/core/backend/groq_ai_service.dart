@@ -24,9 +24,9 @@ class GroqAiService implements AiChatClient {
 
   GroqAiService({
     required this.apiKey,
-    // Default matches `default_model` in src/core/provider/groq.zig:
-    // llama-3.1-8b-instant — fast, low-latency, ideal for interactive IDE chat.
-    this.defaultModel = 'llama-3.1-8b-instant',
+    // Current Groq agent-friendly default. The provider manager may override
+    // this with a persisted or discovered model at runtime.
+    this.defaultModel = 'openai/gpt-oss-120b',
     http.Client? client,
   }) : _client = client ?? http.Client();
 
