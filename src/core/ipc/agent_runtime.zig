@@ -36,6 +36,14 @@ fn initRegistry() void {
     registry.register(workspace_tools.searchWorkspaceTool()) catch {};
 }
 
+fn approvalGranted(allocator: std.mem.Allocator, input: []const u8) bool {
+    var parsed = std.json.parseFromSlice(std.json.Value, allocator, input, .{}) catch return false;
+    defer parsed.deinit();
+    if (parsed.value != .object) return false;
+    const value = parsed.value.object.get("approved") orelse return false;
+    return value == .true;
+}
+
 /// Executes `tool_id` with the JSON-encoded `input` against `workspace_root`.
 /// `timeout_ms` becomes the invocation deadline (the process tool turns it
 /// into its watchdog kill). `output`/`error_message` are owned by `allocator`.
@@ -230,3 +238,34 @@ test "agent runtime: file.mkdir, nested file.write and file.delete" {
     }
     try std.testing.expect(del_dir.ok);
 }
+
+test "agent runtime: dangerous tools require an explicit approval token" {
+    const denied = try executeTool(
+        std.testing.allocator,
+        "process.run",
+        "{\"command\":\"printf denied\"}",
+        ".",
+        5_000,
+    );
+    defer {
+        std.testing.allocator.free(denied.output);
+        std.testing.allocator.free(denied.error_message);
+    }
+    try std.testing.expect(!denied.ok);
+    try std.testing.expectEqualStrings("approval_required", denied.error_message);
+
+    const approved = try executeTool(
+        std.testing.allocator,
+        "process.run",
+        "{\"command\":\"printf approved\",\"approved\":true}",
+        ".",
+        5_000,
+    );
+    defer {
+        std.testing.allocator.free(approved.output);
+        std.testing.allocator.free(approved.error_message);
+    }
+    try std.testing.expect(approved.ok);
+    try std.testing.expectEqualStrings("approved", std.mem.trim(u8, approved.output, " \r\n"));
+}
+
