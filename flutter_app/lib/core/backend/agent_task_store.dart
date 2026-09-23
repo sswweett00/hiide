@@ -99,6 +99,7 @@ class AgentTaskRecord {
   final List<AgentTimelineEvent> timeline;
   final List<Map<String, dynamic>> transcript;
   final int toolCalls;
+  final bool? verificationPassed;
 
   const AgentTaskRecord({
     required this.id,
@@ -117,6 +118,7 @@ class AgentTaskRecord {
     this.timeline = const [],
     this.transcript = const [],
     this.toolCalls = 0,
+    this.verificationPassed,
   });
 
   AgentTaskRecord copyWith({
@@ -131,6 +133,7 @@ class AgentTaskRecord {
     List<AgentTimelineEvent>? timeline,
     List<Map<String, dynamic>>? transcript,
     int? toolCalls,
+    bool? verificationPassed,
     bool clearError = false,
   }) => AgentTaskRecord(
         id: id,
@@ -149,6 +152,7 @@ class AgentTaskRecord {
         timeline: timeline ?? this.timeline,
         transcript: transcript ?? this.transcript,
         toolCalls: toolCalls ?? this.toolCalls,
+        verificationPassed: verificationPassed ?? this.verificationPassed,
       );
 
   Map<String, dynamic> toJson() => {
@@ -168,6 +172,7 @@ class AgentTaskRecord {
         'timeline': timeline.map((e) => e.toJson()).toList(),
         'transcript': transcript,
         'toolCalls': toolCalls,
+        'verificationPassed': verificationPassed,
       };
 
   factory AgentTaskRecord.fromJson(Map<String, dynamic> json) {
@@ -203,6 +208,9 @@ class AgentTaskRecord {
           .toList(),
       transcript: maps(json['transcript']),
       toolCalls: (json['toolCalls'] as num?)?.toInt() ?? 0,
+      verificationPassed: json['verificationPassed'] is bool
+          ? json['verificationPassed'] as bool
+          : null,
     );
   }
 }
@@ -275,6 +283,7 @@ class AgentTaskStore {
     List<String>? changedFiles,
     List<String>? verificationCommands,
     int? toolCalls,
+    bool? verificationPassed,
     bool clearError = false,
   }) {
     final task = _find(id);
@@ -287,6 +296,7 @@ class AgentTaskStore {
       changedFiles: changedFiles,
       verificationCommands: verificationCommands,
       toolCalls: toolCalls,
+      verificationPassed: verificationPassed,
       clearError: clearError,
     ));
   }
