@@ -208,7 +208,7 @@ class SplashScreen extends StatelessWidget {
 /// The start screen's folder picker: shows the current workspace, quick-opens
 /// recently used folders, and opens the real folder browser (or the native OS
 /// picker) to choose a new one. Selecting a folder activates it app-wide and
-/// moves to the dashboard.
+/// moves directly into the agent workspace.
 class WorkspacePickerScreen extends ConsumerWidget {
   const WorkspacePickerScreen({super.key});
 
