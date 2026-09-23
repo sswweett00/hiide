@@ -30,10 +30,8 @@ void main() {
     final client = _FakeClient((request) async {
       path = request.url.path;
       headers = request.headers;
-      body = jsonDecode(utf8.decode(await request.finalize().fold<List<int>>(
-            <int>[],
-            (buffer, chunk) => buffer..addAll(chunk),
-          ))) as Map<String, dynamic>;
+      final rawRequest = request as http.Request;
+      body = jsonDecode(rawRequest.body) as Map<String, dynamic>;
       return http.Response(
         jsonEncode({
           'choices': [
