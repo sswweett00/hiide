@@ -162,6 +162,47 @@ class PlanningAgent {
 
   void stop() => _stopRequested = true;
 
+  static const _readOnlyToolDefinitions = <Map<String, dynamic>>[
+    {
+      'type': 'function',
+      'function': {
+        'name': 'read_file',
+        'description': 'Read a file inside the workspace. Planning is read-only.',
+        'parameters': {
+          'type': 'object',
+          'properties': {'path': {'type': 'string'}},
+          'required': ['path'],
+        },
+      },
+    },
+    {
+      'type': 'function',
+      'function': {
+        'name': 'list_directory',
+        'description': 'List one workspace directory. Planning is read-only.',
+        'parameters': {
+          'type': 'object',
+          'properties': {'path': {'type': 'string'}},
+          'required': ['path'],
+        },
+      },
+    },
+    {
+      'type': 'function',
+      'function': {
+        'name': 'search_workspace',
+        'description': 'Search the workspace for a text fragment. Planning is read-only.',
+        'parameters': {
+          'type': 'object',
+          'properties': {'query': {'type': 'string'}},
+          'required': ['query'],
+        },
+      },
+    },
+  ];
+
+  static const _maxInspectionRounds = 8;
+  static const _maxToolResultChars = 12000;
   static const _systemPrompt = '''
 You are Hiide Plan Mode, a senior software architect and implementation planner.
 Produce an exhaustive but executable implementation plan. Planning is read-only.
@@ -181,13 +222,7 @@ failure paths, security/performance implications and rollback. Match the user's 
 
     Map<String, dynamic> response;
     try {
-      response = await _ai.chatCompletion(
-        messages: [
-          {'role': 'system', 'content': _systemPrompt},
-          {'role': 'user', 'content': request},
-        ],
-        temperature: 0.1,
-      );
+      response = await _requestWithReadOnlyInspection(request);
     } catch (e) {
       yield PlanErrorEvent('Planning request failed: ' + e.toString());
       return;
@@ -240,6 +275,117 @@ failure paths, security/performance implications and rollback. Match the user's 
     if (!_stopRequested) yield PlanDoneEvent(markdown, document);
   }
 
+  Future<Map<String, dynamic>> _requestWithReadOnlyInspection(String request) async {
+    final messages = <Map<String, dynamic>>[
+      {'role': 'system', 'content': _systemPrompt},
+      {'role': 'user', 'content': request},
+    ];
+
+    for (var round = 0; round < _maxInspectionRounds; round++) {
+      if (_stopRequested) return const {'error': 'planning_stopped'};
+      final response = await _ai.chatCompletion(
+        messages: messages,
+        tools: _readOnlyToolDefinitions,
+        temperature: 0.1,
+      );
+      if (response['error'] != null) return response;
+      final choices = response['choices'];
+      if (choices is! List || choices.isEmpty) return response;
+      final first = choices.first;
+      if (first is! Map) return response;
+      final message = first['message'];
+      if (message is! Map) return response;
+      final toolCalls = message['tool_calls'];
+      if (toolCalls is! List || toolCalls.isEmpty) return response;
+
+      messages.add({
+        'role': 'assistant',
+        'content': message['content']?.toString() ?? '',
+        'tool_calls': toolCalls,
+      });
+
+      for (final rawCall in toolCalls) {
+        if (_stopRequested) return const {'error': 'planning_stopped'};
+        if (rawCall is! Map) continue;
+        final call = Map<String, dynamic>.from(rawCall);
+        final function = call['function'];
+        if (function is! Map) {
+          messages.add({
+            'role': 'tool',
+            'tool_call_id': call['id']?.toString() ?? 'unknown',
+            'content': '(error) invalid tool call payload',
+          });
+          continue;
+        }
+        final fn = Map<String, dynamic>.from(function);
+        final name = fn['name']?.toString() ?? '';
+        final args = _parseToolArguments(fn['arguments']);
+        final output = await _executeReadOnlyTool(name, args);
+        messages.add({
+          'role': 'tool',
+          'tool_call_id': call['id']?.toString() ?? 'unknown',
+          'content': output,
+        });
+      }
+    }
+
+    return const {
+      'error': 'Planner reached the maximum read-only inspection rounds (8).',
+    };
+  }
+
+  Future<String> _executeReadOnlyTool(String name, Map<String, dynamic> args) async {
+    try {
+      switch (name) {
+        case 'read_file':
+          final path = args['path']?.toString().trim() ?? '';
+          if (path.isEmpty) return '(error) path is required';
+          final result = await _backend.executeAgentTool(
+            'file.read',
+            {'path': path},
+            workspaceRoot: _workspaceRoot,
+          );
+          return _truncateToolResult(result.ok ? result.output : '(error) ' + result.error);
+        case 'list_directory':
+          final path = args['path']?.toString().trim() ?? '.';
+          final result = await _backend.executeAgentTool(
+            'file.list',
+            {'path': path.isEmpty ? '.' : path},
+            workspaceRoot: _workspaceRoot,
+          );
+          return _truncateToolResult(result.ok ? result.output : '(error) ' + result.error);
+        case 'search_workspace':
+          final query = args['query']?.toString().trim() ?? '';
+          if (query.isEmpty) return '(error) query is required';
+          final hits = await _backend.workspaceSearch(_workspaceRoot, query, maxResults: 80);
+          if (hits.isEmpty) return '(no matches)';
+          final out = StringBuffer();
+          for (final hit in hits) {
+            out.writeln(hit.path + ':' + hit.line.toString() + ':' + hit.col.toString() + ': ' + hit.text);
+          }
+          return _truncateToolResult(out.toString().trim());
+        default:
+          return '(error) tool not permitted in Plan mode: ' + name;
+      }
+    } catch (e) {
+      return '(error) ' + e.toString();
+    }
+  }
+
+  static Map<String, dynamic> _parseToolArguments(dynamic raw) {
+    if (raw is Map) return Map<String, dynamic>.from(raw);
+    if (raw is! String || raw.trim().isEmpty) return const {};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map) return Map<String, dynamic>.from(decoded);
+    } catch (_) {}
+    return const {};
+  }
+
+  static String _truncateToolResult(String value) {
+    if (value.length <= _maxToolResultChars) return value;
+    return value.substring(0, _maxToolResultChars) + '\n…[truncated read-only tool result]';
+  }
   Future<String> _workspaceSnapshot() async {
     try {
       final entries = await _backend.workspaceTree(_workspaceRoot, maxEntries: maxWorkspaceEntries.clamp(1, 300));
@@ -270,17 +416,7 @@ failure paths, security/performance implications and rollback. Match the user's 
   }
 
   static PlanDocument parseDocument(String content, {int maxSteps = 24}) {
-    var text = content.trim();
-    final fence = text.indexOf('```');
-    if (fence >= 0) {
-      final lineEnd = text.indexOf('\n', fence);
-      final close = text.lastIndexOf('```');
-      if (lineEnd >= 0 && close > lineEnd) text = text.substring(lineEnd + 1, close).trim();
-    }
-    final start = text.indexOf('{');
-    final end = text.lastIndexOf('}');
-    if (start < 0 || end <= start) throw const FormatException('No JSON object found.');
-    final decoded = jsonDecode(text.substring(start, end + 1));
+    final decoded = jsonDecode(_extractJsonObject(content));
     if (decoded is! Map) throw const FormatException('Plan root must be an object.');
 
     final rawSteps = decoded['steps'];
@@ -314,6 +450,42 @@ failure paths, security/performance implications and rollback. Match the user's 
     return document;
   }
 
+  static String _extractJsonObject(String content) {
+    var text = content.trim();
+    final fence = text.indexOf(String.fromCharCode(96) + String.fromCharCode(96) + String.fromCharCode(96));
+    if (fence >= 0) {
+      final lineEnd = text.indexOf('\n', fence);
+      final close = text.lastIndexOf(String.fromCharCode(96) + String.fromCharCode(96) + String.fromCharCode(96));
+      if (lineEnd >= 0 && close > lineEnd) text = text.substring(lineEnd + 1, close).trim();
+    }
+    final start = text.indexOf('{');
+    if (start < 0) throw const FormatException('No JSON object found.');
+    var depth = 0;
+    var inString = false;
+    var escaped = false;
+    for (var i = start; i < text.length; i++) {
+      final ch = text.codeUnitAt(i);
+      if (inString) {
+        if (escaped) {
+          escaped = false;
+        } else if (ch == 92) {
+          escaped = true;
+        } else if (ch == 34) {
+          inString = false;
+        }
+        continue;
+      }
+      if (ch == 34) {
+        inString = true;
+      } else if (ch == 123) {
+        depth++;
+      } else if (ch == 125) {
+        depth--;
+        if (depth == 0) return text.substring(start, i + 1);
+      }
+    }
+    throw const FormatException('Unterminated JSON object.');
+  }
   static List<String> _strings(dynamic value) {
     if (value is! List) return const [];
     return value.map((item) => item?.toString().trim() ?? '').where((item) => item.isNotEmpty).toList();
