@@ -165,7 +165,7 @@ class HiideApp extends ConsumerWidget {
     return ProviderScope(
       overrides: [backendServiceProvider.overrideWithValue(backendService)],
       child: MaterialApp.router(
-        title: 'Hiide AI IDE',
+        title: 'Hiide Agent Workspace',
         debugShowCheckedModeBanner: false,
         theme: AppThemes.lightTheme,
         darkTheme: _resolveDarkTheme(preference),
