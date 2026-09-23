@@ -64,6 +64,9 @@ pub const AgentTask = struct {
     prompt_template_id: u32,
     rollback_journal_id: u64,
     title: []const u8,
+    /// Original user objective shared across every node in the plan.
+    /// Borrowed from the plan owner; immutable for the task lifetime.
+    objective: []const u8 = "",
 };
 
 pub const TaskReceipt = struct {
