@@ -11,6 +11,7 @@ import 'core/backend/backend_service.dart';
 import 'core/backend/hiide_backend_service.dart';
 import 'core/backend/mock_backend_service.dart';
 import 'core/backend/settings_service.dart';
+import 'core/backend/agent_task_store.dart';
 import 'core/backend/ai_providers/ai_provider.dart';
 import 'core/backend/ai_providers/provider_manager.dart';
 import 'core/localization/app_localizations.dart';
@@ -49,6 +50,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final backendService = await _createBackendService();
+  final agentTaskStore = await AgentTaskStore.load();
 
   // Restore the last workspace (when it still exists) so the IDE opens where
   // the user left off; a vanished entry falls back to the folder browser.
@@ -121,6 +123,7 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       overrides: [
+        agentTaskStoreProvider.overrideWithValue(agentTaskStore),
         workspaceRootProvider.overrideWith(
           (ref) => workspaceRoot ?? fallbackWorkspace,
         ),
