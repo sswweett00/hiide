@@ -33,6 +33,9 @@ class OpenAiCompatibleProvider implements AiProvider {
   final String apiKey;
 
   @override
+  bool get isConfigured => !requiresApiKey || apiKey.trim().isNotEmpty;
+
+  @override
   final bool requiresApiKey;
 
   @override
