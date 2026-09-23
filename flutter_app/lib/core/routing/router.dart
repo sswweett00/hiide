@@ -230,7 +230,7 @@ class WorkspacePickerScreen extends ConsumerWidget {
     );
     if (selected == null || selected.isEmpty) return;
     await activateWorkspace(ref, selected);
-    if (context.mounted) context.go('/editor');
+    if (context.mounted) context.go('/agent');
   }
 
   Future<void> _openNativePicker(BuildContext context, WidgetRef ref) async {
@@ -239,7 +239,7 @@ class WorkspacePickerScreen extends ConsumerWidget {
     final path = result.path;
     if (path != null) {
       await activateWorkspace(ref, path);
-      if (context.mounted) context.go('/editor');
+      if (context.mounted) context.go('/agent');
       return;
     }
     // A plain cancel has no message; anything else is surfaced explicitly.
