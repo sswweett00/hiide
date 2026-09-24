@@ -253,6 +253,9 @@ class GroqAiService implements AiChatClient {
       client.close();
     }
   }
+
+  /// Releases the HTTP transport owned by this service.
+  void dispose() => _client.close();
 }
 
 /// Builds the prompt for an inline code completion from the current editor
