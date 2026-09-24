@@ -543,13 +543,15 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
     );
   }
 
-  if ((keys['anthropic'] ?? '').isNotEmpty) {
-    providers.add(
-      AnthropicProvider(apiKey: keys['anthropic']!),
-    );
-  } else {
-    providers.add(AnthropicProvider(apiKey: ''));
-  }
+  final anthropicBaseUrl = baseUrls['anthropic']?.trim().isNotEmpty == true
+      ? baseUrls['anthropic']!
+      : 'https://api.anthropic.com/v1';
+  providers.add(
+    AnthropicProvider(
+      apiKey: keys['anthropic'] ?? '',
+      baseUrl: anthropicBaseUrl,
+    ),
+  );
 
   for (final raw in custom) {
     final id = raw['id']?.trim() ?? '';
