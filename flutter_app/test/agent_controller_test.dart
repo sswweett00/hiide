@@ -354,6 +354,33 @@ void main() {
     expect(toolMsg, contains('search_target.dart'));
   });
 
+  test('forces one verification turn after a successful mutation', () async {
+    final file = File('\${tempDir.path}/needs_verify.txt');
+    final ai = FakeAiClient([
+      _toolResponse('call_1', 'write_file', {
+        'path': 'needs_verify.txt',
+        'content': 'updated',
+      }),
+      _textResponse('I changed the file.'),
+      _toolResponse('call_2', 'run_command', {'command': 'printf verified'}),
+      _textResponse('done and verified'),
+    ]);
+
+    final controller = makeController(ai);
+    final events = await controller.run([
+      {'role': 'user', 'content': 'update the file and verify it'},
+    ]).toList();
+
+    expect(file.readAsStringSync(), 'updated');
+    expect(ai.calls, 4);
+    expect(events.whereType<AgentToolFinishedEvent>().length, 2);
+    expect(
+      events.whereType<AgentToolFinishedEvent>().last.toolCall.name,
+      'run_command',
+    );
+    expect(events.last, isA<AgentDoneEvent>());
+  });
+
   test('stops cleanly when stop() is requested', () async {
     late AgentController controller;
     final ai = FakeAiClient([
