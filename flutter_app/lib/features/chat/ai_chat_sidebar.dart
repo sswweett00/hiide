@@ -477,9 +477,9 @@ At the end report changed areas, verification commands, unresolved failures, and
         case AgentIterationLimitEvent(:final iterations, :final reason):
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
+          final message = reason + ' (iteration ' + iterations.toString() + ').';
           if (taskId != null) {
-            final message = reason + ' (iteration ' + iterations.toString() + ').';
-            store.update(taskId, status: AgentTaskStatus.failed, error: message, summary: 'Iteration limit reached');
+            store.update(taskId, status: AgentTaskStatus.failed, error: message, summary: 'Agent budget limit reached');
             store.addEvent(taskId, kind: 'limit', title: 'Agent budget limit', detail: message, success: false);
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
