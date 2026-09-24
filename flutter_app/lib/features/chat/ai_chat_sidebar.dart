@@ -855,6 +855,11 @@ At the end report changed areas, verification commands, unresolved failures, and
     final providerConfigured = !providerManager.active.requiresApiKey ||
         providerKey.trim().isNotEmpty;
     final statusLabel = providerConfigured ? 'Ready' : 'API key required';
+    final dotColor = !providerConfigured
+        ? cs.error
+        : isThinking
+            ? cs.primary
+            : cs.tertiary;
 
     return Container(
       color: cs.surface,
@@ -1127,7 +1132,7 @@ class _OfflineBanner extends StatelessWidget {
           const SizedBox(width: DesignTokens.space2),
           Expanded(
             child: Text(
-              'Groq offline: $short',
+              'AI provider unavailable: $short',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
