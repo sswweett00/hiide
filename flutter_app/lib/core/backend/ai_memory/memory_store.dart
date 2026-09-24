@@ -186,6 +186,62 @@ class AiMemoryStore {
     return {};
   }
 
+  /// Builds a bounded, non-instructional memory context for an agent turn.
+  ///
+  /// Stored memory is reference data only. Callers should wrap the returned
+  /// string as untrusted context so historical text cannot override the task.
+  Future<String> buildContext({
+    required String workspaceRoot,
+    List<String> keywords = const <String>[],
+    int maxChars = 8000,
+  }) async {
+    final sections = <String>[];
+
+    final project = await getProjectContext(workspaceRoot);
+    if (project.isNotEmpty) {
+      sections.add(
+        'PROJECT CONTEXT:\n' +
+            project.entries
+                .take(32)
+                .map((e) => '- ' + e.key + ': ' + e.value)
+                .join('\n'),
+      );
+    }
+
+    final conversations = await searchConversations(
+      workspaceRoot,
+      keywords,
+    );
+    if (conversations.isNotEmpty) {
+      sections.add(
+        'RELEVANT PAST TASK SUMMARIES:\n' +
+            conversations
+                .take(5)
+                .map((e) => '- ' + (e['summary']?.toString() ?? ''))
+                .where((e) => e.length > 2)
+                .join('\n'),
+      );
+    }
+
+    final patterns = await getCodePatterns(workspaceRoot);
+    if (patterns.isNotEmpty) {
+      sections.add(
+        'OBSERVED CODE PATTERNS:\n' +
+            patterns
+                .reversed
+                .take(12)
+                .map((e) => '- ' + (e['pattern']?.toString() ?? '') +
+                    (e['example'] == null ? '' : ': ' + e['example'].toString()))
+                .where((e) => e.length > 2)
+                .join('\n'),
+      );
+    }
+
+    final text = sections.join('\n\n');
+    if (text.length <= maxChars) return text;
+    return text.substring(0, maxChars) + '\n…[memory truncated]';
+  }
+
   // ─── Cleanup ─────────────────────────────────────────────────────────────
 
   /// Clears all memory for a workspace.
