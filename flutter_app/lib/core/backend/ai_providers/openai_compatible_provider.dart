@@ -45,6 +45,9 @@ class OpenAiCompatibleProvider implements AiProvider {
   @override
   final String defaultModel;
 
+  @override
+  void dispose() => _client.close();
+
   final Map<String, String> extraHeaders;
   final String apiKeyHeader;
   final String apiKeyPrefix;
