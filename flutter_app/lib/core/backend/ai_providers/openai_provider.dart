@@ -10,12 +10,14 @@ import 'ai_provider.dart';
 /// Together AI, Fireworks, etc.).
 class OpenAiProvider implements AiProvider {
   final String apiKey;
+  @override
   final String baseUrl;
   String _selectedModel;
   final http.Client _client;
 
   OpenAiProvider({
     required this.apiKey,
+    this.baseUrl = 'https://api.openai.com/v1',
     String selectedModel = 'gpt-4o',
     http.Client? client,
   })  : _selectedModel = selectedModel,
@@ -23,9 +25,6 @@ class OpenAiProvider implements AiProvider {
 
   @override
   String get displayName => 'OpenAI';
-
-  @override
-  final String baseUrl = 'https://api.openai.com/v1';
 
   @override
   String get defaultModel => _selectedModel;
