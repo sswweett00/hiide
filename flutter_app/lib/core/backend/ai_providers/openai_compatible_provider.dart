@@ -20,6 +20,8 @@ class OpenAiCompatibleProvider implements AiProvider {
     required this.defaultModel,
     this.requiresApiKey = true,
     this.extraHeaders = const <String, String>{},
+    this.apiKeyHeader = 'Authorization',
+    this.apiKeyPrefix = 'Bearer ',
     http.Client? client,
   }) : _client = client ?? http.Client();
 
@@ -43,6 +45,8 @@ class OpenAiCompatibleProvider implements AiProvider {
   final String defaultModel;
 
   final Map<String, String> extraHeaders;
+  final String apiKeyHeader;
+  final String apiKeyPrefix;
   final http.Client _client;
 
   String get _base => _normalizeBaseUrl(baseUrl);
@@ -58,7 +62,7 @@ class OpenAiCompatibleProvider implements AiProvider {
   Uri _uri(String suffix) => Uri.parse('$_base$suffix');
 
   Map<String, String> _headers({bool json = false}) => {
-        if (apiKey.isNotEmpty) 'Authorization': 'Bearer $apiKey',
+        if (apiKey.isNotEmpty) apiKeyHeader: '$apiKeyPrefix$apiKey',
         if (json) 'Content-Type': 'application/json',
         ...extraHeaders,
       };
