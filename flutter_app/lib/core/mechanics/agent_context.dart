@@ -69,10 +69,10 @@ class AgentContextCompactor {
       if (count >= maxMessages || chars >= maxCharacters) break;
     }
 
-    selected.reverse();
+    final orderedSelected = selected.reversed.toList();
     final result = <Map<String, dynamic>>[
       ...system,
-      ...selected.expand((turn) => turn),
+      ...orderedSelected.expand((turn) => turn),
     ];
 
     return _trimToHardLimits(result);
