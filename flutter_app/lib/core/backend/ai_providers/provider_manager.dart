@@ -272,6 +272,8 @@ class ProviderManager implements AiChatClient {
       <String, _ModelCacheEntry>{};
   final Map<String, Future<List<String>>> _modelRequests =
       <String, Future<List<String>>>{};
+  final Map<String, _ProviderRuntimeState> _runtimeStats =
+      <String, _ProviderRuntimeState>{};
 
   static const _availabilityTtl = Duration(seconds: 15);
   static const _modelCacheTtl = Duration(minutes: 2);
@@ -288,6 +290,29 @@ class ProviderManager implements AiChatClient {
   }
 
   List<AiProvider> get available => List.unmodifiable(_providers);
+
+  Map<String, ProviderRuntimeSnapshot> get runtimeStats {
+    return {
+      for (final provider in _providers)
+        provider.id: (_runtimeStats[provider.id] ?? _ProviderRuntimeState())
+            .snapshot(),
+    };
+  }
+
+  _ProviderRuntimeState _runtimeStateFor(String providerId) {
+    return _runtimeStats.putIfAbsent(
+      providerId,
+      _ProviderRuntimeState.new,
+    );
+  }
+
+  void _recordRuntime(
+    String providerId,
+    Duration latency, {
+    required bool success,
+  }) {
+    _runtimeStateFor(providerId).record(latency, success: success);
+  }
 
   CircuitBreaker _breakerFor(String providerId) {
     return _providerBreakers.putIfAbsent(
@@ -445,14 +470,16 @@ class ProviderManager implements AiChatClient {
   List<AiProvider> _orderedProviders() {
     if (_providers.isEmpty) return const [];
 
-    final ordered = <AiProvider>[];
-    for (final provider in _providers) {
-      if (provider.id == _activeProviderId) {
-        ordered.insert(0, provider);
-        continue;
-      }
-      ordered.add(provider);
-    }
+    final ordered = List<AiProvider>.from(_providers);
+    ordered.sort((a, b) {
+      if (a.id == _activeProviderId) return -1;
+      if (b.id == _activeProviderId) return 1;
+
+      final sa = _runtimeStats[a.id]?.routeScore ?? 0;
+      final sb = _runtimeStats[b.id]?.routeScore ?? 0;
+      if (sa != sb) return sa.compareTo(sb);
+      return a.id.compareTo(b.id);
+    });
     return ordered;
   }
 
@@ -478,6 +505,7 @@ class ProviderManager implements AiChatClient {
         requestedProviderId: requestedProviderId,
       );
 
+      final started = DateTime.now();
       try {
         final result = await _request(
           provider,
@@ -486,6 +514,7 @@ class ProviderManager implements AiChatClient {
           model: requestModel,
           temperature: temperature,
         );
+        _recordRuntime(provider.id, DateTime.now().difference(started), success: true);
         _activeProviderId = provider.id;
         _availabilityCache[provider.id] = _AvailabilityEntry(
           checkedAt: DateTime.now(),
@@ -493,6 +522,11 @@ class ProviderManager implements AiChatClient {
         );
         return result;
       } catch (error) {
+        _recordRuntime(
+          provider.id,
+          DateTime.now().difference(started),
+          success: false,
+        );
         lastError = error;
       }
     }
@@ -527,6 +561,7 @@ class ProviderManager implements AiChatClient {
       );
 
       var emitted = false;
+      final started = DateTime.now();
       try {
         await for (final chunk in provider.chatCompletionStream(
           messages: messages,
@@ -536,6 +571,7 @@ class ProviderManager implements AiChatClient {
           yield chunk;
         }
         if (emitted) {
+          _recordRuntime(provider.id, DateTime.now().difference(started), success: true);
           _activeProviderId = provider.id;
           _breakerFor(provider.id).recordSuccess();
           _availabilityCache[provider.id] = _AvailabilityEntry(
@@ -550,6 +586,7 @@ class ProviderManager implements AiChatClient {
         _breakerFor(provider.id).recordFailure();
       } catch (error) {
         _breakerFor(provider.id).recordFailure();
+        _recordRuntime(provider.id, DateTime.now().difference(started), success: false);
         lastError = error;
         // Once a stream has emitted content, switching providers would append
         // a second, unrelated completion to the same answer.
@@ -569,6 +606,7 @@ class ProviderManager implements AiChatClient {
     for (final provider in _orderedProviders()) {
       if (!provider.isConfigured) continue;
       if (_breakerFor(provider.id).state == CircuitState.open) continue;
+      final started = DateTime.now();
       try {
         final value = await _breakerFor(provider.id).run(() async {
           final result = await provider.completeCode(
@@ -586,9 +624,12 @@ class ProviderManager implements AiChatClient {
           }
           return result;
         });
+        _recordRuntime(provider.id, DateTime.now().difference(started), success: true);
         _activeProviderId = provider.id;
         return value;
-      } catch (_) {}
+      } catch (_) {
+        _recordRuntime(provider.id, DateTime.now().difference(started), success: false);
+      }
     }
     return null;
   }
@@ -736,4 +777,56 @@ class _ModelCacheEntry {
 
   final DateTime fetchedAt;
   final List<String> models;
+}
+
+
+class ProviderRuntimeSnapshot {
+  const ProviderRuntimeSnapshot({
+    required this.successes,
+    required this.failures,
+    required this.averageLatencyMs,
+  });
+
+  final int successes;
+  final int failures;
+  final double averageLatencyMs;
+
+  double get routeScore =>
+      failures * 10 + averageLatencyMs / 1000.0;
+}
+
+class _ProviderRuntimeState {
+  int successes = 0;
+  int failures = 0;
+  double averageLatencyMs = 0;
+
+  double get routeScore => failures * 10 + averageLatencyMs / 1000.0;
+
+  void record(Duration latency, {required bool success}) {
+    final value = latency.inMicroseconds / 1000.0;
+    if (success) {
+      successes++;
+    } else {
+      failures++;
+    }
+
+    final total = successes + failures;
+    if (total == 1) {
+      averageLatencyMs = value;
+    } else {
+      // Exponential smoothing avoids overreacting to one slow response while
+      // still adapting quickly when a provider degrades.
+      const alpha = 0.25;
+      averageLatencyMs =
+          averageLatencyMs * (1 - alpha) + value * alpha;
+    }
+  }
+
+  ProviderRuntimeSnapshot snapshot() {
+    return ProviderRuntimeSnapshot(
+      successes: successes,
+      failures: failures,
+      averageLatencyMs: averageLatencyMs,
+    );
+  }
 }
