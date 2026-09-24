@@ -21,6 +21,7 @@ class SettingsService {
   static const _keyOllamaUrl = 'ollama_url';
   static const _keyAiApiKeys = 'ai_api_keys_v2';
   static const _keyAiModels = 'ai_provider_models_v2';
+  static const _keyAiBaseUrls = 'ai_provider_base_urls_v1';
   static const _keyCustomAiProviders = 'ai_custom_providers_v1';
 
   static const List<String> availableModels = [
@@ -352,6 +353,39 @@ class SettingsService {
       values[id] = normalized;
     }
     await _prefs.setString(_keyAiModels, jsonEncode(values));
+  }
+
+  Future<Map<String, String>> getAiProviderBaseUrls() async {
+    await init();
+    final raw = _safeGetString(_keyAiBaseUrls);
+    if (raw == null || raw.isEmpty) return <String, String>{};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return <String, String>{};
+      return {
+        for (final entry in decoded.entries)
+          if (entry.key.toString().trim().isNotEmpty &&
+              (entry.value?.toString().trim() ?? '').isNotEmpty)
+            entry.key.toString().trim().toLowerCase():
+                entry.value.toString().trim(),
+      };
+    } catch (_) {
+      return <String, String>{};
+    }
+  }
+
+  Future<void> setAiProviderBaseUrl(String providerId, String baseUrl) async {
+    await init();
+    final id = providerId.trim().toLowerCase();
+    if (id.isEmpty) return;
+    final values = await getAiProviderBaseUrls();
+    final normalized = baseUrl.trim();
+    if (normalized.isEmpty) {
+      values.remove(id);
+    } else if (normalized.length <= 512) {
+      values[id] = normalized;
+    }
+    await _prefs.setString(_keyAiBaseUrls, jsonEncode(values));
   }
 
   Future<List<Map<String, String>>> getCustomAiProviders() async {
