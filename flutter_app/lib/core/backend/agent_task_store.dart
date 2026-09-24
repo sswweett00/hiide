@@ -414,25 +414,40 @@ class AgentTaskStore {
   }
 
   Map<String, dynamic> _sanitizeMessage(Map<String, dynamic> message) {
-    final copy = <String, dynamic>{};
-    for (final entry in message.entries) {
-      final value = entry.value;
-      if (value is String) {
-        copy[entry.key] = value.length > 12000
-            ? value.substring(0, 12000) + '\n…[truncated]'
-            : value;
-      } else if (value is num || value is bool || value == null) {
-        copy[entry.key] = value;
-      } else if (value is List) {
-        copy[entry.key] = value.take(24).map((item) {
-          if (item is Map) return Map<String, dynamic>.from(item);
-          return item.toString();
-        }).toList();
-      } else if (value is Map) {
-        copy[entry.key] = Map<String, dynamic>.from(value);
-      }
+    return message.map(
+      (key, value) => MapEntry(key, _sanitizeValue(value, depth: 0)),
+    );
+  }
+
+  dynamic _sanitizeValue(dynamic value, {required int depth}) {
+    if (value is String) {
+      const limit = 4000;
+      if (value.length <= limit) return value;
+      return value.substring(0, limit) + '\n…[transcript-truncated]';
     }
-    return copy;
+    if (value is num || value is bool || value == null) return value;
+
+    // Keep nested tool-call structures, but cap both depth and fan-out so one
+    // large write_file request cannot explode SharedPreferences storage.
+    if (depth >= 4) return value.toString();
+
+    if (value is List) {
+      return value
+          .take(24)
+          .map((item) => _sanitizeValue(item, depth: depth + 1))
+          .toList();
+    }
+
+    if (value is Map) {
+      final result = <String, dynamic>{};
+      for (final entry in value.entries.take(24)) {
+        result[entry.key.toString()] =
+            _sanitizeValue(entry.value, depth: depth + 1);
+      }
+      return result;
+    }
+
+    return value.toString();
   }
 }
 
