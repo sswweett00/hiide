@@ -143,6 +143,9 @@ class OpenAiProvider implements AiProvider {
           } catch (_) {}
         }
       }
+    } catch (e) {
+      debugPrint('OpenAI streaming error: $e');
+      yield 'Error: OpenAI streaming failed: $e';
     }
   }
 
