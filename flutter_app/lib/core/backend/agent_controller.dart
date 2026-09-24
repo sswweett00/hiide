@@ -826,7 +826,7 @@ Guidelines:
   }
 
   String _truncate(String text, [int? limit]) {
-    final maxChars = (limit ?? toolResultMaxChars).clamp(256, 1 << 20);
+    final maxChars = (limit ?? toolResultMaxChars).clamp(256, 1 << 20).toInt();
     if (text.length <= maxChars) return text;
 
     // Keep both the beginning (diagnostics/context) and the tail (compiler
