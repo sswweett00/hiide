@@ -45,6 +45,9 @@ abstract class AiProvider {
 
   /// Models actually served by this provider (for the settings dropdown).
   Future<List<String>> fetchAvailableModels();
+
+  /// Releases provider-owned transports/resources.
+  void dispose() {}
 }
 
 /// Identifies which provider the user has selected.
