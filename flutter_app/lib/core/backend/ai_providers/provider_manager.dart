@@ -221,6 +221,13 @@ class AiProviderCatalog {
       apiKeyPrefix: '',
     ),
     BuiltInAiProviderSpec(
+      id: 'litellm',
+      displayName: 'LiteLLM Gateway',
+      baseUrl: 'http://127.0.0.1:4000/v1',
+      defaultModel: 'gpt-4o-mini',
+      envKey: 'LITELLM_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
       id: 'ollama',
       displayName: 'Ollama (Local)',
       baseUrl: 'http://127.0.0.1:11434/v1',
