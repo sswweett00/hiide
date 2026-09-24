@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'agent_guard.dart';
 import 'backpressure_queue.dart';
 import 'cancellation_token.dart';
 import 'circuit_breaker.dart';
@@ -20,6 +21,7 @@ import 'ttl_cache.dart';
 import 'worker_pool.dart';
 import 'workspace_session.dart';
 
+export 'agent_guard.dart';
 export 'backpressure_queue.dart';
 export 'cancellation_token.dart';
 export 'circuit_breaker.dart';
@@ -41,6 +43,12 @@ export 'state_machine.dart';
 export 'ttl_cache.dart';
 export 'worker_pool.dart';
 export 'workspace_session.dart';
+
+final agentRunGuardProvider = Provider<AgentRunGuard>((ref) {
+  final guard = AgentRunGuard();
+  ref.onDispose(() {});
+  return guard;
+});
 
 final appEventBusProvider = Provider<AppEventBus<Object>>((ref) {
   final bus = AppEventBus<Object>();
