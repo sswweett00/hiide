@@ -16,7 +16,6 @@ class OpenAiProvider implements AiProvider {
 
   OpenAiProvider({
     required this.apiKey,
-    this.baseUrl = 'https://api.openai.com/v1',
     String selectedModel = 'gpt-4o',
     http.Client? client,
   })  : _selectedModel = selectedModel,
@@ -26,7 +25,7 @@ class OpenAiProvider implements AiProvider {
   String get displayName => 'OpenAI';
 
   @override
-  String get baseUrl => this.baseUrl;
+  final String baseUrl = 'https://api.openai.com/v1';
 
   @override
   String get defaultModel => _selectedModel;
