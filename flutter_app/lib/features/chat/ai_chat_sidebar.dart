@@ -988,6 +988,12 @@ At the end report changed areas, verification commands, unresolved failures, and
             ]),
           ),
 
+          if (!providerConfigured && !isThinking)
+            _OfflineBanner(
+              message: 'Configure an API key for ${providerManager.active.displayName} in Settings.',
+              onRetry: () => setState(() {}),
+            ),
+
           // ─── Messages (or welcome panel on first run) ─────────────────────
           Expanded(
             child: messages.isEmpty && streamingText.isEmpty
