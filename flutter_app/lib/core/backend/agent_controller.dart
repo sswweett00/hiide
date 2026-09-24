@@ -346,7 +346,10 @@ Guidelines:
         maxRepeatedToolCalls: maxRepeatedToolCalls,
       ),
     );
-    const context = AgentContextCompactor();
+    final context = AgentContextCompactor(
+      maxMessages: maxContextMessages,
+      maxCharacters: maxContextCharacters,
+    );
     while (true) {
       final budgetFailure = guard.checkRunBudget(iterations: iterations);
       if (budgetFailure != null) {
@@ -359,10 +362,7 @@ Guidelines:
         return;
       }
 
-      final compacted = AgentContextCompactor(
-        maxMessages: maxContextMessages,
-        maxCharacters: maxContextCharacters,
-      ).compact(apiMessages);
+      final compacted = context.compact(apiMessages);
       apiMessages
         ..clear()
         ..addAll(compacted);
