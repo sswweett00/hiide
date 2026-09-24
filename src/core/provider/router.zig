@@ -73,6 +73,10 @@ pub const Provider = struct {
     health: HealthStatus,
     vtable: *const VTable,
     ctx: *anyopaque,
+    /// Runtime routing telemetry, updated by the execution layer.
+    success_count: u64 = 0,
+    failure_count: u64 = 0,
+    ema_latency_ms: f32 = 0,
 
     pub const VTable = struct {
         get_models: *const fn (*anyopaque, std.mem.Allocator) anyerror![]ModelDescriptor,
@@ -181,7 +185,7 @@ pub const Router = struct {
                 if (!capsMatch(req.required_capabilities, model.capabilities)) continue;
                 if (req.max_cost_1k > 0 and model.cost_per_1k_input > req.max_cost_1k) continue;
 
-                const score = scoreModel(model, req, provider.mode);
+                const score = scoreModel(model, req, provider);
                 if (score > best_score) {
                     best_score = score;
                     best = .{
@@ -203,13 +207,34 @@ pub const Router = struct {
     pub fn recordFailure(self: *Router, provider_id: []const u8) !void {
         const gop = try self.failure_counts.getOrPutValue(self.allocator, provider_id, 0);
         gop.value_ptr.* += 1;
-        if (gop.value_ptr.* >= self.circuit_threshold) {
-            for (self.providers.items) |*p| {
-                if (std.mem.eql(u8, p.id, provider_id)) {
-                    p.health = .circuit_open;
-                    break;
-                }
+        for (self.providers.items) |*p| {
+            if (!std.mem.eql(u8, p.id, provider_id)) continue;
+            p.failure_count += 1;
+            if (gop.value_ptr.* >= self.circuit_threshold) {
+                p.health = .circuit_open;
+            } else if (p.health == .healthy) {
+                p.health = .degraded;
             }
+            break;
+        }
+    }
+
+    /// Records a successful request and updates provider latency telemetry.
+    pub fn recordSuccess(self: *Router, provider_id: []const u8, latency_ms: u32) void {
+        _ = self.failure_counts.remove(provider_id);
+        for (self.providers.items) |*p| {
+            if (!std.mem.eql(u8, p.id, provider_id)) continue;
+            p.success_count += 1;
+            p.failure_count = 0;
+            p.health = .healthy;
+            const latency = @as(f32, @floatFromInt(latency_ms));
+            if (p.success_count == 1) {
+                p.ema_latency_ms = latency;
+            } else {
+                const alpha: f32 = 0.25;
+                p.ema_latency_ms = p.ema_latency_ms * (1.0 - alpha) + latency * alpha;
+            }
+            break;
         }
     }
 
@@ -218,6 +243,7 @@ pub const Router = struct {
         _ = self.failure_counts.remove(provider_id);
         for (self.providers.items) |*p| {
             if (std.mem.eql(u8, p.id, provider_id)) {
+                p.failure_count = 0;
                 p.health = .healthy;
                 break;
             }
@@ -249,13 +275,19 @@ pub const Router = struct {
         return true;
     }
 
-    fn scoreModel(model: ModelDescriptor, req: RouteRequest, mode: ProviderMode) f32 {
+    fn scoreModel(model: ModelDescriptor, req: RouteRequest, provider: Provider) f32 {
         var score: f32 = 1.0;
-        // Prefer local/self-hosted for latency class 2.
-        if (req.latency_class >= 2 and mode == .self_hosted) score += 0.5;
-        // Penalize by cost.
+        if (req.latency_class >= 2 and provider.mode == .self_hosted) score += 0.5;
+        if (provider.health == .healthy) score += 0.1;
+        if (provider.health == .degraded) score -= 0.25;
+        if (provider.health == .unknown) score -= 0.1;
+
         if (model.cost_per_1k_input > 0) {
             score -= @as(f32, @floatFromInt(model.cost_per_1k_input)) / 10_000.0;
+        }
+        score -= @as(f32, @floatFromInt(@min(provider.failure_count, 50))) * 0.02;
+        if (provider.ema_latency_ms > 0) {
+            score -= @min(provider.ema_latency_ms / 10_000.0, 0.5);
         }
         return score;
     }
@@ -359,6 +391,58 @@ const TestProvider = struct {
         };
     }
 };
+
+test "router: runtime telemetry influences scoring" {
+    const alloc = std.testing.allocator;
+    var router = Router.init(alloc);
+    defer router.deinit();
+
+    var fast = TestProvider{
+        .id = "fast",
+        .mode = .byok,
+        .models = &[_]ModelDescriptor{.{
+            .id = "fast-model",
+            .provider_id = "fast",
+            .capabilities = ModelCapabilities.all(),
+            .context_window = 16_000,
+            .cost_per_1k_input = 1,
+            .cost_per_1k_output = 1,
+        }},
+    };
+    var slow = TestProvider{
+        .id = "slow",
+        .mode = .byok,
+        .models = &[_]ModelDescriptor{.{
+            .id = "slow-model",
+            .provider_id = "slow",
+            .capabilities = ModelCapabilities.all(),
+            .context_window = 16_000,
+            .cost_per_1k_input = 1,
+            .cost_per_1k_output = 1,
+        }},
+    };
+    try router.registerProvider(fast.toProvider());
+    try router.registerProvider(slow.toProvider());
+
+    router.recordSuccess("fast", 20);
+    router.recordSuccess("slow", 900);
+
+    const cfg = TenantConfig{
+        .allow_byok = true,
+        .allow_managed = false,
+        .allow_self_hosted = false,
+        .allowed_provider_ids = &.{},
+    };
+    const req = RouteRequest{
+        .required_capabilities = .{ .tool_use = true, .vision = false, .structured_output = false, .long_context = false, .streaming = true },
+        .latency_class = 1,
+        .max_cost_1k = 0,
+        .max_classification = 0,
+    };
+
+    const route = try router.select(req, cfg, alloc);
+    try std.testing.expectEqualStrings("fast", route.provider_id);
+}
 
 test "router: selects eligible provider" {
     const alloc = std.testing.allocator;
