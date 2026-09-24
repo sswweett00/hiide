@@ -76,6 +76,7 @@ enum AiProviderType {
   baseten,
   friendli,
   ai21,
+  litellm,
 }
 
 /// Parses a string id into an [AiProviderType], defaulting to Groq.
