@@ -448,6 +448,41 @@ test "router: runtime telemetry influences scoring" {
     try std.testing.expectEqualStrings("fast", route.provider_id);
 }
 
+test "router: filters models above their data classification ceiling" {
+    const alloc = std.testing.allocator;
+    var router = Router.init(alloc);
+    defer router.deinit();
+
+    var tp = TestProvider{
+        .id = "public-only",
+        .mode = .byok,
+        .models = &[_]ModelDescriptor{.{
+            .id = "public-model",
+            .provider_id = "public-only",
+            .capabilities = ModelCapabilities.all(),
+            .context_window = 8_000,
+            .max_classification = 0,
+            .cost_per_1k_input = 1,
+            .cost_per_1k_output = 1,
+        }},
+    };
+    try router.registerProvider(tp.toProvider());
+
+    const cfg = TenantConfig{
+        .allow_byok = true,
+        .allow_managed = false,
+        .allow_self_hosted = false,
+        .allowed_provider_ids = &.{},
+    };
+    const req = RouteRequest{
+        .required_capabilities = .{ .tool_use = false, .vision = false, .structured_output = false, .long_context = false, .streaming = true },
+        .latency_class = 0,
+        .max_cost_1k = 0,
+        .max_classification = 2,
+    };
+    try std.testing.expectError(RouterError.NoEligibleProvider, router.select(req, cfg, alloc));
+}
+
 test "router: selects eligible provider" {
     const alloc = std.testing.allocator;
     var router = Router.init(alloc);
