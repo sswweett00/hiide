@@ -104,6 +104,7 @@ class AgentController {
     this.maxToolCalls = 64,
     this.maxRunDuration = const Duration(minutes: 10),
     this.maxRepeatedToolCalls = 2,
+    this.maxUnchangedToolResults = 3,
     this.maxContextMessages = 48,
     this.maxContextCharacters = 120000,
     this.approvalHandler,
@@ -124,6 +125,7 @@ class AgentController {
   final int maxToolCalls;
   final Duration maxRunDuration;
   final int maxRepeatedToolCalls;
+  final int maxUnchangedToolResults;
   final int maxContextMessages;
   final int maxContextCharacters;
   final Future<bool> Function(String toolName, Map<String, dynamic> arguments)? approvalHandler;
@@ -347,6 +349,7 @@ Guidelines:
         maxToolCalls: maxToolCalls,
         maxRunDuration: maxRunDuration,
         maxRepeatedToolCalls: maxRepeatedToolCalls,
+        maxUnchangedToolResults: maxUnchangedToolResults,
       ),
     );
     final context = AgentContextCompactor(
@@ -502,6 +505,7 @@ Guidelines:
               )) {
             _verificationObserved = true;
           }
+          guard.recordResult(call.name, result.output);
         }
         final toolMsg = <String, dynamic>{
           'role': 'tool',
