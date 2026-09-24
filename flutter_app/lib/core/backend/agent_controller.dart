@@ -129,6 +129,9 @@ class AgentController {
   final Future<bool> Function(String toolName, Map<String, dynamic> arguments)? approvalHandler;
 
   bool _stopRequested = false;
+  bool _workspaceMutated = false;
+  bool _verificationObserved = false;
+  bool _verificationNudgeSent = false;
   List<Map<String, dynamic>> _workingMessages = [];
 
   /// Asks the loop to stop after the current step completes.
@@ -417,7 +420,23 @@ Guidelines:
       final toolCalls = (message?['tool_calls'] as List?) ?? const [];
 
       if (toolCalls.isEmpty) {
-        // The model is done: stream the final answer as a typewriter effect.
+        // A workspace mutation without verification is not treated as a
+        // trustworthy completion. Give the agent one explicit self-check turn.
+        if (_workspaceMutated &&
+            !_verificationObserved &&
+            !_verificationNudgeSent) {
+          _verificationNudgeSent = true;
+          apiMessages.add({
+            'role': 'system',
+            'content': 'You modified workspace state but have not run a '
+                'verification command yet. Before giving the final answer, '
+                'run the narrowest relevant test/build/lint/type-check command '
+                'and inspect its result. If verification is genuinely '
+                'impossible, explain why instead of claiming success.',
+          });
+          continue;
+        }
+
         final content = message?['content']?.toString() ?? '';
         _workingMessages.add({'role': 'assistant', 'content': content});
         yield* _emitTypedText(content);
@@ -474,6 +493,16 @@ Guidelines:
         call.status =
             result.success ? AgentToolStatus.success : AgentToolStatus.error;
         call.result = _truncate(result.output, toolResultMaxChars);
+
+        if (result.success) {
+          if (_isMutationTool(call.name)) _workspaceMutated = true;
+          if (call.name == 'run_command' &&
+              _isVerificationCommand(
+                call.arguments['command']?.toString() ?? '',
+              )) {
+            _verificationObserved = true;
+          }
+        }
         final toolMsg = <String, dynamic>{
           'role': 'tool',
           'tool_call_id': call.id,
@@ -489,6 +518,30 @@ Guidelines:
         }
       }
     }
+  }
+
+  bool _isMutationTool(String name) {
+    return name == 'write_file' ||
+        name == 'apply_diff' ||
+        name == 'delete_file' ||
+        name == 'create_directory';
+  }
+
+  bool _isVerificationCommand(String command) {
+    final lower = command.toLowerCase();
+    const markers = <String>[
+      'test',
+      'build',
+      'analyze',
+      'lint',
+      'typecheck',
+      'type-check',
+      'check',
+      'verify',
+      'compile',
+      'fmt',
+    ];
+    return markers.any(lower.contains);
   }
 
   Future<_ToolResult> _executeGuardedTool(
