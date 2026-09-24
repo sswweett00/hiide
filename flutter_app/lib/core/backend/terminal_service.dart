@@ -74,6 +74,18 @@ class TerminalService {
     return canceled;
   }
 
+  /// Cancels the most recently started foreground-like process without
+  /// disturbing unrelated terminal jobs.
+  bool cancelLatestProcess() {
+    if (_activeProcesses.isEmpty) return false;
+    final process = _activeProcesses.last;
+    try {
+      return process.kill();
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<String> executeCapture(String command, {Duration timeout = const Duration(seconds: 60)}) async {
     if (_disposed) return '(error) terminal disposed';
     final normalized = command.trim();
