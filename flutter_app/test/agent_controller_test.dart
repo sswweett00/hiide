@@ -355,7 +355,7 @@ void main() {
   });
 
   test('forces one verification turn after a successful mutation', () async {
-    final file = File('\${tempDir.path}/needs_verify.txt');
+    final file = File('${tempDir.path}/needs_verify.txt');
     final ai = FakeAiClient([
       _toolResponse('call_1', 'write_file', {
         'path': 'needs_verify.txt',
