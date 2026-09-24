@@ -77,8 +77,32 @@ enum AiProviderType {
 
 /// Parses a string id into an [AiProviderType], defaulting to Groq.
 AiProviderType aiProviderTypeFromId(String id) {
-  return AiProviderType.values.firstWhere(
-    (t) => t.name == id,
-    orElse: () => AiProviderType.groq,
-  );
+  final normalized = id.trim().toLowerCase();
+  switch (normalized) {
+    case 'lm-studio':
+    case 'lm_studio':
+      return AiProviderType.lmStudio;
+    case 'opencode-zen':
+    case 'opencode_zen':
+    case 'opencodezen':
+      return AiProviderType.opencodeZen;
+    case 'qwen':
+    case 'dashscope':
+      return AiProviderType.qwen;
+    case 'huggingface':
+    case 'hugging-face':
+    case 'hf':
+      return AiProviderType.huggingface;
+    case 'nvidia':
+    case 'nvidia-nim':
+      return AiProviderType.nvidia;
+    case 'siliconflow':
+    case 'silicon-flow':
+      return AiProviderType.siliconflow;
+    default:
+      return AiProviderType.values.firstWhere(
+        (t) => t.name.toLowerCase() == normalized,
+        orElse: () => AiProviderType.groq,
+      );
+  }
 }
