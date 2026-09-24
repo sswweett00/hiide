@@ -8,6 +8,7 @@ class _FakeProvider implements AiProvider {
     required this.available,
     this.models = const ['model'],
     this.responseError,
+    this.streamError,
   });
 
   @override
@@ -22,6 +23,9 @@ class _FakeProvider implements AiProvider {
   @override
   final List<String> models;
   final String? responseError;
+  final String? streamError;
+  int chatCalls = 0;
+  int modelCalls = 0;
 
   @override
   String get displayName => id;
@@ -45,6 +49,7 @@ class _FakeProvider implements AiProvider {
     String? model,
     double temperature = 0.2,
   }) async {
+    chatCalls++;
     if (responseError != null) {
       return {'error': responseError!};
     }
@@ -59,6 +64,9 @@ class _FakeProvider implements AiProvider {
     required List<Map<String, dynamic>> messages,
     String? model,
   }) async* {
+    if (streamError != null) {
+      throw StateError(streamError!);
+    }
     yield id;
   }
 
@@ -68,7 +76,10 @@ class _FakeProvider implements AiProvider {
   }
 
   @override
-  Future<List<String>> fetchAvailableModels() async => models;
+  Future<List<String>> fetchAvailableModels() async {
+    modelCalls++;
+    return models;
+  }
 }
 
 void main() {
@@ -127,6 +138,85 @@ void main() {
 
     expect(await manager.fetchModels('other'), ['x', 'y']);
     expect(manager.activeProviderId, 'primary');
+  });
+
+  test('coalesces concurrent model discovery requests', () async {
+    final provider = _FakeProvider(id: 'primary', available: true, models: ['a', 'b']);
+    final manager = ProviderManager(
+      [provider],
+      activeProviderId: 'primary',
+      selectedModels: const {},
+    );
+
+    final results = await Future.wait([
+      manager.fetchModels('primary'),
+      manager.fetchModels('primary'),
+      manager.fetchModels('primary'),
+    ]);
+
+    expect(results, [
+      ['a', 'b'],
+      ['a', 'b'],
+      ['a', 'b'],
+    ]);
+    expect(provider.modelCalls, 1);
+  });
+
+  test('falls back from a streaming provider error', () async {
+    final manager = ProviderManager(
+      [
+        _FakeProvider(
+          id: 'primary',
+          available: true,
+          streamError: 'stream unavailable',
+        ),
+        _FakeProvider(id: 'fallback', available: true),
+      ],
+      activeProviderId: 'primary',
+      selectedModels: const {},
+    );
+
+    final chunks = await manager.chatCompletionStream(
+      messages: const [
+        {'role': 'user', 'content': 'hi'}
+      ],
+    ).toList();
+
+    expect(chunks, ['fallback']);
+    expect(manager.activeProviderId, 'fallback');
+  });
+
+  test('opens a provider circuit after repeated request failures', () async {
+    final primary = _FakeProvider(
+      id: 'primary',
+      available: true,
+      responseError: 'temporary outage',
+    );
+    final fallback = _FakeProvider(id: 'fallback', available: true);
+    final manager = ProviderManager(
+      [primary, fallback],
+      activeProviderId: 'primary',
+      selectedModels: const {},
+    );
+
+    for (var i = 0; i < 3; i++) {
+      manager.switchTo('primary');
+      final result = await manager.chatCompletion(
+        messages: const [
+          {'role': 'user', 'content': 'retry'}
+        ],
+      );
+      expect(result['provider'], 'fallback');
+    }
+
+    manager.switchTo('primary');
+    final result = await manager.chatCompletion(
+      messages: const [
+        {'role': 'user', 'content': 'circuit'}
+      ],
+    );
+    expect(result['provider'], 'fallback');
+    expect(primary.chatCalls, 3);
   });
 
   test('does not leak the primary provider model into fallback provider', () async {
