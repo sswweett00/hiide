@@ -195,8 +195,7 @@ class AnthropicProvider implements AiProvider {
     String? model,
   }) async* {
     if (apiKey.isEmpty) {
-      yield 'Error: Anthropic API key missing.';
-      return;
+      throw StateError('Anthropic API key is missing.');
     }
 
     String? systemPrompt;
