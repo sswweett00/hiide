@@ -187,7 +187,7 @@ class OpenAiProvider implements AiProvider {
       return data
           .whereType<Map<String, dynamic>>()
           .map((m) => m['id']?.toString() ?? '')
-          .where((id) => id.isNotEmpty && id.startsWith('gpt'))
+          .where((id) => id.isNotEmpty)
           .toList()
         ..sort();
     } catch (e) {
