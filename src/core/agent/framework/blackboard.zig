@@ -68,6 +68,8 @@ pub const Entry = struct {
     task_id: u128,
     visibility: Visibility,
     created_ms: i64,
+    /// Previous entry for the same key, newest-first linked list.
+    prev_same_key: ?usize = null,
 };
 
 pub const PutOptions = struct {
@@ -88,6 +90,10 @@ pub const Blackboard = struct {
     entries: std.ArrayListUnmanaged(Entry) = .empty,
     /// key → index of the newest entry for that key.
     index: std.StringHashMapUnmanaged(usize) = .empty,
+    /// artifact id → entry index for O(1) handle-based lookup.
+    id_index: std.AutoHashMapUnmanaged(u64, usize) = .empty,
+    /// Number of live entries at each classification level.
+    classification_counts: [5]u64 = .{ 0, 0, 0, 0, 0 },
     next_id: u64 = 1,
     generation: std.atomic.Value(u64) = std.atomic.Value(u64).init(0),
     clock: clock_mod.Clock,
@@ -110,6 +116,7 @@ pub const Blackboard = struct {
         }
         self.entries.deinit(self.allocator);
         self.index.deinit(self.allocator);
+        self.id_index.deinit(self.allocator);
         self.* = undefined;
     }
 
@@ -150,7 +157,8 @@ pub const Blackboard = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        const previous_version: u32 = if (self.index.get(key)) |idx|
+        const previous_idx = self.index.get(key);
+        const previous_version: u32 = if (previous_idx) |idx|
             self.entries.items[idx].handle.version
         else
             0;
@@ -161,6 +169,7 @@ pub const Blackboard = struct {
         // Reserve index space up front so the append below is the last fallible
         // step; this keeps ownership transfer exception-safe.
         try self.index.ensureUnusedCapacity(self.allocator, 1);
+        try self.id_index.ensureUnusedCapacity(self.allocator, 1);
 
         const handle = Handle{
             .id = self.next_id,
@@ -179,10 +188,13 @@ pub const Blackboard = struct {
             .task_id = opts.task_id,
             .visibility = if (opts.speculative) .speculative else .committed,
             .created_ms = self.clock.nowMs(),
+            .prev_same_key = previous_idx,
         });
 
         const idx = self.entries.items.len - 1;
         self.index.putAssumeCapacity(owned_key, idx);
+        self.id_index.putAssumeCapacity(handle.id, idx);
+        self.classification_counts[@intFromEnum(opts.classification)] += 1;
 
         self.next_id += 1;
         _ = self.generation.fetchAdd(1, .acq_rel);
@@ -207,16 +219,16 @@ pub const Blackboard = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        var i = self.entries.items.len;
-        while (i > 0) {
-            i -= 1;
-            const entry = &self.entries.items[i];
-            if (!std.mem.eql(u8, entry.key, key)) continue;
-            if (entry.visibility == .discarded) continue;
-            if (entry.visibility == .speculative and entry.task_id != task_id) continue;
-            return entry.bytes;
+        var idx = self.index.get(key) orelse return null;
+        while (true) {
+            const entry = &self.entries.items[idx];
+            if (entry.visibility != .discarded) {
+                if (entry.visibility == .committed or entry.task_id == task_id) {
+                    return entry.bytes;
+                }
+            }
+            idx = entry.prev_same_key orelse return null;
         }
-        return null;
     }
 
     /// Returns the handle metadata for the newest committed version of `key`.
@@ -235,10 +247,10 @@ pub const Blackboard = struct {
     pub fn getById(self: *Blackboard, id: u64) ?[]const u8 {
         self.mutex.lock();
         defer self.mutex.unlock();
-        for (self.entries.items) |entry| {
-            if (entry.handle.id == id and entry.visibility != .discarded) return entry.bytes;
-        }
-        return null;
+        const idx = self.id_index.get(id) orelse return null;
+        const entry = &self.entries.items[idx];
+        if (entry.visibility == .discarded) return null;
+        return entry.bytes;
     }
 
     /// Returns every version handle for `key`, oldest first. Caller owns the slice.
@@ -288,6 +300,7 @@ pub const Blackboard = struct {
         for (self.entries.items) |*entry| {
             if (entry.task_id == task_id and entry.visibility == .speculative) {
                 entry.visibility = .discarded;
+                self.classification_counts[@intFromEnum(entry.handle.classification)] -= 1;
                 n += 1;
             }
         }
@@ -302,14 +315,12 @@ pub const Blackboard = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        var max: Classification = .public;
-        for (self.entries.items) |entry| {
-            if (entry.visibility == .discarded) continue;
-            if (@intFromEnum(entry.handle.classification) > @intFromEnum(max)) {
-                max = entry.handle.classification;
-            }
+        var i: usize = self.classification_counts.len;
+        while (i > 0) {
+            i -= 1;
+            if (self.classification_counts[i] != 0) return @enumFromInt(i);
         }
-        return max;
+        return .public;
     }
 
     /// Handle group compatible with the legacy `WorkingMemoryRef` contract.
@@ -346,14 +357,12 @@ pub const Blackboard = struct {
     }
 
     fn newestVisibleLocked(self: *Blackboard, key: []const u8) ?*Entry {
-        var i = self.entries.items.len;
-        while (i > 0) {
-            i -= 1;
-            const entry = &self.entries.items[i];
-            if (entry.visibility != .committed) continue;
-            if (std.mem.eql(u8, entry.key, key)) return entry;
+        var idx = self.index.get(key) orelse return null;
+        while (true) {
+            const entry = &self.entries.items[idx];
+            if (entry.visibility == .committed) return entry;
+            idx = entry.prev_same_key orelse return null;
         }
-        return null;
     }
 };
 
@@ -487,4 +496,21 @@ test "blackboard: concurrent writers keep every version" {
     const refs = board.snapshotRefs(1, 2);
     try std.testing.expectEqual(@as(u64, 1), refs.task_graph_id);
     try std.testing.expect(refs.artifact_set_id > 0);
+}
+
+
+test "blackboard: classification ceiling remains correct after speculative discard" {
+    var board = Blackboard.init(std.testing.allocator, clock_mod.system());
+    defer board.deinit();
+
+    _ = try board.put("public", .note, "ok", .{ .classification = .public });
+    _ = try board.put("secret", .note, "draft", .{
+        .classification = .secret,
+        .task_id = 9,
+        .speculative = true,
+    });
+
+    try std.testing.expectEqual(Classification.secret, board.maxClassification());
+    try std.testing.expectEqual(@as(usize, 1), board.discardTask(9));
+    try std.testing.expectEqual(Classification.public, board.maxClassification());
 }

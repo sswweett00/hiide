@@ -79,9 +79,6 @@ pub const Editor = struct {
 
     pub fn insertText(self: *Editor, pos: usize, text: []const u8) !void {
         if (pos > self.buffer.size()) return error.OutOfBounds;
-        const old = try self.buffer.slice(pos, pos);
-        defer self.allocator.free(old);
-
         try self.buffer.insert(pos, text);
         self.cursor_pos = pos + text.len;
 
@@ -95,7 +92,7 @@ pub const Editor = struct {
     }
 
     pub fn deleteRange(self: *Editor, pos: usize, len_: usize) !void {
-        if (pos + len_ > self.buffer.size()) return error.OutOfBounds;
+        if (pos > self.buffer.size() or len_ > self.buffer.size() - pos) return error.OutOfBounds;
         if (len_ == 0) return;
 
         const deleted = try self.buffer.slice(pos, pos + len_);

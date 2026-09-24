@@ -52,6 +52,10 @@ pub const Registry = struct {
     allocator: std.mem.Allocator,
     mutex: compat.Mutex = .init,
     factories: std.ArrayListUnmanaged(Factory) = .empty,
+    /// Descriptor id → factory index for O(1) lookup.
+    id_index: std.StringHashMapUnmanaged(usize) = .empty,
+    /// Agent kind → highest-version factory index for O(1) resolution.
+    kind_index: std.AutoHashMapUnmanaged(types.AgentKind, usize) = .empty,
 
     /// Creates an empty registry.
     /// @example
@@ -62,6 +66,8 @@ pub const Registry = struct {
 
     pub fn deinit(self: *Registry) void {
         self.factories.deinit(self.allocator);
+        self.id_index.deinit(self.allocator);
+        self.kind_index.deinit(self.allocator);
         self.* = undefined;
     }
 
@@ -77,7 +83,20 @@ pub const Registry = struct {
                 return RegistryError.AgentAlreadyRegistered;
             }
         }
-        try self.factories.append(self.allocator, factory);
+        try self.factories.ensureUnusedCapacity(self.allocator, 1);
+        try self.id_index.ensureUnusedCapacity(self.allocator, 1);
+        try self.kind_index.ensureUnusedCapacity(self.allocator, 1);
+
+        const idx = self.factories.items.len;
+        self.factories.appendAssumeCapacity(factory);
+        self.id_index.putAssumeCapacity(factory.descriptor.id, idx);
+        if (self.kind_index.get(factory.descriptor.kind)) |existing_idx| {
+            if (factory.descriptor.version > self.factories.items[existing_idx].descriptor.version) {
+                self.kind_index.putAssumeCapacity(factory.descriptor.kind, idx);
+            }
+        } else {
+            self.kind_index.putAssumeCapacity(factory.descriptor.kind, idx);
+        }
     }
 
     /// Registers a shared, already-constructed agent instance.
@@ -108,7 +127,7 @@ pub const Registry = struct {
 
         for (self.factories.items, 0..) |existing, i| {
             if (std.mem.eql(u8, existing.descriptor.id, id)) {
-                _ = self.factories.orderedRemove(i);
+                self.removeAtLocked(i);
                 return;
             }
         }
@@ -126,7 +145,7 @@ pub const Registry = struct {
         var i: usize = 0;
         while (i < self.factories.items.len) {
             if (std.mem.eql(u8, self.factories.items[i].owner, owner)) {
-                _ = self.factories.orderedRemove(i);
+                self.removeAtLocked(i);
                 removed += 1;
                 continue;
             }
@@ -141,10 +160,8 @@ pub const Registry = struct {
     pub fn byId(self: *Registry, id: []const u8) ?Factory {
         self.mutex.lock();
         defer self.mutex.unlock();
-        for (self.factories.items) |factory| {
-            if (std.mem.eql(u8, factory.descriptor.id, id)) return factory;
-        }
-        return null;
+        const idx = self.id_index.get(id) orelse return null;
+        return self.factories.items[idx];
     }
 
     /// Resolves the highest-version factory registered for `kind`.
@@ -154,14 +171,8 @@ pub const Registry = struct {
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        var best: ?Factory = null;
-        for (self.factories.items) |factory| {
-            if (factory.descriptor.kind != kind) continue;
-            if (best == null or factory.descriptor.version > best.?.descriptor.version) {
-                best = factory;
-            }
-        }
-        return best;
+        const idx = self.kind_index.get(kind) orelse return null;
+        return self.factories.items[idx];
     }
 
     /// Creates an instance for `kind`.
@@ -208,6 +219,38 @@ pub const Registry = struct {
         var out = try alloc.alloc(agent_mod.AgentDescriptor, self.factories.items.len);
         for (self.factories.items, 0..) |factory, i| out[i] = factory.descriptor;
         return out;
+    }
+
+    fn removeAtLocked(self: *Registry, index: usize) void {
+        const removed = self.factories.items[index];
+        _ = self.factories.orderedRemove(index);
+        _ = self.id_index.remove(removed.descriptor.id);
+
+        if (self.kind_index.get(removed.descriptor.kind)) |best_idx| {
+            if (best_idx == index) {
+                var replacement: ?usize = null;
+                for (self.factories.items, 0..) |factory, i| {
+                    if (factory.descriptor.kind != removed.descriptor.kind) continue;
+                    if (replacement == null or
+                        factory.descriptor.version > self.factories.items[replacement.?].descriptor.version)
+                    {
+                        replacement = i;
+                    }
+                }
+                if (replacement) |i| {
+                    self.kind_index.putAssumeCapacity(removed.descriptor.kind, i);
+                } else {
+                    _ = self.kind_index.remove(removed.descriptor.kind);
+                }
+            } else if (best_idx > index) {
+                self.kind_index.putAssumeCapacity(removed.descriptor.kind, best_idx - 1);
+            }
+        }
+
+        var it = self.id_index.iterator();
+        while (it.next()) |entry| {
+            if (entry.value_ptr.* > index) entry.value_ptr.* -= 1;
+        }
     }
 
     pub fn count(self: *Registry) usize {
@@ -421,4 +464,25 @@ test "registry: singleton rejects non-concurrency-safe agents" {
         RegistryError.SingletonNotConcurrencySafe,
         registry.registerSingleton(&holder, instance),
     );
+}
+
+
+test "registry: indexed lookup survives removal of the highest version" {
+    var registry = Registry.init(std.testing.allocator);
+    defer registry.deinit();
+
+    try registry.register(factoryFor(NoopAgent, .{
+        .id = "core.coder.v1",
+        .kind = .coder,
+        .version = 1,
+    }));
+    try registry.register(factoryFor(NoopAgent, .{
+        .id = "core.coder.v2",
+        .kind = .coder,
+        .version = 2,
+    }));
+
+    try registry.unregister("core.coder.v2");
+    try std.testing.expectEqualStrings("core.coder.v1", registry.byKind(.coder).?.descriptor.id);
+    try std.testing.expectEqual(@as(?Factory, null), registry.byId("core.coder.v2"));
 }

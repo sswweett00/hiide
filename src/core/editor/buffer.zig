@@ -46,9 +46,9 @@ pub const TextBuffer = struct {
         const gap = self.gapSize();
         if (gap >= needed) return;
 
-        const new_cap = self.buf.len * 2;
+        const doubled = if (self.buf.len == 0) DefaultCapacity else self.buf.len * 2;
+        const new_cap = @max(doubled, self.len + needed);
         const new_buf = try self.allocator.alloc(u8, new_cap);
-        @memset(new_buf, 0);
 
         @memcpy(new_buf[0..self.gap_start], self.buf[0..self.gap_start]);
         const new_gap_end = new_cap - (self.buf.len - self.gap_end);
@@ -102,7 +102,7 @@ pub const TextBuffer = struct {
     }
 
     pub fn delete(self: *TextBuffer, pos: usize, len_: usize) !void {
-        if (pos + len_ > self.len) return error.OutOfBounds;
+        if (pos > self.len or len_ > self.len - pos) return error.OutOfBounds;
         if (len_ == 0) return;
 
         // Count newlines in the region to be deleted BEFORE moving the gap,
@@ -211,3 +211,30 @@ pub const TextBuffer = struct {
         return self.len;
     }
 };
+
+
+test "buffer: large insert grows beyond a single doubling" {
+    var buffer = try TextBuffer.init(std.testing.allocator);
+    defer buffer.deinit();
+
+    const payload = try std.testing.allocator.alloc(u8, DefaultCapacity * 5 + 123);
+    defer std.testing.allocator.free(payload);
+    @memset(payload, 'x');
+
+    try buffer.insert(0, payload);
+    try std.testing.expectEqual(payload.len, buffer.size());
+    try std.testing.expectEqual(@as(u8, 'x'), buffer.charAt(payload.len - 1));
+}
+
+test "buffer: growth preserves both sides of the gap" {
+    var buffer = try TextBuffer.init(std.testing.allocator);
+    defer buffer.deinit();
+
+    try buffer.insert(0, "prefix-");
+    try buffer.insert(buffer.size(), "suffix");
+    try buffer.insert(7, "middle-");
+
+    const text = try buffer.slice(0, buffer.size());
+    defer std.testing.allocator.free(text);
+    try std.testing.expectEqualStrings("prefix-middle-suffix", text);
+}

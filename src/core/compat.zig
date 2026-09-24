@@ -198,7 +198,26 @@ pub fn ManagedArrayList(comptime T: type) type {
         }
 
         pub fn appendSlice(self: *@This(), slice: []const T) !void {
-            for (slice) |item| try self.append(item);
+            if (slice.len == 0) return;
+
+            const old_len = self.items.len;
+            const required = old_len + slice.len;
+            if (required > self.capacity) {
+                const doubled = if (self.capacity == 0) 8 else self.capacity * 2;
+                const new_cap = @max(doubled, required);
+                const new_buf = try self.allocator_.alloc(T, new_cap);
+                if (old_len > 0) {
+                    @memcpy(new_buf[0..old_len], self.items);
+                }
+                if (self.capacity > 0) {
+                    self.allocator_.free(self.items.ptr[0..self.capacity]);
+                }
+                self.items = new_buf[0..required];
+                self.capacity = new_cap;
+            } else {
+                self.items = self.items.ptr[0..required];
+            }
+            @memcpy(self.items[old_len..required], slice);
         }
 
         pub fn clearRetainingCapacity(self: *@This()) void {
