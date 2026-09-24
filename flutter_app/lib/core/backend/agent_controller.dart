@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 
 import 'ai_chat_client.dart';
 import 'backend_service.dart';
+import '../mechanics/agent_context.dart';
 import '../mechanics/agent_guard.dart';
 
 // ─── Agent loop types ─────────────────────────────────────────────────────────
@@ -103,6 +104,8 @@ class AgentController {
     this.maxToolCalls = 64,
     this.maxRunDuration = const Duration(minutes: 10),
     this.maxRepeatedToolCalls = 2,
+    this.maxContextMessages = 48,
+    this.maxContextCharacters = 120000,
     this.approvalHandler,
   })  : _ai = ai,
         _backend = backend,
@@ -121,6 +124,8 @@ class AgentController {
   final int maxToolCalls;
   final Duration maxRunDuration;
   final int maxRepeatedToolCalls;
+  final int maxContextMessages;
+  final int maxContextCharacters;
   final Future<bool> Function(String toolName, Map<String, dynamic> arguments)? approvalHandler;
 
   bool _stopRequested = false;
@@ -341,6 +346,7 @@ Guidelines:
         maxRepeatedToolCalls: maxRepeatedToolCalls,
       ),
     );
+    const context = AgentContextCompactor();
     while (true) {
       final budgetFailure = guard.checkRunBudget(iterations: iterations);
       if (budgetFailure != null) {
@@ -352,6 +358,14 @@ Guidelines:
         yield const AgentStoppedEvent();
         return;
       }
+
+      final compacted = AgentContextCompactor(
+        maxMessages: maxContextMessages,
+        maxCharacters: maxContextCharacters,
+      ).compact(apiMessages);
+      apiMessages
+        ..clear()
+        ..addAll(compacted);
 
       final response = await _ai.chatCompletion(
         messages: apiMessages,
