@@ -4,6 +4,7 @@ import 'ai_provider.dart';
 import 'anthropic_provider.dart';
 import 'openai_compatible_provider.dart';
 import '../ai_chat_client.dart';
+import '../../mechanics/circuit_breaker.dart';
 
 /// Runtime catalog entry for a hosted or local provider.
 class BuiltInAiProviderSpec {
@@ -265,8 +266,16 @@ class ProviderManager implements AiChatClient {
   final Map<String, String> _selectedModels;
   final Map<String, _AvailabilityEntry> _availabilityCache =
       <String, _AvailabilityEntry>{};
+  final Map<String, CircuitBreaker> _providerBreakers =
+      <String, CircuitBreaker>{};
+  final Map<String, _ModelCacheEntry> _modelCache =
+      <String, _ModelCacheEntry>{};
+  final Map<String, Future<List<String>>> _modelRequests =
+      <String, Future<List<String>>>{};
 
   static const _availabilityTtl = Duration(seconds: 15);
+  static const _modelCacheTtl = Duration(minutes: 2);
+  static const _providerResetTimeout = Duration(seconds: 20);
 
   AiProvider get active =>
       _providers.firstWhere((p) => p.id == _activeProviderId, orElse: () => _providers.first);
@@ -279,6 +288,16 @@ class ProviderManager implements AiChatClient {
   }
 
   List<AiProvider> get available => List.unmodifiable(_providers);
+
+  CircuitBreaker _breakerFor(String providerId) {
+    return _providerBreakers.putIfAbsent(
+      providerId,
+      () => CircuitBreaker(
+        failureThreshold: 3,
+        resetTimeout: _providerResetTimeout,
+      ),
+    );
+  }
 
   Future<bool> _cachedAvailability(AiProvider provider) async {
     if (!provider.isConfigured) return false;
@@ -351,7 +370,61 @@ class ProviderManager implements AiChatClient {
             (p) => p.id == providerId,
             orElse: () => active,
           );
-    return provider.fetchAvailableModels();
+    if (!provider.isConfigured) return const [];
+
+    final now = DateTime.now();
+    final cached = _modelCache[provider.id];
+    if (cached != null && now.difference(cached.fetchedAt) < _modelCacheTtl) {
+      return cached.models;
+    }
+
+    final inFlight = _modelRequests[provider.id];
+    if (inFlight != null) return inFlight;
+
+    final request = _fetchModelsUncached(provider);
+    _modelRequests[provider.id] = request;
+    try {
+      return await request;
+    } finally {
+      _modelRequests.remove(provider.id);
+    }
+  }
+
+  Future<List<String>> _fetchModelsUncached(AiProvider provider) async {
+    try {
+      final models = await provider.fetchAvailableModels();
+      _modelCache[provider.id] = _ModelCacheEntry(
+        fetchedAt: DateTime.now(),
+        models: List<String>.unmodifiable(models),
+      );
+      return models;
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  Future<Map<String, dynamic>> _request(
+    AiProvider provider, {
+    required List<Map<String, dynamic>> messages,
+    List<Map<String, dynamic>>? tools,
+    required String model,
+    required double temperature,
+  }) async {
+    final breaker = _breakerFor(provider.id);
+    if (breaker.state == CircuitState.open) {
+      throw CircuitOpenException(DateTime.now().add(_providerResetTimeout));
+    }
+    return breaker.run(() async {
+      final result = await provider.chatCompletion(
+        messages: messages,
+        tools: tools,
+        model: model,
+        temperature: temperature,
+      );
+      final error = result['error']?.toString().trim() ?? '';
+      if (error.isNotEmpty) throw _ProviderRequestException(error);
+      return result;
+    });
   }
 
   String _modelFor(
@@ -395,6 +468,7 @@ class ProviderManager implements AiChatClient {
 
     for (final provider in _orderedProviders()) {
       if (!provider.isConfigured) continue;
+      if (_breakerFor(provider.id).state == CircuitState.open) continue;
 
       // Availability probes are advisory. A provider can omit /models while
       // still supporting chat completions, so the real request is authoritative.
@@ -405,18 +479,19 @@ class ProviderManager implements AiChatClient {
       );
 
       try {
-        final result = await provider.chatCompletion(
+        final result = await _request(
+          provider,
           messages: messages,
           tools: tools,
           model: requestModel,
           temperature: temperature,
         );
-        final error = result['error']?.toString().trim() ?? '';
-        if (error.isEmpty) {
-          _activeProviderId = provider.id;
-          return result;
-        }
-        lastError = error;
+        _activeProviderId = provider.id;
+        _availabilityCache[provider.id] = _AvailabilityEntry(
+          checkedAt: DateTime.now(),
+          available: true,
+        );
+        return result;
       } catch (error) {
         lastError = error;
       }
@@ -433,16 +508,47 @@ class ProviderManager implements AiChatClient {
     required List<Map<String, dynamic>> messages,
     String? model,
   }) async* {
+    if (_providers.isEmpty) {
+      yield 'No AI providers are configured.';
+      return;
+    }
+
     final requestedProviderId = _activeProviderId;
-    final provider = await _resolve();
-    yield* provider.chatCompletionStream(
-      messages: messages,
-      model: _modelFor(
+    Object? lastError;
+
+    for (final provider in _orderedProviders()) {
+      if (!provider.isConfigured) continue;
+      if (_breakerFor(provider.id).state == CircuitState.open) continue;
+
+      final requestModel = _modelFor(
         provider,
         requestedModel: model,
         requestedProviderId: requestedProviderId,
-      ),
-    );
+      );
+
+      var emitted = false;
+      try {
+        await for (final chunk in provider.chatCompletionStream(
+          messages: messages,
+          model: requestModel,
+        )) {
+          emitted = true;
+          yield chunk;
+        }
+        if (emitted) {
+          _activeProviderId = provider.id;
+          return;
+        }
+        lastError = StateError(
+          provider.id + ' did not emit any streaming content.',
+        );
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    yield 'All configured AI providers failed. ' +
+        (lastError?.toString() ?? '');
   }
 
   Future<String?> completeCode(String prompt, {String? model}) async {
@@ -593,3 +699,21 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
 final unifiedAiClientProvider = Provider<AiChatClient>((ref) {
   return ref.watch(providerManagerProvider);
 });
+
+
+class _ProviderRequestException implements Exception {
+  const _ProviderRequestException(this.message);
+  final String message;
+  @override
+  String toString() => message;
+}
+
+class _ModelCacheEntry {
+  const _ModelCacheEntry({
+    required this.fetchedAt,
+    required this.models,
+  });
+
+  final DateTime fetchedAt;
+  final List<String> models;
+}
