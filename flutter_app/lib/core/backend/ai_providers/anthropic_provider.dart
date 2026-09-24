@@ -8,13 +8,14 @@ import 'ai_provider.dart';
 /// Completions API). Tool calling is supported on Claude 3.5+ models.
 class AnthropicProvider implements AiProvider {
   final String apiKey;
+  @override
+  final String baseUrl;
   String _selectedModel;
   final http.Client _client;
 
-  static const _baseUrl = 'https://api.anthropic.com/v1';
-
   AnthropicProvider({
     required this.apiKey,
+    this.baseUrl = 'https://api.anthropic.com/v1',
     String selectedModel = 'claude-sonnet-4-20250514',
     http.Client? client,
   })  : _selectedModel = selectedModel,
@@ -45,7 +46,7 @@ class AnthropicProvider implements AiProvider {
       // Anthropic doesn't have a /models endpoint; just check auth
       final response = await _client
           .post(
-            Uri.parse('$_baseUrl/messages'),
+            Uri.parse(''$baseUrl'/messages'),
             headers: {
               'x-api-key': apiKey,
               'anthropic-version': '2023-06-01',
@@ -168,7 +169,7 @@ class AnthropicProvider implements AiProvider {
     try {
       final response = await _client
           .post(
-            Uri.parse('$_baseUrl/messages'),
+            Uri.parse(''$baseUrl'/messages'),
             headers: {
               'x-api-key': apiKey,
               'anthropic-version': '2023-06-01',
@@ -219,7 +220,7 @@ class AnthropicProvider implements AiProvider {
     };
     if (systemPrompt != null) body['system'] = systemPrompt;
 
-    final request = http.Request('POST', Uri.parse('$_baseUrl/messages'))
+    final request = http.Request('POST', Uri.parse(''$baseUrl'/messages'))
       ..headers['x-api-key'] = apiKey
       ..headers['anthropic-version'] = '2023-06-01'
       ..headers['Content-Type'] = 'application/json'
