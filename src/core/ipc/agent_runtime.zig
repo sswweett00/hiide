@@ -26,16 +26,16 @@ var registry: tool_mod.Registry = undefined;
 var registry_mutex: compat.Mutex = .init;
 var registry_initialized = std.atomic.Value(bool).init(false);
 
-fn initRegistry() void {
+fn initRegistry() !void {
     registry = tool_mod.Registry.init(std.heap.c_allocator);
-    registry.register(file_tools.readFileTool()) catch {};
-    registry.register(file_tools.writeFileTool()) catch {};
-    registry.register(file_tools.deleteFileTool()) catch {};
-    registry.register(file_tools.createDirectoryTool()) catch {};
-    registry.register(file_tools.applyDiffTool()) catch {};
-    registry.register(file_tools.listFilesTool()) catch {};
-    registry.register(process_tools.processRunTool()) catch {};
-    registry.register(workspace_tools.searchWorkspaceTool()) catch {};
+    try registry.register(file_tools.readFileTool());
+    try registry.register(file_tools.writeFileTool());
+    try registry.register(file_tools.deleteFileTool());
+    try registry.register(file_tools.createDirectoryTool());
+    try registry.register(file_tools.applyDiffTool());
+    try registry.register(file_tools.listFilesTool());
+    try registry.register(process_tools.processRunTool());
+    try registry.register(workspace_tools.searchWorkspaceTool());
 }
 
 fn approvalGranted(allocator: std.mem.Allocator, input: []const u8) bool {
@@ -46,14 +46,14 @@ fn approvalGranted(allocator: std.mem.Allocator, input: []const u8) bool {
     return switch (value) { .bool => |flag| flag, else => false };
 }
 
-fn ensureRegistry() void {
+fn ensureRegistry() !void {
     if (registry_initialized.load(.acquire)) return;
 
     registry_mutex.lock();
     defer registry_mutex.unlock();
 
     if (registry_initialized.load(.acquire)) return;
-    initRegistry();
+    try initRegistry();
     registry_initialized.store(true, .release);
 }
 
@@ -67,7 +67,7 @@ pub fn executeTool(
     workspace_root: []const u8,
     timeout_ms: ?u32,
 ) !ToolResponse {
-    ensureRegistry();
+    try ensureRegistry();
 
     const tool = registry.get(tool_id) orelse return error.ToolNotFound;
 
