@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +27,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
   late final List<TerminalLine> _lines;
+  StreamSubscription<TerminalLine>? _lineSubscription;
 
   @override
   void initState() {
@@ -34,12 +37,19 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     _lines = List<TerminalLine>.from(service.outputLog);
 
     // Listen for new lines
-    service.lineStream.listen((line) {
+    _lineSubscription = service.lineStream.listen((line) {
       if (!mounted) return;
       if (line.text == '\x1B[2J') {
         setState(() => _lines.clear());
       } else {
-        setState(() => _lines.add(line));
+        setState(() {
+          _lines.add(line);
+          // Keep the in-memory terminal bounded; the service owns the full
+          // persistent-ish command log used when reopening the panel.
+          if (_lines.length > 5000) {
+            _lines.removeRange(0, _lines.length - 5000);
+          }
+        });
       }
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     });
@@ -52,6 +62,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
 
   @override
   void dispose() {
+    _lineSubscription?.cancel();
     _controller.dispose();
     _scrollController.dispose();
     _focusNode.dispose();
