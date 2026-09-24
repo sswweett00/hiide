@@ -439,17 +439,49 @@ class ProviderManager implements AiChatClient {
     if (breaker.state == CircuitState.open) {
       throw CircuitOpenException(DateTime.now().add(_providerResetTimeout));
     }
-    return breaker.run(() async {
-      final result = await provider.chatCompletion(
-        messages: messages,
-        tools: tools,
-        model: model,
-        temperature: temperature,
-      );
-      final error = result['error']?.toString().trim() ?? '';
-      if (error.isNotEmpty) throw _ProviderRequestException(error);
-      return result;
-    });
+
+    Object? lastError;
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await breaker.run(() async {
+          final result = await provider.chatCompletion(
+            messages: messages,
+            tools: tools,
+            model: model,
+            temperature: temperature,
+          );
+          final error = result['error']?.toString().trim() ?? '';
+          if (error.isNotEmpty) throw _ProviderRequestException(error);
+          return result;
+        });
+      } catch (error) {
+        lastError = error;
+        if (!_isTransientProviderError(error) || attempt == 2) rethrow;
+        await Future<void>.delayed(
+          Duration(milliseconds: attempt == 0 ? 150 : 350),
+        );
+      }
+    }
+    throw lastError ?? StateError('Provider request failed.');
+  }
+
+  bool _isTransientProviderError(Object error) {
+    final text = error.toString().toLowerCase();
+    const transientMarkers = <String>[
+      'http 408',
+      'http 429',
+      'http 500',
+      'http 502',
+      'http 503',
+      'http 504',
+      'timed out',
+      'timeout',
+      'network error',
+      'connection reset',
+      'connection closed',
+      'temporarily unavailable',
+    ];
+    return transientMarkers.any(text.contains);
   }
 
   String _modelFor(
@@ -562,37 +594,49 @@ class ProviderManager implements AiChatClient {
 
       var emitted = false;
       final started = DateTime.now();
-      try {
-        await for (final chunk in provider.chatCompletionStream(
-          messages: messages,
-          model: requestModel,
-        )) {
+      for (var attempt = 0; attempt < 3; attempt++) {
+        try {
+          await for (final chunk in provider.chatCompletionStream(
+            messages: messages,
+            model: requestModel,
+          )) {
           emitted = true;
-          yield chunk;
-        }
-        if (emitted) {
-          _recordRuntime(provider.id, DateTime.now().difference(started), success: true);
-          _activeProviderId = provider.id;
-          _breakerFor(provider.id).recordSuccess();
-          _availabilityCache[provider.id] = _AvailabilityEntry(
-            checkedAt: DateTime.now(),
-            available: true,
+            yield chunk;
+          }
+          if (emitted) {
+            _recordRuntime(provider.id, DateTime.now().difference(started), success: true);
+            _activeProviderId = provider.id;
+            _breakerFor(provider.id).recordSuccess();
+            _availabilityCache[provider.id] = _AvailabilityEntry(
+              checkedAt: DateTime.now(),
+              available: true,
+            );
+            return;
+          }
+          lastError = StateError(
+            provider.id + ' did not emit any streaming content.',
           );
-          return;
-        }
-        lastError = StateError(
-          provider.id + ' did not emit any streaming content.',
-        );
-        _breakerFor(provider.id).recordFailure();
-      } catch (error) {
-        _breakerFor(provider.id).recordFailure();
-        _recordRuntime(provider.id, DateTime.now().difference(started), success: false);
-        lastError = error;
-        // Once a stream has emitted content, switching providers would append
-        // a second, unrelated completion to the same answer.
-        if (emitted) {
-          yield '[' + provider.id + ' stream interrupted: ' + error.toString() + ']';
-          return;
+          _breakerFor(provider.id).recordFailure();
+          if (attempt < 2) {
+            await Future<void>.delayed(
+              Duration(milliseconds: attempt == 0 ? 150 : 350),
+            );
+            continue;
+          }
+        } catch (error) {
+          _breakerFor(provider.id).recordFailure();
+          _recordRuntime(provider.id, DateTime.now().difference(started), success: false);
+          lastError = error;
+          if (emitted) {
+            yield '[' + provider.id + ' stream interrupted: ' + error.toString() + ']';
+            return;
+          }
+          if (!_isTransientProviderError(error) || attempt == 2) {
+            break;
+          }
+          await Future<void>.delayed(
+            Duration(milliseconds: attempt == 0 ? 150 : 350),
+          );
         }
       }
     }
