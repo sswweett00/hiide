@@ -252,8 +252,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
         case PlanTextTokenEvent(:final token):
-          ref.read(streamingMessageProvider.notifier).state =
-              _queueStreamingToken(token);
+          _queueStreamingToken(token);
         case PlanDoneEvent(:final summary, :final document):
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
@@ -475,16 +474,16 @@ At the end report changed areas, verification commands, unresolved failures, and
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
           _addMessage(ChatMessage(role: ChatRole.system, content: '⏹ Stopped by user.', timestamp: DateTime.now()));
-        case AgentIterationLimitEvent(:final iterations):
+        case AgentIterationLimitEvent(:final iterations, :final reason):
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
-            final message = 'Stopped after ' + iterations.toString() + ' tool rounds.';
+            final message = reason + ' (iteration ' + iterations.toString() + ').';
             store.update(taskId, status: AgentTaskStatus.failed, error: message, summary: 'Iteration limit reached');
-            store.addEvent(taskId, kind: 'limit', title: 'Iteration limit', detail: message, success: false);
+            store.addEvent(taskId, kind: 'limit', title: 'Agent budget limit', detail: message, success: false);
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
-          _addMessage(ChatMessage(role: ChatRole.error, content: 'Stopped after ' + iterations.toString() + ' tool rounds. Task may need a more specific instruction.', timestamp: DateTime.now()));
+          _addMessage(ChatMessage(role: ChatRole.error, content: message, timestamp: DateTime.now()));
       }
     }
     ref.read(agentMessagesProvider.notifier).state = List<Map<String, dynamic>>.from(controller.workingMessages);
