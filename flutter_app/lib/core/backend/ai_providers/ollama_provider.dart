@@ -124,6 +124,9 @@ class OllamaProvider implements AiProvider {
           } catch (_) {}
         }
       }
+    } catch (e) {
+      debugPrint('Ollama streaming error: $e');
+      yield 'Error: Ollama streaming failed: $e';
     }
   }
 
