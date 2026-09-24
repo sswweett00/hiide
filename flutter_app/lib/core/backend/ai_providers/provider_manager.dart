@@ -732,6 +732,14 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
     final name = raw['name']?.trim() ?? '';
     final baseUrl = raw['baseUrl']?.trim() ?? '';
     final model = raw['model']?.trim() ?? '';
+    final apiKeyHeader =
+        raw['apiKeyHeader']?.trim().isNotEmpty == true
+            ? raw['apiKeyHeader']!.trim()
+            : 'Authorization';
+    final apiKeyPrefix =
+        raw['apiKeyPrefix']?.isNotEmpty == true
+            ? raw['apiKeyPrefix']!
+            : 'Bearer ';
     if (id.isEmpty || name.isEmpty || baseUrl.isEmpty || model.isEmpty) {
       continue;
     }
@@ -745,6 +753,8 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
         baseUrl: baseUrl,
         apiKey: keys[id] ?? '',
         defaultModel: model,
+        apiKeyHeader: apiKeyHeader,
+        apiKeyPrefix: apiKeyPrefix,
       ),
     );
   }
