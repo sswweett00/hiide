@@ -44,12 +44,6 @@ export 'ttl_cache.dart';
 export 'worker_pool.dart';
 export 'workspace_session.dart';
 
-final agentRunGuardProvider = Provider<AgentRunGuard>((ref) {
-  final guard = AgentRunGuard();
-  ref.onDispose(() {});
-  return guard;
-});
-
 final appEventBusProvider = Provider<AppEventBus<Object>>((ref) {
   final bus = AppEventBus<Object>();
   ref.onDispose(bus.close);
