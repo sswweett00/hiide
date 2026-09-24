@@ -117,11 +117,17 @@ var next_sub_id: std.atomic.Value(u64) = std.atomic.Value(u64).init(1);
 /// root (allocator-owned key) → last enumeration (allocator-owned entries).
 var snapshots: std.StringHashMapUnmanaged([]workspace_tools.WorkspaceEntry) = .{};
 
-var watcher_once = std.once(startWatcher);
+var watcher_started = std.atomic.Value(bool).init(false);
 
 /// Spins up the background watcher thread (idempotent).
 pub fn ensureStarted() void {
-    watcher_once.call();
+    if (watcher_started.load(.acquire)) return;
+
+    if (watcher_started.cmpxchgStrong(false, true, .acq_rel, .acquire) == null) {
+        if (!startWatcher()) {
+            watcher_started.store(false, .release);
+        }
+    }
 }
 
 /// Allocates a fresh connection id for `handleConnection`.
@@ -327,9 +333,10 @@ fn serializeEvent(line: *compat.ManagedArrayList(u8), root: []const u8, changes:
 
 // ── Watcher thread ───────────────────────────────────────────────────────────
 
-fn startWatcher() void {
-    const thread = std.Thread.spawn(.{}, watcherThread, .{}) catch return;
+fn startWatcher() bool {
+    const thread = std.Thread.spawn(.{}, watcherThread, .{}) catch return false;
     thread.detach();
+    return true;
 }
 
 fn watcherThread() void {
