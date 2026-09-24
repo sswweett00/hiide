@@ -153,6 +153,11 @@ class SettingsService {
     return values[id] ?? '';
   }
 
+  /// Legacy compatibility accessors used by application bootstrap.
+  Future<String> getOpenaiApiKey() => getAiApiKey('openai');
+
+  Future<String> getAnthropicApiKey() => getAiApiKey('anthropic');
+
   Future<void> setAiApiKey(String providerId, String key) async {
     await init();
     final id = providerId.trim().toLowerCase();
@@ -314,7 +319,7 @@ class SettingsService {
       return {
         for (final entry in decoded.entries)
           if (entry.key.toString().trim().isNotEmpty &&
-              entry.value?.toString().trim().isNotEmpty)
+              (entry.value?.toString().trim() ?? '').isNotEmpty)
             entry.key.toString().trim().toLowerCase():
                 entry.value.toString().trim(),
       };

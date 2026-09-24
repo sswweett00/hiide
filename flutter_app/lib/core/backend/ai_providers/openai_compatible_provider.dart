@@ -29,6 +29,8 @@ class OpenAiCompatibleProvider implements AiProvider {
   @override
   final String displayName;
 
+  final String baseUrl;
+
   @override
   final String apiKey;
 

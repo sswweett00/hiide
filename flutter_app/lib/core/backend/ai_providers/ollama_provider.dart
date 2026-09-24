@@ -33,6 +33,9 @@ class OllamaProvider implements AiProvider {
   bool get requiresApiKey => false;
 
   @override
+  bool get isConfigured => true;
+
+  @override
   Future<bool> get isAvailable async {
     try {
       final response = await _client

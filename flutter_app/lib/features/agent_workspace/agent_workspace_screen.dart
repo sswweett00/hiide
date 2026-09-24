@@ -8,7 +8,7 @@ import '../../core/design_system/tokens.dart';
 import '../../shared/models/chat_message.dart';
 import '../../shared/providers/editor_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
-import 'ai_chat_sidebar.dart';
+import '../chat/ai_chat_sidebar.dart';
 
 class AgentWorkspaceScreen extends ConsumerWidget {
   const AgentWorkspaceScreen({super.key});
