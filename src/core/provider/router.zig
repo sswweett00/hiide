@@ -49,6 +49,9 @@ pub const ModelDescriptor = struct {
     provider_id: []const u8,
     capabilities: ModelCapabilities,
     context_window: u32,
+    /// Highest data-classification level this model endpoint may receive.
+    /// 0 = public, 4 = secret.
+    max_classification: u8 = 0,
     /// Cost per 1k tokens in microunits.
     cost_per_1k_input: u32,
     cost_per_1k_output: u32,
@@ -183,6 +186,7 @@ pub const Router = struct {
 
             for (models) |model| {
                 if (!capsMatch(req.required_capabilities, model.capabilities)) continue;
+                if (model.max_classification < req.max_classification) continue;
                 if (req.max_cost_1k > 0 and model.cost_per_1k_input > req.max_cost_1k) continue;
 
                 const score = scoreModel(model, req, provider);
@@ -471,6 +475,7 @@ test "router: selects eligible provider" {
     };
     const req = RouteRequest{
         .required_capabilities = .{ .tool_use = false, .vision = false, .structured_output = false, .long_context = false, .streaming = true },
+        .max_classification = 0,
         .latency_class = 1,
         .max_cost_1k = 0,
         .max_classification = 0,
