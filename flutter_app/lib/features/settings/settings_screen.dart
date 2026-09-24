@@ -81,7 +81,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ref.read(aiProviderBaseUrlsProvider.notifier).state = baseUrls;
         final id = ref.read(aiProviderIdProvider);
         _baseUrlCtrl.text = baseUrls[id] ??
-            ref.read(providerManagerProvider).activeBaseUrl;
+            AiProviderCatalog.byId(id)?.baseUrl ??
+            '';
       }
     });
     settingsService.getAiProviderModels().then((models) {
@@ -382,7 +383,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       child: TextField(
                                         controller: _baseUrlCtrl,
                                         decoration: InputDecoration(
-                                          hintText: active.baseUrl,
+                                          hintText: activeBaseUrl,
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
                                           ),
@@ -396,13 +397,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         final next = {
                                           ...ref.read(aiProviderBaseUrlsProvider),
                                         };
-                                        if (value.isEmpty || value == active.baseUrl) {
+                                        if (value.isEmpty || value == activeBaseUrl) {
                                           next.remove(active.id);
                                         } else {
                                           next[active.id] = value;
                                         }
                                         ref.read(aiProviderBaseUrlsProvider.notifier).state = next;
-                                        await settingsService.setAiProviderBaseUrl(active.id, value == active.baseUrl ? '' : value);
+                                        await settingsService.setAiProviderBaseUrl(active.id, value == activeBaseUrl ? '' : value);
                                         if (mounted) setState(() {});
                                       },
                                       child: const Text('Save'),
