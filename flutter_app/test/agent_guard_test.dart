@@ -66,6 +66,23 @@ void main() {
       );
     });
 
+    test('stops a no-progress loop after repeated identical results', () {
+      final guard = AgentRunGuard(
+        budget: const AgentRunBudget(maxUnchangedToolResults: 2),
+      );
+
+      expect(guard.recordResult('search_workspace', 'same result'), isNull);
+      expect(guard.recordResult('search_workspace', 'same result'), isNull);
+      expect(
+        guard.recordResult('search_workspace', 'same result'),
+        contains('no measurable progress'),
+      );
+      expect(
+        guard.checkRunBudget(),
+        contains('no measurable progress'),
+      );
+    });
+
     test('checkRunBudget reports the hard tool limit before the next action', () {
       final guard = AgentRunGuard(
         budget: const AgentRunBudget(maxToolCalls: 1),
