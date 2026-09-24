@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'agent_context.dart';
 import 'agent_guard.dart';
 import 'backpressure_queue.dart';
 import 'cancellation_token.dart';
@@ -21,6 +22,7 @@ import 'ttl_cache.dart';
 import 'worker_pool.dart';
 import 'workspace_session.dart';
 
+export 'agent_context.dart';
 export 'agent_guard.dart';
 export 'backpressure_queue.dart';
 export 'cancellation_token.dart';
