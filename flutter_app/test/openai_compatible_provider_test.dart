@@ -85,6 +85,76 @@ void main() {
     expect(result['choices'], isA<List>());
   });
 
+  test('supports non-Bearer authentication headers', () async {
+    late Map<String, String> headers;
+    final client = _FakeClient((request) async {
+      headers = request.headers;
+      return http.Response(
+        jsonEncode({
+          'choices': [
+            {'message': {'role': 'assistant', 'content': 'ok'}},
+          ],
+        }),
+        200,
+      );
+    });
+
+    final provider = OpenAiCompatibleProvider(
+      id: 'custom',
+      displayName: 'Custom',
+      baseUrl: 'https://example.test/v1',
+      apiKey: 'secret',
+      defaultModel: 'model-a',
+      apiKeyHeader: 'x-api-key',
+      apiKeyPrefix: '',
+      client: client,
+    );
+
+    await provider.chatCompletion(
+      messages: const [
+        {'role': 'user', 'content': 'hello'}
+      ],
+    );
+
+    expect(headers['x-api-key'], 'secret');
+    expect(headers.containsKey('authorization'), isFalse);
+  });
+
+  test('supports keyless OpenAI-compatible endpoints', () async {
+    var called = false;
+    final client = _FakeClient((request) async {
+      called = true;
+      expect(request.headers.containsKey('authorization'), isFalse);
+      return http.Response(
+        jsonEncode({
+          'choices': [
+            {'message': {'role': 'assistant', 'content': 'local'}},
+          ],
+        }),
+        200,
+      );
+    });
+
+    final provider = OpenAiCompatibleProvider(
+      id: 'local',
+      displayName: 'Local',
+      baseUrl: 'http://127.0.0.1:8000/v1',
+      apiKey: '',
+      defaultModel: 'local-model',
+      requiresApiKey: false,
+      client: client,
+    );
+
+    final result = await provider.chatCompletion(
+      messages: const [
+        {'role': 'user', 'content': 'hello'}
+      ],
+    );
+
+    expect(called, isTrue);
+    expect(result['choices'], isA<List>());
+  });
+
   test('discovers models from standard /models response', () async {
     final client = _FakeClient((request) async {
       expect(request.url.path, '/v1/models');
