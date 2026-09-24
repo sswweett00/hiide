@@ -31,6 +31,37 @@ final aiPromptProvider = StateProvider<String?>((ref) => null);
 
 /// Max characters of the active file injected as context per turn.
 const _activeFileContextChars = 3000;
+const _maxVisibleChatMessages = 300;
+const _maxAgentHistoryMessages = 160;
+
+List<ChatMessage> _boundedChatMessages(Iterable<ChatMessage> messages) {
+  final values = messages.toList(growable: false);
+  if (values.length <= _maxVisibleChatMessages) {
+    return List<ChatMessage>.from(values);
+  }
+  return values.sublist(values.length - _maxVisibleChatMessages);
+}
+
+List<Map<String, dynamic>> _boundedAgentMessages(
+    Iterable<Map<String, dynamic>> messages) {
+  final values = messages
+      .map((message) => Map<String, dynamic>.from(message))
+      .toList(growable: false);
+  if (values.length <= _maxAgentHistoryMessages) {
+    return values;
+  }
+
+  // Drop oldest messages by complete user turns. This keeps tool-call
+  // conversations structurally valid while bounding long-lived UI state.
+  final firstKept = values.length - _maxAgentHistoryMessages;
+  var start = firstKept;
+  while (start < values.length &&
+      values[start]['role'] != 'user' &&
+      start < values.length - 1) {
+    start++;
+  }
+  return values.sublist(start);
+}
 
 class AiChatSidebar extends ConsumerStatefulWidget {
   const AiChatSidebar({super.key});
@@ -111,10 +142,11 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
   }
 
   void _addMessage(ChatMessage msg) {
-    ref.read(chatMessagesProvider.notifier).state = [
+    final next = [
       ...ref.read(chatMessagesProvider),
       msg,
     ];
+    ref.read(chatMessagesProvider.notifier).state = _boundedChatMessages(next);
     _scrollToBottom();
   }
 
@@ -257,10 +289,10 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     final planner = PlanningAgent(ai: ai, backend: backend, workspaceRoot: workspace.rootPath);
     _stopActiveAgent = planner.stop;
     String? createdPlan;
-    final history = <Map<String, dynamic>>[
+    final history = _boundedAgentMessages([
       ...ref.read(agentMessagesProvider),
       {'role': 'user', 'content': userContent},
-    ];
+    ]);
 
     await for (final event in planner.run(userContent)) {
       if (!mounted) break;
@@ -343,11 +375,11 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     }
 
     final plan = createdPlan;
-    final planHistory = <Map<String, dynamic>>[
+    final planHistory = _boundedAgentMessages([
       ...history,
       if (plan != null && plan.trim().isNotEmpty)
         {'role': 'assistant', 'content': plan},
-    ];
+    ]);
     ref.read(agentMessagesProvider.notifier).state = planHistory;
     if (taskId != null) {
       store.replaceTranscript(taskId, planHistory);
@@ -558,7 +590,8 @@ At the end report changed areas, verification commands, unresolved failures, and
           _addMessage(ChatMessage(role: ChatRole.error, content: message, timestamp: DateTime.now()));
       }
     }
-    ref.read(agentMessagesProvider.notifier).state = List<Map<String, dynamic>>.from(controller.workingMessages);
+    ref.read(agentMessagesProvider.notifier).state =
+        _boundedAgentMessages(controller.workingMessages);
     if (taskId != null) {
       store.replaceTranscript(taskId, controller.workingMessages);
       ref.read(agentTaskVersionProvider.notifier).state++;
