@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/backend/terminal_service.dart';
-import '../../core/backend/workspace_service.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
-import '../../shared/models/editor_tab.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/models/file_tree_item.dart';
 import '../../shared/widgets/ai_widgets.dart';
 import '../../shared/widgets/ide_shell.dart';
 
@@ -153,7 +151,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
             name: 'Check workspace',
             type: 'Shell',
             command:
-                'cd $quotedRoot && printf "Workspace ready: %s\n" "$PWD"',
+                'cd $quotedRoot && printf "Workspace ready: %s\n" "\$PWD"',
             timeout: const Duration(minutes: 1),
           ),
         );
