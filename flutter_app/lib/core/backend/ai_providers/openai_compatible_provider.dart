@@ -138,8 +138,7 @@ class OpenAiCompatibleProvider implements AiProvider {
     String? model,
   }) async* {
     if (requiresApiKey && apiKey.trim().isEmpty) {
-      yield '$displayName API key missing.';
-      return;
+      throw StateError('$displayName API key missing.');
     }
 
     final request = http.Request('POST', _uri('/chat/completions'))
@@ -153,16 +152,23 @@ class OpenAiCompatibleProvider implements AiProvider {
       });
 
     try {
-      final response = await _client.send(request);
+      final response = await _client.send(request).timeout(
+        const Duration(seconds: 30),
+      );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        yield _extractError(await response.stream.bytesToString()) ??
-            '$displayName HTTP ' + response.statusCode.toString();
-        return;
+        final body = await response.stream.bytesToString().timeout(
+          const Duration(seconds: 10),
+        );
+        throw StateError(
+          _extractError(body) ??
+              '$displayName HTTP ' + response.statusCode.toString(),
+        );
       }
 
       final stream = response.stream
           .transform(utf8.decoder)
-          .transform(const LineSplitter());
+          .transform(const LineSplitter())
+          .timeout(const Duration(seconds: 120));
 
       await for (final line in stream) {
         var payload = line.trim();
@@ -175,13 +181,22 @@ class OpenAiCompatibleProvider implements AiProvider {
         try {
           final decoded = jsonDecode(payload);
           final content = decoded['choices']?[0]?['delta']?['content'];
-          if (content != null) yield content.toString();
+          if (content is String && content.isNotEmpty) {
+            yield content;
+          } else if (content is List) {
+            for (final part in content) {
+              if (part is Map && part['text'] != null) {
+                final text = part['text'].toString();
+                if (text.isNotEmpty) yield text;
+              }
+            }
+          }
         } catch (_) {
           // Ignore keep-alives/provider-specific SSE metadata.
         }
       }
-    } catch (e) {
-      yield '$displayName stream error: $e';
+    } on TimeoutException {
+      throw StateError('$displayName stream timed out.');
     }
   }
 
