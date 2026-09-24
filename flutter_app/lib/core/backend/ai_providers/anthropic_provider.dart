@@ -25,9 +25,6 @@ class AnthropicProvider implements AiProvider {
   String get displayName => 'Anthropic (Claude)';
 
   @override
-  String get baseUrl => _baseUrl;
-
-  @override
   String get defaultModel => _selectedModel;
 
   @override
@@ -46,7 +43,7 @@ class AnthropicProvider implements AiProvider {
       // Anthropic doesn't have a /models endpoint; just check auth
       final response = await _client
           .post(
-            Uri.parse(''$baseUrl'/messages'),
+            Uri.parse('$baseUrl/messages'),
             headers: {
               'x-api-key': apiKey,
               'anthropic-version': '2023-06-01',
@@ -169,7 +166,7 @@ class AnthropicProvider implements AiProvider {
     try {
       final response = await _client
           .post(
-            Uri.parse(''$baseUrl'/messages'),
+            Uri.parse('$baseUrl/messages'),
             headers: {
               'x-api-key': apiKey,
               'anthropic-version': '2023-06-01',
@@ -220,7 +217,7 @@ class AnthropicProvider implements AiProvider {
     };
     if (systemPrompt != null) body['system'] = systemPrompt;
 
-    final request = http.Request('POST', Uri.parse(''$baseUrl'/messages'))
+    final request = http.Request('POST', Uri.parse('$baseUrl/messages'))
       ..headers['x-api-key'] = apiKey
       ..headers['anthropic-version'] = '2023-06-01'
       ..headers['Content-Type'] = 'application/json'
