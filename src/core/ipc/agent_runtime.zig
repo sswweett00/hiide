@@ -13,6 +13,7 @@ const process_tools = @import("../agent/framework/process_tools.zig");
 const workspace_tools = @import("../agent/framework/workspace_tools.zig");
 const cancel_mod = @import("../agent/framework/cancel.zig");
 const clock_mod = @import("../agent/framework/clock.zig");
+const compat = @import("../compat.zig");
 
 /// Result of one tool invocation, with allocator-owned strings.
 pub const ToolResponse = struct {
@@ -22,7 +23,8 @@ pub const ToolResponse = struct {
 };
 
 var registry: tool_mod.Registry = undefined;
-var registry_ready = std.once(initRegistry);
+var registry_mutex: compat.Mutex = .init;
+var registry_initialized = std.atomic.Value(bool).init(false);
 
 fn initRegistry() void {
     registry = tool_mod.Registry.init(std.heap.c_allocator);
@@ -44,6 +46,17 @@ fn approvalGranted(allocator: std.mem.Allocator, input: []const u8) bool {
     return switch (value) { .bool => |flag| flag, else => false };
 }
 
+fn ensureRegistry() void {
+    if (registry_initialized.load(.acquire)) return;
+
+    registry_mutex.lock();
+    defer registry_mutex.unlock();
+
+    if (registry_initialized.load(.acquire)) return;
+    initRegistry();
+    registry_initialized.store(true, .release);
+}
+
 /// Executes `tool_id` with the JSON-encoded `input` against `workspace_root`.
 /// `timeout_ms` becomes the invocation deadline (the process tool turns it
 /// into its watchdog kill). `output`/`error_message` are owned by `allocator`.
@@ -54,7 +67,7 @@ pub fn executeTool(
     workspace_root: []const u8,
     timeout_ms: ?u32,
 ) !ToolResponse {
-    registry_ready.call();
+    ensureRegistry();
 
     const tool = registry.get(tool_id) orelse return error.ToolNotFound;
 
