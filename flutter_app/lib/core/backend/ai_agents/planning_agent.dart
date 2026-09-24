@@ -229,7 +229,7 @@ failure paths, security/performance implications and rollback. Match the user's 
     }
     if (_stopRequested) return;
 
-    PlanDocument? document;
+    late final PlanDocument document;
     try {
       document = parseDocument(_contentFromResponse(response), maxSteps: maxSteps);
     } catch (firstError) {
@@ -249,10 +249,6 @@ failure paths, security/performance implications and rollback. Match the user's 
       }
     }
 
-    if (document == null) {
-      yield const PlanErrorEvent('Planner returned no validated document.');
-      return;
-    }
     lastPlan = document;
     yield PlanCreatedEvent(document.steps, document);
 

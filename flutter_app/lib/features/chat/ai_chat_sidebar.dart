@@ -41,7 +41,6 @@ class AiChatSidebar extends ConsumerStatefulWidget {
 class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  AgentController? _agentController;
   VoidCallback? _stopActiveAgent;
   bool _approveCommandsForSession = false;
   Timer? _streamFlushTimer;
@@ -184,8 +183,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       }
       _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + e.toString(), timestamp: DateTime.now()));
     } finally {
-      _agentController = null;
-      _stopActiveAgent = null;
+        _stopActiveAgent = null;
       _finishStreamingText();
       ref.read(streamingMessageProvider.notifier).state = '';
       if (mounted) ref.read(isAiThinkingProvider.notifier).state = false;
@@ -202,7 +200,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     }
     final providerManager = ref.read(providerManagerProvider);
     final ai = providerManager;
-    final model = providerManager.activeModel;
     final workspace = ref.read(workspaceServiceProvider);
     final backend = ref.read(backendServiceProvider);
     final userContent = _buildUserPrompt(text, _activeTabNow());
@@ -290,10 +287,11 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       }
     }
 
+    final plan = createdPlan;
     final planHistory = <Map<String, dynamic>>[
       ...history,
-      if (createdPlan != null && createdPlan!.trim().isNotEmpty)
-        {'role': 'assistant', 'content': createdPlan},
+      if (plan != null && plan.trim().isNotEmpty)
+        {'role': 'assistant', 'content': plan},
     ];
     ref.read(agentMessagesProvider.notifier).state = planHistory;
     if (taskId != null) {
@@ -346,7 +344,6 @@ At the end report changed areas, verification commands, unresolved failures, and
       systemPrompt: codeSystemPrompt,
       approvalHandler: _requestAgentApproval,
     );
-    _agentController = controller;
     _stopActiveAgent = controller.stop;
     await for (final event in controller.run(history)) {
       if (!mounted) break;

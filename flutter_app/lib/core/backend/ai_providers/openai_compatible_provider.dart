@@ -148,9 +148,8 @@ class OpenAiCompatibleProvider implements AiProvider {
         'stream': true,
       });
 
-    final client = http.Client();
     try {
-      final response = await client.send(request);
+      final response = await _client.send(request);
       if (response.statusCode < 200 || response.statusCode >= 300) {
         yield _extractError(await response.stream.bytesToString()) ??
             '$displayName HTTP ' + response.statusCode.toString();
@@ -179,8 +178,6 @@ class OpenAiCompatibleProvider implements AiProvider {
       }
     } catch (e) {
       yield '$displayName stream error: $e';
-    } finally {
-      client.close();
     }
   }
 

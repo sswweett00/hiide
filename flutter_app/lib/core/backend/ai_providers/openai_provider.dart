@@ -121,9 +121,8 @@ class OpenAiProvider implements AiProvider {
         'stream': true,
       });
 
-    final client = http.Client();
     try {
-      final response = await client.send(request);
+      final response = await _client.send(request);
       if (response.statusCode != 200) {
         final body = await response.stream.bytesToString();
         yield 'Error ${response.statusCode}: $body';
@@ -144,8 +143,6 @@ class OpenAiProvider implements AiProvider {
           } catch (_) {}
         }
       }
-    } finally {
-      client.close();
     }
   }
 
