@@ -551,6 +551,12 @@ class ProviderManager implements AiChatClient {
       } catch (error) {
         _breakerFor(provider.id).recordFailure();
         lastError = error;
+        // Once a stream has emitted content, switching providers would append
+        // a second, unrelated completion to the same answer.
+        if (emitted) {
+          yield '[' + provider.id + ' stream interrupted: ' + error.toString() + ']';
+          return;
+        }
       }
     }
 
@@ -562,19 +568,26 @@ class ProviderManager implements AiChatClient {
     final requestedProviderId = _activeProviderId;
     for (final provider in _orderedProviders()) {
       if (!provider.isConfigured) continue;
+      if (_breakerFor(provider.id).state == CircuitState.open) continue;
       try {
-        final value = await provider.completeCode(
-          prompt,
-          model: _modelFor(
-            provider,
-            requestedModel: model,
-            requestedProviderId: requestedProviderId,
-          ),
-        );
-        if (value != null && value.trim().isNotEmpty) {
-          _activeProviderId = provider.id;
-          return value;
-        }
+        final value = await _breakerFor(provider.id).run(() async {
+          final result = await provider.completeCode(
+            prompt,
+            model: _modelFor(
+              provider,
+              requestedModel: model,
+              requestedProviderId: requestedProviderId,
+            ),
+          );
+          if (result == null || result.trim().isEmpty) {
+            throw const _ProviderRequestException(
+              'Code completion returned no content.',
+            );
+          }
+          return result;
+        });
+        _activeProviderId = provider.id;
+        return value;
       } catch (_) {}
     }
     return null;
