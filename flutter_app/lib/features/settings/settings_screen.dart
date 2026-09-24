@@ -35,6 +35,13 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  String _catalogBaseUrl(String id, String fallback) {
+    for (final spec in AiProviderCatalog.specs) {
+      if (spec.id == id) return spec.baseUrl;
+    }
+    return fallback;
+  }
+
   late final TextEditingController _apiKeyCtrl;
   late final TextEditingController _openaiKeyCtrl;
   late final TextEditingController _anthropicKeyCtrl;
@@ -44,6 +51,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _customUrlCtrl;
   late final TextEditingController _customModelCtrl;
   late final TextEditingController _customKeyCtrl;
+  late final TextEditingController _baseUrlCtrl;
   bool _apiKeyObscured = true;
   String? _formProviderId;
 
@@ -59,12 +67,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _customUrlCtrl = TextEditingController();
     _customModelCtrl = TextEditingController();
     _customKeyCtrl = TextEditingController();
+    _baseUrlCtrl = TextEditingController();
     // Restore the full provider registry state.
     settingsService.getAiApiKeys().then((keys) {
       if (mounted) {
         ref.read(aiProviderKeysProvider.notifier).state = keys;
         final id = ref.read(aiProviderIdProvider);
         _apiKeyCtrl.text = keys[id] ?? '';
+      }
+    });
+    settingsService.getAiProviderBaseUrls().then((baseUrls) {
+      if (mounted) {
+        ref.read(aiProviderBaseUrlsProvider.notifier).state = baseUrls;
+        final id = ref.read(aiProviderIdProvider);
+        _baseUrlCtrl.text = baseUrls[id] ??
+            ref.read(providerManagerProvider).activeBaseUrl;
       }
     });
     settingsService.getAiProviderModels().then((models) {
@@ -105,6 +122,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _customUrlCtrl.dispose();
     _customModelCtrl.dispose();
     _customKeyCtrl.dispose();
+    _baseUrlCtrl.dispose();
     super.dispose();
   }
 
@@ -148,16 +166,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       final activeId = ref.watch(aiProviderIdProvider);
                       final keys = ref.watch(aiProviderKeysProvider);
                       final models = ref.watch(aiProviderModelsProvider);
+                      final baseUrls = ref.watch(aiProviderBaseUrlsProvider);
                       final active = manager.active;
                       final configured = !active.requiresApiKey ||
                           (keys[active.id] ?? '').trim().isNotEmpty;
                       final model = models[active.id]?.trim().isNotEmpty == true
                           ? models[active.id]!
                           : active.defaultModel;
+                      final activeBaseUrl = baseUrls[active.id]?.trim().isNotEmpty == true
+                          ? baseUrls[active.id]!
+                          : _catalogBaseUrl(active.id, active.defaultModel);
                       if (_formProviderId != active.id) {
                         _formProviderId = active.id;
                         _modelCtrl.text = model;
                         _apiKeyCtrl.text = keys[active.id] ?? '';
+                        _baseUrlCtrl.text = baseUrls[active.id] ?? activeBaseUrl;
                       } else if (_modelCtrl.text.isEmpty) {
                         _modelCtrl.text = model;
                       }
@@ -219,6 +242,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     final nextModels =
                                         ref.read(aiProviderModelsProvider);
                                     _apiKeyCtrl.text = nextKeys[value] ?? '';
+                                    _baseUrlCtrl.text =
+                                        ref.read(aiProviderBaseUrlsProvider)[value] ??
+                                            manager.available
+                                                .firstWhere(
+                                                  (p) => p.id == value,
+                                                  orElse: () => active,
+                                                )
+                                                .baseUrl;
                                     _modelCtrl.text = nextModels[value] ??
                                         manager.available
                                             .firstWhere(
@@ -318,6 +349,69 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 ],
                               ),
                             ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              DesignTokens.space4,
+                              0,
+                              DesignTokens.space4,
+                              DesignTokens.space4,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'API endpoint',
+                                  style: TextStyle(
+                                    color: cs.onSurface,
+                                    fontWeight: DesignTokens.fontWeightMedium,
+                                    fontSize: DesignTokens.fontSizeMD,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Override the default endpoint for this provider. Useful for Azure, gateways and self-hosted deployments.',
+                                  style: TextStyle(
+                                    color: cs.onSurfaceVariant,
+                                    fontSize: DesignTokens.fontSizeSM,
+                                  ),
+                                ),
+                                const SizedBox(height: DesignTokens.space3),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: _baseUrlCtrl,
+                                        decoration: InputDecoration(
+                                          hintText: active.baseUrl,
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: DesignTokens.space2),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        final value = _baseUrlCtrl.text.trim();
+                                        final next = {
+                                          ...ref.read(aiProviderBaseUrlsProvider),
+                                        };
+                                        if (value.isEmpty || value == active.baseUrl) {
+                                          next.remove(active.id);
+                                        } else {
+                                          next[active.id] = value;
+                                        }
+                                        ref.read(aiProviderBaseUrlsProvider.notifier).state = next;
+                                        await settingsService.setAiProviderBaseUrl(active.id, value == active.baseUrl ? '' : value);
+                                        if (mounted) setState(() {});
+                                      },
+                                      child: const Text('Save'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(
                               DesignTokens.space4,
