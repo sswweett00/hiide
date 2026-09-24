@@ -324,7 +324,6 @@ class ProviderManager implements AiChatClient {
     );
   }
 
-  @override
   Future<String?> completeCode(String prompt, {String? model}) async {
     final requestedProviderId = _activeProviderId;
     for (final provider in _orderedProviders()) {
