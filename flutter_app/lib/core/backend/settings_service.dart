@@ -135,6 +135,18 @@ class SettingsService {
         'xai': 'XAI_API_KEY',
         'gemini': 'GEMINI_API_KEY',
         'cerebras': 'CEREBRAS_API_KEY',
+        'cohere': 'COHERE_API_KEY',
+        'nvidia': 'NVIDIA_API_KEY',
+        'sambanova': 'SAMBANOVA_API_KEY',
+        'deepinfra': 'DEEPINFRA_API_KEY',
+        'huggingface': 'HF_TOKEN',
+        'qwen': 'DASHSCOPE_API_KEY',
+        'siliconflow': 'SILICONFLOW_API_KEY',
+        'novita': 'NOVITA_API_KEY',
+        'baseten': 'BASETEN_API_KEY',
+        'friendli': 'FRIENDLI_TOKEN',
+        'ai21': 'AI21_API_KEY',
+        'opencode-zen': 'OPENCODE_API_KEY',
       };
       for (final entry in envNames.entries) {
         if ((values[entry.key] ?? '').isNotEmpty) continue;
