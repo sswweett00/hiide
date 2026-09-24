@@ -289,7 +289,6 @@ class ProviderManager implements AiChatClient {
     return selected == null || selected.isEmpty ? active.defaultModel : selected;
   }
 
-  @override
   void dispose() {
     for (final provider in _providers) {
       provider.dispose();
