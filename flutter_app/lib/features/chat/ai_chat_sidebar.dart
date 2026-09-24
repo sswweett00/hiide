@@ -393,6 +393,10 @@ At the end report changed areas, verification commands, unresolved failures, and
                   ? event.toolCall.status == AgentToolStatus.success
                   : current?.verificationPassed,
             );
+            // Checkpoint the live transcript after every completed tool. The
+            // task store coalesces these writes, so crashes can resume from a
+            // recent consistent conversation state without write amplification.
+            store.replaceTranscript(taskId, controller.workingMessages);
             if (command.isNotEmpty && _isVerificationCommand(command)) {
               store.addArtifact(
                 taskId,
