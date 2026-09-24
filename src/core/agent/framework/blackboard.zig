@@ -504,7 +504,7 @@ test "blackboard: classification ceiling remains correct after speculative disca
     defer board.deinit();
 
     _ = try board.put("public", .diagnostic_bundle, "ok", .{ .classification = .public });
-    _ = try board.put("secret", .note, "draft", .{
+    _ = try board.put("secret", .test_report, "draft", .{
         .classification = .secret,
         .task_id = 9,
         .speculative = true,
