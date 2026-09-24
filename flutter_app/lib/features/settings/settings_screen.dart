@@ -48,6 +48,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _customAuthPrefixCtrl;
   late final TextEditingController _baseUrlCtrl;
   bool _apiKeyObscured = true;
+  bool _customRequiresApiKey = true;
   String? _formProviderId;
 
   @override
@@ -648,6 +649,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ),
                           ),
                           const SizedBox(height: DesignTokens.space2),
+                          CheckboxListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                            value: _customRequiresApiKey,
+                            onChanged: (value) => setState(
+                              () => _customRequiresApiKey = value ?? true,
+                            ),
+                            title: const Text('Requires API key'),
+                            subtitle: const Text(
+                              'Disable for local gateways that accept anonymous requests.',
+                            ),
+                          ),
+                          const SizedBox(height: DesignTokens.space1),
                           Row(
                             children: [
                               Expanded(
@@ -718,6 +732,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       ? 'Authorization'
                                       : _customAuthHeaderCtrl.text.trim(),
                                   'apiKeyPrefix': _customAuthPrefixCtrl.text,
+                                  'requiresApiKey': _customRequiresApiKey.toString(),
                                 },
                               ];
                               ref
@@ -745,6 +760,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               _customKeyCtrl.clear();
                               _customAuthHeaderCtrl.text = 'Authorization';
                               _customAuthPrefixCtrl.text = 'Bearer ';
+                              _customRequiresApiKey = true;
                               _apiKeyCtrl.text = keys[uniqueId] ?? '';
                               _modelCtrl.text = model;
                               if (mounted) setState(() {});
