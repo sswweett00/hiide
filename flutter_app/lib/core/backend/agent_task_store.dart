@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -226,7 +227,10 @@ class AgentTaskStore {
 
   final SharedPreferences _prefs;
   List<AgentTaskRecord> _tasks;
-  Future<void> _writeQueue = Future<void>.value();
+  bool _persistRunning = false;
+  bool _persistRequested = false;
+  Completer<void>? _persistWaiter;
+
   List<AgentTaskRecord> get tasks => List.unmodifiable(_tasks);
 
   static Future<AgentTaskStore> load() async {
@@ -353,19 +357,45 @@ class AgentTaskStore {
     return _replace(task.copyWith(transcript: safe.sublist(start)));
   }
 
+  /// Coalesces bursty task mutations into the smallest possible number of
+  /// SharedPreferences writes. Agent tool events can arrive several times per
+  /// second; serializing every intermediate snapshot creates stale queued work.
   Future<void> _persist() {
-    final snapshot = jsonEncode(
-      _tasks.map((e) => e.toJson()).toList(),
-    );
-    _writeQueue = _writeQueue.then((_) async {
-      try {
-        await _prefs.setString(_prefsKey, snapshot);
-      } catch (_) {}
-    });
-    return _writeQueue;
+    _persistRequested = true;
+    final waiter = _persistWaiter ??= Completer<void>();
+    if (!_persistRunning) {
+      unawaited(_drainPersistence());
+    }
+    return waiter.future;
   }
 
-  Future<void> flush() => _writeQueue;
+  Future<void> _drainPersistence() async {
+    if (_persistRunning) return;
+    _persistRunning = true;
+    try {
+      while (_persistRequested) {
+        _persistRequested = false;
+        final snapshot = jsonEncode(
+          _tasks.map((e) => e.toJson()).toList(),
+        );
+        try {
+          await _prefs.setString(_prefsKey, snapshot);
+        } catch (_) {
+          // Persistence is best-effort; in-memory task state remains intact.
+        }
+      }
+    } finally {
+      _persistRunning = false;
+      final waiter = _persistWaiter;
+      _persistWaiter = null;
+      if (waiter != null && !waiter.isCompleted) waiter.complete();
+      if (_persistRequested) {
+        unawaited(_drainPersistence());
+      }
+    }
+  }
+
+  Future<void> flush() => _persist();
 
   AgentTaskRecord? _find(String id) {
     for (final task in _tasks) {
