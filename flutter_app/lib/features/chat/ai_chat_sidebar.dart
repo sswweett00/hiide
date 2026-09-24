@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/agent_controller.dart';
@@ -42,24 +44,70 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
   AgentController? _agentController;
   VoidCallback? _stopActiveAgent;
   bool _approveCommandsForSession = false;
+  Timer? _streamFlushTimer;
+  final StringBuffer _streamBuffer = StringBuffer();
 
   @override
   void dispose() {
+    _streamFlushTimer?.cancel();
+    _streamFlushTimer = null;
+    _streamBuffer.clear();
     _inputController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _scrollToBottom() {
+  void _scrollToBottom({bool animate = true}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
+      if (!_scrollController.hasClients) return;
+      final target = _scrollController.position.maxScrollExtent;
+      if (animate) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          target,
           duration: const Duration(milliseconds: 120),
           curve: Curves.easeOut,
         );
+      } else {
+        _scrollController.jumpTo(target);
       }
     });
+  }
+
+  /// Coalesces high-frequency model tokens into bounded UI updates.
+  ///
+  /// Providers can emit dozens of token events per frame. Updating Riverpod
+  /// state and starting a new scroll animation for each token forces repeated
+  /// layout/paint work and creates visible jank on long generations.
+  void _queueStreamingToken(String token) {
+    if (token.isEmpty) return;
+    _streamBuffer.write(token);
+    if (_streamFlushTimer?.isActive ?? false) return;
+    _streamFlushTimer =
+        Timer(const Duration(milliseconds: 33), _flushStreamingText);
+  }
+
+  void _flushStreamingText() {
+    _streamFlushTimer = null;
+    if (!mounted || _streamBuffer.isEmpty) return;
+
+    final chunk = _streamBuffer.toString();
+    _streamBuffer.clear();
+    final current = ref.read(streamingMessageProvider);
+    ref.read(streamingMessageProvider.notifier).state = current + chunk;
+    _scrollToBottom(animate: false);
+  }
+
+  void _finishStreamingText() {
+    _streamFlushTimer?.cancel();
+    _streamFlushTimer = null;
+    _flushStreamingText();
+  }
+
+  void _resetStreamingText() {
+    _streamFlushTimer?.cancel();
+    _streamFlushTimer = null;
+    _streamBuffer.clear();
+    ref.read(streamingMessageProvider.notifier).state = '';
   }
 
   void _addMessage(ChatMessage msg) {
@@ -125,6 +173,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
         await _runCodeMode(text);
       }
     } catch (e) {
+      _finishStreamingText();
       ref.read(streamingMessageProvider.notifier).state = '';
       final taskId = ref.read(activeAgentTaskIdProvider);
       if (taskId != null) {
@@ -137,6 +186,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     } finally {
       _agentController = null;
       _stopActiveAgent = null;
+      _finishStreamingText();
       ref.read(streamingMessageProvider.notifier).state = '';
       if (mounted) ref.read(isAiThinkingProvider.notifier).state = false;
     }
@@ -206,9 +256,9 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
           }
         case PlanTextTokenEvent(:final token):
           ref.read(streamingMessageProvider.notifier).state =
-              ref.read(streamingMessageProvider) + token;
-          _scrollToBottom();
+              _queueStreamingToken(token);
         case PlanDoneEvent(:final summary, :final document):
+          _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           createdPlan = summary;
           ref.read(lastPlanProvider.notifier).state = document.toMarkdown();
@@ -229,6 +279,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
           }
           _addMessage(ChatMessage(role: ChatRole.assistant, content: summary, timestamp: DateTime.now()));
         case PlanErrorEvent(:final message):
+          _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
             store.update(taskId, status: AgentTaskStatus.failed, error: message);
@@ -301,8 +352,7 @@ At the end report changed areas, verification commands, unresolved failures, and
       if (!mounted) break;
       switch (event) {
         case AgentTextTokenEvent():
-          ref.read(streamingMessageProvider.notifier).state = ref.read(streamingMessageProvider) + event.token;
-          _scrollToBottom();
+          _queueStreamingToken(event.token);
         case AgentToolStartedEvent():
           _addToolBubble(event.toolCall);
           if (taskId != null) {
@@ -376,6 +426,7 @@ At the end report changed areas, verification commands, unresolved failures, and
             if (command.isNotEmpty) ref.read(terminalServiceProvider).logAgentRun(command, event.toolCall.result ?? '');
           }
         case AgentDoneEvent():
+          _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
             final current = store.byId(taskId);
@@ -410,6 +461,7 @@ At the end report changed areas, verification commands, unresolved failures, and
           }
           if (event.text.trim().isNotEmpty) _addMessage(ChatMessage(role: ChatRole.assistant, content: event.text, timestamp: DateTime.now()));
         case AgentErrorEvent(:final message):
+          _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
             store.update(taskId, status: AgentTaskStatus.failed, error: message, summary: 'Agent execution failed');
@@ -418,6 +470,7 @@ At the end report changed areas, verification commands, unresolved failures, and
           }
           _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + message, timestamp: DateTime.now()));
         case AgentStoppedEvent():
+          _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
             store.update(taskId, status: AgentTaskStatus.canceled, summary: 'Kullanıcı tarafından durduruldu.');
@@ -426,6 +479,7 @@ At the end report changed areas, verification commands, unresolved failures, and
           }
           _addMessage(ChatMessage(role: ChatRole.system, content: '⏹ Stopped by user.', timestamp: DateTime.now()));
         case AgentIterationLimitEvent(:final iterations):
+          _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
             final message = 'Stopped after ' + iterations.toString() + ' tool rounds.';
@@ -698,7 +752,7 @@ At the end report changed areas, verification commands, unresolved failures, and
   void _clearChat() {
     ref.read(chatMessagesProvider.notifier).state = [];
     ref.read(agentMessagesProvider.notifier).state = [];
-    ref.read(streamingMessageProvider.notifier).state = '';
+    _resetStreamingText();
   }
 
   /// Saves the conversation as a Markdown file in the workspace root
