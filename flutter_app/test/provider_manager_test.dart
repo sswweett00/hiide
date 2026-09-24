@@ -14,6 +14,9 @@ class _FakeProvider implements AiProvider {
   final String id;
 
   @override
+  String get baseUrl => 'https://example.test/v1';
+
+  @override
   final bool available;
 
   @override
