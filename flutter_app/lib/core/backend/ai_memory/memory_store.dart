@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +10,7 @@ class AiMemoryStore {
 
   late SharedPreferences _prefs;
   bool _initialized = false;
+  Future<void> _writeQueue = Future<void>.value();
 
   Future<void> init() async {
     if (_initialized) return;
@@ -25,12 +27,14 @@ class AiMemoryStore {
     required String value,
   }) async {
     await init();
-    final memories = await getProjectContext(workspaceRoot);
-    memories[key] = value;
-    await _prefs.setString(
-      'ai_mem_ctx_$workspaceRoot',
-      jsonEncode(memories),
-    );
+    await _serializeWrite(() async {
+      final memories = await getProjectContext(workspaceRoot);
+      memories[key] = value;
+      await _prefs.setString(
+        'ai_mem_ctx_$workspaceRoot',
+        jsonEncode(memories),
+      );
+    });
   }
 
   Future<Map<String, String>> getProjectContext(String workspaceRoot) async {
@@ -55,20 +59,21 @@ class AiMemoryStore {
     required List<String> topics,
   }) async {
     await init();
-    final entries = await _getConversations(workspaceRoot);
-    entries.insert(0, {
-      'summary': summary,
-      'topics': topics,
-      'timestamp': DateTime.now().toIso8601String(),
+    await _serializeWrite(() async {
+      final entries = await _getConversations(workspaceRoot);
+      entries.insert(0, {
+        'summary': summary,
+        'topics': topics,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+      if (entries.length > _maxEntries) {
+        entries.removeRange(_maxEntries, entries.length);
+      }
+      await _prefs.setString(
+        'ai_mem_conv_$workspaceRoot',
+        jsonEncode(entries),
+      );
     });
-    // Keep only the most recent entries
-    if (entries.length > _maxEntries) {
-      entries.removeRange(_maxEntries, entries.length);
-    }
-    await _prefs.setString(
-      'ai_mem_conv_$workspaceRoot',
-      jsonEncode(entries),
-    );
   }
 
   Future<List<Map<String, dynamic>>> _getConversations(
@@ -127,23 +132,24 @@ class AiMemoryStore {
     required String example,
   }) async {
     await init();
-    final patterns = await getCodePatterns(workspaceRoot);
-    // Deduplicate
-    if (patterns.any((p) => p['pattern']?.toString() == pattern)) {
-      return;
-    }
-    patterns.add({
-      'pattern': pattern,
-      'example': _truncate(example, _maxTokensPerEntry),
-      'timestamp': DateTime.now().toIso8601String(),
+    await _serializeWrite(() async {
+      final patterns = await getCodePatterns(workspaceRoot);
+      if (patterns.any((p) => p['pattern']?.toString() == pattern)) {
+        return;
+      }
+      patterns.add({
+        'pattern': pattern,
+        'example': _truncate(example, _maxTokensPerEntry),
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+      if (patterns.length > 50) {
+        patterns.removeRange(0, patterns.length - 50);
+      }
+      await _prefs.setString(
+        'ai_mem_patterns_$workspaceRoot',
+        jsonEncode(patterns),
+      );
     });
-    if (patterns.length > 50) {
-      patterns.removeRange(0, patterns.length - 50);
-    }
-    await _prefs.setString(
-      'ai_mem_patterns_$workspaceRoot',
-      jsonEncode(patterns),
-    );
   }
 
   Future<List<Map<String, dynamic>>> getCodePatterns(
@@ -168,9 +174,11 @@ class AiMemoryStore {
     required String value,
   }) async {
     await init();
-    final prefs = await getPreferences();
-    prefs[key] = value;
-    await _prefs.setString('ai_mem_prefs', jsonEncode(prefs));
+    await _serializeWrite(() async {
+      final prefs = await getPreferences();
+      prefs[key] = value;
+      await _prefs.setString('ai_mem_prefs', jsonEncode(prefs));
+    });
   }
 
   Future<Map<String, String>> getPreferences() async {
@@ -184,6 +192,15 @@ class AiMemoryStore {
       }
     } catch (_) {}
     return {};
+  }
+
+  Future<T> _serializeWrite<T>(Future<T> Function() action) {
+    final result = _writeQueue.then<T>((_) => action());
+    _writeQueue = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace __) {},
+    );
+    return result;
   }
 
   /// Builds a bounded, non-instructional memory context for an agent turn.
@@ -247,20 +264,24 @@ class AiMemoryStore {
   /// Clears all memory for a workspace.
   Future<void> clearWorkspace(String workspaceRoot) async {
     await init();
-    await _prefs.remove('ai_mem_ctx_$workspaceRoot');
-    await _prefs.remove('ai_mem_conv_$workspaceRoot');
-    await _prefs.remove('ai_mem_patterns_$workspaceRoot');
+    await _serializeWrite(() async {
+      await _prefs.remove('ai_mem_ctx_$workspaceRoot');
+      await _prefs.remove('ai_mem_conv_$workspaceRoot');
+      await _prefs.remove('ai_mem_patterns_$workspaceRoot');
+    });
   }
 
   /// Clears all memory.
   Future<void> clearAll() async {
     await init();
-    final keys = _prefs.getKeys();
-    for (final key in keys) {
-      if (key.startsWith('ai_mem_')) {
-        await _prefs.remove(key);
+    await _serializeWrite(() async {
+      final keys = _prefs.getKeys();
+      for (final key in keys) {
+        if (key.startsWith('ai_mem_')) {
+          await _prefs.remove(key);
+        }
       }
-    }
+    });
   }
 
   String _truncate(String text, int maxLen) {
