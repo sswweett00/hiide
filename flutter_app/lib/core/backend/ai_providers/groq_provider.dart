@@ -19,6 +19,9 @@ class GroqProvider implements AiProvider {
   String get baseUrl => 'https://api.groq.com/openai/v1';
 
   @override
+  String get baseUrl => 'https://api.groq.com/openai/v1';
+
+  @override
   String get defaultModel => 'openai/gpt-oss-120b';
 
   @override
