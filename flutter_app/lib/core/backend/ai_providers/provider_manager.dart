@@ -142,6 +142,10 @@ class ProviderManager implements AiChatClient {
   final List<AiProvider> _providers;
   String _activeProviderId;
   final Map<String, String> _selectedModels;
+  final Map<String, _AvailabilityEntry> _availabilityCache =
+      <String, _AvailabilityEntry>{};
+
+  static const _availabilityTtl = Duration(seconds: 15);
 
   AiProvider get active =>
       _providers.firstWhere((p) => p.id == _activeProviderId, orElse: () => _providers.first);
@@ -155,6 +159,27 @@ class ProviderManager implements AiChatClient {
 
   List<AiProvider> get available => List.unmodifiable(_providers);
 
+  Future<bool> _cachedAvailability(AiProvider provider) async {
+    if (!provider.isConfigured) return false;
+
+    final now = DateTime.now();
+    final cached = _availabilityCache[provider.id];
+    if (cached != null && now.difference(cached.checkedAt) < _availabilityTtl) {
+      return cached.available;
+    }
+
+    try {
+      final available = await provider.isAvailable;
+      _availabilityCache[provider.id] =
+          _AvailabilityEntry(checkedAt: now, available: available);
+      return available;
+    } catch (_) {
+      _availabilityCache[provider.id] =
+          _AvailabilityEntry(checkedAt: now, available: false);
+      return false;
+    }
+  }
+
   Future<AiProvider> _resolve() async {
     if (_providers.isEmpty) {
       throw StateError('No AI providers registered');
@@ -167,20 +192,16 @@ class ProviderManager implements AiChatClient {
         break;
       }
     }
-    if (preferred != null) {
-      try {
-        if (await preferred.isAvailable) return preferred;
-      } catch (_) {}
+    if (preferred != null && await _cachedAvailability(preferred)) {
+      return preferred;
     }
 
     for (final provider in _providers) {
       if (preferred != null && identical(provider, preferred)) continue;
-      try {
-        if (await provider.isAvailable) {
-          _activeProviderId = provider.id;
-          return provider;
-        }
-      } catch (_) {}
+      if (await _cachedAvailability(provider)) {
+        _activeProviderId = provider.id;
+        return provider;
+      }
     }
 
     return preferred ?? _providers.first;
@@ -189,6 +210,7 @@ class ProviderManager implements AiChatClient {
   void switchTo(String providerId) {
     if (_providers.any((p) => p.id == providerId)) {
       _activeProviderId = providerId;
+      _availabilityCache.remove(providerId);
     }
   }
 
@@ -327,6 +349,19 @@ class ProviderManager implements AiChatClient {
 
   /// There is deliberately no write-side API for secrets here. Credentials
   /// enter via SettingsService/Riverpod and are passed to providers by value.
+}
+
+
+/// Short-lived provider reachability cache used to avoid an HTTP availability
+/// probe before every streamed completion.
+class _AvailabilityEntry {
+  const _AvailabilityEntry({
+    required this.checkedAt,
+    required this.available,
+  });
+
+  final DateTime checkedAt;
+  final bool available;
 }
 
 final aiProviderIdProvider = StateProvider<String>((ref) => 'groq');
