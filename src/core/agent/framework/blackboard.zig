@@ -503,7 +503,7 @@ test "blackboard: classification ceiling remains correct after speculative disca
     var board = Blackboard.init(std.testing.allocator, clock_mod.system());
     defer board.deinit();
 
-    _ = try board.put("public", .note, "ok", .{ .classification = .public });
+    _ = try board.put("public", .diagnostic_bundle, "ok", .{ .classification = .public });
     _ = try board.put("secret", .note, "draft", .{
         .classification = .secret,
         .task_id = 9,

@@ -217,7 +217,7 @@ test "buffer: large insert grows beyond a single doubling" {
     var buffer = try TextBuffer.init(std.testing.allocator);
     defer buffer.deinit();
 
-    const payload = try std.testing.allocator.alloc(u8, DefaultCapacity * 5 + 123);
+    const payload = try std.testing.allocator.alloc(u8, TextBuffer.DefaultCapacity * 5 + 123);
     defer std.testing.allocator.free(payload);
     @memset(payload, 'x');
 

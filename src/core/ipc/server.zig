@@ -598,7 +598,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
             allocator.free(entries);
         }
 
-        var arr = compat.ManagedArrayList(json.Value).init(allocator);
+        var arr = json.Array.init(allocator);
         errdefer {
             for (arr.items) |*item| deinitValue(allocator, item);
             arr.deinit();
