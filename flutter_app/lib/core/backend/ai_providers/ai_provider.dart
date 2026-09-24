@@ -59,6 +59,20 @@ enum AiProviderType {
   xai,
   gemini,
   cerebras,
+  cohere,
+  nvidia,
+  sambanova,
+  deepinfra,
+  huggingface,
+  lmStudio,
+  vllm,
+  opencodeZen,
+  qwen,
+  siliconflow,
+  novita,
+  baseten,
+  friendli,
+  ai21,
 }
 
 /// Parses a string id into an [AiProviderType], defaulting to Groq.
