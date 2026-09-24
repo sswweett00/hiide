@@ -14,6 +14,7 @@ class BuiltInAiProviderSpec {
     required this.defaultModel,
     this.requiresApiKey = true,
     this.envKey,
+    this.extraHeaders = const <String, String>{},
   });
 
   final String id;
@@ -22,6 +23,7 @@ class BuiltInAiProviderSpec {
   final String defaultModel;
   final bool requiresApiKey;
   final String? envKey;
+  final Map<String, String> extraHeaders;
 }
 
 /// Providers shipped with Hiide. OpenAI-compatible services all share the same
@@ -54,7 +56,7 @@ class AiProviderCatalog {
       id: 'deepseek',
       displayName: 'DeepSeek',
       baseUrl: 'https://api.deepseek.com',
-      defaultModel: 'deepseek-flash',
+      defaultModel: 'deepseek-chat',
       envKey: 'DEEPSEEK_API_KEY',
     ),
     BuiltInAiProviderSpec(
@@ -82,21 +84,21 @@ class AiProviderCatalog {
       id: 'perplexity',
       displayName: 'Perplexity',
       baseUrl: 'https://api.perplexity.ai',
-      defaultModel: 'sonar-pro',
+      defaultModel: 'sonar',
       envKey: 'PERPLEXITY_API_KEY',
     ),
     BuiltInAiProviderSpec(
       id: 'xai',
       displayName: 'xAI (Grok)',
       baseUrl: 'https://api.x.ai/v1',
-      defaultModel: 'grok-4.7',
+      defaultModel: 'grok-4',
       envKey: 'XAI_API_KEY',
     ),
     BuiltInAiProviderSpec(
       id: 'gemini',
       displayName: 'Google Gemini',
       baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
-      defaultModel: 'gemini-3.8-flash',
+      defaultModel: 'gemini-2.5-flash',
       envKey: 'GEMINI_API_KEY',
     ),
     BuiltInAiProviderSpec(
@@ -107,13 +109,111 @@ class AiProviderCatalog {
       envKey: 'CEREBRAS_API_KEY',
     ),
     BuiltInAiProviderSpec(
+      id: 'cohere',
+      displayName: 'Cohere',
+      baseUrl: 'https://api.cohere.com/compatibility/v1',
+      defaultModel: 'command-a-03-2025',
+      envKey: 'COHERE_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'nvidia',
+      displayName: 'NVIDIA NIM',
+      baseUrl: 'https://integrate.api.nvidia.com/v1',
+      defaultModel: 'moonshotai/kimi-k2.6',
+      envKey: 'NVIDIA_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'sambanova',
+      displayName: 'SambaNova',
+      baseUrl: 'https://api.sambanova.ai/v1',
+      defaultModel: 'Meta-Llama-3.3-70B-Instruct',
+      envKey: 'SAMBANOVA_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'deepinfra',
+      displayName: 'DeepInfra',
+      baseUrl: 'https://api.deepinfra.com/v1/openai',
+      defaultModel: 'meta-llama/Meta-Llama-3.3-70B-Instruct',
+      envKey: 'DEEPINFRA_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'huggingface',
+      displayName: 'Hugging Face',
+      baseUrl: 'https://router.huggingface.co/v1',
+      defaultModel: 'meta-llama/Llama-3.3-70B-Instruct',
+      envKey: 'HF_TOKEN',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'qwen',
+      displayName: 'Qwen / Alibaba Cloud',
+      baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+      defaultModel: 'qwen-plus',
+      envKey: 'DASHSCOPE_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'siliconflow',
+      displayName: 'SiliconFlow',
+      baseUrl: 'https://api.siliconflow.com/v1',
+      defaultModel: 'Qwen/Qwen3-8B',
+      envKey: 'SILICONFLOW_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'novita',
+      displayName: 'Novita AI',
+      baseUrl: 'https://api.novita.ai/openai',
+      defaultModel: 'meta-llama/llama-3.1-70b-instruct',
+      envKey: 'NOVITA_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'baseten',
+      displayName: 'Baseten',
+      baseUrl: 'https://inference.baseten.co/v1',
+      defaultModel: 'moonshotai/Kimi-K2-Instruct-0905',
+      envKey: 'BASETEN_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'friendli',
+      displayName: 'FriendliAI',
+      baseUrl: 'https://api.friendli.ai/serverless/v1',
+      defaultModel: 'meta-llama-3.1-70b-instruct',
+      envKey: 'FRIENDLI_TOKEN',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'ai21',
+      displayName: 'AI21 Labs',
+      baseUrl: 'https://api.ai21.com/studio/v1',
+      defaultModel: 'jamba-large',
+      envKey: 'AI21_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'opencode-zen',
+      displayName: 'OpenCode Zen',
+      baseUrl: 'https://opencode.ai/zen/v1',
+      defaultModel: 'claude-sonnet-4-6',
+      envKey: 'OPENCODE_API_KEY',
+    ),
+    BuiltInAiProviderSpec(
+      id: 'lm-studio',
+      displayName: 'LM Studio (Local)',
+      baseUrl: 'http://127.0.0.1:1234/v1',
+      defaultModel: 'local-model',
+      requiresApiKey: false,
+    ),
+    BuiltInAiProviderSpec(
+      id: 'vllm',
+      displayName: 'vLLM (Local / Self-hosted)',
+      baseUrl: 'http://127.0.0.1:8000/v1',
+      defaultModel: 'local-model',
+      requiresApiKey: false,
+    ),
+    BuiltInAiProviderSpec(
       id: 'ollama',
       displayName: 'Ollama (Local)',
       baseUrl: 'http://127.0.0.1:11434/v1',
       defaultModel: 'llama3.2',
       requiresApiKey: false,
     ),
-  ];
+  ]
 
   static BuiltInAiProviderSpec? byId(String id) {
     for (final spec in specs) {
@@ -414,6 +514,7 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
         apiKey: key,
         defaultModel: spec.defaultModel,
         requiresApiKey: spec.requiresApiKey,
+        extraHeaders: spec.extraHeaders,
       ),
     );
   }
