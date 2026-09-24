@@ -148,6 +148,7 @@ class SettingsService {
         'friendli': 'FRIENDLI_TOKEN',
         'ai21': 'AI21_API_KEY',
         'opencode-zen': 'OPENCODE_API_KEY',
+        'litellm': 'LITELLM_API_KEY',
       };
       for (final entry in envNames.entries) {
         if ((values[entry.key] ?? '').isNotEmpty) continue;
