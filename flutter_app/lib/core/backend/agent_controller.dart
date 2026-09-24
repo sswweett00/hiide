@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 
 import 'ai_chat_client.dart';
 import 'backend_service.dart';
+import '../mechanics/agent_guard.dart';
 
 // ─── Agent loop types ─────────────────────────────────────────────────────────
 
@@ -66,7 +67,11 @@ class AgentStoppedEvent extends AgentEvent {
 
 class AgentIterationLimitEvent extends AgentEvent {
   final int iterations;
-  const AgentIterationLimitEvent(this.iterations);
+  final String reason;
+  const AgentIterationLimitEvent(
+    this.iterations, [
+    this.reason = 'Agent iteration limit reached.',
+  ]);
 }
 
 class _ToolResult {
@@ -94,6 +99,10 @@ class AgentController {
     String? systemPrompt,
     this.maxIterations = 15,
     this.toolResultMaxChars = 8000,
+    this.maxToolContextChars = 12000,
+    this.maxToolCalls = 64,
+    this.maxRunDuration = const Duration(minutes: 10),
+    this.maxRepeatedToolCalls = 2,
     this.approvalHandler,
   })  : _ai = ai,
         _backend = backend,
@@ -108,6 +117,10 @@ class AgentController {
   final String _systemPrompt;
   final int maxIterations;
   final int toolResultMaxChars;
+  final int maxToolContextChars;
+  final int maxToolCalls;
+  final Duration maxRunDuration;
+  final int maxRepeatedToolCalls;
   final Future<bool> Function(String toolName, Map<String, dynamic> arguments)? approvalHandler;
 
   bool _stopRequested = false;
@@ -321,7 +334,20 @@ Guidelines:
 
     var iterations = 0;
     var toolFailRetries = 0;
+    final guard = AgentRunGuard(
+      budget: AgentRunBudget(
+        maxToolCalls: maxToolCalls,
+        maxRunDuration: maxRunDuration,
+        maxRepeatedToolCalls: maxRepeatedToolCalls,
+      ),
+    );
     while (true) {
+      final budgetFailure = guard.checkRunBudget(iterations: iterations);
+      if (budgetFailure != null) {
+        yield AgentIterationLimitEvent(iterations, budgetFailure);
+        return;
+      }
+
       if (_stopRequested) {
         yield const AgentStoppedEvent();
         return;
@@ -401,28 +427,43 @@ Guidelines:
       apiMessages.add(assistantMsg);
       _workingMessages.add(assistantMsg);
 
-      // Execute every requested tool call.
+      // Materialize the calls once so the runtime can safely parallelize
+      // independent read-only work without ever racing writes/commands.
+      final calls = <AgentToolCall>[];
       for (final tc in toolCalls) {
         final t = tc as Map<String, dynamic>;
         final fn = (t['function'] as Map<String, dynamic>?) ?? const {};
         final name = fn['name']?.toString() ?? 'unknown';
         final arguments = _parseArguments(fn['arguments']?.toString());
-
         final call = AgentToolCall(
-          id: t['id']?.toString() ?? 'call_$iterations',
+          id: t['id']?.toString() ?? 'call_${iterations}_${calls.length}',
           name: name,
           arguments: arguments,
         );
+        calls.add(call);
         yield AgentToolStartedEvent(call);
+      }
 
-        final result = await _executeTool(name, arguments);
+      final parallelReadOnly = calls.length > 1 &&
+          calls.every((call) => AgentReadOnlyTool.contains(call.name));
+
+      final results = parallelReadOnly
+          ? await Future.wait(calls.map((call) => _executeGuardedTool(call, guard)))
+          : <_ToolResult>[
+              for (final call in calls)
+                await _executeGuardedTool(call, guard),
+            ];
+
+      for (var i = 0; i < calls.length; i++) {
+        final call = calls[i];
+        final result = results[i];
         call.status =
             result.success ? AgentToolStatus.success : AgentToolStatus.error;
-        call.result = _truncate(result.output);
+        call.result = _truncate(result.output, toolResultMaxChars);
         final toolMsg = <String, dynamic>{
           'role': 'tool',
           'tool_call_id': call.id,
-          'content': result.output,
+          'content': _truncate(result.output, maxToolContextChars),
         };
         apiMessages.add(toolMsg);
         _workingMessages.add(toolMsg);
@@ -434,6 +475,17 @@ Guidelines:
         }
       }
     }
+  }
+
+  Future<_ToolResult> _executeGuardedTool(
+    AgentToolCall call,
+    AgentRunGuard guard,
+  ) async {
+    final blocked = guard.reserveTool(call.name, call.arguments);
+    if (blocked != null) {
+      return _ToolResult('(agent guard) $blocked', success: false);
+    }
+    return _executeTool(call.name, call.arguments);
   }
 
   /// Whether an API error is Groq's hard rejection of a malformed tool call
@@ -773,8 +825,17 @@ Guidelines:
     }
   }
 
-  String _truncate(String text) {
-    if (text.length <= toolResultMaxChars) return text;
-    return '${text.substring(0, toolResultMaxChars)}\n…[truncated]';
+  String _truncate(String text, [int? limit]) {
+    final maxChars = (limit ?? toolResultMaxChars).clamp(256, 1 << 20);
+    if (text.length <= maxChars) return text;
+
+    // Keep both the beginning (diagnostics/context) and the tail (compiler
+    // summaries, exit codes and stack traces) instead of discarding the tail.
+    final head = (maxChars * 2) ~/ 3;
+    final tail = maxChars - head;
+    final omitted = text.length - head - tail;
+    return '${text.substring(0, head)}\n'
+        '…[$omitted chars truncated]…\n'
+        '${text.substring(text.length - tail)}';
   }
 }
