@@ -537,12 +537,19 @@ class ProviderManager implements AiChatClient {
         }
         if (emitted) {
           _activeProviderId = provider.id;
+          _breakerFor(provider.id).recordSuccess();
+          _availabilityCache[provider.id] = _AvailabilityEntry(
+            checkedAt: DateTime.now(),
+            available: true,
+          );
           return;
         }
         lastError = StateError(
           provider.id + ' did not emit any streaming content.',
         );
+        _breakerFor(provider.id).recordFailure();
       } catch (error) {
+        _breakerFor(provider.id).recordFailure();
         lastError = error;
       }
     }
