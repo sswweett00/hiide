@@ -340,6 +340,7 @@ fn startWatcher() bool {
 }
 
 fn watcherThread() void {
+    defer watcher_started.store(false, .release);
     if (comptime is_linux) {
         linuxWatcherThread();
     } else {
