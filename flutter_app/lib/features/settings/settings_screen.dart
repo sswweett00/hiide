@@ -35,13 +35,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  String _catalogBaseUrl(String id, String fallback) {
-    for (final spec in AiProviderCatalog.specs) {
-      if (spec.id == id) return spec.baseUrl;
-    }
-    return fallback;
-  }
-
   late final TextEditingController _apiKeyCtrl;
   late final TextEditingController _openaiKeyCtrl;
   late final TextEditingController _anthropicKeyCtrl;
@@ -81,8 +74,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ref.read(aiProviderBaseUrlsProvider.notifier).state = baseUrls;
         final id = ref.read(aiProviderIdProvider);
         _baseUrlCtrl.text = baseUrls[id] ??
-            AiProviderCatalog.byId(id)?.baseUrl ??
-            '';
+            ref.read(providerManagerProvider).active.baseUrl;
       }
     });
     settingsService.getAiProviderModels().then((models) {
@@ -176,7 +168,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           : active.defaultModel;
                       final activeBaseUrl = baseUrls[active.id]?.trim().isNotEmpty == true
                           ? baseUrls[active.id]!
-                          : _catalogBaseUrl(active.id, active.defaultModel);
+                          : active.baseUrl;
                       if (_formProviderId != active.id) {
                         _formProviderId = active.id;
                         _modelCtrl.text = model;
