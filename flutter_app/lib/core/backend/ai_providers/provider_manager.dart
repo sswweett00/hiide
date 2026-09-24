@@ -289,6 +289,18 @@ class ProviderManager implements AiChatClient {
     return selected == null || selected.isEmpty ? active.defaultModel : selected;
   }
 
+  @override
+  void dispose() {
+    for (final provider in _providers) {
+      provider.dispose();
+    }
+    _modelRequests.clear();
+    _modelCache.clear();
+    _availabilityCache.clear();
+    _providerBreakers.clear();
+    _runtimeStats.clear();
+  }
+
   List<AiProvider> get available => List.unmodifiable(_providers);
 
   Map<String, ProviderRuntimeSnapshot> get runtimeStats {
@@ -811,6 +823,7 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
     activeProviderId: activeId,
     selectedModels: models,
   );
+  ref.onDispose(manager.dispose);
   return manager;
 });
 
