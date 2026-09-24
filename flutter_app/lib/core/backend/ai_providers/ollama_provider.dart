@@ -24,6 +24,9 @@ class OllamaProvider implements AiProvider {
   String get displayName => 'Ollama (Local)';
 
   @override
+  String get baseUrl => this.baseUrl;
+
+  @override
   String get defaultModel => _selectedModel;
 
   @override
