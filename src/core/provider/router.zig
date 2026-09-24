@@ -279,7 +279,7 @@ pub const Router = struct {
         return true;
     }
 
-    fn scoreModel(model: ModelDescriptor, req: RouteRequest, provider: Provider) f32 {
+    fn scoreModel(model: ModelDescriptor, req: RouteRequest, provider: *const Provider) f32 {
         var score: f32 = 1.0;
         if (req.latency_class >= 2 and provider.mode == .self_hosted) score += 0.5;
         if (provider.health == .healthy) score += 0.1;
@@ -510,7 +510,6 @@ test "router: selects eligible provider" {
     };
     const req = RouteRequest{
         .required_capabilities = .{ .tool_use = false, .vision = false, .structured_output = false, .long_context = false, .streaming = true },
-        .max_classification = 0,
         .latency_class = 1,
         .max_cost_1k = 0,
         .max_classification = 0,
