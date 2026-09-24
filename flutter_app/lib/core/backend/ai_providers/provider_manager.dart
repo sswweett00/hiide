@@ -740,6 +740,8 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
         raw['apiKeyPrefix']?.isNotEmpty == true
             ? raw['apiKeyPrefix']!
             : 'Bearer ';
+    final requiresApiKey =
+        raw['requiresApiKey']?.trim().toLowerCase() != 'false';
     if (id.isEmpty || name.isEmpty || baseUrl.isEmpty || model.isEmpty) {
       continue;
     }
@@ -753,6 +755,7 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
         baseUrl: baseUrl,
         apiKey: keys[id] ?? '',
         defaultModel: model,
+        requiresApiKey: requiresApiKey,
         apiKeyHeader: apiKeyHeader,
         apiKeyPrefix: apiKeyPrefix,
       ),
