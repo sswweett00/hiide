@@ -15,6 +15,8 @@ class BuiltInAiProviderSpec {
     this.requiresApiKey = true,
     this.envKey,
     this.extraHeaders = const <String, String>{},
+    this.apiKeyHeader = 'Authorization',
+    this.apiKeyPrefix = 'Bearer ',
   });
 
   final String id;
@@ -24,6 +26,8 @@ class BuiltInAiProviderSpec {
   final bool requiresApiKey;
   final String? envKey;
   final Map<String, String> extraHeaders;
+  final String apiKeyHeader;
+  final String apiKeyPrefix;
 }
 
 /// Providers shipped with Hiide. OpenAI-compatible services all share the same
@@ -205,6 +209,16 @@ class AiProviderCatalog {
       baseUrl: 'http://127.0.0.1:8000/v1',
       defaultModel: 'local-model',
       requiresApiKey: false,
+    ),
+    BuiltInAiProviderSpec(
+      id: 'azure-openai',
+      displayName: 'Azure OpenAI / Foundry',
+      baseUrl: 'https://YOUR-RESOURCE-NAME.openai.azure.com/openai/v1',
+      defaultModel: 'gpt-4.1-mini',
+      envKey: 'AZURE_OPENAI_API_KEY',
+      extraHeaders: const {},
+      apiKeyHeader: 'api-key',
+      apiKeyPrefix: '',
     ),
     BuiltInAiProviderSpec(
       id: 'ollama',
@@ -482,6 +496,11 @@ final aiProviderModelsProvider =
 final customAiProvidersProvider =
     StateProvider<List<Map<String, String>>>((ref) => const []);
 
+/// Per-provider endpoint overrides. This enables deployment-specific endpoints
+/// such as Azure OpenAI without changing the provider transport.
+final aiProviderBaseUrlsProvider =
+    StateProvider<Map<String, String>>((ref) => const <String, String>{});
+
 final groqApiKeyProvider = StateProvider<String>((ref) {
   return ref.watch(aiProviderKeysProvider)['groq'] ?? '';
 });
@@ -499,6 +518,7 @@ final selectedModelProvider = StateProvider<String>((ref) => '');
 final providerManagerProvider = Provider<ProviderManager>((ref) {
   final keys = ref.watch(aiProviderKeysProvider);
   final custom = ref.watch(customAiProvidersProvider);
+  final baseUrls = ref.watch(aiProviderBaseUrlsProvider);
   final activeId = ref.watch(aiProviderIdProvider);
   final models = ref.watch(aiProviderModelsProvider);
 
@@ -510,11 +530,15 @@ final providerManagerProvider = Provider<ProviderManager>((ref) {
       OpenAiCompatibleProvider(
         id: spec.id,
         displayName: spec.displayName,
-        baseUrl: spec.baseUrl,
+        baseUrl: baseUrls[spec.id]?.trim().isNotEmpty == true
+            ? baseUrls[spec.id]!
+            : spec.baseUrl,
         apiKey: key,
         defaultModel: spec.defaultModel,
         requiresApiKey: spec.requiresApiKey,
         extraHeaders: spec.extraHeaders,
+        apiKeyHeader: spec.apiKeyHeader,
+        apiKeyPrefix: spec.apiKeyPrefix,
       ),
     );
   }
