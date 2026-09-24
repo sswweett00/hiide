@@ -129,6 +129,7 @@ Future<void> main() async {
   Map<String, String> aiProviderKeys = const <String, String>{};
   Map<String, String> aiProviderModels = const <String, String>{};
   List<Map<String, String>> customAiProviders = const <Map<String, String>>[];
+  Map<String, String> aiProviderBaseUrls = const <String, String>{};
   String openaiKey = '';
   String anthropicKey = '';
   String ollamaUrl = 'http://127.0.0.1:11434';
@@ -143,6 +144,9 @@ Future<void> main() async {
   } catch (_) {}
   try {
     customAiProviders = await settingsService.getCustomAiProviders();
+  } catch (_) {}
+  try {
+    aiProviderBaseUrls = await settingsService.getAiProviderBaseUrls();
   } catch (_) {}
   try {
     openaiKey = await settingsService.getOpenaiApiKey();
@@ -190,6 +194,7 @@ Future<void> main() async {
         aiProviderKeysProvider.overrideWith((ref) => aiProviderKeys),
         aiProviderModelsProvider.overrideWith((ref) => aiProviderModels),
         customAiProvidersProvider.overrideWith((ref) => customAiProviders),
+        aiProviderBaseUrlsProvider.overrideWith((ref) => aiProviderBaseUrls),
         openaiApiKeyProvider.overrideWith(
           (ref) => aiProviderKeys['openai'] ?? openaiKey,
         ),
