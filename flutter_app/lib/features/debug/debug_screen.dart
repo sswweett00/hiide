@@ -199,7 +199,7 @@ class _DebugScreenState extends ConsumerState<DebugScreen> {
       _status = 'Running: ${config.name}';
     });
 
-    final command = config.command.replaceAll('$', r'$');
+    final command = config.command;
     final future = terminal.executeCapture(
       command,
       timeout: config.timeout,
