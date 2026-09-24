@@ -9,6 +9,7 @@ import 'ai_provider.dart';
 /// Local Ollama provider — runs models on the user's machine with no API key.
 /// Ollama serves an OpenAI-compatible API on port 11434 by default.
 class OllamaProvider implements AiProvider {
+  @override
   String baseUrl;
   String _selectedModel;
   final http.Client _client;
@@ -22,9 +23,6 @@ class OllamaProvider implements AiProvider {
 
   @override
   String get displayName => 'Ollama (Local)';
-
-  @override
-  String get baseUrl => this.baseUrl;
 
   @override
   String get defaultModel => _selectedModel;
