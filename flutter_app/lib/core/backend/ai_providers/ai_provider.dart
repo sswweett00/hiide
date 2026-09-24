@@ -10,6 +10,9 @@ abstract class AiProvider {
   /// Stable id used for persistence (e.g. "groq", "openai", "ollama").
   String get id;
 
+  /// Canonical API endpoint used by this provider instance.
+  String get baseUrl;
+
   /// Whether this provider needs an API key (Ollama does not).
   bool get requiresApiKey;
 
