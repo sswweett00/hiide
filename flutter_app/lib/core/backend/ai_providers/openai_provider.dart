@@ -24,6 +24,9 @@ class OpenAiProvider implements AiProvider {
         _client = client ?? http.Client();
 
   @override
+  void dispose() => _client.close();
+
+  @override
   String get displayName => 'OpenAI';
 
   @override
