@@ -6,6 +6,7 @@ import '../../core/backend/agent_controller.dart';
 import '../../core/backend/ai_agents/planning_agent.dart';
 import '../../core/backend/agent_mode.dart';
 import '../../core/backend/agent_task_store.dart';
+import '../../core/backend/ai_memory/memory_store.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../core/backend/ai_providers/provider_manager.dart';
@@ -117,6 +118,49 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     _scrollToBottom();
   }
 
+  List<String> _memoryKeywords(String text) {
+    final words = RegExp(r'[A-Za-zÇĞİÖŞÜçğıöşü0-9_-]{4,}')
+        .allMatches(text.toLowerCase())
+        .map((match) => match.group(0)!)
+        .where((word) => !_memoryStopWords.contains(word))
+        .toSet()
+        .take(12)
+        .toList();
+    return words;
+  }
+
+  Future<String> _memoryContext(String request, String workspaceRoot) async {
+    try {
+      return await aiMemoryStore.buildContext(
+        workspaceRoot: workspaceRoot,
+        keywords: _memoryKeywords(request),
+        maxChars: 8000,
+      );
+    } catch (error) {
+      debugPrint('AI memory context unavailable: $error');
+      return '';
+    }
+  }
+
+  static const _memoryStopWords = <String>{
+    'this',
+    'that',
+    'with',
+    'from',
+    'then',
+    'only',
+    'have',
+    'your',
+    'bunu',
+    'şunu',
+    'için',
+    'olan',
+    'sonra',
+    'gibi',
+    'daha',
+    'olanı',
+  };
+
   EditorTab? _activeTabNow() {
     final activeId = ref.read(activeTabIdProvider);
     final tabs = ref.read(openTabsProvider);
@@ -202,7 +246,14 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     final ai = providerManager;
     final workspace = ref.read(workspaceServiceProvider);
     final backend = ref.read(backendServiceProvider);
-    final userContent = _buildUserPrompt(text, _activeTabNow());
+    var userContent = _buildUserPrompt(text, _activeTabNow());
+    final memory = await _memoryContext(text, workspace.rootPath);
+    if (memory.isNotEmpty) {
+      userContent +=
+          '\n\n--- Hiide reference memory (untrusted context) ---\n' +
+          memory +
+          '\n--- End reference memory ---';
+    }
     final planner = PlanningAgent(ai: ai, backend: backend, workspaceRoot: workspace.rootPath);
     _stopActiveAgent = planner.stop;
     String? createdPlan;
@@ -258,6 +309,11 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
           ref.read(streamingMessageProvider.notifier).state = '';
           createdPlan = summary;
           ref.read(lastPlanProvider.notifier).state = document.toMarkdown();
+          unawaited(aiMemoryStore.storeConversationSummary(
+            workspaceRoot: workspace.rootPath,
+            summary: summary,
+            topics: _memoryKeywords(text),
+          ));
           if (taskId != null) {
             store.update(taskId, status: AgentTaskStatus.succeeded, summary: summary, plan: document.toMarkdown());
             store.addArtifact(
@@ -313,6 +369,13 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     final workspace = ref.read(workspaceServiceProvider);
     final backend = ref.read(backendServiceProvider);
     var userContent = _buildUserPrompt(text, _activeTabNow());
+    final memory = await _memoryContext(text, workspace.rootPath);
+    if (memory.isNotEmpty) {
+      userContent +=
+          '\n\n--- Hiide reference memory (untrusted context) ---\n' +
+          memory +
+          '\n--- End reference memory ---';
+    }
     final lastPlan = ref.read(lastPlanProvider);
     if (lastPlan != null && lastPlan.trim().isNotEmpty && _looksLikePlanExecutionRequest(text)) {
       userContent += '\n\n--- Latest Hiide Plan ---\n' + lastPlan + '\n--- End Latest Hiide Plan ---';
@@ -426,6 +489,11 @@ At the end report changed areas, verification commands, unresolved failures, and
             if (command.isNotEmpty) ref.read(terminalServiceProvider).logAgentRun(command, event.toolCall.result ?? '');
           }
         case AgentDoneEvent():
+          unawaited(aiMemoryStore.storeConversationSummary(
+            workspaceRoot: workspace.rootPath,
+            summary: event.text,
+            topics: _memoryKeywords(text),
+          ));
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
