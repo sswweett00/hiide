@@ -8,6 +8,7 @@ pub const Scheduler = struct {
     ready: std.ArrayListUnmanaged(types.AgentTask) = .empty,
     ready_head: usize = 0,
     canceled: std.AutoHashMapUnmanaged(u128, void) = .{},
+    children: std.AutoHashMapUnmanaged(u128, std.ArrayListUnmanaged(u128)) = .{},
 
     pub fn init(allocator: std.mem.Allocator) Scheduler {
         return .{ .allocator = allocator };
@@ -16,6 +17,12 @@ pub const Scheduler = struct {
     pub fn deinit(self: *Scheduler) void {
         self.ready.deinit(self.allocator);
         self.canceled.deinit(self.allocator);
+
+        var it = self.children.iterator();
+        while (it.next()) |entry| {
+            entry.value_ptr.deinit(self.allocator);
+        }
+        self.children.deinit(self.allocator);
         self.* = undefined;
     }
 
@@ -25,6 +32,12 @@ pub const Scheduler = struct {
 
         if (self.canceled.contains(task.id)) return error.TaskCanceled;
         try self.ready.append(self.allocator, task);
+
+        if (task.parent_id) |parent_id| {
+            const gop = try self.children.getOrPut(self.allocator, parent_id);
+            if (!gop.found_existing) gop.value_ptr.* = .empty;
+            try gop.value_ptr.append(self.allocator, task.id);
+        }
     }
 
     /// Returns the next runnable task in FIFO order.
@@ -69,14 +82,14 @@ pub const Scheduler = struct {
     }
 
     /// Cancels a task subtree rooted at `root_task_id` using BFS.
-    /// All transitive descendants are marked cancelled, not just direct children.
+    /// The parent→children index makes this proportional to the affected
+    /// subtree rather than rescanning the entire ready queue per node.
     pub fn cancelSubtree(self: *Scheduler, root_task_id: u128) !void {
         self.mutex.lock();
         defer self.mutex.unlock();
 
         var frontier = std.ArrayListUnmanaged(u128).empty;
         defer frontier.deinit(self.allocator);
-
         try frontier.append(self.allocator, root_task_id);
 
         while (frontier.items.len > 0) {
@@ -84,9 +97,11 @@ pub const Scheduler = struct {
             if (self.canceled.contains(current_id)) continue;
             try self.canceled.put(self.allocator, current_id, {});
 
-            for (self.ready.items[self.ready_head..]) |task| {
-                if (task.parent_id == current_id and !self.canceled.contains(task.id)) {
-                    try frontier.append(self.allocator, task.id);
+            if (self.children.get(current_id)) |descendants| {
+                for (descendants.items) |child_id| {
+                    if (!self.canceled.contains(child_id)) {
+                        try frontier.append(self.allocator, child_id);
+                    }
                 }
             }
         }
