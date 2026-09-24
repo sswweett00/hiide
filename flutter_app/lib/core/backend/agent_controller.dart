@@ -470,7 +470,7 @@ Guidelines:
         final t = tc as Map<String, dynamic>;
         final fn = (t['function'] as Map<String, dynamic>?) ?? const {};
         final name = fn['name']?.toString() ?? 'unknown';
-        final arguments = _parseArguments(fn['arguments']?.toString());
+        final arguments = _parseArguments(fn['arguments']);
         final call = AgentToolCall(
           id: t['id']?.toString() ?? 'call_${iterations}_${calls.length}',
           name: name,
@@ -885,15 +885,29 @@ Guidelines:
     return joined.isEmpty ? '.' : joined;
   }
 
-  Map<String, dynamic> _parseArguments(String? raw) {
-    if (raw == null || raw.isEmpty) return {};
-    try {
-      final decoded = jsonDecode(raw);
-      if (decoded is Map<String, dynamic>) return decoded;
-      return {};
-    } catch (_) {
-      return {};
+  Map<String, dynamic> _parseArguments(dynamic raw) {
+    if (raw == null) return const <String, dynamic>{};
+    if (raw is Map<String, dynamic>) {
+      return Map<String, dynamic>.from(raw);
     }
+    if (raw is Map) {
+      return raw.map((key, value) => MapEntry(key.toString(), value));
+    }
+    final text = raw.toString().trim();
+    if (text.isEmpty) return const <String, dynamic>{};
+    try {
+      final decoded = jsonDecode(text);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+      if (decoded is Map) {
+        return decoded.map((key, value) => MapEntry(key.toString(), value));
+      }
+    } catch (_) {
+      // The provider emitted malformed arguments. The tool invocation will
+      // return a structured error and the model can repair the call.
+    }
+    return const <String, dynamic>{};
   }
 
   String _truncate(String text, [int? limit]) {
