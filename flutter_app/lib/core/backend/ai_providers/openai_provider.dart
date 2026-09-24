@@ -106,8 +106,7 @@ class OpenAiProvider implements AiProvider {
     String? model,
   }) async* {
     if (apiKey.isEmpty) {
-      yield 'Error: OpenAI API key missing.';
-      return;
+      throw StateError('OpenAI API key is missing.');
     }
 
     final request = http.Request(
@@ -122,34 +121,41 @@ class OpenAiProvider implements AiProvider {
         'stream': true,
       });
 
-    try {
-      final response = await _client.send(request);
-      if (response.statusCode != 200) {
-        final body = await response.stream.bytesToString();
-        yield 'Error ${response.statusCode}: $body';
-        return;
-      }
+    final response = await _client.send(request).timeout(
+      const Duration(seconds: 30),
+    );
+    if (response.statusCode != 200) {
+      final body = await response.stream.bytesToString().timeout(
+        const Duration(seconds: 10),
+      );
+      throw StateError(
+        _extractError(body) ??
+            'OpenAI HTTP ' + response.statusCode.toString(),
+      );
+    }
 
-      final stream = response.stream
-          .transform(utf8.decoder)
-          .transform(const LineSplitter());
+    final stream = response.stream
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .timeout(const Duration(seconds: 120));
+
+    try {
       await for (final line in stream) {
-        if (line.startsWith('data: ')) {
-          final data = line.substring(6).trim();
-          if (data == '[DONE]') break;
-          try {
-            final json = jsonDecode(data);
-            final content = json['choices']?[0]?['delta']?['content'];
-            if (content != null) yield content.toString();
-          } catch (_) {}
-        }
+        if (!line.startsWith('data: ')) continue;
+        final data = line.substring(6).trim();
+        if (data == '[DONE]') break;
+        try {
+          final json = jsonDecode(data);
+          final content = json['choices']?[0]?['delta']?['content'];
+          if (content is String && content.isNotEmpty) {
+            yield content;
+          }
+        } catch (_) {}
       }
-    } catch (e) {
-      debugPrint('OpenAI streaming error: $e');
-      yield 'Error: OpenAI streaming failed: $e';
+    } on TimeoutException {
+      throw StateError('OpenAI streaming timed out.');
     }
   }
-
   @override
   Future<String?> completeCode(String prompt, {String? model}) async {
     if (apiKey.isEmpty) return null;
