@@ -62,6 +62,18 @@ class TerminalService {
     await _runAndLog(command, timeout: null);
   }
 
+  /// Cancels all processes currently owned by the terminal session.
+  /// Returns the number of processes that received a kill signal.
+  int cancelActiveProcesses() {
+    var canceled = 0;
+    for (final process in List<Process>.from(_activeProcesses)) {
+      try {
+        if (process.kill()) canceled++;
+      } catch (_) {}
+    }
+    return canceled;
+  }
+
   Future<String> executeCapture(String command, {Duration timeout = const Duration(seconds: 60)}) async {
     if (_disposed) return '(error) terminal disposed';
     final normalized = command.trim();
