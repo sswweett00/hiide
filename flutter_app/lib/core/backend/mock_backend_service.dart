@@ -12,6 +12,9 @@ class MockBackendService implements BackendService {
   bool _connected = false;
   final _controller = StreamController<String>.broadcast();
   final Map<int, String> _buffers = {};
+  final Map<int, List<String>> _undoStacks = {};
+  final Map<int, List<String>> _redoStacks = {};
+  static const int _maxUndoDepth = 100;
   int _nextHandle = 1;
 
   @override
@@ -38,6 +41,8 @@ class MockBackendService implements BackendService {
     await Future.delayed(const Duration(milliseconds: 100));
     final handle = _nextHandle++;
     _buffers[handle] = text;
+    _undoStacks[handle] = <String>[];
+    _redoStacks[handle] = <String>[];
     return handle;
   }
 
@@ -52,6 +57,7 @@ class MockBackendService implements BackendService {
     await Future.delayed(const Duration(milliseconds: 50));
     final content = _buffers[handle];
     if (content == null || pos > content.length) return 0;
+    _recordEdit(handle, content);
     _buffers[handle] =
         content.substring(0, pos) + text + content.substring(pos);
     return _buffers[handle]!.length;
@@ -62,6 +68,7 @@ class MockBackendService implements BackendService {
     await Future.delayed(const Duration(milliseconds: 50));
     final content = _buffers[handle];
     if (content == null || pos + len > content.length) return 0;
+    _recordEdit(handle, content);
     _buffers[handle] = content.substring(0, pos) + content.substring(pos + len);
     return _buffers[handle]!.length;
   }
@@ -69,13 +76,33 @@ class MockBackendService implements BackendService {
   @override
   Future<void> editorUndo(int handle) async {
     await Future.delayed(const Duration(milliseconds: 50));
-    // Mock: no-op.
+    final stack = _undoStacks[handle];
+    final current = _buffers[handle];
+    if (stack == null || stack.isEmpty || current == null) return;
+    _redoStacks[handle]!.add(current);
+    _buffers[handle] = stack.removeLast();
   }
 
   @override
   Future<void> editorRedo(int handle) async {
     await Future.delayed(const Duration(milliseconds: 50));
-    // Mock: no-op.
+    final stack = _redoStacks[handle];
+    final current = _buffers[handle];
+    if (stack == null || stack.isEmpty || current == null) return;
+    final next = stack.removeLast();
+    _undoStacks[handle]!.add(current);
+    _buffers[handle] = next;
+  }
+
+  void _recordEdit(int handle, String previous) {
+    final stack = _undoStacks[handle];
+    if (stack == null) return;
+    if (stack.isNotEmpty && stack.last == previous) return;
+    if (stack.length >= _maxUndoDepth) {
+      stack.removeAt(0);
+    }
+    stack.add(previous);
+    _redoStacks[handle]?.clear();
   }
 
   @override
@@ -121,11 +148,16 @@ class MockBackendService implements BackendService {
   Future<void> editorDestroy(int handle) async {
     await Future.delayed(const Duration(milliseconds: 50));
     _buffers.remove(handle);
+    _undoStacks.remove(handle);
+    _redoStacks.remove(handle);
   }
 
   @override
   Future<void> editorApplyText(int handle, String text) async {
     await Future.delayed(const Duration(milliseconds: 50));
+    final current = _buffers[handle];
+    if (current == text) return;
+    if (current != null) _recordEdit(handle, current);
     _buffers[handle] = text;
   }
 
