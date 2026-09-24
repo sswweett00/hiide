@@ -9,15 +9,18 @@ class AgentRunBudget {
     this.maxToolCalls = 64,
     this.maxRunDuration = const Duration(minutes: 10),
     this.maxRepeatedToolCalls = 2,
+    this.maxUnchangedToolResults = 3,
     this.maxFingerprintChars = 4096,
   })  : assert(maxToolCalls > 0),
         assert(maxRunDuration > Duration.zero),
         assert(maxRepeatedToolCalls > 0),
+        assert(maxUnchangedToolResults > 0),
         assert(maxFingerprintChars >= 256);
 
   final int maxToolCalls;
   final Duration maxRunDuration;
   final int maxRepeatedToolCalls;
+  final int maxUnchangedToolResults;
   final int maxFingerprintChars;
 }
 
@@ -28,6 +31,8 @@ class AgentRunGuard {
   final AgentRunBudget budget;
   final DateTime _startedAt;
   final Map<String, int> _toolFingerprints = <String, int>{};
+  final Map<String, String> _lastToolResult = <String, String>{};
+  final Map<String, int> _unchangedResultCounts = <String, int>{};
 
   int _toolCalls = 0;
   String? _budgetFailure;
@@ -93,6 +98,43 @@ class AgentRunGuard {
     }
 
     return null;
+  }
+
+  /// Records a tool result and detects a no-progress loop where the
+  /// same tool keeps returning the same payload despite changing inputs.
+  ///
+  /// The current result is still allowed through to the model; the guard
+  /// becomes terminal so the next model turn is not executed.
+  String? recordResult(String name, String result) {
+    if (_budgetFailure != null) return _budgetFailure;
+    if (result.trim().isEmpty) return null;
+
+    final digest = _digest(result);
+    final previous = _lastToolResult[name];
+    final count = previous == digest
+        ? (_unchangedResultCounts[name] ?? 0) + 1
+        : 1;
+    _lastToolResult[name] = digest;
+    _unchangedResultCounts[name] = count;
+
+    if (count > budget.maxUnchangedToolResults) {
+      _budgetFailure =
+          'Agent made no measurable progress: $name returned the same '
+          'result $count times.';
+      return _budgetFailure;
+    }
+    return null;
+  }
+
+  String _digest(String value) {
+    // Compact deterministic digest without making guard state depend on
+    // object identity or randomized hash codes.
+    var hash = 0x811C9DC5;
+    for (final unit in value.codeUnits) {
+      hash ^= unit;
+      hash = (hash * 0x01000193) & 0xFFFFFFFF;
+    }
+    return hash.toRadixString(16);
   }
 
   String _fingerprint(String name, Map<String, dynamic> arguments) {
