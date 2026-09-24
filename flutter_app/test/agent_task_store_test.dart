@@ -63,6 +63,39 @@ void main() {
     expect(saved.transcript.length, 2);
   });
 
+  test('bounds deeply nested tool-call transcript payloads', () async {
+    final store = await AgentTaskStore.load();
+    final task = store.create(
+      objective: 'Persist a large tool call safely',
+      workspace: '/workspace/demo',
+      mode: 'code',
+    );
+
+    final huge = 'x' * 20000;
+    store.replaceTranscript(task.id, [
+      {
+        'role': 'assistant',
+        'tool_calls': [
+          {
+            'id': 'call-1',
+            'type': 'function',
+            'function': {
+              'name': 'write_file',
+              'arguments': huge,
+            },
+          },
+        ],
+      },
+    ]);
+    await store.flush();
+
+    final restored = await AgentTaskStore.load();
+    final saved = restored.byId(task.id)!;
+    final args = ((saved.transcript.single['tool_calls'] as List).single
+        as Map)['function'] as Map;
+    expect((args['arguments'] as String).length, lessThanOrEqualTo(4025));
+  });
+
   test('marks interrupted non-terminal tasks canceled after restart', () async {
     final store = await AgentTaskStore.load();
     final task = store.create(
