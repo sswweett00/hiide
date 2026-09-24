@@ -9,24 +9,63 @@ import '../../shared/widgets/ai_widgets.dart';
 
 final quickOpenQueryProvider = StateProvider<String>((ref) => '');
 
-final quickOpenResultsProvider = FutureProvider<List<_FileResult>>((ref) async {
-  final query = ref.watch(quickOpenQueryProvider).toLowerCase().trim();
+final quickOpenIndexProvider = FutureProvider<List<_FileResult>>((ref) async {
   final tree = await ref.watch(fileTreeProvider.future);
-
   final results = <_FileResult>[];
   _collectFiles(tree, results);
+  results.sort((a, b) => a.path.length.compareTo(b.path.length));
+  return List.unmodifiable(results);
+});
+
+final quickOpenResultsProvider = FutureProvider<List<_FileResult>>((ref) async {
+  final query = ref.watch(quickOpenQueryProvider).toLowerCase().trim();
+  final index = await ref.watch(quickOpenIndexProvider.future);
 
   if (query.isEmpty) {
-    return results.take(50).toList();
+    return index.take(50).toList();
   }
 
-  return results
-      .where((r) =>
-          r.name.toLowerCase().contains(query) ||
-          r.path.toLowerCase().contains(query))
-      .take(50)
-      .toList();
+  final ranked = <({double score, _FileResult result})>[];
+  for (final result in index) {
+    final score = _fuzzyScore(query, result);
+    if (score >= 0) {
+      ranked.add((score: score, result: result));
+    }
+  }
+
+  ranked.sort((a, b) {
+    final score = b.score.compareTo(a.score);
+    if (score != 0) return score;
+    return a.result.path.length.compareTo(b.result.path.length);
+  });
+  return ranked.take(50).map((entry) => entry.result).toList();
 });
+
+double _fuzzyScore(String query, _FileResult result) {
+  final name = result.name.toLowerCase();
+  final path = result.path.toLowerCase();
+
+  if (name == query) return 1000;
+  if (name.startsWith(query)) return 800 - name.length / 100;
+  if (name.contains(query)) return 600 - name.length / 100;
+  if (path.contains(query)) return 400 - path.length / 100;
+
+  var qi = 0;
+  var score = 0.0;
+  var consecutive = 0;
+  for (var i = 0; i < path.length && qi < query.length; i++) {
+    if (path.codeUnitAt(i) == query.codeUnitAt(qi)) {
+      qi++;
+      consecutive++;
+      score += 10 + consecutive * 2;
+      if (i == 0 || '/_-'.contains(path[i - 1])) score += 20;
+    } else {
+      consecutive = 0;
+    }
+  }
+  if (qi != query.length) return -1;
+  return score - path.length / 100;
+}
 
 void _collectFiles(List<dynamic> items, List<_FileResult> results) {
   for (final item in items) {
@@ -67,11 +106,13 @@ class _QuickOpenDialog extends ConsumerStatefulWidget {
 
 class _QuickOpenDialogState extends ConsumerState<_QuickOpenDialog> {
   final TextEditingController _ctrl = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    _focusNode.requestFocus();
     // Reset query on open
     Future.microtask(() {
       ref.read(quickOpenQueryProvider.notifier).state = '';
@@ -81,6 +122,7 @@ class _QuickOpenDialogState extends ConsumerState<_QuickOpenDialog> {
   @override
   void dispose() {
     _ctrl.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -149,7 +191,7 @@ class _QuickOpenDialogState extends ConsumerState<_QuickOpenDialog> {
             ],
           ),
           child: KeyboardListener(
-            focusNode: FocusNode()..requestFocus(),
+            focusNode: _focusNode,
             onKeyEvent: (event) {
               if (event is! KeyDownEvent) return;
               resultsAsync.whenData((results) {
