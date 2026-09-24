@@ -44,6 +44,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _customUrlCtrl;
   late final TextEditingController _customModelCtrl;
   late final TextEditingController _customKeyCtrl;
+  late final TextEditingController _customAuthHeaderCtrl;
+  late final TextEditingController _customAuthPrefixCtrl;
   late final TextEditingController _baseUrlCtrl;
   bool _apiKeyObscured = true;
   String? _formProviderId;
@@ -60,6 +62,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _customUrlCtrl = TextEditingController();
     _customModelCtrl = TextEditingController();
     _customKeyCtrl = TextEditingController();
+    _customAuthHeaderCtrl = TextEditingController(text: 'Authorization');
+    _customAuthPrefixCtrl = TextEditingController(text: 'Bearer ');
     _baseUrlCtrl = TextEditingController();
     // Restore the full provider registry state.
     settingsService.getAiApiKeys().then((keys) {
@@ -115,6 +119,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _customUrlCtrl.dispose();
     _customModelCtrl.dispose();
     _customKeyCtrl.dispose();
+    _customAuthHeaderCtrl.dispose();
+    _customAuthPrefixCtrl.dispose();
     _baseUrlCtrl.dispose();
     super.dispose();
   }
@@ -641,6 +647,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               border: OutlineInputBorder(),
                             ),
                           ),
+                          const SizedBox(height: DesignTokens.space2),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _customAuthHeaderCtrl,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Auth header',
+                                    hintText: 'Authorization / x-api-key / api-key',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: DesignTokens.space2),
+                              Expanded(
+                                child: TextField(
+                                  controller: _customAuthPrefixCtrl,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Auth prefix',
+                                    hintText: 'Bearer ',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: DesignTokens.space3),
                           ElevatedButton.icon(
                             icon: const Icon(Icons.add),
@@ -682,6 +714,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   'name': name,
                                   'baseUrl': baseUrl,
                                   'model': model,
+                                  'apiKeyHeader': _customAuthHeaderCtrl.text.trim().isEmpty
+                                      ? 'Authorization'
+                                      : _customAuthHeaderCtrl.text.trim(),
+                                  'apiKeyPrefix': _customAuthPrefixCtrl.text,
                                 },
                               ];
                               ref
@@ -707,6 +743,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               _customUrlCtrl.clear();
                               _customModelCtrl.clear();
                               _customKeyCtrl.clear();
+                              _customAuthHeaderCtrl.text = 'Authorization';
+                              _customAuthPrefixCtrl.text = 'Bearer ';
                               _apiKeyCtrl.text = keys[uniqueId] ?? '';
                               _modelCtrl.text = model;
                               if (mounted) setState(() {});
@@ -720,7 +758,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   subtitle: Text(
                                     (provider['baseUrl'] ?? '') +
                                         ' · ' +
-                                        (provider['model'] ?? ''),
+                                        (provider['model'] ?? '') +
+                                        ' · ' +
+                                        (provider['apiKeyHeader'] ?? 'Authorization'),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
