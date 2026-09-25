@@ -224,7 +224,9 @@ class OpenAiCompatibleProvider implements AiProvider {
     }
     final message = choices.first;
     if (message is! Map) return null;
-    final content = (message['message'] as Map?)?['content']?.toString().trim();
+    final rawMessage = message['message'];
+    if (rawMessage is! Map) return null;
+    final content = rawMessage['content']?.toString().trim();
     return content == null || content.isEmpty ? null : content;
   }
 
