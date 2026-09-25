@@ -217,7 +217,7 @@ class AiProviderCatalog {
       baseUrl: 'https://YOUR-RESOURCE-NAME.openai.azure.com/openai/v1',
       defaultModel: 'gpt-4.1-mini',
       envKey: 'AZURE_OPENAI_API_KEY',
-      extraHeaders: const {},
+      extraHeaders: {},
       apiKeyHeader: 'api-key',
       apiKeyPrefix: '',
     ),
@@ -235,7 +235,7 @@ class AiProviderCatalog {
       defaultModel: 'llama3.2',
       requiresApiKey: false,
     ),
-  ]
+  ];
 
   static BuiltInAiProviderSpec? byId(String id) {
     for (final spec in specs) {
