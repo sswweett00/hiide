@@ -12,7 +12,7 @@ class AgentRunBudget {
     this.maxUnchangedToolResults = 3,
     this.maxFingerprintChars = 4096,
   })  : assert(maxToolCalls > 0),
-        assert(maxRunDuration > Duration.zero),
+
         assert(maxRepeatedToolCalls > 0),
         assert(maxUnchangedToolResults > 0),
         assert(maxFingerprintChars >= 256);
@@ -26,7 +26,15 @@ class AgentRunBudget {
 
 class AgentRunGuard {
   AgentRunGuard({this.budget = const AgentRunBudget()})
-      : _startedAt = DateTime.now();
+      : _startedAt = DateTime.now() {
+    if (budget.maxRunDuration <= Duration.zero) {
+      throw ArgumentError.value(
+        budget.maxRunDuration,
+        'maxRunDuration',
+        'must be greater than zero',
+      );
+    }
+  }
 
   final AgentRunBudget budget;
   final DateTime _startedAt;
