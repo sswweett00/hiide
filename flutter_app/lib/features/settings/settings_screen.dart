@@ -512,8 +512,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                                       active.displayName +
                                                           ' models'),
                                                   content: SizedBox(
-                                                    width: 520,
-                                                    height: 420,
+                                                    width: (MediaQuery.sizeOf(context).width - 32).clamp(320.0, 520.0).toDouble(),
+                                                    height: (MediaQuery.sizeOf(context).height - 160).clamp(240.0, 420.0).toDouble(),
                                                     child: ListView.builder(
                                                       itemCount: models.length,
                                                       itemBuilder:
@@ -1055,42 +1055,77 @@ class _SettingsItem extends StatelessWidget {
   final String description;
   final Widget trailing;
 
-  const _SettingsItem(
-      {required this.title, required this.description, required this.trailing});
+  const _SettingsItem({
+    required this.title,
+    required this.description,
+    required this.trailing,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 600;
+        final copy = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: cs.onSurface,
+                fontSize: DesignTokens.fontSizeMD,
+                fontWeight: DesignTokens.fontWeightMedium,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              description,
+              softWrap: true,
+              style: TextStyle(
+                color: cs.onSurfaceVariant,
+                fontSize: DesignTokens.fontSizeSM,
+              ),
+            ),
+          ],
+        );
 
-    return Container(
-      padding: const EdgeInsets.all(DesignTokens.space4),
-      decoration: BoxDecoration(
-        border: Border(
-            bottom: BorderSide(
-                color: cs.outlineVariant, width: DesignTokens.borderWidthThin)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: TextStyle(
-                        color: cs.onSurface,
-                        fontSize: DesignTokens.fontSizeMD,
-                        fontWeight: DesignTokens.fontWeightMedium)),
-                Text(description,
-                    style: TextStyle(
-                        color: cs.onSurfaceVariant,
-                        fontSize: DesignTokens.fontSizeSM)),
-              ],
+        return Container(
+          padding: EdgeInsets.all(
+            compact ? DesignTokens.space3 : DesignTokens.space4,
+          ),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: cs.outlineVariant,
+                width: DesignTokens.borderWidthThin,
+              ),
             ),
           ),
-          const SizedBox(width: DesignTokens.space3),
-          SizedBox(width: 120, child: trailing),
-        ],
-      ),
+          child: compact
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    copy,
+                    const SizedBox(height: DesignTokens.space3),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 260),
+                        child: trailing,
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Expanded(child: copy),
+                    const SizedBox(width: DesignTokens.space3),
+                    SizedBox(width: 120, child: trailing),
+                  ],
+                ),
+        );
+      },
     );
   }
 }
