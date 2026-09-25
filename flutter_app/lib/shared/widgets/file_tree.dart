@@ -93,6 +93,7 @@ class _FileTreeView extends ConsumerWidget {
       } catch (e) {
         content = '// Error reading file: $e';
       }
+      if (!context.mounted) return;
 
       final newTab = EditorTab(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
