@@ -548,8 +548,9 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         const query = try paramStr(params, "query");
         const max_results: usize = blk: {
             const value = params.get("max_results") orelse break :blk 200;
-            if (value.integer <= 0) break :blk 200;
-            break :blk @intCast(value.integer);
+            const raw = intValue(value) catch return errResp(req.id, "max_results must be an integer");
+            if (raw <= 0) break :blk 200;
+            break :blk @intCast(@min(raw, 10_000));
         };
 
         const hits = try workspace_tools.workspaceSearch(allocator, root, query, max_results, false);
@@ -585,8 +586,9 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         const root = try paramStr(params, "root");
         const max_entries: usize = blk: {
             const value = params.get("max_entries") orelse break :blk 50_000;
-            if (value.integer <= 0) break :blk 50_000;
-            break :blk @intCast(value.integer);
+            const raw = intValue(value) catch return errResp(req.id, "max_entries must be an integer");
+            if (raw <= 0) break :blk 50_000;
+            break :blk @intCast(@min(raw, 50_000));
         };
 
         const entries = try workspace_tools.workspaceTree(allocator, root, max_entries);
