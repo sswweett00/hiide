@@ -184,7 +184,7 @@ pub const Editor = struct {
     }
 
     pub fn search(self: *const Editor, allocator: std.mem.Allocator, query: []const u8) ![]SearchResult {
-        if (query.len == 0) return &[_]SearchResult{};
+        if (query.len == 0) return try allocator.alloc(SearchResult, 0);
         var results = compat.ManagedArrayList(SearchResult).init(allocator);
         errdefer results.deinit();
 
