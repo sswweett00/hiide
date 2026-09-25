@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:hiide_flutter/core/mechanics/mechanics.dart';
@@ -46,6 +48,26 @@ void main() {
     expect(center.items.first.title, 'Y');
     expect(center.items.last.message, '2');
     expect(center.unreadCount, 1);
+  });
+
+  test('background save failures do not escape as unhandled async errors', () async {
+    final errors = <Object>[];
+
+    await runZonedGuarded(() async {
+      final coordinator = SaveCoordinator(
+        delay: const Duration(milliseconds: 1),
+        maxWait: const Duration(milliseconds: 5),
+      );
+      coordinator.schedule(() async {
+        throw StateError('simulated save failure');
+      });
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      await coordinator.dispose();
+    }, (error, _) {
+      errors.add(error);
+    });
+
+    expect(errors, isEmpty);
   });
 
   test('save coordinator coalesces rapid schedules', () async {
