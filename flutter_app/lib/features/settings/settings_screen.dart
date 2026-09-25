@@ -512,8 +512,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                                       active.displayName +
                                                           ' models'),
                                                   content: SizedBox(
-                                                    width: (MediaQuery.sizeOf(context).width - 32).clamp(320.0, 520.0).toDouble(),
-                                                    height: (MediaQuery.sizeOf(context).height - 160).clamp(240.0, 420.0).toDouble(),
+                                                    width: (MediaQuery.sizeOf(context).width - 24).clamp(240.0, 520.0).toDouble(),
+                                                    height: (MediaQuery.sizeOf(context).height - 128).clamp(220.0, 420.0).toDouble(),
                                                     child: ListView.builder(
                                                       itemCount: models.length,
                                                       itemBuilder:
