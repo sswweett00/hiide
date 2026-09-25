@@ -170,7 +170,7 @@ class _QuickOpenDialogState extends ConsumerState<_QuickOpenDialog> {
     final size = MediaQuery.sizeOf(context);
     final horizontalInset = size.width < 640 ? 24.0 : 200.0;
     final verticalInset = size.height < 620 ? 24.0 : 80.0;
-    final dialogHeight = (size.height - verticalInset * 2).clamp(300.0, 500.0);
+    final dialogHeight = (size.height - verticalInset * 2).clamp(240.0, 500.0);
 
     return Dialog(
       backgroundColor: Colors.transparent,
