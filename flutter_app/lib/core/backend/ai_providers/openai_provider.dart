@@ -177,8 +177,10 @@ class OpenAiProvider implements AiProvider {
     if (response.containsKey('error')) return null;
     final choices = response['choices'];
     if (choices is! List || choices.isEmpty) return null;
-    final message = (choices.first as Map<String, dynamic>)['message'];
-    final content = message?['content']?.toString().trim();
+    final first = choices.first;
+    if (first is! Map) return null;
+    final message = first['message'];
+    final content = message is Map ? message['content']?.toString().trim() : null;
     return (content != null && content.isNotEmpty) ? content : null;
   }
 
