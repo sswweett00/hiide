@@ -344,11 +344,15 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
           ref.read(streamingMessageProvider.notifier).state = '';
           createdPlan = summary;
           ref.read(lastPlanProvider.notifier).state = document.toMarkdown();
-          unawaited(aiMemoryStore.storeConversationSummary(
-            workspaceRoot: workspace.rootPath,
-            summary: summary,
-            topics: _memoryKeywords(text),
-          ));
+          unawaited(
+            aiMemoryStore
+                .storeConversationSummary(
+                  workspaceRoot: workspace.rootPath,
+                  summary: summary,
+                  topics: _memoryKeywords(text),
+                )
+                .catchError((_) {}),
+          );
           if (taskId != null) {
             store.update(taskId, status: AgentTaskStatus.succeeded, summary: summary, plan: document.toMarkdown());
             store.addArtifact(
@@ -526,11 +530,15 @@ At the end report changed areas, verification commands, unresolved failures, and
             if (command.isNotEmpty) ref.read(terminalServiceProvider).logAgentRun(command, event.toolCall.result ?? '');
           }
         case AgentDoneEvent():
-          unawaited(aiMemoryStore.storeConversationSummary(
-            workspaceRoot: workspace.rootPath,
-            summary: event.text,
-            topics: _memoryKeywords(text),
-          ));
+          unawaited(
+            aiMemoryStore
+                .storeConversationSummary(
+                  workspaceRoot: workspace.rootPath,
+                  summary: event.text,
+                  topics: _memoryKeywords(text),
+                )
+                .catchError((_) {}),
+          );
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
@@ -726,6 +734,7 @@ At the end report changed areas, verification commands, unresolved failures, and
         );
       },
     );
+    if (!mounted) return false;
     if (approved == true) {
       if (taskId != null) {
         ref.read(agentTaskStoreProvider).update(taskId, status: AgentTaskStatus.executing);
