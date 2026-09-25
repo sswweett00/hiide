@@ -167,21 +167,22 @@ class _QuickOpenDialogState extends ConsumerState<_QuickOpenDialog> {
 
     // Adapt the dialog insets to the window: on narrow windows the side
     // insets shrink so the footer hint row fits without overflowing.
-    final windowWidth = MediaQuery.sizeOf(context).width;
-    final horizontalInset = windowWidth < 640 ? 24.0 : 200.0;
+    final size = MediaQuery.sizeOf(context);
+    final horizontalInset = size.width < 640 ? 24.0 : 200.0;
+    final verticalInset = size.height < 620 ? 24.0 : 80.0;
+    final dialogHeight = (size.height - verticalInset * 2).clamp(300.0, 500.0);
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.only(
-        top: 80,
-        left: horizontalInset,
-        right: horizontalInset,
+      insetPadding: EdgeInsets.symmetric(
+        vertical: verticalInset,
+        horizontal: horizontalInset,
       ),
       child: AiGlowCard(
         padding: EdgeInsets.zero,
         wash: false,
         child: Container(
-          height: 500,
+          height: dialogHeight,
           decoration: BoxDecoration(
             color: cs.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
@@ -347,14 +348,18 @@ class _QuickOpenDialogState extends ConsumerState<_QuickOpenDialog> {
                     border: Border(
                         top: BorderSide(color: cs.outlineVariant, width: 1)),
                   ),
-                  child: Row(
-                    children: [
-                      _HintKey('↑↓', 'navigate'),
-                      const SizedBox(width: 16),
-                      _HintKey('Enter', 'open'),
-                      const SizedBox(width: 16),
-                      _HintKey('Esc', 'close'),
-                    ],
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const ClampingScrollPhysics(),
+                    child: Row(
+                      children: [
+                        _HintKey('↑↓', 'navigate'),
+                        const SizedBox(width: 16),
+                        _HintKey('Enter', 'open'),
+                        const SizedBox(width: 16),
+                        _HintKey('Esc', 'close'),
+                      ],
+                    ),
                   ),
                 ),
               ],
