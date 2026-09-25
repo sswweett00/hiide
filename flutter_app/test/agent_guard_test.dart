@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/core/mechanics/agent_guard.dart';
+import 'package:hiide_flutter/core/mechanics/agent_guard.dart';
 
 void main() {
   group('AgentRunGuard', () {
