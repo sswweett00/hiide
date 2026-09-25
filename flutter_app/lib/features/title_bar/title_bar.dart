@@ -21,7 +21,7 @@ class TitleBar extends ConsumerWidget {
         builder: (context, constraints) {
           // Below ~560px there isn't room for the menu row, so keep only
           // the app logo, the mode slider and the window controls.
-          final showMenus = constraints.maxWidth >= 720;
+          final showMenus = constraints.maxWidth >= 900;
           final showSecondaryActions = constraints.maxWidth >= 520;
           final showModeSlider = constraints.maxWidth >= 440;
 
