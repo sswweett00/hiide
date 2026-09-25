@@ -21,8 +21,14 @@ class SaveCoordinator {
     if (_disposed) return;
     _pendingSave = save;
     _debounce?.cancel();
-    _debounce = Timer(delay, flush);
-    _maxWaitTimer ??= Timer(maxWait, flush);
+    // Timer callbacks cannot await a Future. Consume timer-triggered errors so
+    // a failed background save never becomes an unhandled async exception.
+    _debounce = Timer(delay, () {
+      unawaited(flush().catchError((_) {}));
+    });
+    _maxWaitTimer ??= Timer(maxWait, () {
+      unawaited(flush().catchError((_) {}));
+    });
   }
 
   Future<void> flush() async {
