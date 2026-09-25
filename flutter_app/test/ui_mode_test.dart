@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:hiide_flutter/core/backend/agent_mode.dart';
 import 'package:hiide_flutter/core/backend/groq_ai_service.dart';
 import 'package:hiide_flutter/core/backend/mock_backend_service.dart';
 import 'package:hiide_flutter/core/providers/backend_provider.dart';
