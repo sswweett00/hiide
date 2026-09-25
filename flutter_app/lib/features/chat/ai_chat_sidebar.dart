@@ -248,6 +248,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
         await _runCodeMode(text);
       }
     } catch (e) {
+      if (!mounted) return;
       _finishStreamingText();
       ref.read(streamingMessageProvider.notifier).state = '';
       final taskId = ref.read(activeAgentTaskIdProvider);
@@ -259,10 +260,11 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       }
       _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + e.toString(), timestamp: DateTime.now()));
     } finally {
-        _stopActiveAgent = null;
+      _stopActiveAgent = null;
+      if (!mounted) return;
       _finishStreamingText();
       ref.read(streamingMessageProvider.notifier).state = '';
-      if (mounted) ref.read(isAiThinkingProvider.notifier).state = false;
+      ref.read(isAiThinkingProvider.notifier).state = false;
     }
   }
 
@@ -280,6 +282,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     final backend = ref.read(backendServiceProvider);
     var userContent = _buildUserPrompt(text, _activeTabNow());
     final memory = await _memoryContext(text, workspace.rootPath);
+    if (!mounted) return;
     if (memory.isNotEmpty) {
       userContent +=
           '\n\n--- Hiide reference memory (untrusted context) ---\n' +
@@ -374,6 +377,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       }
     }
 
+    if (!mounted) return;
     final plan = createdPlan;
     final planHistory = _boundedAgentMessages([
       ...history,
@@ -402,6 +406,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     final backend = ref.read(backendServiceProvider);
     var userContent = _buildUserPrompt(text, _activeTabNow());
     final memory = await _memoryContext(text, workspace.rootPath);
+    if (!mounted) return;
     if (memory.isNotEmpty) {
       userContent +=
           '\n\n--- Hiide reference memory (untrusted context) ---\n' +
@@ -590,6 +595,7 @@ At the end report changed areas, verification commands, unresolved failures, and
           _addMessage(ChatMessage(role: ChatRole.error, content: message, timestamp: DateTime.now()));
       }
     }
+    if (!mounted) return;
     ref.read(agentMessagesProvider.notifier).state =
         _boundedAgentMessages(controller.workingMessages);
     if (taskId != null) {
