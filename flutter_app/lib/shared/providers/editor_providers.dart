@@ -66,12 +66,22 @@ Future<void> activateWorkspace(WidgetRef ref, String path) async {
   ref.read(activeTabIdProvider.notifier).state = null;
   ref.invalidate(fileTreeProvider);
 
-  await settingsService.setLastWorkspace(root);
-  final recents = await settingsService.getRecentWorkspaces();
-  final updated = [root, ...recents.where((r) => r != root)].take(8).toList();
-  await settingsService.setRecentWorkspaces(updated);
-  ref.read(recentWorkspacesProvider.notifier).state = updated;
+  try {
+    await settingsService.setLastWorkspace(root);
+    if (!ref.context.mounted) return;
+    final recents = await settingsService.getRecentWorkspaces();
+    if (!ref.context.mounted) return;
+    final updated = [root, ...recents.where((r) => r != root)].take(8).toList();
+    await settingsService.setRecentWorkspaces(updated);
+    if (!ref.context.mounted) return;
+    ref.read(recentWorkspacesProvider.notifier).state = updated;
+  } catch (error) {
+    // Workspace activation should remain usable even when persistence is
+    // temporarily unavailable (for example, during a platform restart).
+    debugPrint('Could not persist workspace selection: $error');
+  }
 
+  if (!ref.context.mounted) return;
   await _openWelcomeReadme(ref, root);
 }
 
@@ -336,6 +346,7 @@ Future<void> openFileInTabs(WidgetRef ref, String path, {String? title}) async {
   }
   final service = ref.read(workspaceServiceProvider);
   final content = await service.readFile(path);
+  if (!ref.context.mounted) return;
   final tab = EditorTab(
     id: DateTime.now().millisecondsSinceEpoch.toString(),
     title: title ?? pathBasename(path),
