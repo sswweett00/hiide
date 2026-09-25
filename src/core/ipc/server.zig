@@ -695,6 +695,26 @@ test "dispatch: malformed params are rejected without crashing" {
     try testing.expectEqualStrings("InvalidParams", badParams.err.?);
 }
 
+test "dispatch: invalid numeric limits return errors instead of panicking" {
+    const object_params: json.Value = .{ .object = blk: {
+        var obj = json.ObjectMap.empty;
+        try obj.put(testing.allocator, "root", .{ .string = "." });
+        try obj.put(testing.allocator, "query", .{ .string = "x" });
+        try obj.put(testing.allocator, "max_results", .{ .string = "not-a-number" });
+        break :blk obj;
+    } };
+    var search = try runDispatch(testing.allocator, "workspace.search", object_params);
+    defer cleanupResponse(testing.allocator, &search);
+    try testing.expectEqualStrings("max_results must be an integer", search.err.?);
+
+    var tree_obj: json.ObjectMap = .empty;
+    try tree_obj.put(testing.allocator, "root", .{ .string = "." });
+    try tree_obj.put(testing.allocator, "max_entries", .{ .bool = true });
+    var tree = try runDispatch(testing.allocator, "workspace.tree", .{ .object = tree_obj });
+    defer cleanupResponse(testing.allocator, &tree);
+    try testing.expectEqualStrings("max_entries must be an integer", tree.err.?);
+}
+
 test "dispatch: forged editor handles are rejected" {
     var response = try runDispatch(testing.allocator, "editor.get_text", .{ .integer = 42 });
     defer cleanupResponse(testing.allocator, &response);
