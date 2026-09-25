@@ -168,73 +168,93 @@ class _AgentTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Container(
-      height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerLow,
-        border: Border(bottom: BorderSide(color: cs.outlineVariant)),
-      ),
-      child: Row(
-        children: [
-          const AiOrb(icon: Icons.auto_awesome, size: 34, iconSize: 18),
-          const SizedBox(width: 12),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Hiide Agent Workspace',
-                style: TextStyle(
-                  color: cs.onSurface,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(
-                width: 420,
-                child: Text(
-                  workspace,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: cs.onSurfaceVariant, fontSize: 11),
-                ),
-              ),
-            ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 760;
+        final ultraCompact = constraints.maxWidth < 540;
+        return Container(
+          height: 64,
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerLow,
+            border: Border(bottom: BorderSide(color: cs.outlineVariant)),
           ),
-          const Spacer(),
-          if (isThinking)
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: Row(
-                children: [
-                  SizedBox(
+          child: Row(
+            children: [
+              const AiOrb(icon: Icons.auto_awesome, size: 34, iconSize: 18),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hiide Agent Workspace',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: cs.onSurface,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    if (!ultraCompact)
+                      Text(
+                        workspace,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: cs.onSurfaceVariant, fontSize: 11),
+                      ),
+                  ],
+                ),
+              ),
+              if (isThinking && !compact)
+                Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 12,
+                        height: 12,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
+                      ),
+                      const SizedBox(width: 7),
+                      Text('Agent çalışıyor', style: TextStyle(color: cs.primary, fontSize: 12)),
+                    ],
+                  ),
+                )
+              else if (isThinking)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: SizedBox(
                     width: 12,
                     height: 12,
                     child: CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
                   ),
-                  const SizedBox(width: 7),
-                  Text('Agent çalışıyor', style: TextStyle(color: cs.primary, fontSize: 12)),
-                ],
+                ),
+              if (!compact)
+                IconButton(
+                  onPressed: onWorkspace,
+                  icon: const Icon(Icons.folder_open_rounded, size: 19),
+                  tooltip: 'Çalışma alanını değiştir',
+                ),
+              if (!compact)
+                IconButton(
+                  onPressed: onOpenEditor,
+                  icon: const Icon(Icons.code_rounded, size: 19),
+                  tooltip: 'Kod yüzeyini aç',
+                ),
+              const SizedBox(width: 5),
+              FilledButton.icon(
+                onPressed: isThinking ? null : onNewTask,
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: const Text('Yeni görev'),
               ),
-            ),
-          IconButton(
-            onPressed: onWorkspace,
-            icon: const Icon(Icons.folder_open_rounded, size: 19),
-            tooltip: 'Çalışma alanını değiştir',
+            ],
           ),
-          IconButton(
-            onPressed: onOpenEditor,
-            icon: const Icon(Icons.code_rounded, size: 19),
-            tooltip: 'Kod yüzeyini aç',
-          ),
-          const SizedBox(width: 5),
-          FilledButton.icon(
-            onPressed: isThinking ? null : onNewTask,
-            icon: const Icon(Icons.add_rounded, size: 18),
-            label: const Text('Yeni görev'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
