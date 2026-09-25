@@ -337,6 +337,31 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
             store.addEvent(taskId, kind: 'plan.step', title: step.title, detail: step.result ?? 'Adım tamamlandı', success: step.error == null);
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
+        case PlanStoppedEvent():
+          _finishStreamingText();
+          ref.read(streamingMessageProvider.notifier).state = '';
+          if (taskId != null) {
+            store.update(
+              taskId,
+              status: AgentTaskStatus.canceled,
+              summary: 'Planlama kullanıcı tarafından durduruldu.',
+            );
+            store.addEvent(
+              taskId,
+              kind: 'canceled',
+              title: 'Planlama durduruldu',
+              detail: 'Kullanıcı durdurdu.',
+              success: false,
+            );
+            ref.read(agentTaskVersionProvider.notifier).state++;
+          }
+          _addMessage(
+            ChatMessage(
+              role: ChatRole.system,
+              content: 'Planlama kullanıcı tarafından durduruldu.',
+              timestamp: DateTime.now(),
+            ),
+          );
         case PlanTextTokenEvent(:final token):
           _queueStreamingToken(token);
         case PlanDoneEvent(:final summary, :final document):
