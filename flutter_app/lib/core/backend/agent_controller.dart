@@ -413,13 +413,20 @@ Guidelines:
       }
       iterations++;
 
-      final choices = (response['choices'] as List?) ?? const [];
-      if (choices.isEmpty) {
+      final choices = response['choices'];
+      if (choices is! List || choices.isEmpty) {
         yield const AgentErrorEvent('Model returned an empty response.');
         return;
       }
-      final message = (choices.first as Map<String, dynamic>)['message']
-          as Map<String, dynamic>?;
+      final firstChoice = choices.first;
+      if (firstChoice is! Map) {
+        yield const AgentErrorEvent('Model returned an invalid response shape.');
+        return;
+      }
+      final rawMessage = firstChoice['message'];
+      final message = rawMessage is Map
+          ? Map<String, dynamic>.from(rawMessage)
+          : <String, dynamic>{};
       final toolCalls = (message?['tool_calls'] as List?) ?? const [];
 
       if (toolCalls.isEmpty) {
