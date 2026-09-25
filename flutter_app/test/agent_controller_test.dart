@@ -467,6 +467,40 @@ void main() {
     );
   });
 
+  test('rejects malformed tool-call envelopes without throwing', () async {
+    final ai = FakeAiClient([
+      {
+        'choices': [
+          {
+            'message': {
+              'role': 'assistant',
+              'content': '',
+              'tool_calls': [
+                {
+                  'id': 'bad_call',
+                  'type': 'function',
+                  'function': 'not-an-object',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    ]);
+
+    final controller = makeController(ai);
+    final events = await controller.run([
+      {'role': 'user', 'content': 'use a tool'},
+    ]).toList();
+
+    expect(events.length, 1);
+    expect(events.single, isA<AgentErrorEvent>());
+    expect(
+      (events.single as AgentErrorEvent).message,
+      contains('invalid tool call'),
+    );
+  });
+
   test('gives up on tool_use_failed after the retry budget is exhausted',
       () async {
     final ai = FakeAiClient([
