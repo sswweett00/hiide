@@ -402,8 +402,13 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     final indentLen = linePrefix.length - linePrefix.trimLeft().length;
     final indentation = linePrefix.substring(0, indentLen);
 
-    final service = await ref.read(groqAiServiceProvider.future);
-    if (service.apiKey.isEmpty) return;
+    late final GroqAiService service;
+    try {
+      service = await ref.read(groqAiServiceProvider.future);
+    } catch (_) {
+      return;
+    }
+    if (!mounted || service.apiKey.isEmpty) return;
 
     ref.read(aiCompletionLoadingProvider.notifier).state = true;
     ref.read(aiCompletionProvider.notifier).state = null;
