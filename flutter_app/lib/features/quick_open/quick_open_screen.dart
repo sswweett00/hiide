@@ -197,6 +197,9 @@ class _QuickOpenDialogState extends ConsumerState<_QuickOpenDialog> {
             onKeyEvent: (event) {
               if (event is! KeyDownEvent) return;
               resultsAsync.whenData((results) {
+                if (results.isEmpty) {
+                  return;
+                }
                 if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                   setState(() => _selectedIndex =
                       (_selectedIndex + 1).clamp(0, results.length - 1));
