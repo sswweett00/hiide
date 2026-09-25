@@ -128,8 +128,8 @@ class _FolderBrowserDialogState extends State<FolderBrowserDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxWidth: dialogWidth.clamp(280.0, 600.0).toDouble(),
-          maxHeight: dialogHeight.clamp(280.0, 500.0).toDouble(),
+          maxWidth: dialogWidth.clamp(240.0, 600.0).toDouble(),
+          maxHeight: dialogHeight.clamp(240.0, 500.0).toDouble(),
         ),
         child: Padding(
           padding: const EdgeInsets.all(DesignTokens.space4),
