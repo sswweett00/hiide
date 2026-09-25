@@ -160,6 +160,7 @@ Future<void> _saveActiveTab(WidgetRef ref, BuildContext context) async {
   }
   try {
     await ref.read(workspaceServiceProvider).writeFile(tab.path!, tab.content);
+    if (!context.mounted) return;
     final updated = tab.copyWith(isModified: false);
     ref.read(openTabsProvider.notifier).state = List<EditorTab>.from(tabs)..[index] = updated;
     if (context.mounted) {
