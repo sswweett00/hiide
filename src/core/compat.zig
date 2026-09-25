@@ -184,7 +184,10 @@ pub fn ManagedArrayList(comptime T: type) type {
 
         pub fn append(self: *@This(), item: T) !void {
             if (self.items.len == self.capacity) {
-                const new_cap = if (self.capacity == 0) 8 else self.capacity * 2;
+                const new_cap = if (self.capacity == 0)
+                    8
+                else
+                    std.math.mul(usize, self.capacity, 2) catch return error.OutOfMemory;
                 const new_buf = try self.allocator_.alloc(T, new_cap);
                 if (self.capacity > 0) {
                     @memcpy(new_buf[0..self.items.len], self.items);
@@ -201,9 +204,12 @@ pub fn ManagedArrayList(comptime T: type) type {
             if (slice.len == 0) return;
 
             const old_len = self.items.len;
-            const required = old_len + slice.len;
+            const required = std.math.add(usize, old_len, slice.len) catch return error.OutOfMemory;
             if (required > self.capacity) {
-                const doubled = if (self.capacity == 0) 8 else self.capacity * 2;
+                const doubled = if (self.capacity == 0)
+                    8
+                else
+                    std.math.mul(usize, self.capacity, 2) catch std.math.maxInt(usize);
                 const new_cap = @max(doubled, required);
                 const new_buf = try self.allocator_.alloc(T, new_cap);
                 if (old_len > 0) {
