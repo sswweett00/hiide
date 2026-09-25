@@ -175,6 +175,11 @@ class OllamaProvider implements AiProvider {
     }
   }
 
+  @override
+  void dispose() {
+    _client.close();
+  }
+
   void updateSelectedModel(String model) => _selectedModel = model;
   void updateBaseUrl(String url) => baseUrl = url;
 }
