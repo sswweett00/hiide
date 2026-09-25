@@ -391,10 +391,10 @@ pub fn runCommandWithTimeout(
     if (argv.len == 0) return error.InvalidArgument;
     if (argv.len > 64) return error.TooManyArguments;
 
-    var stdout_pipe: [2]i32 = undefined;
-    var stderr_pipe: [2]i32 = undefined;
-    // Prepare argv/environment before fork. The child must not allocate or
-    // enter allocator-backed Zig runtime paths after fork.
+    // All heap allocation required by the child is completed before fork.
+    // This is important in a multi-threaded process: after fork, only the
+    // calling thread survives and touching a process-wide allocator can
+    // deadlock on a lock owned by a vanished thread.
     var arg_zs: [64][:0]const u8 = undefined;
     var arg_count: usize = 0;
     errdefer {
@@ -407,15 +407,13 @@ pub fn runCommandWithTimeout(
         arg_count += 1;
     }
     var arg_ptrs: [65:null]?[*:0]const u8 = undefined;
-    for (arg_zs[0..argv.len], 0..) |arg, i| arg_ptrs[i] = arg.ptr;
+    for (arg_zs[0..argv.len], 0..) |arg, i| {
+        arg_ptrs[i] = arg.ptr;
+    }
     arg_ptrs[argv.len] = null;
 
-    const default_path = "/usr/bin:/bin";
-    const path_env = getEnvAlloc(std.heap.page_allocator, "PATH") orelse default_path;
-    const path_owned = path_env.ptr != default_path.ptr;
-    defer if (path_owned) std.heap.page_allocator.free(path_env);
-    defer for (arg_zs[0..argv.len]) |arg| std.heap.page_allocator.free(arg);
-
+    // Preserve a bounded PATH from the parent environment, but keep the
+    // environment storage entirely stack-backed so the child never allocates.
     var env_buf: [32768]u8 = undefined;
     var env_ptrs: [256:null]?[*:0]const u8 = undefined;
     var env_count: usize = 0;
@@ -428,15 +426,14 @@ pub fn runCommandWithTimeout(
             if (n == 0 or n > env_buf.len - env_total) break;
             env_total += n;
         }
-
         var env_pos: usize = 0;
         while (env_pos < env_total and env_count < env_ptrs.len - 1) {
-            const end = std.mem.indexOfScalarPos(u8, env_buf[0..env_total], env_pos, 0) orelse env_total;
-            if (end > env_pos) {
+            const term = std.mem.indexOfScalarPos(u8, env_buf[0..env_total], env_pos, 0) orelse env_total;
+            if (term > env_pos) {
                 env_ptrs[env_count] = @ptrCast(&env_buf[env_pos]);
                 env_count += 1;
             }
-            env_pos = @min(end + 1, env_total);
+            env_pos = @min(term + 1, env_total);
         }
     }
     if (env_count == 0) {
@@ -445,32 +442,26 @@ pub fn runCommandWithTimeout(
     }
     env_ptrs[env_count] = null;
 
+    var stdout_pipe: [2]i32 = undefined;
     if (linux.pipe(&stdout_pipe) != 0) return error.PipeFailed;
-    if (linux.pipe(&stderr_pipe) != 0) {
-        _ = linux.close(stdout_pipe[0]);
-        _ = linux.close(stdout_pipe[1]);
-        return error.PipeFailed;
-    }
 
     const pid_result = linux.fork();
     if (pid_result > @as(usize, @intCast(std.math.maxInt(i32) - 1))) {
         _ = linux.close(stdout_pipe[0]);
         _ = linux.close(stdout_pipe[1]);
-        _ = linux.close(stderr_pipe[0]);
-        _ = linux.close(stderr_pipe[1]);
         return error.ForkFailed;
     }
 
     if (pid_result == 0) {
         _ = linux.close(stdout_pipe[0]);
-        _ = linux.close(stderr_pipe[0]);
-        _ = linux.close(stderr_pipe[1]);
         _ = linux.dup2(stdout_pipe[1], 1);
-        // Merge stderr into stdout so a child cannot deadlock on two full pipes.
+        // stderr is deliberately merged into stdout, so a child cannot
+        // deadlock while two independent pipes are simultaneously full.
         _ = linux.dup2(stdout_pipe[1], 2);
         _ = linux.close(stdout_pipe[1]);
 
-        var path_iter = std.mem.splitScalar(u8, path_env, ':');
+        // No allocator access, logging, or error propagation after fork.
+        var path_iter = std.mem.splitScalar(u8, "/usr/bin:/bin", ':');
         while (path_iter.next()) |dir| {
             var full_path: [4096]u8 = undefined;
             const full = std.fmt.bufPrint(&full_path, "{s}/{s}", .{ dir, argv[0] }) catch continue;
@@ -480,91 +471,27 @@ pub fn runCommandWithTimeout(
             path_z[full.len] = 0;
             _ = linux.execve(@ptrCast(&path_z), &arg_ptrs, &env_ptrs);
         }
-
         linux.exit(127);
     }
 
-        _ = linux.close(stdout_pipe[1]);
-
-        var args_buf: [64][]const u8 = undefined;
-        const argc = argv.len;
-        for (argv[0..argc], 0..) |arg, i| args_buf[i] = arg;
-
-        var arg_zs: [64][:0]const u8 = undefined;
-        for (args_buf[0..argc], 0..) |arg, i| {
-            arg_zs[i] = try std.heap.page_allocator.dupeSentinel(u8, arg, 0);
+    // Parent owns all remaining heap allocations and pipe state.
+    defer {
+        for (arg_zs[0..arg_count]) |arg| {
+            std.heap.page_allocator.free(arg);
         }
-
-        var ptrs: [65:null]?[*:0]const u8 = undefined;
-        for (arg_zs[0..argc], 0..) |arg, i| ptrs[i] = arg.ptr;
-        ptrs[argc] = null;
-
-        const default_path = "/usr/bin:/bin";
-        const path_env = getEnvAlloc(std.heap.page_allocator, "PATH") orelse default_path;
-        defer if (path_env.ptr != default_path.ptr) std.heap.page_allocator.free(path_env);
-
-        var env_buf: [32768]u8 = undefined;
-        var env_ptrs: [256:null]?[*:0]const u8 = undefined;
-        var env_count: usize = 0;
-        const env_fd = linux.open("/proc/self/environ", .{ .ACCMODE = .RDONLY }, 0);
-        if (env_fd >= 0) {
-            defer _ = linux.close(@intCast(env_fd));
-            var env_total: usize = 0;
-            while (env_total < env_buf.len) {
-                const n = linux.read(@intCast(env_fd), env_buf[env_total..].ptr, env_buf.len - env_total);
-                if (n == 0 or n > env_buf.len - env_total) break;
-                env_total += n;
-            }
-
-            var pos: usize = 0;
-            while (pos < env_total and env_count < env_ptrs.len - 1) {
-                const end = std.mem.indexOfScalarPos(u8, env_buf[0..env_total], pos, 0) orelse env_total;
-                if (end > pos) {
-                    env_ptrs[env_count] = @ptrCast(&env_buf[pos]);
-                    env_count += 1;
-                }
-                pos = @min(end + 1, env_total);
-            }
-        }
-
-        if (env_count == 0) {
-            env_ptrs[0] = "PATH=/usr/bin:/bin";
-            env_count = 1;
-        }
-        env_ptrs[env_count] = null;
-
-        var path_iter = std.mem.splitScalar(u8, path_env, ':');
-        while (path_iter.next()) |dir| {
-            const full_path = std.fs.path.join(std.heap.page_allocator, &.{ dir, argv[0] }) catch continue;
-            defer std.heap.page_allocator.free(full_path);
-            const path_z = std.heap.page_allocator.dupeSentinel(u8, full_path, 0) catch continue;
-            _ = linux.execve(path_z.ptr, &ptrs, &env_ptrs);
-            std.heap.page_allocator.free(path_z);
-        }
-
-        linux.exit(127);
     }
 
-        _ = linux.close(stdout_pipe[1]);
-    _ = linux.close(stderr_pipe[0]);
-    _ = linux.close(stderr_pipe[1]);
+    _ = linux.close(stdout_pipe[1]);
 
     const max_output_bytes: usize = 4 * 1024 * 1024;
     var stdout_list = std.ArrayList(u8).initCapacity(allocator, 4096) catch {
-        var dummy: u32 = 0;
         _ = linux.close(stdout_pipe[0]);
-        _ = linux.waitpid(@intCast(pid_result), &dummy, 0);
+        _ = linux.kill(@intCast(pid_result), .KILL);
+        var status: u32 = 0;
+        _ = linux.waitpid(@intCast(pid_result), &status, 0);
         return error.OutOfMemory;
     };
     defer stdout_list.deinit(allocator);
-
-    var stderr_list = std.ArrayList(u8).initCapacity(allocator, 0) catch {
-        var dummy: u32 = 0;
-        _ = linux.close(stdout_pipe[0]);
-        _ = linux.waitpid(@intCast(pid_result), &dummy, 0);
-        return error.OutOfMemory;
-    };
-    defer stderr_list.deinit(allocator);
 
     const Watchdog = struct {
         done: *std.atomic.Value(bool),
@@ -605,8 +532,8 @@ pub fn runCommandWithTimeout(
         };
         watchdog_thread = std.Thread.spawn(.{}, Watchdog.run, .{&watchdog_state}) catch {
             _ = linux.kill(pid, .KILL);
-            var dummy: u32 = 0;
-            _ = linux.waitpid(pid, &dummy, 0);
+            var status: u32 = 0;
+            _ = linux.waitpid(@intCast(pid_result), &status, 0);
             _ = linux.close(stdout_pipe[0]);
             return error.WatchdogSpawnFailed;
         };
@@ -615,7 +542,7 @@ pub fn runCommandWithTimeout(
     var buf: [4096]u8 = undefined;
     while (true) {
         const n = linux.read(stdout_pipe[0], &buf, buf.len);
-        if (n == 0 or n > buf.len) break;
+        if (n <= 0 or n > buf.len) break;
         if (stdout_list.items.len < max_output_bytes) {
             const remaining = max_output_bytes - stdout_list.items.len;
             stdout_list.appendSlice(allocator, buf[0..@min(n, remaining)]) catch break;
@@ -630,11 +557,14 @@ pub fn runCommandWithTimeout(
 
     if (watchdog_thread) |*thread| thread.join();
 
-    const status: u32 = status_raw;
+    const stdout = try stdout_list.toOwnedSlice(allocator);
+    const stderr = try allocator.alloc(u8, 0);
     return .{
-        .stdout = try stdout_list.toOwnedSlice(allocator),
-        .stderr = try stderr_list.toOwnedSlice(allocator),
-        .success = !timed_out.load(.acquire) and linux.W.IFEXITED(status) and linux.W.EXITSTATUS(status) == 0,
+        .stdout = stdout,
+        .stderr = stderr,
+        .success = !timed_out.load(.acquire) and
+            linux.W.IFEXITED(status_raw) and
+            linux.W.EXITSTATUS(status_raw) == 0,
         .timed_out = timed_out.load(.acquire),
     };
 }
