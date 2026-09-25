@@ -195,8 +195,10 @@ class GroqAiService implements AiChatClient {
     if (response.containsKey('error')) return null;
     final choices = response['choices'];
     if (choices is! List || choices.isEmpty) return null;
-    final message = (choices.first as Map<String, dynamic>)['message'];
-    if (message is! Map<String, dynamic>) return null;
+    final first = choices.first;
+    if (first is! Map) return null;
+    final message = first['message'];
+    if (message is! Map) return null;
     final content = message['content'];
     if (content is! String) return null;
     final trimmed = content.trim();
