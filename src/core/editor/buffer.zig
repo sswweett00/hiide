@@ -46,8 +46,12 @@ pub const TextBuffer = struct {
         const gap = self.gapSize();
         if (gap >= needed) return;
 
-        const doubled = if (self.buf.len == 0) DefaultCapacity else self.buf.len * 2;
-        const new_cap = @max(doubled, self.len + needed);
+        const doubled = if (self.buf.len == 0)
+            DefaultCapacity
+        else
+            std.math.mul(usize, self.buf.len, 2) catch std.math.maxInt(usize);
+        const required = std.math.add(usize, self.len, needed) catch return error.OutOfMemory;
+        const new_cap = @max(doubled, required);
         const new_buf = try self.allocator.alloc(u8, new_cap);
 
         @memcpy(new_buf[0..self.gap_start], self.buf[0..self.gap_start]);
