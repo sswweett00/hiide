@@ -158,7 +158,7 @@ pub fn applyDiffTool() tool_mod.Tool {
 
             var file = compat.cwd().createFile(io, path, .{ .truncate = true }) catch return ToolResult.failure("unable to open workspace file for patch");
             defer file.close(io);
-            try file.writeAll(io, new_content);
+            try file.writeStreamingAll(io, new_content);
             return ToolResult.success("{\"applied\":true}");
         }
     };
