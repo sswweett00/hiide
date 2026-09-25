@@ -6,14 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/backend/terminal_service.dart';
 import '../../features/bottom_panels/bottom_panels.dart';
+import '../../shared/providers/editor_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
-
-// Singleton-style provider so the same service is shared across the app
-final terminalServiceProvider = Provider<TerminalService>((ref) {
-  final service = TerminalService();
-  ref.onDispose(service.dispose);
-  return service;
-});
 
 class TerminalScreen extends ConsumerStatefulWidget {
   const TerminalScreen({super.key});
