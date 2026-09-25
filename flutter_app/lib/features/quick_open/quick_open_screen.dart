@@ -115,6 +115,7 @@ class _QuickOpenDialogState extends ConsumerState<_QuickOpenDialog> {
     _focusNode.requestFocus();
     // Reset query on open
     Future.microtask(() {
+      if (!mounted) return;
       ref.read(quickOpenQueryProvider.notifier).state = '';
     });
   }
