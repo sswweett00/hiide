@@ -393,6 +393,58 @@ pub fn runCommandWithTimeout(
 
     var stdout_pipe: [2]i32 = undefined;
     var stderr_pipe: [2]i32 = undefined;
+    // Prepare argv/environment before fork. The child must not allocate or
+    // enter allocator-backed Zig runtime paths after fork.
+    var arg_zs: [64][:0]const u8 = undefined;
+    var arg_count: usize = 0;
+    errdefer {
+        for (arg_zs[0..arg_count]) |arg| {
+            std.heap.page_allocator.free(arg);
+        }
+    }
+    for (argv, 0..) |arg, i| {
+        arg_zs[i] = try std.heap.page_allocator.dupeSentinel(u8, arg, 0);
+        arg_count += 1;
+    }
+    var arg_ptrs: [65:null]?[*:0]const u8 = undefined;
+    for (arg_zs[0..argv.len], 0..) |arg, i| arg_ptrs[i] = arg.ptr;
+    arg_ptrs[argv.len] = null;
+
+    const default_path = "/usr/bin:/bin";
+    const path_env = getEnvAlloc(std.heap.page_allocator, "PATH") orelse default_path;
+    const path_owned = path_env.ptr != default_path.ptr;
+    defer if (path_owned) std.heap.page_allocator.free(path_env);
+    defer for (arg_zs[0..argv.len]) |arg| std.heap.page_allocator.free(arg);
+
+    var env_buf: [32768]u8 = undefined;
+    var env_ptrs: [256:null]?[*:0]const u8 = undefined;
+    var env_count: usize = 0;
+    const env_fd = linux.open("/proc/self/environ", .{ .ACCMODE = .RDONLY }, 0);
+    if (env_fd >= 0) {
+        defer _ = linux.close(@intCast(env_fd));
+        var env_total: usize = 0;
+        while (env_total < env_buf.len) {
+            const n = linux.read(@intCast(env_fd), env_buf[env_total..].ptr, env_buf.len - env_total);
+            if (n == 0 or n > env_buf.len - env_total) break;
+            env_total += n;
+        }
+
+        var env_pos: usize = 0;
+        while (env_pos < env_total and env_count < env_ptrs.len - 1) {
+            const end = std.mem.indexOfScalarPos(u8, env_buf[0..env_total], env_pos, 0) orelse env_total;
+            if (end > env_pos) {
+                env_ptrs[env_count] = @ptrCast(&env_buf[env_pos]);
+                env_count += 1;
+            }
+            env_pos = @min(end + 1, env_total);
+        }
+    }
+    if (env_count == 0) {
+        env_ptrs[0] = "PATH=/usr/bin:/bin";
+        env_count = 1;
+    }
+    env_ptrs[env_count] = null;
+
     if (linux.pipe(&stdout_pipe) != 0) return error.PipeFailed;
     if (linux.pipe(&stderr_pipe) != 0) {
         _ = linux.close(stdout_pipe[0]);
@@ -410,12 +462,28 @@ pub fn runCommandWithTimeout(
     }
 
     if (pid_result == 0) {
-                _ = linux.close(stdout_pipe[0]);
+        _ = linux.close(stdout_pipe[0]);
         _ = linux.close(stderr_pipe[0]);
         _ = linux.close(stderr_pipe[1]);
         _ = linux.dup2(stdout_pipe[1], 1);
         // Merge stderr into stdout so a child cannot deadlock on two full pipes.
         _ = linux.dup2(stdout_pipe[1], 2);
+        _ = linux.close(stdout_pipe[1]);
+
+        var path_iter = std.mem.splitScalar(u8, path_env, ':');
+        while (path_iter.next()) |dir| {
+            var full_path: [4096]u8 = undefined;
+            const full = std.fmt.bufPrint(&full_path, "{s}/{s}", .{ dir, argv[0] }) catch continue;
+            var path_z: [4097]u8 = undefined;
+            if (full.len >= path_z.len) continue;
+            @memcpy(path_z[0..full.len], full);
+            path_z[full.len] = 0;
+            _ = linux.execve(@ptrCast(&path_z), &arg_ptrs, &env_ptrs);
+        }
+
+        linux.exit(127);
+    }
+
         _ = linux.close(stdout_pipe[1]);
 
         var args_buf: [64][]const u8 = undefined;
