@@ -52,23 +52,33 @@ class Breadcrumb extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          _CrumbIcon(icon: Icons.folder_open_outlined, color: cs.primary),
-          const SizedBox(width: 6),
-          _CrumbText(workspaceName, emphasized: false),
-          if (segments.isNotEmpty) ...[
-            _Divider(),
-            ...segments.asMap().entries.map((entry) {
-              final isLast = entry.key == segments.length - 1;
-              return Row(
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const ClampingScrollPhysics(),
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (entry.key > 0) _Divider(),
-                  _CrumbText(entry.value, emphasized: isLast),
+                  _CrumbIcon(icon: Icons.folder_open_outlined, color: cs.primary),
+                  const SizedBox(width: 6),
+                  _CrumbText(workspaceName, emphasized: false),
+                  if (segments.isNotEmpty) ...[
+                    _Divider(),
+                    ...segments.asMap().entries.map((entry) {
+                      final isLast = entry.key == segments.length - 1;
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (entry.key > 0) _Divider(),
+                          _CrumbText(entry.value, emphasized: isLast),
+                        ],
+                      );
+                    }),
+                  ],
                 ],
-              );
-            }),
-          ],
-          const Spacer(),
+              ),
+            ),
+          ),
           if (fileName != null && fileName.isNotEmpty)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
