@@ -134,6 +134,7 @@ class AgentController {
   bool _stopRequested = false;
   bool _workspaceMutated = false;
   bool _verificationObserved = false;
+  bool _verificationFailed = false;
   bool _verificationNudgeSent = false;
   List<Map<String, dynamic>> _workingMessages = [];
 
@@ -339,6 +340,7 @@ Guidelines:
     _stopRequested = false;
     _workspaceMutated = false;
     _verificationObserved = false;
+    _verificationFailed = false;
     _verificationNudgeSent = false;
     _workingMessages = _sanitizeHistory(messages);
     final apiMessages = <Map<String, dynamic>>[
@@ -444,18 +446,30 @@ Guidelines:
         // A workspace mutation without verification is not treated as a
         // trustworthy completion. Give the agent one explicit self-check turn.
         if (_workspaceMutated &&
-            !_verificationObserved &&
-            !_verificationNudgeSent) {
-          _verificationNudgeSent = true;
-          apiMessages.add({
-            'role': 'system',
-            'content': 'You modified workspace state but have not run a '
-                'verification command yet. Before giving the final answer, '
-                'run the narrowest relevant test/build/lint/type-check command '
-                'and inspect its result. If verification is genuinely '
-                'impossible, explain why instead of claiming success.',
-          });
-          continue;
+            (!_verificationObserved || _verificationFailed)) {
+          if (!_verificationNudgeSent) {
+            _verificationNudgeSent = true;
+            apiMessages.add({
+              'role': 'system',
+              'content': _verificationFailed
+                  ? 'The latest verification command failed. Do not give a '
+                      'successful final answer yet. Inspect the failure, fix '
+                      'the root cause, and rerun the narrowest relevant '
+                      'verification command until it passes.'
+                  : 'You modified workspace state but have not completed a '
+                      'successful verification yet. Before giving the final '
+                      'answer, run the narrowest relevant test/build/lint/'
+                      'type-check command and inspect its result. If it fails, '
+                      'fix the root cause and rerun it.',
+            });
+            continue;
+          }
+          yield AgentErrorEvent(
+            _verificationFailed
+                ? 'Verification failed; the agent could not establish a passing final state.'
+                : 'Workspace changes were not successfully verified.',
+          );
+          return;
         }
 
         final content = message?['content']?.toString() ?? '';
@@ -542,8 +556,15 @@ Guidelines:
                 call.arguments['command']?.toString() ?? '',
               )) {
             _verificationObserved = true;
+            _verificationFailed = false;
           }
           guard.recordResult(call.name, result.output);
+        } else if (call.name == 'run_command' &&
+            _isVerificationCommand(
+              call.arguments['command']?.toString() ?? '',
+            )) {
+          _verificationFailed = true;
+          _verificationObserved = false;
         }
         final toolMsg = <String, dynamic>{
           'role': 'tool',
