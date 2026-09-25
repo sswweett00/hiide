@@ -40,8 +40,10 @@ class StatusBar extends ConsumerWidget {
             final w = constraints.maxWidth;
             final showFile = w >= 1000;
             final showStats = w >= 1000;
-            final compact = w < 600;
-            final showAi = true;
+            final compact = w < 500;
+            final showLanguageLabel = w >= 500;
+            final showAi = w >= 520;
+            final showAiLabel = w >= 700;
             return Row(
               children: [
                 _StatusItem(icon: connected ? Icons.cloud_done_outlined : Icons.cloud_off_outlined, label: compact ? '' : (connected ? 'Engine' : 'Fallback'), tone: connected ? const Color(0xFF3FB950) : Colors.amber),
@@ -54,13 +56,18 @@ class StatusBar extends ConsumerWidget {
                 if (showStats)
                   _StatusItem(icon: Icons.data_object, label: '$lineCount lines · $wordCount words · $charCount chars'),
                 if (showStats) const SizedBox(width: 6),
-                _StatusItem(icon: Icons.code, label: compact ? '' : language),
+                _StatusItem(icon: Icons.code, label: showLanguageLabel ? language : ''),
                 const SizedBox(width: 6),
                 if (showAi) ...[
-                  _AiStatusItem(isThinking: isThinking),
+                  _AiStatusItem(isThinking: isThinking, showLabel: showAiLabel),
                   const SizedBox(width: 6),
                 ],
-                _StatusItem(icon: Icons.my_location_outlined, label: 'Ln $cursorLine, Col $cursorColumn'),
+                Flexible(
+                  child: _StatusItem(
+                    icon: Icons.my_location_outlined,
+                    label: 'Ln $cursorLine, Col $cursorColumn',
+                  ),
+                ),
               ],
             );
           },
@@ -80,7 +87,8 @@ class StatusBar extends ConsumerWidget {
 
 class _AiStatusItem extends ConsumerWidget {
   final bool isThinking;
-  const _AiStatusItem({required this.isThinking});
+  final bool showLabel;
+  const _AiStatusItem({required this.isThinking, this.showLabel = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -101,8 +109,17 @@ class _AiStatusItem extends ConsumerWidget {
           SizedBox(width: 10, height: 10, child: CircularProgressIndicator(strokeWidth: 1.5, color: tone))
         else
           Icon(Icons.auto_awesome, size: 12, color: tone),
-        if (label.isNotEmpty) const SizedBox(width: 4),
-        if (label.isNotEmpty) Text(label, style: TextStyle(color: tone, fontSize: 10, fontWeight: FontWeight.w600)),
+        if (showLabel && label.isNotEmpty) const SizedBox(width: 4),
+        if (showLabel && label.isNotEmpty)
+          Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: tone,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
       ],
     );
   }
