@@ -356,33 +356,6 @@ class ProviderManager implements AiChatClient {
     }
   }
 
-  Future<AiProvider> _resolve() async {
-    if (_providers.isEmpty) {
-      throw StateError('No AI providers registered');
-    }
-
-    AiProvider? preferred;
-    for (final provider in _providers) {
-      if (provider.id == _activeProviderId) {
-        preferred = provider;
-        break;
-      }
-    }
-    if (preferred != null && await _cachedAvailability(preferred)) {
-      return preferred;
-    }
-
-    for (final provider in _providers) {
-      if (preferred != null && identical(provider, preferred)) continue;
-      if (await _cachedAvailability(provider)) {
-        _activeProviderId = provider.id;
-        return provider;
-      }
-    }
-
-    return preferred ?? _providers.first;
-  }
-
   void switchTo(String providerId) {
     if (_providers.any((p) => p.id == providerId)) {
       _activeProviderId = providerId;
