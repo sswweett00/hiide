@@ -501,6 +501,80 @@ void main() {
     );
   });
 
+  test('recovers from transient provider response errors', () async {
+    final ai = FakeAiClient([
+      {'error': 'HTTP 503 temporarily unavailable'},
+      _toolResponse('call_1', 'list_directory', {'path': '.'}),
+      _textResponse('recovered'),
+    ]);
+
+    final controller = makeController(ai);
+    final events = await controller.run([
+      {'role': 'user', 'content': 'list files'},
+    ]).toList();
+
+    expect(events.whereType<AgentErrorEvent>(), isEmpty);
+    expect(events.last, isA<AgentDoneEvent>());
+    expect(ai.calls, 3);
+  });
+
+  test('turns malformed tool arguments into a recoverable tool error', () async {
+    final ai = FakeAiClient([
+      {
+        'choices': [
+          {
+            'message': {
+              'role': 'assistant',
+              'content': '',
+              'tool_calls': [
+                {
+                  'id': 'bad_args',
+                  'type': 'function',
+                  'function': {
+                    'name': 'read_file',
+                    'arguments': '{not-valid-json',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      _textResponse('recovered'),
+    ]);
+
+    final controller = makeController(ai);
+    final events = await controller.run([
+      {'role': 'user', 'content': 'read a file'},
+    ]).toList();
+
+    final finished = events.whereType<AgentToolFinishedEvent>().single;
+    expect(finished.toolCall.status, AgentToolStatus.error);
+    expect(finished.toolCall.result, contains('invalid JSON'));
+    expect(events.last, isA<AgentDoneEvent>());
+  });
+
+  test('does not report success after a failed verification', () async {
+    final ai = FakeAiClient([
+      _toolResponse('write_1', 'write_file', {
+        'path': 'verification.txt',
+        'content': 'changed',
+      }),
+      _toolResponse('verify_1', 'run_command', {'command': 'false'}),
+      _textResponse('I am done'),
+      _textResponse('I am still done'),
+    ]);
+
+    final controller = makeController(ai);
+    final events = await controller.run([
+      {'role': 'user', 'content': 'change the file and verify it'},
+    ]).toList();
+
+    expect(events.any((event) => event is AgentDoneEvent), isFalse);
+    final error = events.whereType<AgentErrorEvent>().single;
+    expect(error.message, contains('Verification failed'));
+  });
+
   test('gives up on tool_use_failed after the retry budget is exhausted',
       () async {
     final ai = FakeAiClient([
