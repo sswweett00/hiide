@@ -39,8 +39,8 @@ class NativeEngineSupervisor {
           const [],
           runInShell: false,
         );
-        unawaited(process.stdout.drain<void>());
-        unawaited(process.stderr.drain<void>());
+        unawaited(process.stdout.drain<void>().catchError((_) {}));
+        unawaited(process.stderr.drain<void>().catchError((_) {}));
 
         final backend = HiideBackendService(host: host, port: port);
         final deadline = DateTime.now().add(_startupTimeout);
