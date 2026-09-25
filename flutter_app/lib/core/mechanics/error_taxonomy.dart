@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'cancellation_token.dart';
 import 'circuit_breaker.dart';
@@ -68,6 +69,76 @@ class HiideFailure implements Exception {
         code: FailureCode.unavailable,
         message: error.toString(),
         retryable: true,
+        cause: error,
+        stackTrace: stack,
+      );
+    }
+    if (error is SocketException || error is HttpException) {
+      return HiideFailure(
+        code: FailureCode.transport,
+        message: error.toString(),
+        retryable: true,
+        cause: error,
+        stackTrace: stack,
+      );
+    }
+    if (error is FormatException) {
+      return HiideFailure(
+        code: FailureCode.validation,
+        message: error.toString(),
+        cause: error,
+        stackTrace: stack,
+      );
+    }
+
+    final text = error.toString().toLowerCase();
+    final retryableMarkers = <String>[
+      'http 408',
+      'http 425',
+      'http 429',
+      'http 500',
+      'http 502',
+      'http 503',
+      'http 504',
+      'timed out',
+      'timeout',
+      'connection reset',
+      'connection closed',
+      'broken pipe',
+      'temporarily unavailable',
+      'service unavailable',
+      'too many requests',
+    ];
+    if (retryableMarkers.any(text.contains)) {
+      final code = text.contains('429') || text.contains('too many requests')
+          ? FailureCode.rateLimited
+          : text.contains('timeout')
+              ? FailureCode.timeout
+              : FailureCode.transport;
+      return HiideFailure(
+        code: code,
+        message: error.toString(),
+        retryable: true,
+        cause: error,
+        stackTrace: stack,
+      );
+    }
+
+    if (text.contains('permission denied') ||
+        text.contains('access denied') ||
+        text.contains('forbidden') ||
+        text.contains('unauthorized')) {
+      return HiideFailure(
+        code: FailureCode.permission,
+        message: error.toString(),
+        cause: error,
+        stackTrace: stack,
+      );
+    }
+    if (text.contains('not found') || text.contains('no such file')) {
+      return HiideFailure(
+        code: FailureCode.notFound,
+        message: error.toString(),
         cause: error,
         stackTrace: stack,
       );
