@@ -427,7 +427,14 @@ Guidelines:
       final message = rawMessage is Map
           ? Map<String, dynamic>.from(rawMessage)
           : <String, dynamic>{};
-      final toolCalls = (message?['tool_calls'] as List?) ?? const [];
+      final rawToolCalls = message['tool_calls'];
+      if (rawToolCalls != null && rawToolCalls is! List) {
+        yield const AgentErrorEvent('Model returned invalid tool-call data.');
+        return;
+      }
+      final toolCalls = rawToolCalls is List
+          ? rawToolCalls
+          : const <dynamic>[];
 
       if (toolCalls.isEmpty) {
         // A workspace mutation without verification is not treated as a
@@ -454,12 +461,30 @@ Guidelines:
         return;
       }
 
-      // Record the assistant message (with its tool calls) in history.
+      // Validate the entire tool-call envelope before executing or storing it.
+      // A malformed provider response becomes an agent error, never a cast
+      // exception that can escape the run stream.
+      final normalizedToolCalls = <Map<String, dynamic>>[];
+      for (final rawCall in toolCalls) {
+        if (rawCall is! Map) {
+          yield const AgentErrorEvent('Model returned an invalid tool call.');
+          return;
+        }
+        final callMap = Map<String, dynamic>.from(rawCall);
+        final rawFunction = callMap['function'];
+        if (rawFunction is! Map) {
+          yield const AgentErrorEvent('Model returned a tool call without a valid function.');
+          return;
+        }
+        callMap['function'] = Map<String, dynamic>.from(rawFunction);
+        normalizedToolCalls.add(callMap);
+      }
+
+      // Record the assistant message (with normalized tool calls) in history.
       final assistantMsg = <String, dynamic>{
         'role': 'assistant',
-        'content': message?['content']?.toString() ?? '',
-        'tool_calls': toolCalls.map((tc) {
-          final t = tc as Map<String, dynamic>;
+        'content': message['content']?.toString() ?? '',
+        'tool_calls': normalizedToolCalls.map((t) {
           return {
             'id': t['id']?.toString() ?? '',
             'type': 'function',
@@ -473,9 +498,8 @@ Guidelines:
       // Materialize the calls once so the runtime can safely parallelize
       // independent read-only work without ever racing writes/commands.
       final calls = <AgentToolCall>[];
-      for (final tc in toolCalls) {
-        final t = tc as Map<String, dynamic>;
-        final fn = (t['function'] as Map<String, dynamic>?) ?? const {};
+      for (final t in normalizedToolCalls) {
+        final fn = t['function'] as Map<String, dynamic>;
         final name = fn['name']?.toString() ?? 'unknown';
         final arguments = _parseArguments(fn['arguments']);
         final call = AgentToolCall(
