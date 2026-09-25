@@ -218,6 +218,8 @@ class AgentTaskRecord {
 
 class AgentTaskStore {
   AgentTaskStore._(this._prefs, this._tasks);
+
+  AgentTaskStore.inMemory() : _prefs = null, _tasks = <AgentTaskRecord>[];
   static const _prefsKey = 'hiide.agent_tasks.v1';
   static const _maxTasks = 50;
   static const _maxTimeline = 120;
@@ -225,7 +227,7 @@ class AgentTaskStore {
   static const _maxArtifacts = 16;
   static const _maxArtifactChars = 16000;
 
-  final SharedPreferences _prefs;
+  final SharedPreferences? _prefs;
   List<AgentTaskRecord> _tasks;
   bool _persistRunning = false;
   bool _persistRequested = false;
@@ -234,7 +236,14 @@ class AgentTaskStore {
   List<AgentTaskRecord> get tasks => List.unmodifiable(_tasks);
 
   static Future<AgentTaskStore> load() async {
-    final prefs = await SharedPreferences.getInstance();
+    late final SharedPreferences prefs;
+    try {
+      prefs = await SharedPreferences.getInstance();
+    } catch (_) {
+      // Storage is optional for runtime operation. A platform/channel
+      // failure must never prevent the IDE from starting.
+      return AgentTaskStore.inMemory();
+    }
     final raw = prefs.getString(_prefsKey);
     if (raw == null || raw.isEmpty) return AgentTaskStore._(prefs, <AgentTaskRecord>[]);
     try {
@@ -378,10 +387,13 @@ class AgentTaskStore {
         final snapshot = jsonEncode(
           _tasks.map((e) => e.toJson()).toList(),
         );
-        try {
-          await _prefs.setString(_prefsKey, snapshot);
-        } catch (_) {
-          // Persistence is best-effort; in-memory task state remains intact.
+        final prefs = _prefs;
+        if (prefs != null) {
+          try {
+            await prefs.setString(_prefsKey, snapshot);
+          } catch (_) {
+            // Persistence is best-effort; in-memory task state remains intact.
+          }
         }
       }
     } finally {
