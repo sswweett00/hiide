@@ -380,7 +380,7 @@ const WATCH_MASK = IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_
 
 fn linuxWatcherThread() void {
     const raw_fd = linux.inotify_init1(0);
-    if (linux.getErrno(raw_fd) != .SUCCESS) return;
+    if (linux.errno(raw_fd) != .SUCCESS) return;
     const fd: i32 = @intCast(@as(isize, @bitCast(raw_fd)));
     defer std.posix.close(fd);
 
