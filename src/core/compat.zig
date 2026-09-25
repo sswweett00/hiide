@@ -61,7 +61,7 @@ pub const TcpServer = struct {
             linux.SOCK.STREAM | linux.SOCK.CLOEXEC,
             0,
         );
-        if (linux.getErrno(raw_fd) != .SUCCESS) return error.SocketFailed;
+        if (linux.errno(raw_fd) != .SUCCESS) return error.SocketFailed;
         const fd: i32 = @intCast(raw_fd);
         errdefer _ = linux.close(fd);
 
@@ -107,7 +107,7 @@ pub const TcpServer = struct {
             &peer_len,
             linux.SOCK.CLOEXEC,
         );
-        if (linux.getErrno(raw_client_fd) != .SUCCESS) return error.AcceptFailed;
+        if (linux.errno(raw_client_fd) != .SUCCESS) return error.AcceptFailed;
         const client_fd: i32 = @intCast(raw_client_fd);
         return TcpConnection{ .stream = .{ .fd = client_fd } };
     }
