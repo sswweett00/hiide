@@ -1,14 +1,18 @@
 import 'dart:async';
 
+import 'error_taxonomy.dart';
+
 class RetryPolicy {
   final int maxAttempts;
   final Duration baseDelay;
   final Duration maxDelay;
+  final bool Function(Object error)? shouldRetry;
 
   const RetryPolicy({
     this.maxAttempts = 4,
     this.baseDelay = const Duration(milliseconds: 250),
     this.maxDelay = const Duration(seconds: 5),
+    this.shouldRetry,
   }) : assert(maxAttempts > 0);
 
   bool get isValid =>
@@ -72,13 +76,20 @@ class RetryQueue {
         lastStack = stack;
         if (attempt == policy.maxAttempts || _disposed) break;
 
+        final failure = HiideFailure.from(error, stack);
+        final retryable = policy.shouldRetry?.call(error) ?? failure.retryable;
+        if (!retryable) break;
+
         final factor = 1 << (attempt - 1);
-        final milliseconds = policy.baseDelay.inMilliseconds * factor;
-        final bounded = milliseconds.clamp(
-          0,
-          policy.maxDelay.inMilliseconds,
-        );
-        await Future<void>.delayed(Duration(milliseconds: bounded));
+        final baseMs = policy.baseDelay.inMilliseconds;
+        final maxMs = policy.maxDelay.inMilliseconds;
+        final candidate = baseMs > 0 && factor > maxMs ~/ baseMs
+            ? maxMs
+            : baseMs * factor;
+        final bounded = candidate.clamp(0, maxMs);
+        if (bounded > 0) {
+          await Future<void>.delayed(Duration(milliseconds: bounded));
+        }
       }
     }
 
