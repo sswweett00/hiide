@@ -225,6 +225,16 @@ pub const Editor = struct {
     };
 };
 
+test "editor: empty search is a safe zero-result operation" {
+    var ed = try Editor.init(std.testing.allocator);
+    defer ed.deinit();
+
+    try ed.load("hello world");
+    const results = try ed.search(std.testing.allocator, "");
+    defer std.testing.allocator.free(results);
+    try testing.expectEqual(@as(usize, 0), results.len);
+}
+
 test "editor: insert/delete/undo/redo lifecycle does not double-free" {
     var ed = try Editor.init(std.testing.allocator);
     defer ed.deinit();
