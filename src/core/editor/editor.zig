@@ -2,6 +2,7 @@ const std = @import("std");
 const compat = @import("../compat.zig");
 const buffer_mod = @import("buffer.zig");
 const highlighter_mod = @import("highlighter.zig");
+const testing = std.testing;
 
 pub const Editor = struct {
     allocator: std.mem.Allocator,
