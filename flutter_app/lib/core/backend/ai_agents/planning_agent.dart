@@ -94,7 +94,9 @@ class PlanDocument {
       if (step.dependsOn.isNotEmpty) b.writeln('- **Depends on:** ' + step.dependsOn.join(', '));
       if (step.verification.isNotEmpty) {
         b.writeln('- **Verification:**');
-        for (final check in step.verification) b.writeln('  - ' + check);
+        for (final check in step.verification) {
+        b.writeln('  - ' + check);
+      }
       }
       if (step.risk.isNotEmpty) b.writeln('- **Risk:** ' + step.risk);
     }
@@ -108,7 +110,9 @@ class PlanDocument {
   static void _section(StringBuffer b, String title, List<String> values) {
     if (values.isEmpty) return;
     b..writeln('## ' + title)..writeln();
-    for (final value in values) b.writeln('- ' + value);
+    for (final value in values) {
+      b.writeln('- ' + value);
+    }
     b.writeln();
   }
 }
@@ -504,10 +508,14 @@ failure paths, security/performance implications and rollback. Match the user's 
       if (visited.contains(id)) return;
       final step = byId[id]!;
       visiting.add(id);
-      for (final dependency in step.dependsOn) visit(dependency);
+      for (final dependency in step.dependsOn) {
+        visit(dependency);
+      }
       visiting.remove(id);
       visited.add(id);
     }
-    for (final step in steps) visit(step.id);
+    for (final step in steps) {
+      visit(step.id);
+    }
   }
 }
