@@ -129,7 +129,7 @@ final workspaceServiceProvider = Provider<WorkspaceService>((ref) {
 });
 
 final terminalServiceProvider = Provider<TerminalService>((ref) {
-  final root = ref.read(workspaceRootProvider);
+  final root = ref.watch(workspaceRootProvider);
   final service = TerminalService(workingDirectory: root);
   ref.onDispose(() {
     unawaited(service.dispose());
