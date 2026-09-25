@@ -21,19 +21,24 @@ class TitleBar extends ConsumerWidget {
         builder: (context, constraints) {
           // Below ~560px there isn't room for the menu row, so keep only
           // the app logo, the mode slider and the window controls.
-          final showMenus = constraints.maxWidth >= 560;
+          final showMenus = constraints.maxWidth >= 720;
+          final showSecondaryActions = constraints.maxWidth >= 520;
+          final showModeSlider = constraints.maxWidth >= 440;
 
           return Row(
             children: [
               _Logo(),
               if (showMenus) _MenuBar(),
               const Spacer(),
-              const _RecentFilesButton(),
-              const SizedBox(width: DesignTokens.space1),
-              const _ZenToggle(),
-              const SizedBox(width: DesignTokens.space2),
-              const _ModeSlider(),
-              const SizedBox(width: DesignTokens.space3),
+              if (showSecondaryActions) ...[
+                const _RecentFilesButton(),
+                const SizedBox(width: DesignTokens.space1),
+                const _ZenToggle(),
+                const SizedBox(width: DesignTokens.space2),
+              ],
+              if (showModeSlider) const _ModeSlider(),
+              if (showModeSlider)
+                const SizedBox(width: DesignTokens.space3),
               _WindowControls(),
             ],
           );
