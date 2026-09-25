@@ -390,6 +390,12 @@ Guidelines:
         return;
       }
 
+      // A successful response proves the model/provider recovered. Start the
+      // malformed-tool retry allowance fresh for the next independent turn.
+      if (response['error'] == null) {
+        toolFailRetries = 0;
+      }
+
       final error = response['error'];
       if (error != null) {
         final err = error.toString();
