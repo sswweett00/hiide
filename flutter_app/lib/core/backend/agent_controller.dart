@@ -9,6 +9,7 @@ import 'ai_chat_client.dart';
 import 'backend_service.dart';
 import '../mechanics/agent_context.dart';
 import '../mechanics/agent_guard.dart';
+import '../mechanics/error_taxonomy.dart';
 
 // ─── Agent loop types ─────────────────────────────────────────────────────────
 
@@ -336,7 +337,10 @@ Guidelines:
   /// system prompt (the controller prepends its own).
   Stream<AgentEvent> run(List<Map<String, dynamic>> messages) async* {
     _stopRequested = false;
-    _workingMessages = List<Map<String, dynamic>>.from(messages);
+    _workspaceMutated = false;
+    _verificationObserved = false;
+    _verificationNudgeSent = false;
+    _workingMessages = _sanitizeHistory(messages);
     final apiMessages = <Map<String, dynamic>>[
       {'role': 'system', 'content': _systemPrompt},
       ..._workingMessages,
@@ -373,7 +377,7 @@ Guidelines:
         ..clear()
         ..addAll(compacted);
 
-      final response = await _ai.chatCompletion(
+      final response = await _chatCompletionWithRecovery(
         messages: apiMessages,
         tools: toolDefinitions,
         model: _model,
@@ -500,11 +504,14 @@ Guidelines:
       final calls = <AgentToolCall>[];
       for (final t in normalizedToolCalls) {
         final fn = t['function'] as Map<String, dynamic>;
-        final name = fn['name']?.toString() ?? 'unknown';
+        final name = fn['name']?.toString().trim() ?? '';
+        final rawId = t['id']?.toString().trim() ?? '';
         final arguments = _parseArguments(fn['arguments']);
         final call = AgentToolCall(
-          id: t['id']?.toString() ?? 'call_${iterations}_${calls.length}',
-          name: name,
+          id: rawId.isEmpty
+              ? 'call_${iterations}_${calls.length}'
+              : _uniqueToolCallId(rawId, calls),
+          name: name.isEmpty ? 'unknown' : name,
           arguments: arguments,
         );
         calls.add(call);
@@ -619,6 +626,10 @@ Guidelines:
 
   Future<_ToolResult> _executeTool(
       String name, Map<String, dynamic> args) async {
+    final argumentError = args['__hiide_argument_error']?.toString();
+    if (argumentError != null && argumentError.isNotEmpty) {
+      return _ToolResult('(invalid arguments) ' + argumentError, success: false);
+    }
     try {
       switch (name) {
         case 'read_file':
@@ -918,9 +929,7 @@ Guidelines:
 
   Map<String, dynamic> _parseArguments(dynamic raw) {
     if (raw == null) return const <String, dynamic>{};
-    if (raw is Map<String, dynamic>) {
-      return Map<String, dynamic>.from(raw);
-    }
+    if (raw is Map<String, dynamic>) return Map<String, dynamic>.from(raw);
     if (raw is Map) {
       return raw.map((key, value) => MapEntry(key.toString(), value));
     }
@@ -928,17 +937,114 @@ Guidelines:
     if (text.isEmpty) return const <String, dynamic>{};
     try {
       final decoded = jsonDecode(text);
-      if (decoded is Map<String, dynamic>) {
-        return decoded;
-      }
+      if (decoded is Map<String, dynamic>) return decoded;
       if (decoded is Map) {
         return decoded.map((key, value) => MapEntry(key.toString(), value));
       }
-    } catch (_) {
-      // The provider emitted malformed arguments. The tool invocation will
-      // return a structured error and the model can repair the call.
+      return const <String, dynamic>{
+        '__hiide_argument_error': 'Tool arguments must decode to a JSON object.',
+      };
+    } catch (error) {
+      return <String, dynamic>{
+        '__hiide_argument_error':
+            'Tool arguments contained invalid JSON: ' + error.toString(),
+      };
     }
-    return const <String, dynamic>{};
+  }
+
+  String _uniqueToolCallId(
+    String requested,
+    List<AgentToolCall> existing,
+  ) {
+    if (!existing.any((call) => call.id == requested)) return requested;
+    var index = 2;
+    while (existing.any((call) => call.id == requested + '_' + index.toString())) {
+      index++;
+    }
+    return requested + '_' + index.toString();
+  }
+
+  List<Map<String, dynamic>> _sanitizeHistory(
+    List<Map<String, dynamic>> messages,
+  ) {
+    final safe = <Map<String, dynamic>>[];
+    for (final raw in messages) {
+      try {
+        safe.add(Map<String, dynamic>.from(raw));
+      } catch (_) {}
+    }
+    return safe;
+  }
+
+  Future<Map<String, dynamic>> _chatCompletionWithRecovery({
+    required List<Map<String, dynamic>> messages,
+    required List<Map<String, dynamic>> tools,
+    required String model,
+  }) async {
+    Object? lastError;
+    StackTrace? lastStack;
+
+    for (var attempt = 0; attempt < 3; attempt++) {
+      if (_stopRequested) return const {'error': 'agent_stopped'};
+      try {
+        final response = await _ai.chatCompletion(
+          messages: messages,
+          tools: tools,
+          model: model,
+        );
+        final providerError = response['error']?.toString().trim() ?? '';
+        if (providerError.isEmpty) return response;
+        final failure = HiideFailure.from(StateError(providerError));
+        if (!_isRetryableAgentFailure(failure, providerError) || attempt == 2) {
+          return response;
+        }
+        await Future<void>.delayed(
+          Duration(milliseconds: attempt == 0 ? 200 : 500),
+        );
+      } catch (error, stack) {
+        lastError = error;
+        lastStack = stack;
+        final failure = HiideFailure.from(error, stack);
+        if (!_isRetryableAgentFailure(failure, error.toString()) || attempt == 2) {
+          return <String, dynamic>{'error': _formatAgentFailure(error, stack)};
+        }
+        await Future<void>.delayed(
+          Duration(milliseconds: attempt == 0 ? 200 : 500),
+        );
+      }
+    }
+
+    return <String, dynamic>{
+      'error': lastError == null
+          ? 'AI provider request failed.'
+          : _formatAgentFailure(lastError!, lastStack),
+    };
+  }
+
+  bool _isRetryableAgentFailure(HiideFailure failure, String text) {
+    if (failure.retryable) return true;
+    final lower = text.toLowerCase();
+    const markers = <String>[
+      'http 408',
+      'http 425',
+      'http 429',
+      'http 500',
+      'http 502',
+      'http 503',
+      'http 504',
+      'timeout',
+      'timed out',
+      'connection reset',
+      'connection closed',
+      'temporarily unavailable',
+      'too many requests',
+    ];
+    return markers.any(lower.contains);
+  }
+
+  String _formatAgentFailure(Object error, [StackTrace? stack]) {
+    final failure = HiideFailure.from(error, stack);
+    return failure.code.name + ': ' + failure.message;
   }
 
   String _truncate(String text, [int? limit]) {
