@@ -12,7 +12,7 @@ class ExplorerScreen extends ConsumerWidget {
 
   Future<void> _browseFolder(BuildContext context, WidgetRef ref) async {
     final ws = await pickWebDirectory();
-    if (ws == null) return;
+    if (ws == null || !context.mounted) return;
     await activateWorkspace(ref, ws.rootPath);
   }
 
@@ -192,6 +192,7 @@ class _FileTreeView extends ConsumerWidget {
     } catch (e) {
       content = '// Error reading file: $e';
     }
+    if (!context.mounted) return;
 
     final newTab = EditorTab(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
