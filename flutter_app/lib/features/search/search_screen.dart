@@ -154,6 +154,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     if (path.isEmpty) return;
     final workspace = ref.read(workspaceServiceProvider);
     final content = await _safeRead(workspace, path);
+    if (!mounted) return;
     if (content == null) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('File could not be read.')));
       return;
