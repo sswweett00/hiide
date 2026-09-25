@@ -57,13 +57,22 @@ class BottomPanel extends ConsumerWidget {
               height: 34,
               child: Row(
                 children: [
-                  const SizedBox(width: 8),
-                  _PanelTab(label: 'TERMINAL', value: 'terminal', selected: selected),
-                  _PanelTab(label: 'PROBLEMS', value: 'problems', selected: selected),
-                  _PanelTab(label: 'OUTPUT', value: 'output', selected: selected),
-                  _PanelTab(label: 'DEBUG CONSOLE', value: 'debug', selected: selected),
-                  _PanelTab(label: 'AI CHAT', value: 'ai_chat', selected: selected),
-                  const Spacer(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const ClampingScrollPhysics(),
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 8),
+                          _PanelTab(label: 'TERMINAL', value: 'terminal', selected: selected),
+                          _PanelTab(label: 'PROBLEMS', value: 'problems', selected: selected),
+                          _PanelTab(label: 'OUTPUT', value: 'output', selected: selected),
+                          _PanelTab(label: 'DEBUG CONSOLE', value: 'debug', selected: selected),
+                          _PanelTab(label: 'AI CHAT', value: 'ai_chat', selected: selected),
+                        ],
+                      ),
+                    ),
+                  ),
                   Tooltip(
                     message: 'Close panel',
                     child: IconButton(
@@ -173,16 +182,29 @@ class _InlineDebugScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.bug_report_outlined, size: 16, color: cs.onSurfaceVariant),
-          const SizedBox(width: 8),
-          Text(
-            'Debug Console — start debugging to see output.',
-            style: TextStyle(color: cs.onSurfaceVariant, fontFamily: 'JetBrains Mono', fontSize: 12),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.bug_report_outlined, size: 16, color: cs.onSurfaceVariant),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                'Debug Console — start debugging to see output.',
+                textAlign: TextAlign.center,
+                softWrap: true,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                style: TextStyle(
+                  color: cs.onSurfaceVariant,
+                  fontFamily: 'JetBrains Mono',
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
