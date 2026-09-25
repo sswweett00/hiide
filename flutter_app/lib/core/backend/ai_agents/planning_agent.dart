@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../ai_chat_client.dart';
 import '../backend_service.dart';
+import '../../mechanics/error_taxonomy.dart';
 
 enum PlanStepStatus { pending, running, success, error, skipped }
 
@@ -145,6 +146,10 @@ class PlanErrorEvent extends PlanningEvent {
   const PlanErrorEvent(this.message);
 }
 
+class PlanStoppedEvent extends PlanningEvent {
+  const PlanStoppedEvent();
+}
+
 class PlanningAgent {
   PlanningAgent({
     required AiChatClient ai,
@@ -163,6 +168,7 @@ class PlanningAgent {
   final int maxWorkspaceEntries;
   bool _stopRequested = false;
   PlanDocument? lastPlan;
+  static const _maxAiRequestRetries = 3;
 
   void stop() => _stopRequested = true;
 
@@ -231,21 +237,27 @@ failure paths, security/performance implications and rollback. Match the user's 
       yield PlanErrorEvent('Planning request failed: ' + e.toString());
       return;
     }
-    if (_stopRequested) return;
+    if (_stopRequested) {
+      yield const PlanStoppedEvent();
+      return;
+    }
 
     late final PlanDocument document;
     try {
       document = parseDocument(_contentFromResponse(response), maxSteps: maxSteps);
     } catch (firstError) {
       try {
-        final repaired = await _ai.chatCompletion(
+        final repaired = await _chatWithRecovery(
           messages: [
             {'role': 'system', 'content': _systemPrompt},
             {'role': 'user', 'content': request + '\n\nThe previous plan was invalid: ' + firstError.toString() + '\nRepair it and return only valid JSON.'},
           ],
           temperature: 0.0,
         );
-        if (_stopRequested) return;
+        if (_stopRequested) {
+          yield const PlanStoppedEvent();
+          return;
+        }
         document = parseDocument(_contentFromResponse(repaired), maxSteps: maxSteps);
       } catch (repairError) {
         yield PlanErrorEvent('Plan could not be validated: ' + repairError.toString());
@@ -257,7 +269,10 @@ failure paths, security/performance implications and rollback. Match the user's 
     yield PlanCreatedEvent(document.steps, document);
 
     for (final step in document.steps) {
-      if (_stopRequested) return;
+      if (_stopRequested) {
+        yield const PlanStoppedEvent();
+        return;
+      }
       step.status = PlanStepStatus.running;
       yield PlanStepStartedEvent(step);
       step.status = PlanStepStatus.success;
@@ -268,7 +283,10 @@ failure paths, security/performance implications and rollback. Match the user's 
     final markdown = document.toMarkdown();
     const chunkSize = 180;
     for (var i = 0; i < markdown.length; i += chunkSize) {
-      if (_stopRequested) return;
+      if (_stopRequested) {
+        yield const PlanStoppedEvent();
+        return;
+      }
       final end = (i + chunkSize < markdown.length) ? i + chunkSize : markdown.length;
       yield PlanTextTokenEvent(markdown.substring(i, end));
     }
@@ -283,47 +301,83 @@ failure paths, security/performance implications and rollback. Match the user's 
 
     for (var round = 0; round < _maxInspectionRounds; round++) {
       if (_stopRequested) return const {'error': 'planning_stopped'};
-      final response = await _ai.chatCompletion(
+      final response = await _chatWithRecovery(
         messages: messages,
         tools: _readOnlyToolDefinitions,
         temperature: 0.1,
       );
       if (response['error'] != null) return response;
       final choices = response['choices'];
-      if (choices is! List || choices.isEmpty) return response;
+      if (choices is! List || choices.isEmpty) {
+        return const {'error': 'Model returned an empty planning response.'};
+      }
       final first = choices.first;
-      if (first is! Map) return response;
+      if (first is! Map) {
+        return const {'error': 'Model returned an invalid planning choice.'};
+      }
       final message = first['message'];
-      if (message is! Map) return response;
+      if (message is! Map) {
+        return const {'error': 'Model returned an invalid planning message.'};
+      }
       final toolCalls = message['tool_calls'];
-      if (toolCalls is! List || toolCalls.isEmpty) return response;
+      if (toolCalls == null) {
+        return response;
+      }
+      if (toolCalls is! List) {
+        return const {'error': 'Model returned invalid planning tool-call data.'};
+      }
+      if (toolCalls.isEmpty) return response;
+
+      final normalizedCalls = <Map<String, dynamic>>[];
+      final ids = <String>{};
+      for (var i = 0; i < toolCalls.length; i++) {
+        final raw = toolCalls[i];
+        if (raw is! Map) {
+          return const {'error': 'Model returned an invalid planning tool call.'};
+        }
+        final call = Map<String, dynamic>.from(raw);
+        final rawFunction = call['function'];
+        if (rawFunction is! Map) {
+          return const {'error': 'Model returned a planning tool call without a valid function.'};
+        }
+        final fn = Map<String, dynamic>.from(rawFunction);
+        final rawId = call['id']?.toString().trim() ?? '';
+        var id = rawId.isEmpty ? 'plan_call_' + round.toString() + '_' + i.toString() : rawId;
+        var suffix = 2;
+        while (ids.contains(id)) {
+          id = rawId + '_' + suffix.toString();
+          suffix++;
+        }
+        ids.add(id);
+        call['id'] = id;
+        call['function'] = fn;
+        normalizedCalls.add(call);
+      }
 
       messages.add({
         'role': 'assistant',
         'content': message['content']?.toString() ?? '',
-        'tool_calls': toolCalls,
+        'tool_calls': normalizedCalls,
       });
 
-      for (final rawCall in toolCalls) {
+      for (final call in normalizedCalls) {
         if (_stopRequested) return const {'error': 'planning_stopped'};
-        if (rawCall is! Map) continue;
-        final call = Map<String, dynamic>.from(rawCall);
-        final function = call['function'];
-        if (function is! Map) {
+        final fn = call['function'] as Map<String, dynamic>;
+        final name = fn['name']?.toString().trim() ?? '';
+        final id = call['id']?.toString() ?? 'unknown';
+        if (name.isEmpty) {
           messages.add({
             'role': 'tool',
-            'tool_call_id': call['id']?.toString() ?? 'unknown',
-            'content': '(error) invalid tool call payload',
+            'tool_call_id': id,
+            'content': '(error) planning tool name is required',
           });
           continue;
         }
-        final fn = Map<String, dynamic>.from(function);
-        final name = fn['name']?.toString() ?? '';
         final args = _parseToolArguments(fn['arguments']);
         final output = await _executeReadOnlyTool(name, args);
         messages.add({
           'role': 'tool',
-          'tool_call_id': call['id']?.toString() ?? 'unknown',
+          'tool_call_id': id,
           'content': output,
         });
       }
@@ -335,6 +389,10 @@ failure paths, security/performance implications and rollback. Match the user's 
   }
 
   Future<String> _executeReadOnlyTool(String name, Map<String, dynamic> args) async {
+    final argumentError = args['__hiide_argument_error']?.toString();
+    if (argumentError != null && argumentError.isNotEmpty) {
+      return '(invalid arguments) ' + argumentError;
+    }
     try {
       switch (name) {
         case 'read_file':
@@ -374,12 +432,69 @@ failure paths, security/performance implications and rollback. Match the user's 
 
   static Map<String, dynamic> _parseToolArguments(dynamic raw) {
     if (raw is Map) return Map<String, dynamic>.from(raw);
-    if (raw is! String || raw.trim().isEmpty) return const {};
+    if (raw == null) return const {};
+    if (raw is! String || raw.trim().isEmpty) {
+      return const {
+        '__hiide_argument_error': 'Planning tool arguments are missing.',
+      };
+    }
     try {
       final decoded = jsonDecode(raw);
       if (decoded is Map) return Map<String, dynamic>.from(decoded);
-    } catch (_) {}
-    return const {};
+      return const {
+        '__hiide_argument_error': 'Planning tool arguments must be a JSON object.',
+      };
+    } catch (error) {
+      return {
+        '__hiide_argument_error':
+            'Planning tool arguments contained invalid JSON: ' + error.toString(),
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> _chatWithRecovery({
+    required List<Map<String, dynamic>> messages,
+    List<Map<String, dynamic>>? tools,
+    required double temperature,
+  }) async {
+    Object? lastError;
+    StackTrace? lastStack;
+
+    for (var attempt = 0; attempt < _maxAiRequestRetries; attempt++) {
+      if (_stopRequested) return const {'error': 'planning_stopped'};
+      try {
+        final response = await _ai.chatCompletion(
+          messages: messages,
+          tools: tools,
+          temperature: temperature,
+        );
+        final errorText = response['error']?.toString().trim() ?? '';
+        if (errorText.isEmpty) return response;
+
+        final failure = HiideFailure.from(StateError(errorText));
+        if (!failure.retryable || attempt == _maxAiRequestRetries - 1) {
+          return response;
+        }
+      } catch (error, stack) {
+        lastError = error;
+        lastStack = stack;
+        final failure = HiideFailure.from(error, stack);
+        if (!failure.retryable || attempt == _maxAiRequestRetries - 1) {
+          return {
+            'error': failure.code.name + ': ' + failure.message,
+          };
+        }
+      }
+      await Future<void>.delayed(
+        Duration(milliseconds: attempt == 0 ? 200 : 500),
+      );
+    }
+
+    return {
+      'error': lastError == null
+          ? 'Planning AI request failed.'
+          : HiideFailure.from(lastError!, lastStack).toString(),
+    };
   }
 
   static String _truncateToolResult(String value) {
