@@ -77,7 +77,9 @@ pub export fn hiide_editor_get_text(handle: ?EditorHandle) callconv(.c) ?[*:0]co
     const text = handle.?.getText() catch return null;
     if (text.len == 0) {
         allocator.free(text);
-        return null;
+        const ptr = allocator.alloc(u8, 1) catch return null;
+        ptr[0] = 0;
+        return @ptrCast(ptr);
     }
     const ptr = allocator.realloc(text, text.len + 1) catch {
         allocator.free(text);
