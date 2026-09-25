@@ -318,16 +318,19 @@ class DiffViewerScreen extends ConsumerWidget {
                             const Icon(Icons.difference_outlined,
                                 size: 16, color: Color(0xFF58A6FF)),
                             const SizedBox(width: 8),
-                            Text(
-                              activeFile.path,
-                              style: TextStyle(
+                            Expanded(
+                              child: Text(
+                                activeFile.path,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
                                 color: cs.onSurface,
                                 fontFamily: 'JetBrains Mono',
                                 fontSize: DesignTokens.fontSizeSM,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.bold,),
                               ),
                             ),
-                            const Spacer(),
+                            const SizedBox(width: DesignTokens.space3),
                             OutlinedButton.icon(
                               onPressed: () =>
                                   ref.invalidate(diffFilesProvider),
