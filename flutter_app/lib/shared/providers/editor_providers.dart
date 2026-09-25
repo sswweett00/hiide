@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/backend_service.dart';
 import '../../core/backend/groq_ai_service.dart';
+import '../../core/backend/terminal_service.dart';
 import '../../core/backend/workspace_service.dart';
 import '../../core/backend/settings_service.dart';
 import '../../core/providers/backend_provider.dart';
@@ -125,6 +126,15 @@ Future<void> _openWelcomeReadme(WidgetRef ref, String root) async {
 final workspaceServiceProvider = Provider<WorkspaceService>((ref) {
   final root = ref.watch(workspaceRootProvider);
   return WorkspaceService(rootPath: root);
+});
+
+final terminalServiceProvider = Provider<TerminalService>((ref) {
+  final root = ref.read(workspaceRootProvider);
+  final service = TerminalService(workingDirectory: root);
+  ref.onDispose(() {
+    unawaited(service.dispose());
+  });
+  return service;
 });
 
 /// Groq AI service — reads key + model from SettingsService (with file
