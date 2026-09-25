@@ -56,12 +56,13 @@ pub const TcpServer = struct {
 
     /// Creates, binds and listens on `127.0.0.1:port`.
     pub fn init(port: u16) !TcpServer {
-        const fd = @as(i32, @intCast(linux.socket(
+        const raw_fd = linux.socket(
             linux.AF.INET,
             linux.SOCK.STREAM | linux.SOCK.CLOEXEC,
             0,
-        )));
-        if (fd < 0) return error.SocketFailed;
+        );
+        if (linux.getErrno(raw_fd) != .SUCCESS) return error.SocketFailed;
+        const fd: i32 = @intCast(raw_fd);
         errdefer _ = linux.close(fd);
 
         // SO_REUSEADDR
@@ -100,13 +101,14 @@ pub const TcpServer = struct {
     pub fn accept(self: *TcpServer) !TcpConnection {
         var peer_addr: linux.sockaddr.in = undefined;
         var peer_len: u32 = @sizeOf(linux.sockaddr.in);
-        const client_fd = @as(i32, @intCast(linux.accept4(
+        const raw_client_fd = linux.accept4(
             self.fd,
             @ptrCast(&peer_addr),
             &peer_len,
             linux.SOCK.CLOEXEC,
-        )));
-        if (client_fd < 0) return error.AcceptFailed;
+        );
+        if (linux.getErrno(raw_client_fd) != .SUCCESS) return error.AcceptFailed;
+        const client_fd: i32 = @intCast(raw_client_fd);
         return TcpConnection{ .stream = .{ .fd = client_fd } };
     }
 };
