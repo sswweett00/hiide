@@ -379,7 +379,9 @@ const IN_ISDIR: u32 = 0x40000000;
 const WATCH_MASK = IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_TO | IN_DELETE_SELF | IN_MOVE_SELF;
 
 fn linuxWatcherThread() void {
-    const fd = std.posix.inotify_init1(0) catch return;
+    const raw_fd = linux.inotify_init1(0);
+    if (linux.getErrno(raw_fd) != .SUCCESS) return;
+    const fd: i32 = @intCast(@as(isize, @bitCast(raw_fd)));
     defer std.posix.close(fd);
 
     // wd → absolute directory path (allocator-owned)
