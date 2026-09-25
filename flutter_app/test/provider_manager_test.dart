@@ -17,10 +17,8 @@ class _FakeProvider implements AiProvider {
   @override
   String get baseUrl => 'https://example.test/v1';
 
-  @override
   final bool available;
 
-  @override
   final List<String> models;
   final String? responseError;
   final String? streamError;
@@ -80,6 +78,9 @@ class _FakeProvider implements AiProvider {
     modelCalls++;
     return models;
   }
+
+  @override
+  void dispose() {}
 }
 
 void main() {
