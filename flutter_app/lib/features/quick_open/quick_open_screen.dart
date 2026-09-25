@@ -129,18 +129,20 @@ class _QuickOpenDialogState extends ConsumerState<_QuickOpenDialog> {
   void _openFile(List<_FileResult> results, int index) async {
     if (index < 0 || index >= results.length) return;
     final file = results[index];
+    final container = ProviderScope.containerOf(context, listen: false);
     Navigator.of(context).pop();
 
-    // Check if already open
-    final tabs = ref.read(openTabsProvider);
+    // Check if already open. Use the app-level container after the dialog
+    // closes so this async operation never touches a disposed WidgetRef.
+    final tabs = container.read(openTabsProvider);
     final existing = tabs.where((t) => t.path == file.path).firstOrNull;
     if (existing != null) {
-      ref.read(activeTabIdProvider.notifier).state = existing.id;
+      container.read(activeTabIdProvider.notifier).state = existing.id;
       return;
     }
 
     // Load and open
-    final service = ref.read(workspaceServiceProvider);
+    final service = container.read(workspaceServiceProvider);
     try {
       final content = await service.readFile(file.path);
       final tab = EditorTab(
@@ -393,16 +395,23 @@ class _HintKey extends StatelessWidget {
 
 // ─── Quick Open Screen (route fallback) ───────────────────────────────────────
 
-class QuickOpenScreen extends ConsumerWidget {
+class QuickOpenScreen extends ConsumerStatefulWidget {
   const QuickOpenScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // This route just shows the dialog overlay on top of the editor
+  ConsumerState<QuickOpenScreen> createState() => _QuickOpenScreenState();
+}
+
+class _QuickOpenScreenState extends ConsumerState<QuickOpenScreen> {
+  @override
+  void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       showQuickOpenOverlay(context, ref);
     });
-
-    return const SizedBox.shrink();
   }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
