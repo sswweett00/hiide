@@ -290,9 +290,9 @@ class _IdeShellState extends ConsumerState<IdeShell> {
                   builder: (context, constraints) {
                     // Zen mode strips every chrome panel — only the editor
                     // (and chat) remain.
-                    final showExplorer = !zen && constraints.maxWidth >= 900;
+                    final showExplorer = !zen && constraints.maxWidth >= 1100;
                     final showAiSidebar =
-                        widget.showAiSidebar && constraints.maxWidth >= 640;
+                        widget.showAiSidebar && constraints.maxWidth >= 1000;
 
                     return Row(
                       children: [
