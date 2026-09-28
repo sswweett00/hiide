@@ -1163,12 +1163,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                           icon:
                               const Icon(Icons.save, size: DesignTokens.iconSM),
                           tooltip: 'Save (Ctrl+S)',
-                          onPressed: _saveActiveTab,
+                          onPressed: null,
                           visualDensity: VisualDensity.compact,
                         )
                       else
                         ElevatedButton.icon(
-                          onPressed: _saveActiveTab,
+                          onPressed: null,
                           icon:
                               const Icon(Icons.save, size: DesignTokens.iconXS),
                           label: const Text('Save'),
@@ -1247,7 +1247,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                           padding:
                               const EdgeInsets.only(left: DesignTokens.space2),
                           child: Focus(
-                            onKeyEvent: _handleEditorKeyEvent,
+                            onKeyEvent: (node, event) => KeyEventResult.ignored,
                             child: Stack(
                               children: [
                                 // Find-bar highlight overlay: a transparent
@@ -1277,8 +1277,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                     key: const Key('editor-code-text-field'),
                                     controller: session.controller,
                                     scrollController: _textScrollController,
-                                    onChanged: (value) =>
-                                        _sync(activeTab, value),
+                                    readOnly: true,
                                     maxLines: null,
                                     expands: true,
                                     keyboardType: TextInputType.multiline,
