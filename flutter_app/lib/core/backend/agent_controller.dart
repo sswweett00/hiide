@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 
 import 'ai_chat_client.dart';
 import 'backend_service.dart';
+import 'agent_transaction.dart';
 import '../mechanics/agent_context.dart';
 import '../mechanics/agent_guard.dart';
 import '../mechanics/error_taxonomy.dart';
@@ -113,13 +114,19 @@ class AgentController {
         _backend = backend,
         _workspaceRoot = workspaceRoot,
         _model = model,
-        _systemPrompt = systemPrompt ?? _defaultSystemPrompt(workspaceRoot);
+        _systemPrompt = systemPrompt ?? _defaultSystemPrompt(workspaceRoot),
+        _transaction = AgentTransaction(backend: backend, workspaceRoot: workspaceRoot);
 
   final AiChatClient _ai;
   final BackendService _backend;
   final String _workspaceRoot;
   final String _model;
   final String _systemPrompt;
+  final AgentTransaction _transaction;
+
+  AgentTransaction get transaction => _transaction;
+
+  Future<AgentRollbackReport> rollbackChanges() => _transaction.rollback();
   final int maxIterations;
   final int toolResultMaxChars;
   final int maxToolContextChars;
@@ -674,6 +681,7 @@ Guidelines:
         case 'write_file':
           final path = args['path']?.toString() ?? '';
           final content = args['content']?.toString() ?? '';
+          await _transaction.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.write',
             {'path': _relPath(path), 'content': content},
@@ -682,6 +690,7 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction.recordWrite(_relPath(path), content);
           final size = _jsonField(result.output, 'size') ?? content.length;
           return _ToolResult('Wrote $size characters to ${_relPath(path)}');
 
@@ -691,6 +700,7 @@ Guidelines:
             return const _ToolResult('(error) No path provided.',
                 success: false);
           }
+          await _transaction.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.delete',
             {'path': _relPath(path)},
@@ -699,6 +709,7 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction.recordDelete(_relPath(path));
           return _ToolResult('Deleted ${_relPath(path)}');
 
         case 'create_directory':
@@ -719,6 +730,7 @@ Guidelines:
 
         case 'apply_diff':
           final path = args['path']?.toString() ?? '';
+          await _transaction.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.apply_diff',
             {
@@ -731,6 +743,7 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction.recordPatchedFile(_relPath(path));
           return _ToolResult('Applied edit to ${_relPath(path)}');
 
         case 'list_directory':
