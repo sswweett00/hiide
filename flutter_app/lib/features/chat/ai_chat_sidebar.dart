@@ -599,6 +599,10 @@ At the end report changed areas, verification commands, unresolved failures, and
           }
           if (event.text.trim().isNotEmpty) _addMessage(ChatMessage(role: ChatRole.assistant, content: event.text, timestamp: DateTime.now()));
         case AgentErrorEvent(:final message):
+          final rollback = await controller.rollbackChanges();
+          if (taskId != null && rollback.restored + rollback.skipped > 0) {
+            store.addEvent(taskId, kind: 'rollback', title: 'Başarısız run geri alındı', detail: 'Restored: ${rollback.restored}, skipped: ${rollback.skipped}. ${rollback.errors.join('; ')}', success: rollback.complete);
+          }
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
@@ -608,6 +612,10 @@ At the end report changed areas, verification commands, unresolved failures, and
           }
           _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + message, timestamp: DateTime.now()));
         case AgentStoppedEvent():
+          final rollback = await controller.rollbackChanges();
+          if (taskId != null && rollback.restored + rollback.skipped > 0) {
+            store.addEvent(taskId, kind: 'rollback', title: 'İptal edilen run geri alındı', detail: 'Restored: ${rollback.restored}, skipped: ${rollback.skipped}. ${rollback.errors.join('; ')}', success: rollback.complete);
+          }
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
@@ -617,6 +625,10 @@ At the end report changed areas, verification commands, unresolved failures, and
           }
           _addMessage(ChatMessage(role: ChatRole.system, content: '⏹ Stopped by user.', timestamp: DateTime.now()));
         case AgentIterationLimitEvent(:final iterations, :final reason):
+          final rollback = await controller.rollbackChanges();
+          if (taskId != null && rollback.restored + rollback.skipped > 0) {
+            store.addEvent(taskId, kind: 'rollback', title: 'Limit sonrası run geri alındı', detail: 'Restored: ${rollback.restored}, skipped: ${rollback.skipped}. ${rollback.errors.join('; ')}', success: rollback.complete);
+          }
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           final message = reason + ' (iteration ' + iterations.toString() + ').';
