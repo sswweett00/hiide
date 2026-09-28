@@ -364,6 +364,8 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   }
 
   Future<void> _autoSaveNow(EditorTab tab) async {
+    // Source files are exclusively mutated by the agent tool pipeline.
+    return;
     try {
       final session = _sessionFor(tab);
       final engineText = await session.engineText();
@@ -435,6 +437,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   /// Inserts the offered completion at the caret, mirroring the change into
   /// the engine buffer exactly like a keystroke.
   void _acceptCompletion() {
+    // Inline completion is intentionally disabled in agent-first mode; request
+    // a change through the Agent Workspace instead of editing the buffer.
+    return;
     final completion = ref.read(aiCompletionProvider);
     final tab = _activeTabNow();
     if (completion == null || completion.isEmpty || tab == null) return;
@@ -512,6 +517,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
   /// Replaces the currently selected match with the replace text.
   void _replaceCurrent() {
+    return; // Search is read-only; replacements must be agent-authored.
     final tab = _activeTabNow();
     if (tab == null || _findRanges.isEmpty) return;
     final session = _sessionFor(tab);
@@ -535,6 +541,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   /// applied back-to-front so offsets stay valid; the replacement is literal
   /// (no `$1` backreference expansion).
   void _replaceAll() {
+    return; // Search is read-only; replacements must be agent-authored.
     final tab = _activeTabNow();
     if (tab == null) return;
     final query = _findCtrl.text;
@@ -1163,12 +1170,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                           icon:
                               const Icon(Icons.save, size: DesignTokens.iconSM),
                           tooltip: 'Save (Ctrl+S)',
-                          onPressed: _saveActiveTab,
+                          onPressed: null,
                           visualDensity: VisualDensity.compact,
                         )
                       else
                         ElevatedButton.icon(
-                          onPressed: _saveActiveTab,
+                          onPressed: null,
                           icon:
                               const Icon(Icons.save, size: DesignTokens.iconXS),
                           label: const Text('Save'),
@@ -1247,7 +1254,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                           padding:
                               const EdgeInsets.only(left: DesignTokens.space2),
                           child: Focus(
-                            onKeyEvent: _handleEditorKeyEvent,
+                            onKeyEvent: (node, event) => KeyEventResult.ignored,
                             child: Stack(
                               children: [
                                 // Find-bar highlight overlay: a transparent
@@ -1277,8 +1284,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                     key: const Key('editor-code-text-field'),
                                     controller: session.controller,
                                     scrollController: _textScrollController,
-                                    onChanged: (value) =>
-                                        _sync(activeTab, value),
+                                    readOnly: true,
                                     maxLines: null,
                                     expands: true,
                                     keyboardType: TextInputType.multiline,
