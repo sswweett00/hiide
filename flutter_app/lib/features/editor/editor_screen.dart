@@ -8,7 +8,6 @@ import '../../core/backend/backend_service.dart';
 import '../../core/backend/editor_session.dart';
 import '../../core/backend/groq_ai_service.dart';
 import '../../core/backend/web_picker.dart';
-import '../../core/backend/workspace_service.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../features/chat/ai_chat_sidebar.dart';
