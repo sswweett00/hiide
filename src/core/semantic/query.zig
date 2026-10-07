@@ -151,24 +151,19 @@ pub const SemanticStore = struct {
             },
 
             .cross_language_path => |clp| {
-                // Cross-language resolution: find all nodes reachable from `from`
-                // that match `to_lang` via any edge.
-                var it = self.g.nodes.iterator();
-                while (it.next()) |entry| {
-                    const node = entry.value_ptr.*;
-                    if (!std.mem.eql(u8, node.lang, clp.to_lang)) continue;
-                    // Check if there is an edge from clp.from to this node.
-                    for (self.g.edges.items) |edge| {
-                        if (edge.from.toU128() == clp.from.toU128() and
-                            edge.to.toU128() == node.id.toU128())
-                        {
-                            try hits.append(alloc, .{
-                                .symbol_id = node.id,
-                                .name = node.name,
-                                .kind = node.kind,
-                                .score = 0.8,
-                            });
-                            break;
+                // Traverse only the source node's adjacency list. The previous
+                // implementation scanned every node and every edge (O(V*E)).
+                if (self.g.out_index.get(clp.from)) |outgoing| {
+                    for (outgoing.items) |edge| {
+                        if (self.g.lookupNode(edge.to)) |node| {
+                            if (std.mem.eql(u8, node.lang, clp.to_lang)) {
+                                try hits.append(alloc, .{
+                                    .symbol_id = node.id,
+                                    .name = node.name,
+                                    .kind = node.kind,
+                                    .score = 0.8,
+                                });
+                            }
                         }
                     }
                 }
