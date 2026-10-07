@@ -74,11 +74,11 @@ class AgentTransaction {
 
     if (!exact.isDirectory) {
       throw StateError(
-        'Unable to snapshot "\${relative}" before mutation: \${read.error}',
+        'Unable to snapshot "${relative}" before mutation: ${read.error}',
       );
     }
 
-    final prefix = relative == '.' ? '' : '\${relative}/';
+    final prefix = relative == '.' ? '' : '${relative}/';
     var fileCount = 0;
     var totalBytes = 0;
 
@@ -98,8 +98,8 @@ class AgentTransaction {
       if (fileCount > _maxSnapshotFiles ||
           totalBytes > _maxSnapshotBytes) {
         throw StateError(
-          'Refusing to mutate "\${relative}": rollback snapshot exceeds '
-          'the \${_maxSnapshotFiles}-file / \${_maxSnapshotBytes}-byte safety limit.',
+          'Refusing to mutate "${relative}": rollback snapshot exceeds '
+          'the ${_maxSnapshotFiles}-file / ${_maxSnapshotBytes}-byte safety limit.',
         );
       }
 
@@ -110,8 +110,8 @@ class AgentTransaction {
       );
       if (!fileRead.ok) {
         throw StateError(
-          'Unable to snapshot "\${entry.path}" before directory mutation: '
-          '\${fileRead.error}',
+          'Unable to snapshot "${entry.path}" before directory mutation: '
+          '${fileRead.error}',
         );
       }
 
@@ -154,7 +154,7 @@ class AgentTransaction {
 
     if (_originalDirectories.contains(relative)) {
       _expectedDirectories.remove(relative);
-      final prefix = relative == '.' ? '' : '\${relative}/';
+      final prefix = relative == '.' ? '' : '${relative}/';
       for (final pathKey in _originalFiles.keys) {
         if (relative == '.' || pathKey.startsWith(prefix)) {
           _expectedFiles[pathKey] = null;
@@ -170,7 +170,7 @@ class AgentTransaction {
 
     if (_originalFiles.containsKey(relative)) {
       throw StateError(
-        'Cannot treat "\${relative}" as a directory; it is a file.',
+        'Cannot treat "${relative}" as a directory; it is a file.',
       );
     }
     _expectedDirectories.add(relative);
@@ -182,7 +182,7 @@ class AgentTransaction {
     await captureBeforeMutation(relative);
 
     if (_originalDirectories.contains(relative)) {
-      throw StateError('Cannot patch directory "\${relative}".');
+      throw StateError('Cannot patch directory "${relative}".');
     }
 
     final result = await _backend.executeAgentTool(
@@ -192,8 +192,8 @@ class AgentTransaction {
     );
     if (!result.ok) {
       throw StateError(
-        'Unable to record the post-patch state for "\${relative}": '
-        '\${result.error}',
+        'Unable to record the post-patch state for "${relative}": '
+        '${result.error}',
       );
     }
     _expectedFiles[relative] = result.output;
@@ -261,7 +261,7 @@ class AgentTransaction {
       } else {
         skipped++;
         errors.add(
-          '\$path: rollback directory restore failed: \${result.error}',
+          '\$path: rollback directory restore failed: ${result.error}',
         );
       }
     }
@@ -300,7 +300,7 @@ class AgentTransaction {
           );
           if (!deleted.ok) {
             skipped++;
-            errors.add('\$path: rollback delete failed: \${deleted.error}');
+            errors.add('\$path: rollback delete failed: ${deleted.error}');
             continue;
           }
           restored++;
@@ -322,7 +322,7 @@ class AgentTransaction {
             );
             if (!write.ok) {
               skipped++;
-              errors.add('\$path: rollback write failed: \${write.error}');
+              errors.add('\$path: rollback write failed: ${write.error}');
               continue;
             }
             restored++;
@@ -341,7 +341,7 @@ class AgentTransaction {
           );
           if (!write.ok) {
             skipped++;
-            errors.add('\$path: rollback write failed: \${write.error}');
+            errors.add('\$path: rollback write failed: ${write.error}');
             continue;
           }
           restored++;
@@ -366,7 +366,7 @@ class AgentTransaction {
         if (_isNotFound(entries.error)) continue;
         skipped++;
         errors.add(
-          '\$path: unable to inspect created directory: \${entries.error}',
+          '\$path: unable to inspect created directory: ${entries.error}',
         );
         continue;
       }
@@ -387,7 +387,7 @@ class AgentTransaction {
       } else {
         skipped++;
         errors.add(
-          '\$path: rollback directory delete failed: \${deleted.error}',
+          '\$path: rollback directory delete failed: ${deleted.error}',
         );
       }
     }
