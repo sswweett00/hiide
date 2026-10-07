@@ -206,7 +206,7 @@ pub const Editor = struct {
             // rescanning from the beginning for every result.
             var cursor = search_pos;
             while (cursor < match_pos) : (cursor += 1) {
-                if (text[cursor] == '\\n') {
+                if (text[cursor] == '\n') {
                     line += 1;
                     col = 1;
                 } else {
@@ -223,7 +223,7 @@ pub const Editor = struct {
             // Match positions remain non-overlapping, matching the previous
             // startsWith-based implementation.
             for (text[match_pos .. match_pos + query.len]) |c| {
-                if (c == '\\n') {
+                if (c == '\n') {
                     line += 1;
                     col = 1;
                 } else {
@@ -256,7 +256,7 @@ test "editor: search preserves line and column across non-overlapping matches" {
     var ed = try Editor.init(std.testing.allocator);
     defer ed.deinit();
 
-    try ed.load("alpha\\nneedle x needle\\nomega");
+    try ed.load("alpha\nneedle x needle\nomega");
     const results = try ed.search(std.testing.allocator, "needle");
     defer {
         for (results) |result| std.testing.allocator.free(result.text);
