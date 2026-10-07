@@ -282,12 +282,46 @@ class AnthropicProvider implements AiProvider {
 
   @override
   Future<List<String>> fetchAvailableModels() async {
-    // Anthropic doesn't expose a models list endpoint; return known models
-    return const [
-      'claude-sonnet-4-20250514',
-      'claude-3-5-haiku-20241022',
-      'claude-3-opus-20240229',
-    ];
+    if (apiKey.trim().isEmpty) {
+      throw StateError('Anthropic API key is not set.');
+    }
+    try {
+      final response = await _client
+          .get(
+            Uri.parse('$baseUrl/models'),
+            headers: {
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+              'Content-Type': 'application/json',
+            },
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw StateError(
+          _extractError(response.body) ??
+              'Anthropic models request failed with HTTP ' +
+                  response.statusCode.toString() +
+                  '.',
+        );
+      }
+
+      final decoded = jsonDecode(response.body);
+      final data = decoded is Map ? decoded['data'] : null;
+      if (data is! List) {
+        throw FormatException('Anthropic models response has no data array.');
+      }
+
+      return data
+          .whereType<Map>()
+          .map((model) => model['id']?.toString() ?? '')
+          .where((id) => id.isNotEmpty)
+          .toList()
+        ..sort();
+    } catch (error) {
+      if (error is StateError || error is FormatException) rethrow;
+      throw StateError('Anthropic models request failed: $error');
+    }
   }
 
   void updateSelectedModel(String model) => _selectedModel = model;
