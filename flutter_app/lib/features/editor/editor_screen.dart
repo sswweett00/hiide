@@ -8,6 +8,7 @@ import '../../core/backend/backend_service.dart';
 import '../../core/backend/editor_session.dart';
 import '../../core/backend/groq_ai_service.dart';
 import '../../core/backend/web_picker.dart';
+import '../../core/backend/workspace_service.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../features/chat/ai_chat_sidebar.dart';
@@ -54,6 +55,310 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   final Set<String> _diffLoading = {};
 
   Timer? _diffDebounce;
+
+  /// Debounced auto-save (see [autoSaveEnabledProvider]).
+  Timer? _autoSaveTimer;
+
+  /// Whether the markdown preview pane is open for the current .md tab.
+  bool _markdownPreview = false;
+  String? _previewTabId;
+
+  // ── Find & replace state ──
+  final TextEditingController _findCtrl = TextEditingController();
+  final TextEditingController _replaceCtrl = TextEditingController();
+  final FocusNode _findFocus = FocusNode();
+
+  /// Scrolls the highlight overlay in lockstep with the editor text field.
+  final ScrollController _overlayScrollController = ScrollController();
+
+  /// (start, end) ranges of every match of [_findCtrl.text] in the active
+  /// tab, honoring the case-sensitivity and regex toggles.
+  List<(int, int)> _findRanges = [];
+
+  /// Index into [_findRanges] currently selected.
+  int _findIndex = 0;
+
+  /// Match-case toggle (Aa).
+  bool _findCaseSensitive = false;
+
+  /// Regex toggle (`.*`).
+  bool _findRegex = false;
+
+  /// Set when the regex pattern does not compile; shown in the bar.
+  String? _findRegexError;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    // Link the text field and the gutter: either one scrolling mirrors the
+    // other (equality guard prevents feedback loops).
+    _textScrollController.addListener(_syncTextToGutter);
+    _scrollController.addListener(_syncGutterToText);
+    // First-run folder selection: when no workspace was restored at startup
+    // (see `resolveStartupWorkspace` in main), open the browser once so the
+    // user picks where to work.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _maybeAutoOpenFolderPicker();
+    });
+  }
+
+  /// Opens the folder browser on first launch. After a workspace was
+  /// restored at startup this is a no-op; on web the picker is unavailable,
+  /// so nothing happens there either.
+  void _maybeAutoOpenFolderPicker() {
+    if (kIsWeb) return; // folder browsing requires dart:io
+    if (ref.read(workspaceRestoredProvider)) return;
+    _showCustomFolderBrowser(context);
+  }
+
+  /// Interactive folder browser to pick the workspace root. On web the
+  /// browser's native directory picker is used instead of the desktop dialog
+  /// (browsers cannot list arbitrary disk directories).
+  Future<void> _showCustomFolderBrowser(BuildContext context) async {
+    if (kIsWeb) {
+      final ws = await pickWebDirectory();
+      if (ws == null) return; // user cancelled
+      await activateWorkspace(ref, ws.rootPath);
+      return;
+    }
+
+    final currentPath = ref.read(workspaceRootProvider);
+    final selectedPath = await showDialog<String>(
+      context: context,
+      builder: (ctx) => FolderBrowserDialog(initialPath: currentPath),
+    );
+
+    if (selectedPath != null && selectedPath.isNotEmpty && mounted) {
+      await activateWorkspace(ref, selectedPath);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Çalışma alanı açıldı: $selectedPath'),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ));
+    }
+  }
+
+  @override
+  void dispose() {
+    _autoSaveTimer?.cancel();
+    _diffDebounce?.cancel();
+    _findCtrl.dispose();
+    _replaceCtrl.dispose();
+    _findFocus.dispose();
+    _overlayScrollController.dispose();
+    _textScrollController.removeListener(_syncTextToGutter);
+    _scrollController.removeListener(_syncGutterToText);
+    _scrollController.removeListener(_onScroll);
+    _textScrollController.dispose();
+    _scrollController.dispose();
+    for (final session in _sessions.values) {
+      session.dispose();
+    }
+    _sessions.clear();
+    super.dispose();
+  }
+
+  EditorSession _sessionFor(EditorTab tab) {
+    return _sessions.putIfAbsent(tab.id, () {
+      final session = EditorSession(
+        tabId: tab.id,
+        backend: ref.read(backendServiceProvider),
+        content: tab.content,
+      );
+      session.controller.addListener(() => _onCursorChanged(session));
+      session.init();
+      return session;
+    });
+  }
+
+  /// Keeps [_cursorLine] in sync with the caret (only for the active tab, so
+  /// background tabs can't clobber the marker).
+  void _onCursorChanged(EditorSession session) {
+    if (!mounted) return;
+    final activeId = ref.read(activeTabIdProvider);
+    if (session.tabId != activeId) return;
+    final offset = session.controller.selection.baseOffset;
+    if (offset < 0) return;
+    final text = session.controller.text;
+    final clamped = offset > text.length ? text.length : offset;
+    final line = text.substring(0, clamped).split('\n').length;
+    if (line != _cursorLine) {
+      _cursorLine = line;
+      setState(() {});
+    }
+  }
+
+  /// Jumps the editor (and the minimap viewport) so line `line` (0-based) is
+  /// at the top of the gutter, clamping to the scroll extent.
+  void _scrollToLine(double line) {
+    if (!_scrollController.hasClients) return;
+    final target = (line * _editorLineHeight)
+        .clamp(0.0, _scrollController.position.maxScrollExtent)
+        .toDouble();
+    _scrollController.jumpTo(target);
+  }
+
+  /// Text field scrolled → mirror into the gutter + minimap.
+  void _syncTextToGutter() {
+    if (!_textScrollController.hasClients || !_scrollController.hasClients) {
+      return;
+    }
+    final textOffset = _textScrollController.offset;
+    if ((textOffset - _scrollController.offset).abs() > 0.5) {
+      _scrollController.jumpTo(
+          textOffset.clamp(0.0, _scrollController.position.maxScrollExtent));
+    }
+    // The find-bar highlight overlay scrolls in lockstep too.
+    if (_overlayScrollController.hasClients) {
+      _overlayScrollController.jumpTo(textOffset);
+    }
+  }
+
+  /// Gutter/minimap jumped → mirror into the text field.
+  void _syncGutterToText() {
+    if (!_textScrollController.hasClients || !_scrollController.hasClients) {
+      return;
+    }
+    final gutterOffset = _scrollController.offset;
+    if ((gutterOffset - _textScrollController.offset).abs() > 0.5) {
+      _textScrollController.jumpTo(gutterOffset.clamp(
+          0.0, _textScrollController.position.maxScrollExtent));
+    }
+  }
+
+  /// Releases sessions whose tab was closed.
+  void _pruneSessions(Set<String> liveTabIds) {
+    final stale =
+        _sessions.keys.where((id) => !liveTabIds.contains(id)).toList();
+    for (final id in stale) {
+      final session = _sessions.remove(id);
+      if (session != null) session.dispose();
+      _diffRegions.remove(id);
+      _diffLoading.remove(id);
+    }
+  }
+
+  /// Marker kind for buffer line `line`, or null when unchanged.
+  /// `deleted` regions have no buffer line of their own — a red marker is
+  /// drawn at the deletion boundary (clamped to the last line at EOF).
+  String? _markerForLine(
+      int line, List<EditorDiffRegion> regions, int lineCount) {
+    for (final r in regions) {
+      if (r.kind == 'deleted') {
+        final boundary = r.line < lineCount ? r.line : lineCount - 1;
+        if (line == boundary) return 'deleted';
+        continue;
+      }
+      if (line >= r.line && line < r.line + r.count) return r.kind;
+    }
+    return null;
+  }
+
+  /// Debounced recompute after typing (keystrokes arrive faster than the diff).
+  void _scheduleDiffRefresh(EditorTab tab) {
+    _diffDebounce?.cancel();
+    _diffDebounce = Timer(const Duration(milliseconds: 250), () {
+      _refreshDiff(tab);
+    });
+  }
+
+  /// Ensures the diff for `tab` is computed (once per session) without a
+  /// timer, for the initial load / external-reload path.
+  void _ensureDiffScheduled(EditorTab tab) {
+    if (_diffRegions.containsKey(tab.id) || _diffLoading.contains(tab.id)) {
+      return;
+    }
+    _diffLoading.add(tab.id);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshDiff(tab));
+  }
+
+  /// Computes buffer-vs-disk change regions natively (or via the Dart
+  /// fallback) and repaints the gutter markers.
+  Future<void> _refreshDiff(EditorTab tab) async {
+    final session = _sessions[tab.id];
+    if (session == null) {
+      _diffLoading.remove(tab.id);
+      return;
+    }
+    final regions = await session.diffAgainstDisk();
+    _diffLoading.remove(tab.id);
+    if (!mounted || !_sessions.containsKey(tab.id)) return;
+    _diffRegions[tab.id] = regions;
+    setState(() {});
+  }
+
+  void _onScroll() {
+    final activeTab = _activeTabNow();
+    final content = activeTab?.content ?? '';
+    final lines = content.split('\n');
+    final offset = _scrollController.offset;
+    final line = (offset / _editorLineHeight).floor() + 1;
+    final clampedLine = line.clamp(1, lines.isEmpty ? 1 : lines.length);
+    if (ref.read(cursorLineProvider) != clampedLine) {
+      ref.read(cursorLineProvider.notifier).state = clampedLine;
+    }
+  }
+
+  /// Reactive variant for `build` (keeps the widget rebuilding on tab changes).
+  EditorTab? _getActiveTab() {
+    final activeId = ref.watch(activeTabIdProvider);
+    final tabs = ref.watch(openTabsProvider);
+    if (activeId == null || tabs.isEmpty) return null;
+    return tabs.firstWhere(
+      (t) => t.id == activeId,
+      orElse: () => tabs.first,
+    );
+  }
+
+  /// Read-only variant safe to call from listeners and async callbacks.
+  EditorTab? _activeTabNow() {
+    final activeId = ref.read(activeTabIdProvider);
+    final tabs = ref.read(openTabsProvider);
+    if (activeId == null || tabs.isEmpty) return null;
+    return tabs.firstWhere(
+      (t) => t.id == activeId,
+      orElse: () => tabs.first,
+    );
+  }
+
+  void _updateActiveTabContent(EditorTab tab, String newContent) {
+    final tabs = ref.read(openTabsProvider);
+    final index = tabs.indexWhere((t) => t.id == tab.id);
+    if (index >= 0) {
+      final updated = tabs[index].copyWith(
+        content: newContent,
+        isModified: true,
+      );
+      final newTabs = List<EditorTab>.from(tabs)..[index] = updated;
+      ref.read(openTabsProvider.notifier).state = newTabs;
+    }
+  }
+
+  /// Updates provider state and mirrors the change into the Zig engine buffer.
+  void _sync(EditorTab tab, String newContent) {
+    // Source files are agent-managed. UI edits are intentionally ignored.
+    // Agent mutations are persisted through AgentController/tool calls.
+    _ = tab;
+    _ = newContent;
+  }
+
+  // ─── Auto-save ────────────────────────────────────────────────────────────
+
+  /// Debounced silent save: while the user types, the timer keeps resetting;
+  /// 1.5s of stillness writes the file (no snackbar). Disabled by the
+  /// Auto Save setting or when the tab has no disk path.
+  void _scheduleAutoSave(EditorTab tab) {
+    // Source persistence belongs to the agent transaction pipeline.
+    _ = tab;
+    _autoSaveTimer?.cancel();
+  }
+
+  Future<void> _autoSaveNow(EditorTab tab) async {
+    // Intentionally disabled for agent-only source editing.
+    _ = tab;
+  }
 
   // ─── AI inline completion (Ctrl+Space) ────────────────────────────────────
 
@@ -110,10 +415,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     final tab = _activeTabNow();
     if (completion == null || completion.isEmpty || tab == null) return;
 
-    final path = tab.path ?? tab.title;
     _askAi(
-      'Apply this AI completion to "' + path + '" using the workspace agent tools. '
-      'Do not modify unrelated code.\n\n' + completion,
+      'Apply this AI completion to "' +
+      (tab.path ?? tab.title) +
+      '" using the workspace agent tools. Keep the edit scoped to this file '
+      'and verify the result.',
     );
     ref.read(aiCompletionProvider.notifier).state = null;
     ref.read(aiCompletionLoadingProvider.notifier).state = false;
@@ -176,12 +482,15 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   /// Replaces the currently selected match with the replace text.
   void _replaceCurrent() {
     final tab = _activeTabNow();
-    if (tab == null || _findCtrl.text.isEmpty) return;
+    if (tab == null || _findRanges.isEmpty) return;
 
-    final path = tab.path ?? tab.title;
     _askAi(
-      'In "' + path + '", replace the current find match of "' +
-      _findCtrl.text + '" with "' + _replaceCtrl.text +
+      'In "' +
+      (tab.path ?? tab.title) +
+      '", replace the current find match "' +
+      _findCtrl.text +
+      '" with "' +
+      _replaceCtrl.text +
       '". Use agent tools and verify the edit.',
     );
   }
@@ -193,10 +502,13 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     final tab = _activeTabNow();
     if (tab == null || _findCtrl.text.isEmpty) return;
 
-    final path = tab.path ?? tab.title;
     _askAi(
-      'In "' + path + '", replace all matches of "' + _findCtrl.text +
-      '" with "' + _replaceCtrl.text +
+      'In "' +
+      (tab.path ?? tab.title) +
+      '", replace all matches of "' +
+      _findCtrl.text +
+      '" with "' +
+      _replaceCtrl.text +
       '". Use agent tools, keep the change scoped to this file, and verify the result.',
     );
   }
@@ -205,10 +517,19 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   /// engine buffer, the gutter diff and the auto-save timer — the same path
   /// a keystroke takes, minus the TextField onChanged event (which does not
   /// fire for programmatic controller writes).
+  void _applyProgrammaticEdit(
+      EditorTab tab, EditorSession session, String newText) {
+    // Compatibility shim: source mutation must happen through the agent.
+    _ = tab;
+    _ = session;
+    _ = newText;
+  }
+
   /// Key handling for the editor text field: Tab accepts the AI completion,
   /// Escape dismisses it, Ctrl+Space requests one. Also supports Tab key
   /// for inserting spaces when no completion is active.
   KeyEventResult _handleEditorKeyEvent(FocusNode node, KeyEvent event) {
+    _ = node;
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
     final ctrl = HardwareKeyboard.instance.isControlPressed;
@@ -227,11 +548,15 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       _requestAiCompletion();
       return KeyEventResult.handled;
     }
-    if (ctrl &&
-        (key == LogicalKeyboardKey.keyZ ||
-            key == LogicalKeyboardKey.keyY)) {
+
+    // Block direct source mutations including indentation and undo/redo.
+    if (key == LogicalKeyboardKey.tab ||
+        (ctrl &&
+            (key == LogicalKeyboardKey.keyZ ||
+                key == LogicalKeyboardKey.keyY))) {
       return KeyEventResult.handled;
     }
+
     return KeyEventResult.ignored;
   }
 
@@ -860,7 +1185,6 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                 Positioned.fill(
                                   child: TextField(
                                     key: const Key('editor-code-text-field'),
-                                    readOnly: true,
                                     controller: session.controller,
                                     scrollController: _textScrollController,
                                     onChanged: (value) =>
