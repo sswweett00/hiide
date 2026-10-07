@@ -78,22 +78,12 @@ Generate at least 3-5 test cases.''',
     );
 
     if (response.containsKey('error')) {
-      return GeneratedTest(
-        testCode: '// Error generating tests: ${response['error']}',
-        fileName: _testFileName(filePath),
-        description: 'Failed to generate tests',
-        testCount: 0,
-      );
+      throw StateError('Test generation provider failed: ${response['error']}');
     }
 
-    final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) {
-      return GeneratedTest(
-        testCode: '// No response from model',
-        fileName: _testFileName(filePath),
-        description: 'No response',
-        testCount: 0,
-      );
+    final choices = response['choices'];
+    if (choices is! List || choices.isEmpty) {
+      throw StateError('Test generation provider returned no choices.');
     }
 
     var testCode = (choices.first as Map)['message']?['content']?.toString() ?? '';
@@ -130,7 +120,7 @@ Generate at least 3-5 test cases.''',
     if (test.testCount == 0) return false;
 
     try {
-      await _backend.executeAgentTool(
+      final result = await _backend.executeAgentTool(
         'file.write',
         {
           'path': test.fileName,
@@ -138,6 +128,9 @@ Generate at least 3-5 test cases.''',
         },
         workspaceRoot: _workspaceRoot,
       );
+      if (!result.ok) {
+        throw StateError('Test file write failed: ${result.error}');
+      }
       return true;
     } catch (e) {
       debugPrint('Test save error: $e');
