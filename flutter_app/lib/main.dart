@@ -11,7 +11,6 @@ import 'core/routing/router.dart';
 import 'core/backend/backend_service.dart';
 import 'core/backend/hiide_backend_service.dart';
 import 'core/backend/native_engine_supervisor.dart';
-import 'core/backend/mock_backend_service.dart';
 import 'core/backend/settings_service.dart';
 import 'core/backend/agent_task_store.dart';
 import 'core/backend/ai_providers/ai_provider.dart';
@@ -34,8 +33,6 @@ ThemeData _resolveDarkTheme(AppThemePreference preference) {
 /// fallback for tests and engine-less environments.
 Process? _spawnedEngineProcess;
 Future<BackendService> _createBackendService() async {
-  if (kIsWeb) return MockBackendService();
-
   final launch = await NativeEngineSupervisor().connectOrStart();
   final process = launch.process;
   if (process != null) {
@@ -50,8 +47,6 @@ Future<BackendService> _createBackendService() async {
   if (launch.backend is HiideBackendService) {
     final backend = launch.backend as HiideBackendService;
     debugPrint('Connected to Hiide Zig engine at ${backend.host}:${backend.port}');
-  } else {
-    debugPrint('Native engine unavailable; using mock backend.');
   }
   return launch.backend;
 }
