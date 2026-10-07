@@ -78,22 +78,10 @@ Rules:
       temperature: 0.2,
     );
 
-    if (response.containsKey('error')) {
-      return CommitSuggestion(
-        message: 'chore: update files',
-        type: 'chore',
-        description: 'Could not analyze diff: ${response['error']}',
-      );
-    }
+    if (response.containsKey('error')) throw StateError(response['error']?.toString() ?? 'AI provider error');
 
     final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) {
-      return const CommitSuggestion(
-        message: 'chore: update files',
-        type: 'chore',
-        description: 'Empty response from model.',
-      );
-    }
+    if (choices.isEmpty) throw StateError('AI provider returned no choices.');
 
     final text = (choices.first as Map)['message']?['content']?.toString() ?? '';
     return _parseCommit(text);
@@ -115,10 +103,10 @@ Output ONLY valid JSON.''',
       temperature: 0.3,
     );
 
-    if (response.containsKey('error')) return [];
+    if (response.containsKey('error')) throw StateError(response['error']?.toString() ?? 'AI provider error');
 
     final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) return [];
+    if (choices.isEmpty) throw StateError('AI provider returned no choices.');
 
     final text = (choices.first as Map)['message']?['content']?.toString() ?? '';
     return _parseBranches(text);
