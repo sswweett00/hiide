@@ -85,10 +85,10 @@ Rules:
       temperature: 0.1,
     );
 
-    if (response.containsKey('error')) return null;
+    if (response.containsKey('error')) {\n      throw StateError(response['error']?.toString() ?? 'AI provider error');\n    }
 
     final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) return null;
+    if (choices.isEmpty) throw StateError('AI provider returned no choices.');
 
     final text = (choices.first as Map)['message']?['content']?.toString() ?? '';
     return _parseFix(filePath, text);
@@ -126,10 +126,10 @@ Focus on the first 5 most critical errors. Output ONLY valid JSON.''',
       temperature: 0.1,
     );
 
-    if (response.containsKey('error')) return [];
+    if (response.containsKey('error')) {\n      throw StateError(response['error']?.toString() ?? 'AI provider error');\n    }
 
     final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) return [];
+    if (choices.isEmpty) throw StateError('AI provider returned no choices.');
 
     final text = (choices.first as Map)['message']?['content']?.toString() ?? '';
     return _parseFixes(text);
@@ -166,7 +166,7 @@ Focus on the first 5 most critical errors. Output ONLY valid JSON.''',
       }
       final start = json.indexOf('[');
       final end = json.lastIndexOf(']');
-      if (start < 0 || end < 0) return [];
+      if (start < 0 || end < 0) throw const FormatException('AI returned invalid fix JSON.');
       json = json.substring(start, end + 1);
 
       final decoded = jsonDecode(json) as List;
