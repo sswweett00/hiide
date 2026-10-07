@@ -96,26 +96,38 @@ pub const SemanticStore = struct {
 
             .hybrid_search => |hs| {
                 const top_k = hs.top_k;
+                if (top_k == 0) break;
                 var it = self.g.nodes.iterator();
                 while (it.next()) |entry| {
                     const node = entry.value_ptr.*;
                     const score = bm25Score(hs.text, node.name);
-                    if (score > 0.1) {
-                        try hits.append(alloc, .{
-                            .symbol_id = node.id,
-                            .name = node.name,
-                            .kind = node.kind,
-                            .score = score,
-                        });
+                    if (score <= 0.1) continue;
+
+                    const hit = QueryHit{
+                        .symbol_id = node.id,
+                        .name = node.name,
+                        .kind = node.kind,
+                        .score = score,
+                    };
+
+                    // Keep only the best K hits while scanning. Sorting every
+                    // matching symbol made large codebases pay O(M log M)
+                    // even when callers requested a tiny top_k.
+                    var insert_at = hits.items.len;
+                    if (insert_at == top_k) {
+                        if (score <= hits.items[insert_at - 1].score) continue;
+                        insert_at -= 1;
+                        hits.items[insert_at] = hit;
+                    } else {
+                        try hits.append(alloc, hit);
                     }
+
+                    while (insert_at > 0 and hits.items[insert_at - 1].score < score) {
+                        hits.items[insert_at] = hits.items[insert_at - 1];
+                        insert_at -= 1;
+                    }
+                    hits.items[insert_at] = hit;
                 }
-                // Sort descending by score.
-                std.mem.sort(QueryHit, hits.items, {}, struct {
-                    fn lt(_: void, a: QueryHit, b: QueryHit) bool {
-                        return a.score > b.score;
-                    }
-                }.lt);
-                if (hits.items.len > top_k) hits.items.len = top_k;
             },
 
             .callers_of => |sym| {
