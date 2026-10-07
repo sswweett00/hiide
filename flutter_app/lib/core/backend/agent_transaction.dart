@@ -137,7 +137,6 @@ class AgentTransaction {
   Future<void> recordWrite(String path, String content) async {
     _ensureOpen();
     final relative = _normalize(path);
-    await _captureParentDirectories(relative);
     await captureBeforeMutation(relative);
 
     if (!_originalFiles.containsKey(relative)) {
@@ -148,7 +147,8 @@ class AgentTransaction {
     _expectedDirectories.remove(relative);
 
     for (final parent in _parentPaths(relative)) {
-      if (!_originalDirectories.contains(parent)) {
+      if (!_preexistingDirectories.contains(parent) &&
+          !_originalDirectories.contains(parent)) {
         _expectedDirectories.add(parent);
       }
     }
@@ -178,7 +178,7 @@ class AgentTransaction {
   Future<void> recordDirectoryCreate(String path) async {
     _ensureOpen();
     final relative = _normalize(path);
-    await captureBeforeMutation(relative);
+    await captureBeforeMutation(relative, snapshotDirectories: false);
 
     if (_originalFiles.containsKey(relative)) {
       throw StateError(
@@ -186,6 +186,12 @@ class AgentTransaction {
       );
     }
     _expectedDirectories.add(relative);
+    for (final parent in _parentPaths(relative)) {
+      if (!_preexistingDirectories.contains(parent) &&
+          !_originalDirectories.contains(parent)) {
+        _expectedDirectories.add(parent);
+      }
+    }
   }
 
   Future<void> recordPatchedFile(String path) async {
@@ -215,6 +221,7 @@ class AgentTransaction {
     _closed = true;
     _originalFiles.clear();
     _originalDirectories.clear();
+    _preexistingDirectories.clear();
     _expectedDirectories.clear();
     _expectedFiles.clear();
   }
@@ -431,6 +438,25 @@ class AgentTransaction {
     }
     parents.sort((a, b) => _depth(a).compareTo(_depth(b)));
     return parents;
+  }
+
+  Future<void> _rememberExistingParents(String relative) async {
+    final parents = _parentPaths(relative);
+    if (parents.isEmpty) return;
+
+    final entries = await _backend.workspaceTree(
+      _workspaceRoot,
+      maxEntries: 50000,
+    );
+    final directories = <String>{};
+    for (final entry in entries) {
+      if (entry.isDirectory) directories.add(entry.path);
+    }
+    for (final parent in parents) {
+      if (directories.contains(parent)) {
+        _preexistingDirectories.add(parent);
+      }
+    }
   }
 
   bool _isTracked(String relative) {
