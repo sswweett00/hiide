@@ -396,7 +396,7 @@ Guidelines:
       );
 
       if (_stopRequested) {
-        yield const AgentStoppedEvent();
+        yield await _stoppedEvent();
         return;
       }
 
@@ -593,7 +593,7 @@ Guidelines:
         yield AgentToolFinishedEvent(call);
 
         if (_stopRequested) {
-          yield const AgentStoppedEvent();
+          yield await _stoppedEvent();
           return;
         }
       }
