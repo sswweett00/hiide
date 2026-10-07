@@ -80,16 +80,18 @@ pub const SemanticStore = struct {
 
         switch (q) {
             .symbol_lookup => |name| {
-                var it = self.g.nodes.iterator();
-                while (it.next()) |entry| {
-                    const node = entry.value_ptr.*;
-                    if (std.mem.eql(u8, node.name, name)) {
-                        try hits.append(alloc, .{
-                            .symbol_id = node.id,
-                            .name = node.name,
-                            .kind = node.kind,
-                            .score = 1.0,
-                        });
+                // Exact symbol lookup is backed by the graph's name index.
+                // This turns repeated IDE lookups from O(V) into O(matches).
+                if (self.g.name_index.get(name)) |ids| {
+                    for (ids.items) |id| {
+                        if (self.g.lookupNode(id)) |node| {
+                            try hits.append(alloc, .{
+                                .symbol_id = node.id,
+                                .name = node.name,
+                                .kind = node.kind,
+                                .score = 1.0,
+                            });
+                        }
                     }
                 }
             },
