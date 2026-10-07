@@ -418,6 +418,41 @@ class AgentTransaction {
     );
   }
 
+  Future<void> _rememberExistingParents(String relative) async {
+    final parents = _parentPaths(relative);
+    if (parents.isEmpty) return;
+
+    final entries = await _backend.workspaceTree(
+      _workspaceRoot,
+      maxEntries: 50000,
+    );
+    final directories = <String>{};
+    for (final entry in entries) {
+      if (entry.isDirectory) directories.add(entry.path);
+    }
+    for (final parent in parents) {
+      if (directories.contains(parent)) {
+        _preexistingDirectories.add(parent);
+      }
+    }
+  }
+
+  List<String> _parentPaths(String relative) {
+    final slash = relative.lastIndexOf('/');
+    if (slash <= 0) return const [];
+
+    final parents = <String>[];
+    var current = relative.substring(0, slash);
+    while (current.isNotEmpty && current != '.') {
+      parents.add(current);
+      final nextSlash = current.lastIndexOf('/');
+      if (nextSlash <= 0) break;
+      current = current.substring(0, nextSlash);
+    }
+    parents.sort((a, b) => _depth(a).compareTo(_depth(b)));
+    return parents;
+  }
+
   bool _isTracked(String relative) {
     return _originalFiles.containsKey(relative) ||
         _originalDirectories.contains(relative) ||
