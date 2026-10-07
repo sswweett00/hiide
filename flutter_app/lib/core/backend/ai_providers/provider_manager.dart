@@ -332,6 +332,16 @@ class ProviderManager implements AiChatClient {
   }
 
 
+  Future<bool> _cachedAvailability(AiProvider provider) async {
+    if (!provider.isConfigured) return false;
+
+    try {
+      return await provider.isAvailable;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void switchTo(String providerId) {
     if (_providers.any((p) => p.id == providerId)) {
       _activeProviderId = providerId;
@@ -487,6 +497,7 @@ class ProviderManager implements AiChatClient {
     for (final provider in _orderedProviders()) {
       if (!provider.isConfigured) continue;
       if (_breakerFor(provider.id).state == CircuitState.open) continue;
+      if (!await _cachedAvailability(provider)) continue;
 
       // Availability probes are advisory. A provider can omit /models while
       // still supporting chat completions, so the real request is authoritative.
@@ -540,6 +551,7 @@ class ProviderManager implements AiChatClient {
     for (final provider in _orderedProviders()) {
       if (!provider.isConfigured) continue;
       if (_breakerFor(provider.id).state == CircuitState.open) continue;
+      if (!await _cachedAvailability(provider)) continue;
 
       final requestModel = _modelFor(
         provider,
