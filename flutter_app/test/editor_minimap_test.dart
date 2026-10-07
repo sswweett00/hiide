@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:hiide_flutter/core/backend/mock_backend_service.dart';
+import 'support/mock_backend_service.dart';
 import 'package:hiide_flutter/core/providers/backend_provider.dart';
 import 'package:hiide_flutter/core/theme/app_themes.dart';
 import 'package:hiide_flutter/features/editor/editor_screen.dart';
