@@ -483,7 +483,7 @@ Guidelines:
           yield await _errorEvent(
             _verificationFailed
                 ? 'Verification failed; the agent could not establish a passing final state.'
-                : 'Workspace changes were not successfully verified.',
+                : 'Verification failed; workspace changes were not successfully verified.',
           );
           return;
         }
@@ -508,7 +508,7 @@ Guidelines:
         final callMap = Map<String, dynamic>.from(rawCall);
         final rawFunction = callMap['function'];
         if (rawFunction is! Map) {
-          yield await _errorEvent('Model returned a tool call without a valid function.');
+          yield await _errorEvent('Model returned an invalid tool call: tool call without a valid function.');
           return;
         }
         callMap['function'] = Map<String, dynamic>.from(rawFunction);
