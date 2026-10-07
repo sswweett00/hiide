@@ -356,13 +356,19 @@ pub fn cwd() std.Io.Dir {
     return std.Io.Dir.cwd();
 }
 
-pub fn realpathAlloc(allocator: std.mem.Allocator, rel_path: []const u8) ![:0]u8 {
+pub fn realpathAlloc(allocator: std.mem.Allocator, path: []const u8) ![:0]u8 {
+    if (path.len == 0) return error.BadPathName;
+
+    if (std.fs.path.isAbsolute(path)) {
+        return allocator.dupeZ(u8, path);
+    }
+
     if (builtin.os.tag == .linux) {
         var buf: [4096]u8 = undefined;
         const len = linux.getcwd(&buf, buf.len);
         if (len == 0) return error.NotFound;
         const cwd_path = buf[0..len];
-        return std.fs.path.joinZ(allocator, &.{ cwd_path, rel_path });
+        return std.fs.path.joinZ(allocator, &.{ cwd_path, path });
     }
     return error.NotFound;
 }
