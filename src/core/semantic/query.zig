@@ -96,7 +96,7 @@ pub const SemanticStore = struct {
 
             .hybrid_search => |hs| {
                 const top_k = hs.top_k;
-                if (top_k == 0) break;
+                if (top_k == 0) return hits.toOwnedSlice(alloc);
                 var it = self.g.nodes.iterator();
                 while (it.next()) |entry| {
                     const node = entry.value_ptr.*;
