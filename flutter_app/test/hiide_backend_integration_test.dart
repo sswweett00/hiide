@@ -249,7 +249,7 @@ void main() {
     // process.run executes a real command and returns its output.
     final run = await backend.executeAgentTool(
       'process.run',
-      {'command': 'echo engine-agent-tool-ok'},
+      {'command': 'echo engine-agent-tool-ok', 'approved': true},
       workspaceRoot: '.',
     );
     expect(run.ok, isTrue, reason: run.error);
