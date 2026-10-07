@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hiide_flutter/core/backend/agent_controller.dart';
 import 'package:hiide_flutter/core/backend/ai_chat_client.dart';
 import 'package:hiide_flutter/core/backend/backend_service.dart';
-import 'package:hiide_flutter/core/backend/mock_backend_service.dart';
+import 'support/mock_backend_service.dart';
 import 'package:hiide_flutter/core/backend/terminal_service.dart';
 
 Map<String, dynamic> _toolResponse(
