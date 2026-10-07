@@ -409,7 +409,9 @@ test "graph: explicit call-edge removal updates reverse index" {
         .added_edges = &[_]EdgeRecord{edge},
         .removed_edges = &.{},
     });
-    try std.testing.expectEqual(@as(usize, 1), (try g.callersOf(target, alloc)).len);
+    const initial_callers = try g.callersOf(target, alloc);
+    defer alloc.free(initial_callers);
+    try std.testing.expectEqual(@as(usize, 1), initial_callers.len);
 
     try g.applyDelta(.{
         .snapshot_id = 2,
