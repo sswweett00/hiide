@@ -7,7 +7,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hiide_flutter/core/backend/editor_session.dart';
-import 'package:hiide_flutter/core/backend/mock_backend_service.dart';
+import 'support/mock_backend_service.dart';
 import 'package:hiide_flutter/core/backend/workspace_service.dart';
 
 void main() {
