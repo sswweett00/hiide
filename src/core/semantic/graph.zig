@@ -106,6 +106,8 @@ pub const SemanticGraph = struct {
     /// Reverse call index: callee -> callers. Keeps callers_of queries O(degree)
     /// instead of scanning the entire edge store on every query.
     call_index: std.AutoHashMapUnmanaged(SymbolId, std.ArrayListUnmanaged(SymbolId)),
+    /// Source-node adjacency index for graph traversals.
+    out_index: std.AutoHashMapUnmanaged(SymbolId, std.ArrayListUnmanaged(EdgeRecord)),
     strings: StringPool,
     current_snapshot: SnapshotId,
 
@@ -115,6 +117,7 @@ pub const SemanticGraph = struct {
             .nodes = .{},
             .edges = .empty,
             .call_index = .{},
+            .out_index = .{},
             .strings = StringPool.init(),
             .current_snapshot = 0,
         };
@@ -126,6 +129,9 @@ pub const SemanticGraph = struct {
         var call_it = self.call_index.iterator();
         while (call_it.next()) |entry| entry.value_ptr.deinit(self.allocator);
         self.call_index.deinit(self.allocator);
+        var out_it = self.out_index.iterator();
+        while (out_it.next()) |entry| entry.value_ptr.deinit(self.allocator);
+        self.out_index.deinit(self.allocator);
         self.strings.deinit(self.allocator);
     }
 
@@ -164,6 +170,21 @@ pub const SemanticGraph = struct {
 
         // Keep the reverse call index consistent after edge/node removal.
         if (delta.removed_edges.len > 0 or delta.removed_ids.len > 0) {
+            var out_it = self.out_index.iterator();
+            while (out_it.next()) |entry| {
+                var write: usize = 0;
+                for (entry.value_ptr.items) |edge| {
+                    if (!removed_node_set.contains(edge.from) and
+                        !removed_node_set.contains(edge.to) and
+                        !edgeWasRemoved(delta.removed_edges, edge.from, edge.to))
+                    {
+                        entry.value_ptr.items[write] = edge;
+                        write += 1;
+                    }
+                }
+                entry.value_ptr.shrinkRetainingCapacity(write);
+            }
+
             var call_it = self.call_index.iterator();
             while (call_it.next()) |entry| {
                 var write: usize = 0;
@@ -208,6 +229,10 @@ pub const SemanticGraph = struct {
         try self.edges.ensureUnusedCapacity(self.allocator, delta.added_edges.len);
         for (delta.added_edges) |edge| {
             self.edges.appendAssumeCapacity(edge);
+            const out = try self.out_index.getOrPut(self.allocator, edge.from);
+            if (!out.found_existing) out.value_ptr.* = .empty;
+            try out.value_ptr.append(self.allocator, edge);
+
             if (edge.kind == .calls) {
                 const gop = try self.call_index.getOrPut(self.allocator, edge.to);
                 if (!gop.found_existing) gop.value_ptr.* = .empty;
