@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/core/backend/agent_transaction.dart';
-import '../lib/core/backend/mock_backend_service.dart';
+import 'package:hiide_flutter/core/backend/agent_transaction.dart';
+import 'package:hiide_flutter/core/backend/mock_backend_service.dart';
 
 void main() {
   late Directory workspace;
