@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:hiide_flutter/core/backend/mock_backend_service.dart';
+import 'support/mock_backend_service.dart';
 import 'package:hiide_flutter/core/backend/settings_service.dart';
 import 'package:hiide_flutter/core/providers/backend_provider.dart';
 import 'package:hiide_flutter/core/routing/router.dart';
