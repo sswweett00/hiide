@@ -81,7 +81,7 @@ void main() {
   });
 
   test('retry queue propagates terminal failures', () async {
-    final queue = RetryQueue(policy: const RetryPolicy(maxAttempts: 3, baseDelay: Duration(milliseconds: 1), maxDelay: Duration(milliseconds: 2)));
+    final queue = RetryQueue(policy: const RetryPolicy(maxAttempts: 3, baseDelay: Duration(milliseconds: 1), maxDelay: Duration(milliseconds: 2), shouldRetry: (_) => true));
     var attempts = 0;
     await expectLater(queue.enqueue(() async { attempts++; throw StateError('retry'); }), throwsStateError);
     expect(attempts, 3);
@@ -89,7 +89,7 @@ void main() {
   });
 
   test('retry queue completes successfully after transient failures', () async {
-    final queue = RetryQueue(policy: const RetryPolicy(maxAttempts: 3, baseDelay: Duration(milliseconds: 1), maxDelay: Duration(milliseconds: 2)));
+    final queue = RetryQueue(policy: const RetryPolicy(maxAttempts: 3, baseDelay: Duration(milliseconds: 1), maxDelay: Duration(milliseconds: 2), shouldRetry: (_) => true));
     var attempts = 0;
     await queue.enqueue(() async {
       attempts++;
