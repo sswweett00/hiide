@@ -264,8 +264,6 @@ class ProviderManager implements AiChatClient {
   final List<AiProvider> _providers;
   String _activeProviderId;
   final Map<String, String> _selectedModels;
-  final Map<String, _AvailabilityEntry> _availabilityCache =
-      <String, _AvailabilityEntry>{};
   final Map<String, CircuitBreaker> _providerBreakers =
       <String, CircuitBreaker>{};
   final Map<String, _ModelCacheEntry> _modelCache =
@@ -275,7 +273,6 @@ class ProviderManager implements AiChatClient {
   final Map<String, _ProviderRuntimeState> _runtimeStats =
       <String, _ProviderRuntimeState>{};
 
-  static const _availabilityTtl = Duration(seconds: 15);
   static const _modelCacheTtl = Duration(minutes: 2);
   static const _providerResetTimeout = Duration(seconds: 20);
 
@@ -295,7 +292,6 @@ class ProviderManager implements AiChatClient {
     }
     _modelRequests.clear();
     _modelCache.clear();
-    _availabilityCache.clear();
     _providerBreakers.clear();
     _runtimeStats.clear();
   }
@@ -335,31 +331,10 @@ class ProviderManager implements AiChatClient {
     );
   }
 
-  Future<bool> _cachedAvailability(AiProvider provider) async {
-    if (!provider.isConfigured) return false;
-
-    final now = DateTime.now();
-    final cached = _availabilityCache[provider.id];
-    if (cached != null && now.difference(cached.checkedAt) < _availabilityTtl) {
-      return cached.available;
-    }
-
-    try {
-      final available = await provider.isAvailable;
-      _availabilityCache[provider.id] =
-          _AvailabilityEntry(checkedAt: now, available: available);
-      return available;
-    } catch (_) {
-      _availabilityCache[provider.id] =
-          _AvailabilityEntry(checkedAt: now, available: false);
-      return false;
-    }
-  }
 
   void switchTo(String providerId) {
     if (_providers.any((p) => p.id == providerId)) {
       _activeProviderId = providerId;
-      _availabilityCache.remove(providerId);
     }
   }
 
@@ -532,10 +507,6 @@ class ProviderManager implements AiChatClient {
         );
         _recordRuntime(provider.id, DateTime.now().difference(started), success: true);
         _activeProviderId = provider.id;
-        _availabilityCache[provider.id] = _AvailabilityEntry(
-          checkedAt: DateTime.now(),
-          available: true,
-        );
         return result;
       } catch (error) {
         _recordRuntime(
@@ -591,10 +562,6 @@ class ProviderManager implements AiChatClient {
             _recordRuntime(provider.id, DateTime.now().difference(started), success: true);
             _activeProviderId = provider.id;
             _breakerFor(provider.id).recordSuccess();
-            _availabilityCache[provider.id] = _AvailabilityEntry(
-              checkedAt: DateTime.now(),
-              available: true,
-            );
             return;
           }
           lastError = StateError(
@@ -667,17 +634,6 @@ class ProviderManager implements AiChatClient {
 }
 
 
-/// Short-lived provider reachability cache used to avoid an HTTP availability
-/// probe before every streamed completion.
-class _AvailabilityEntry {
-  const _AvailabilityEntry({
-    required this.checkedAt,
-    required this.available,
-  });
-
-  final DateTime checkedAt;
-  final bool available;
-}
 
 final aiProviderIdProvider = StateProvider<String>((ref) => 'groq');
 
