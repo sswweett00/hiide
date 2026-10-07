@@ -152,8 +152,7 @@ Focus on the first 5 most critical errors. Output ONLY valid JSON.''',
         confidence: (decoded['confidence'] as num?)?.toDouble() ?? 0.8,
       );
     } catch (e) {
-      debugPrint('ErrorFix parse error: $e');
-      return null;
+      throw FormatException('AI returned invalid error-fix JSON: $e');
     }
   }
 
@@ -182,8 +181,7 @@ Focus on the first 5 most critical errors. Output ONLY valid JSON.''',
         );
       }).toList();
     } catch (e) {
-      debugPrint('ErrorFix parse error: $e');
-      return [];
+      throw FormatException('AI returned invalid build-fix JSON: $e');
     }
   }
 }
