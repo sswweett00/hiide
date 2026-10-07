@@ -249,7 +249,7 @@ class AgentTransaction {
       return AgentRollbackReport(
         restored: 0,
         skipped: _originalFiles.length + _expectedDirectories.length,
-        errors: ['Unable to inspect current workspace state: \$error'],
+        errors: ['Unable to inspect current workspace state: $error'],
       );
     }
 
@@ -265,7 +265,7 @@ class AgentTransaction {
       if (currentDirectories.contains(path)) continue;
       if (currentFiles.contains(path)) {
         skipped++;
-        errors.add('\$path: a file occupies the original directory path');
+        errors.add('$path: a file occupies the original directory path');
         continue;
       }
 
@@ -280,7 +280,7 @@ class AgentTransaction {
       } else {
         skipped++;
         errors.add(
-          '\$path: rollback directory restore failed: ${result.error}',
+          '$path: rollback directory restore failed: ${result.error}',
         );
       }
     }
@@ -302,13 +302,13 @@ class AgentTransaction {
           if (expected == null) {
             if (!currentExists) continue;
             skipped++;
-            errors.add('\$path: current file exists unexpectedly');
+            errors.add('$path: current file exists unexpectedly');
             continue;
           }
 
           if (!currentExists || current != expected) {
             skipped++;
-            errors.add('\$path: current file differs from agent state');
+            errors.add('$path: current file differs from agent state');
             continue;
           }
 
@@ -319,7 +319,7 @@ class AgentTransaction {
           );
           if (!deleted.ok) {
             skipped++;
-            errors.add('\$path: rollback delete failed: ${deleted.error}');
+            errors.add('$path: rollback delete failed: ${deleted.error}');
             continue;
           }
           restored++;
@@ -330,7 +330,7 @@ class AgentTransaction {
         if (expected == null) {
           if (currentExists && current != expected) {
             skipped++;
-            errors.add('\$path: current file differs from expected deletion');
+            errors.add('$path: current file differs from expected deletion');
             continue;
           }
           if (!currentExists) {
@@ -341,7 +341,7 @@ class AgentTransaction {
             );
             if (!write.ok) {
               skipped++;
-              errors.add('\$path: rollback write failed: ${write.error}');
+              errors.add('$path: rollback write failed: ${write.error}');
               continue;
             }
             restored++;
@@ -350,7 +350,7 @@ class AgentTransaction {
         } else {
           if (!currentExists || current != expected) {
             skipped++;
-            errors.add('\$path: current file differs from agent state');
+            errors.add('$path: current file differs from agent state');
             continue;
           }
           final write = await _backend.executeAgentTool(
@@ -360,14 +360,14 @@ class AgentTransaction {
           );
           if (!write.ok) {
             skipped++;
-            errors.add('\$path: rollback write failed: ${write.error}');
+            errors.add('$path: rollback write failed: ${write.error}');
             continue;
           }
           restored++;
         }
       } catch (error) {
         skipped++;
-        errors.add('\$path: \$error');
+        errors.add('$path: $error');
       }
     }
 
@@ -385,14 +385,14 @@ class AgentTransaction {
         if (_isNotFound(entries.error)) continue;
         skipped++;
         errors.add(
-          '\$path: unable to inspect created directory: ${entries.error}',
+          '$path: unable to inspect created directory: ${entries.error}',
         );
         continue;
       }
 
       if (!_isEmptyDirectoryJson(entries.output)) {
         skipped++;
-        errors.add('\$path: created directory is no longer empty');
+        errors.add('$path: created directory is no longer empty');
         continue;
       }
 
@@ -406,7 +406,7 @@ class AgentTransaction {
       } else {
         skipped++;
         errors.add(
-          '\$path: rollback directory delete failed: ${deleted.error}',
+          '$path: rollback directory delete failed: ${deleted.error}',
         );
       }
     }
