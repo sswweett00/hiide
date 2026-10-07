@@ -24,6 +24,11 @@ class AgentTransaction {
 
   final LinkedHashMap<String, String?> _originalFiles =
       LinkedHashMap<String, String?>();
+  final LinkedHashSet<String> _capturedPaths =
+      LinkedHashSet<String>();
+  final LinkedHashSet<String> _missingPaths =
+      LinkedHashSet<String>();
+
   final LinkedHashSet<String> _originalDirectories =
       LinkedHashSet<String>();
   final LinkedHashSet<String> _preexistingDirectories =
@@ -49,8 +54,9 @@ class AgentTransaction {
   }) async {
     _ensureOpen();
     final relative = _normalize(path);
-    if (_isTracked(relative)) return;
+    if (_isTracked(relative) || _capturedPaths.contains(relative)) return;
 
+    _capturedPaths.add(relative);
     await _rememberExistingParents(relative);
 
     final read = await _backend.executeAgentTool(
@@ -77,7 +83,10 @@ class AgentTransaction {
       }
     }
 
-    if (exact == null) return;
+    if (exact == null) {
+      _missingPaths.add(relative);
+      return;
+    }
 
     if (!exact.isDirectory) {
       throw StateError(
@@ -139,7 +148,7 @@ class AgentTransaction {
     final relative = _normalize(path);
     await captureBeforeMutation(relative);
 
-    if (!_originalFiles.containsKey(relative)) {
+    if (_missingPaths.remove(relative) || !_originalFiles.containsKey(relative)) {
       _originalFiles[relative] = null;
     }
 
@@ -222,6 +231,8 @@ class AgentTransaction {
     _originalFiles.clear();
     _originalDirectories.clear();
     _preexistingDirectories.clear();
+    _capturedPaths.clear();
+    _missingPaths.clear();
     _expectedDirectories.clear();
     _expectedFiles.clear();
   }
