@@ -338,15 +338,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
   /// Updates provider state and mirrors the change into the Zig engine buffer.
   void _sync(EditorTab tab, String newContent) {
-    _updateActiveTabContent(tab, newContent);
-    _sessionFor(tab).syncChange(newContent);
-    _scheduleDiffRefresh(tab);
-    _scheduleAutoSave(tab);
-    // Keep the find-bar match list fresh while the user edits.
-    if (ref.read(findBarOpenProvider)) {
-      _computeFindMatches();
-      setState(() {});
-    }
+    // Source files are agent-managed. Direct TextField changes are disabled.
   }
 
   // ─── Auto-save ────────────────────────────────────────────────────────────
@@ -355,33 +347,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   /// 1.5s of stillness writes the file (no snackbar). Disabled by the
   /// Auto Save setting or when the tab has no disk path.
   void _scheduleAutoSave(EditorTab tab) {
-    if (!ref.read(autoSaveEnabledProvider)) return;
-    if (tab.path == null || tab.path!.isEmpty) return;
     _autoSaveTimer?.cancel();
-    _autoSaveTimer = Timer(const Duration(milliseconds: 1500), () {
-      _autoSaveNow(tab);
-    });
   }
 
   Future<void> _autoSaveNow(EditorTab tab) async {
-    try {
-      final session = _sessionFor(tab);
-      final engineText = await session.engineText();
-      await ref.read(workspaceServiceProvider).writeFile(tab.path!, engineText);
-      session.markSaved(engineText);
-      _diffDebounce?.cancel();
-      _diffRegions[tab.id] = const [];
-      final tabs = ref.read(openTabsProvider);
-      final index = tabs.indexWhere((t) => t.id == tab.id);
-      if (index >= 0) {
-        final updated = tabs[index].copyWith(isModified: false);
-        ref.read(openTabsProvider.notifier).state = List<EditorTab>.from(tabs)
-          ..[index] = updated;
-      }
-    } catch (_) {
-      // Silent auto-save failures never surface errors — the user can still
-      // save manually (Ctrl+S shows failures).
-    }
+    // Intentionally disabled: workspace persistence belongs to the agent.
   }
 
   // ─── AI inline completion (Ctrl+Space) ────────────────────────────────────
@@ -438,20 +408,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     final completion = ref.read(aiCompletionProvider);
     final tab = _activeTabNow();
     if (completion == null || completion.isEmpty || tab == null) return;
-    final session = _sessionFor(tab);
-    final controller = session.controller;
-    var offset = controller.selection.baseOffset;
-    if (offset < 0) offset = controller.text.length;
-    final newText = controller.text.replaceRange(offset, offset, completion);
-    final newOffset = offset + completion.length;
-    controller.value = TextEditingValue(
-      text: newText,
-      selection: TextSelection.collapsed(offset: newOffset),
+
+    final path = tab.path ?? tab.title;
+    _askAi(
+      'Apply this AI completion to "' + path + '" using the workspace agent tools. '
+      'Do not modify unrelated code.\n\n' + completion,
     );
-    _updateActiveTabContent(tab, newText);
-    session.syncChange(newText);
-    _scheduleDiffRefresh(tab);
-    _scheduleAutoSave(tab);
     ref.read(aiCompletionProvider.notifier).state = null;
     ref.read(aiCompletionLoadingProvider.notifier).state = false;
   }
@@ -513,22 +475,14 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   /// Replaces the currently selected match with the replace text.
   void _replaceCurrent() {
     final tab = _activeTabNow();
-    if (tab == null || _findRanges.isEmpty) return;
-    final session = _sessionFor(tab);
-    final controller = session.controller;
-    final (start, end) = _findRanges[_findIndex];
-    controller.selection = TextSelection(baseOffset: start, extentOffset: end);
-    final replacement = _replaceCtrl.text;
-    final newText = controller.text.replaceRange(start, end, replacement);
-    controller.value = TextEditingValue(
-      text: newText,
-      selection: TextSelection.collapsed(offset: start + replacement.length),
+    if (tab == null || _findCtrl.text.isEmpty) return;
+
+    final path = tab.path ?? tab.title;
+    _askAi(
+      'In "' + path + '", replace the current find match of "' +
+      _findCtrl.text + '" with "' + _replaceCtrl.text +
+      '". Use agent tools and verify the edit.',
     );
-    _applyProgrammaticEdit(tab, session, newText);
-    _computeFindMatches();
-    if (_findRanges.isNotEmpty) {
-      _jumpToFind(_findIndex.clamp(0, _findRanges.length - 1));
-    }
   }
 
   /// Replaces every occurrence of the query in the active tab. Ranges are
@@ -536,21 +490,14 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   /// (no `$1` backreference expansion).
   void _replaceAll() {
     final tab = _activeTabNow();
-    if (tab == null) return;
-    final query = _findCtrl.text;
-    if (query.isEmpty) return;
-    final session = _sessionFor(tab);
-    final ranges = _findRangesFor(session.controller.text, query);
-    if (ranges.isEmpty) return;
-    var newText = session.controller.text;
-    for (final (start, end) in ranges.reversed) {
-      newText = newText.replaceRange(start, end, _replaceCtrl.text);
-    }
-    if (newText == session.controller.text) return;
-    session.controller.value = TextEditingValue(
-        text: newText, selection: session.controller.selection);
-    _applyProgrammaticEdit(tab, session, newText);
-    _computeFindMatches();
+    if (tab == null || _findCtrl.text.isEmpty) return;
+
+    final path = tab.path ?? tab.title;
+    _askAi(
+      'In "' + path + '", replace all matches of "' + _findCtrl.text +
+      '" with "' + _replaceCtrl.text +
+      '". Use agent tools, keep the change scoped to this file, and verify the result.',
+    );
   }
 
   /// Mirrors a programmatic edit (find-replace) into the provider tab, the
@@ -559,10 +506,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   /// fire for programmatic controller writes).
   void _applyProgrammaticEdit(
       EditorTab tab, EditorSession session, String newText) {
-    _updateActiveTabContent(tab, newText);
-    session.syncChange(newText);
-    _scheduleDiffRefresh(tab);
-    _scheduleAutoSave(tab);
+    // Compatibility guard: source buffers are never written by UI code.
   }
 
   /// Key handling for the editor text field: Tab accepts the AI completion,
@@ -570,30 +514,13 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   /// for inserting spaces when no completion is active.
   KeyEventResult _handleEditorKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
     final ctrl = HardwareKeyboard.instance.isControlPressed;
     final key = event.logicalKey;
-
     final completion = ref.read(aiCompletionProvider);
+
     if (key == LogicalKeyboardKey.tab && completion != null) {
       _acceptCompletion();
-      return KeyEventResult.handled;
-    }
-    // Tab key: insert spaces (or tab character) when no AI completion
-    if (key == LogicalKeyboardKey.tab && completion == null) {
-      final tab = _activeTabNow();
-      if (tab != null) {
-        final session = _sessionFor(tab);
-        final controller = session.controller;
-        final offset = controller.selection.baseOffset;
-        final tabSize = ref.read(editorTabSizeProvider);
-        final spaces = ' ' * tabSize;
-        final newText = controller.text.replaceRange(offset, offset, spaces);
-        controller.value = TextEditingValue(
-          text: newText,
-          selection: TextSelection.collapsed(offset: offset + spaces.length),
-        );
-        _sync(tab, newText);
-      }
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.escape && completion != null) {
@@ -604,21 +531,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       _requestAiCompletion();
       return KeyEventResult.handled;
     }
-    // Ctrl+Z — Undo (handled by TextField natively, but we mark as handled
-    // so the IdeShell doesn't intercept it)
-    if (ctrl && !HardwareKeyboard.instance.isShiftPressed &&
-        key == LogicalKeyboardKey.keyZ) {
-      return KeyEventResult.ignored; // Let TextField handle undo
-    }
-    // Ctrl+Shift+Z — Redo
-    if (ctrl && HardwareKeyboard.instance.isShiftPressed &&
-        key == LogicalKeyboardKey.keyZ) {
-      return KeyEventResult.ignored; // Let TextField handle redo
-    }
-    // Ctrl+Y — Redo (alternative)
-    if (ctrl && !HardwareKeyboard.instance.isShiftPressed &&
-        key == LogicalKeyboardKey.keyY) {
-      return KeyEventResult.ignored; // Let TextField handle redo
+    if (ctrl &&
+        (key == LogicalKeyboardKey.keyZ ||
+            key == LogicalKeyboardKey.keyY)) {
+      return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
   }
@@ -648,42 +564,15 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   }
 
   Future<void> _saveActiveTab() async {
-    final activeTab = _activeTabNow();
-    if (activeTab == null || activeTab.path == null) return;
-    final workspaceService = ref.read(workspaceServiceProvider);
-    try {
-      // The Zig engine buffer is authoritative: flush pending ops, then save
-      // the exact bytes the engine holds.
-      final session = _sessionFor(activeTab);
-      final engineText = await session.engineText();
-      await workspaceService.writeFile(activeTab.path!, engineText);
-      // The saved bytes are the new on-disk baseline: the gutter diff clears.
-      session.markSaved(engineText);
-      _diffDebounce?.cancel();
-      _diffRegions[activeTab.id] = const [];
-      final tabs = ref.read(openTabsProvider);
-      final index = tabs.indexWhere((t) => t.id == activeTab.id);
-      if (index >= 0) {
-        final updated = tabs[index].copyWith(isModified: false);
-        ref.read(openTabsProvider.notifier).state = List<EditorTab>.from(tabs)
-          ..[index] = updated;
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Saved ${activeTab.title}'),
-              duration: const Duration(seconds: 1)),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Error saving file: $e'),
-              backgroundColor: Colors.red),
-        );
-      }
-    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Source files are agent-managed. Use Ask AI to make changes.',
+        ),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   /// Text metrics for the highlight overlay — identical to the editor
@@ -1275,6 +1164,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                 Positioned.fill(
                                   child: TextField(
                                     key: const Key('editor-code-text-field'),
+                                    readOnly: true,
                                     controller: session.controller,
                                     scrollController: _textScrollController,
                                     onChanged: (value) =>
