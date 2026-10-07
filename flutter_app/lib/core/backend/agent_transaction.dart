@@ -26,6 +26,8 @@ class AgentTransaction {
       LinkedHashMap<String, String?>();
   final LinkedHashSet<String> _originalDirectories =
       LinkedHashSet<String>();
+  final LinkedHashSet<String> _preexistingDirectories =
+      LinkedHashSet<String>();
   final LinkedHashSet<String> _expectedDirectories =
       LinkedHashSet<String>();
   final LinkedHashMap<String, String?> _expectedFiles =
@@ -41,10 +43,15 @@ class AgentTransaction {
   List<String> get trackedFiles =>
       List.unmodifiable(_originalFiles.keys.toList());
 
-  Future<void> captureBeforeMutation(String path) async {
+  Future<void> captureBeforeMutation(
+    String path, {
+    bool snapshotDirectories = true,
+  }) async {
     _ensureOpen();
     final relative = _normalize(path);
     if (_isTracked(relative)) return;
+
+    await _rememberExistingParents(relative);
 
     final read = await _backend.executeAgentTool(
       'file.read',
@@ -76,6 +83,11 @@ class AgentTransaction {
       throw StateError(
         'Unable to snapshot "${relative}" before mutation: ${read.error}',
       );
+    }
+
+    if (!snapshotDirectories) {
+      _preexistingDirectories.add(relative);
+      return;
     }
 
     final prefix = relative == '.' ? '' : '${relative}/';
