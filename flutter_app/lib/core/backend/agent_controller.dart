@@ -600,6 +600,36 @@ Guidelines:
     }
   }
 
+  Future<AgentRollbackReport?> _rollbackCurrentRun() async {
+    final transaction = _transaction;
+    if (transaction == null || !transaction.hasChanges) return null;
+    return transaction.rollback();
+  }
+
+  Future<AgentErrorEvent> _errorEvent(String message) async {
+    return AgentErrorEvent(
+      message,
+      rollback: await _rollbackCurrentRun(),
+    );
+  }
+
+  Future<AgentStoppedEvent> _stoppedEvent() async {
+    return AgentStoppedEvent(
+      rollback: await _rollbackCurrentRun(),
+    );
+  }
+
+  Future<AgentIterationLimitEvent> _limitEvent(
+    int iterations, [
+    String reason = 'Agent iteration limit reached.',
+  ]) async {
+    return AgentIterationLimitEvent(
+      iterations,
+      reason,
+      await _rollbackCurrentRun(),
+    );
+  }
+
   bool _isMutationTool(String name) {
     return name == 'write_file' ||
         name == 'apply_diff' ||
@@ -685,6 +715,7 @@ Guidelines:
         case 'write_file':
           final path = args['path']?.toString() ?? '';
           final content = args['content']?.toString() ?? '';
+          await _transaction?.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.write',
             {'path': _relPath(path), 'content': content},
@@ -693,6 +724,7 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction?.recordWrite(_relPath(path), content);
           final size = _jsonField(result.output, 'size') ?? content.length;
           return _ToolResult('Wrote $size characters to ${_relPath(path)}');
 
@@ -702,6 +734,7 @@ Guidelines:
             return const _ToolResult('(error) No path provided.',
                 success: false);
           }
+          await _transaction?.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.delete',
             {'path': _relPath(path)},
@@ -710,6 +743,7 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction?.recordDelete(_relPath(path));
           return _ToolResult('Deleted ${_relPath(path)}');
 
         case 'create_directory':
@@ -718,6 +752,7 @@ Guidelines:
             return const _ToolResult('(error) No path provided.',
                 success: false);
           }
+          await _transaction?.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.mkdir',
             {'path': _relPath(path)},
@@ -726,10 +761,12 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction?.recordDirectoryCreate(_relPath(path));
           return _ToolResult('Created directory ${_relPath(path)}');
 
         case 'apply_diff':
           final path = args['path']?.toString() ?? '';
+          await _transaction?.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.apply_diff',
             {
@@ -742,6 +779,7 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction?.recordPatchedFile(_relPath(path));
           return _ToolResult('Applied edit to ${_relPath(path)}');
 
         case 'list_directory':
