@@ -103,6 +103,9 @@ pub const SemanticGraph = struct {
     allocator: std.mem.Allocator,
     nodes: std.AutoHashMapUnmanaged(SymbolId, NodeRecord),
     edges: std.ArrayListUnmanaged(EdgeRecord),
+    /// Reverse call index: callee -> callers. Keeps callers_of queries O(degree)
+    /// instead of scanning the entire edge store on every query.
+    call_index: std.AutoHashMapUnmanaged(SymbolId, std.ArrayListUnmanaged(SymbolId)),
     strings: StringPool,
     current_snapshot: SnapshotId,
 
@@ -111,6 +114,7 @@ pub const SemanticGraph = struct {
             .allocator = alloc,
             .nodes = .{},
             .edges = .empty,
+            .call_index = .{},
             .strings = StringPool.init(),
             .current_snapshot = 0,
         };
@@ -119,6 +123,9 @@ pub const SemanticGraph = struct {
     pub fn deinit(self: *SemanticGraph) void {
         self.nodes.deinit(self.allocator);
         self.edges.deinit(self.allocator);
+        var call_it = self.call_index.iterator();
+        while (call_it.next()) |entry| entry.value_ptr.deinit(self.allocator);
+        self.call_index.deinit(self.allocator);
         self.strings.deinit(self.allocator);
     }
 
@@ -155,6 +162,32 @@ pub const SemanticGraph = struct {
         }
         self.edges.shrinkRetainingCapacity(write_idx);
 
+        // Keep the reverse call index consistent after edge/node removal.
+        if (delta.removed_edges.len > 0 or delta.removed_ids.len > 0) {
+            var call_it = self.call_index.iterator();
+            while (call_it.next()) |entry| {
+                var write: usize = 0;
+                for (entry.value_ptr.items) |caller| {
+                    if (!removed_node_set.contains(caller) and
+                        !removed_node_set.contains(entry.key_ptr.*) and
+                        !edgeWasRemoved(delta.removed_edges, caller, entry.key_ptr.*))
+                    {
+                        entry.value_ptr.items[write] = caller;
+                        write += 1;
+                    }
+                }
+                entry.value_ptr.shrinkRetainingCapacity(write);
+            }
+
+            var empty_it = self.call_index.iterator();
+            while (empty_it.next()) |entry| {
+                if (entry.value_ptr.items.len == 0) {
+                    // Removal is deferred until after iteration.
+                }
+            }
+            // Empty buckets are harmless and avoid churn during incremental updates.
+        }
+
         // 3. Yeni Düğümleri Ekle (String Interning Yapılarak)
         for (delta.added_nodes) |node| {
             if (self.nodes.contains(node.id)) continue; // Idempotent check
@@ -175,6 +208,11 @@ pub const SemanticGraph = struct {
         try self.edges.ensureUnusedCapacity(self.allocator, delta.added_edges.len);
         for (delta.added_edges) |edge| {
             self.edges.appendAssumeCapacity(edge);
+            if (edge.kind == .calls) {
+                const gop = try self.call_index.getOrPut(self.allocator, edge.to);
+                if (!gop.found_existing) gop.value_ptr.* = .empty;
+                try gop.value_ptr.append(self.allocator, edge.from);
+            }
         }
 
         self.current_snapshot = delta.snapshot_id;
@@ -182,15 +220,10 @@ pub const SemanticGraph = struct {
 
     /// Returns all callers of a given symbol (nodes with a `calls` edge to it).
     pub fn callersOf(self: *const SemanticGraph, target: SymbolId, alloc: std.mem.Allocator) ![]SymbolId {
-        var result = std.ArrayListUnmanaged(SymbolId).empty;
-        errdefer result.deinit(alloc);
-
-        for (self.edges.items) |edge| {
-            if (edge.kind == .calls and edge.to.toU128() == target.toU128()) {
-                try result.append(alloc, edge.from);
-            }
+        if (self.call_index.get(target)) |callers| {
+            return alloc.dupe(SymbolId, callers.items);
         }
-        return result.toOwnedSlice(alloc);
+        return alloc.alloc(SymbolId, 0);
     }
 
     /// Looks up a node by SymbolId. Returns null if not found.
@@ -206,6 +239,13 @@ pub const SemanticGraph = struct {
         return self.edges.items.len;
     }
 };
+
+fn edgeWasRemoved(removed: []const EdgeRecord, from: SymbolId, to: SymbolId) bool {
+    for (removed) |edge| {
+        if (edge.kind == .calls and edge.from == from and edge.to == to) return true;
+    }
+    return false;
+}
 
 // --- Testler ---
 
