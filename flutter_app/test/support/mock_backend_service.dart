@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import '../../lib/core/backend/backend_service.dart';
-import '../../lib/core/backend/line_diff.dart';
+import 'package:hiide_flutter/core/backend/backend_service.dart';
+import 'package:hiide_flutter/core/backend/line_diff.dart';
 
 /// In-memory backend test double. This file is test-only and must never be used by the production application.
 class MockBackendService implements BackendService {
