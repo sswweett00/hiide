@@ -261,10 +261,11 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + e.toString(), timestamp: DateTime.now()));
     } finally {
       _stopActiveAgent = null;
-      if (!mounted) return;
-      _finishStreamingText();
-      ref.read(streamingMessageProvider.notifier).state = '';
-      ref.read(isAiThinkingProvider.notifier).state = false;
+      if (mounted) {
+        _finishStreamingText();
+        ref.read(streamingMessageProvider.notifier).state = '';
+        ref.read(isAiThinkingProvider.notifier).state = false;
+      }
     }
   }
 
