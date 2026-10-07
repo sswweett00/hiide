@@ -341,3 +341,85 @@ test "graph: remove node via delta cleans memory and dangling edges" {
     try std.testing.expectEqual(@as(usize, 1), graph.nodeCount());
     try std.testing.expectEqual(@as(usize, 0), graph.edgeCount());
 }
+
+
+test "graph: secondary indexes stay consistent after edge and node removal" {
+    const alloc = std.testing.allocator;
+    var g = SemanticGraph.init(alloc);
+    defer g.deinit();
+
+    const caller = SymbolId.fromU128(10);
+    const target = SymbolId.fromU128(11);
+    const other = SymbolId.fromU128(12);
+    const nodes = [_]NodeRecord{
+        .{ .id = caller, .kind = .function, .name = "run", .lang = "zig", .parent = null },
+        .{ .id = target, .kind = .function, .name = "run", .lang = "zig", .parent = null },
+        .{ .id = other, .kind = .function, .name = "other", .lang = "zig", .parent = null },
+    };
+    const edges = [_]EdgeRecord{
+        .{ .from = caller, .to = target, .kind = .calls },
+        .{ .from = other, .to = target, .kind = .calls },
+    };
+
+    try g.applyDelta(.{
+        .snapshot_id = 1,
+        .added_nodes = &nodes,
+        .removed_ids = &.{},
+        .added_edges = &edges,
+        .removed_edges = &.{},
+    });
+
+    const callers_before = try g.callersOf(target, alloc);
+    defer alloc.free(callers_before);
+    try std.testing.expectEqual(@as(usize, 2), callers_before.len);
+    try std.testing.expectEqual(@as(usize, 2), g.name_index.get("run").?.items.len);
+
+    try g.applyDelta(.{
+        .snapshot_id = 2,
+        .added_nodes = &.{},
+        .removed_ids = &[_]SymbolId{caller},
+        .added_edges = &.{},
+        .removed_edges = &.{},
+    });
+
+    const callers_after = try g.callersOf(target, alloc);
+    defer alloc.free(callers_after);
+    try std.testing.expectEqual(@as(usize, 1), callers_after.len);
+    try std.testing.expectEqual(other.toU128(), callers_after[0].toU128());
+    try std.testing.expectEqual(@as(usize, 1), g.name_index.get("run").?.items.len);
+}
+
+test "graph: explicit call-edge removal updates reverse index" {
+    const alloc = std.testing.allocator;
+    var g = SemanticGraph.init(alloc);
+    defer g.deinit();
+
+    const caller = SymbolId.fromU128(20);
+    const target = SymbolId.fromU128(21);
+    const nodes = [_]NodeRecord{
+        .{ .id = caller, .kind = .function, .name = "caller", .lang = "zig", .parent = null },
+        .{ .id = target, .kind = .function, .name = "target", .lang = "zig", .parent = null },
+    };
+    const edge = EdgeRecord{ .from = caller, .to = target, .kind = .calls };
+
+    try g.applyDelta(.{
+        .snapshot_id = 1,
+        .added_nodes = &nodes,
+        .removed_ids = &.{},
+        .added_edges = &[_]EdgeRecord{edge},
+        .removed_edges = &.{},
+    });
+    try std.testing.expectEqual(@as(usize, 1), (try g.callersOf(target, alloc)).len);
+
+    try g.applyDelta(.{
+        .snapshot_id = 2,
+        .added_nodes = &.{},
+        .removed_ids = &.{},
+        .added_edges = &.{},
+        .removed_edges = &[_]EdgeRecord{edge},
+    });
+
+    const callers = try g.callersOf(target, alloc);
+    defer alloc.free(callers);
+    try std.testing.expectEqual(@as(usize, 0), callers.len);
+}
