@@ -224,7 +224,7 @@ class WorkspaceService {
       final ws = webWorkspaceStore.workspace;
       final rel = ws?.relOf(filePath);
       if (ws != null && rel != null) return ws.readText(rel);
-      return _mockWebContent(filePath);
+      throw StateError('No web workspace is open for ' + filePath + '.');
     }
     final safePath = _resolveWorkspacePath(filePath);
     final file = File(safePath);
@@ -238,7 +238,10 @@ class WorkspaceService {
     if (kIsWeb) {
       final ws = webWorkspaceStore.workspace;
       final rel = ws?.relOf(filePath);
-      if (ws != null && rel != null) ws.writeText(rel, content);
+      if (ws == null || rel == null) {
+        throw StateError('No web workspace is open for ' + filePath + '.');
+      }
+      ws.writeText(rel, content);
       return;
     }
     final safePath = _resolveWorkspacePath(filePath);
@@ -260,7 +263,9 @@ class WorkspaceService {
     if (kIsWeb) {
       final ws = webWorkspaceStore.workspace;
       final rel = ws?.relOf(filePath);
-      if (ws == null || rel == null) return false;
+      if (ws == null || rel == null) {
+        throw StateError('No web workspace is open for ' + filePath + '.');
+      }
       final content = await ws.readText(rel);
       final first = content.indexOf(target);
       if (first < 0 || content.indexOf(target, first + target.length) >= 0) return false;
@@ -280,7 +285,10 @@ class WorkspaceService {
     if (kIsWeb) {
       final ws = webWorkspaceStore.workspace;
       final rel = ws?.relOf(filePath) ?? filePath;
-      if (ws != null) ws.writeText(rel, content);
+      if (ws == null) {
+        throw StateError('No web workspace is open for ' + filePath + '.');
+      }
+      ws.writeText(rel, content);
       return;
     }
     final safePath = _resolveWorkspacePath(filePath);
@@ -290,12 +298,16 @@ class WorkspaceService {
   }
 
   Future<void> createDirectory(String dirPath) async {
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      throw UnsupportedError('Directory creation requires the native workspace backend.');
+    }
     await Directory(_resolveWorkspacePath(dirPath)).create(recursive: true);
   }
 
   Future<void> deleteEntity(String path) async {
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      throw UnsupportedError('Entity deletion requires the native workspace backend.');
+    }
     final safePath = _resolveWorkspacePath(path);
     final file = File(safePath);
     final dir = Directory(safePath);
@@ -307,7 +319,9 @@ class WorkspaceService {
   }
 
   Future<void> renameEntity(String oldPath, String newPath) async {
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      throw UnsupportedError('Entity rename requires the native workspace backend.');
+    }
     final safeOld = _resolveWorkspacePath(oldPath);
     final safeNew = _resolveWorkspacePath(newPath);
     final file = File(safeOld);
@@ -320,7 +334,6 @@ class WorkspaceService {
     }
   }
 
-  String _mockWebContent(String filePath) => '// ${pathBasename(filePath)}\n// Mock preview content.\n';
 
   IconData _getIconForFile(String fileName) {
     final name = fileName.toLowerCase();
