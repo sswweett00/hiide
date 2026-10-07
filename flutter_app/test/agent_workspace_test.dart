@@ -6,7 +6,7 @@ import 'package:hiide_flutter/core/backend/agent_mode.dart';
 import 'package:hiide_flutter/core/backend/agent_task_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hiide_flutter/core/backend/groq_ai_service.dart';
-import 'package:hiide_flutter/core/backend/mock_backend_service.dart';
+import 'support/mock_backend_service.dart';
 import 'package:hiide_flutter/core/providers/backend_provider.dart';
 import 'package:hiide_flutter/core/theme/app_themes.dart';
 import 'package:hiide_flutter/features/agent_workspace/agent_workspace_screen.dart';
