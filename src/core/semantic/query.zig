@@ -96,26 +96,38 @@ pub const SemanticStore = struct {
 
             .hybrid_search => |hs| {
                 const top_k = hs.top_k;
+                if (top_k == 0) return hits.toOwnedSlice(alloc);
                 var it = self.g.nodes.iterator();
                 while (it.next()) |entry| {
                     const node = entry.value_ptr.*;
                     const score = bm25Score(hs.text, node.name);
-                    if (score > 0.1) {
-                        try hits.append(alloc, .{
-                            .symbol_id = node.id,
-                            .name = node.name,
-                            .kind = node.kind,
-                            .score = score,
-                        });
+                    if (score <= 0.1) continue;
+
+                    const hit = QueryHit{
+                        .symbol_id = node.id,
+                        .name = node.name,
+                        .kind = node.kind,
+                        .score = score,
+                    };
+
+                    // Keep only the best K hits while scanning. Sorting every
+                    // matching symbol made large codebases pay O(M log M)
+                    // even when callers requested a tiny top_k.
+                    var insert_at = hits.items.len;
+                    if (insert_at == top_k) {
+                        if (score <= hits.items[insert_at - 1].score) continue;
+                        insert_at -= 1;
+                        hits.items[insert_at] = hit;
+                    } else {
+                        try hits.append(alloc, hit);
                     }
+
+                    while (insert_at > 0 and hits.items[insert_at - 1].score < score) {
+                        hits.items[insert_at] = hits.items[insert_at - 1];
+                        insert_at -= 1;
+                    }
+                    hits.items[insert_at] = hit;
                 }
-                // Sort descending by score.
-                std.mem.sort(QueryHit, hits.items, {}, struct {
-                    fn lt(_: void, a: QueryHit, b: QueryHit) bool {
-                        return a.score > b.score;
-                    }
-                }.lt);
-                if (hits.items.len > top_k) hits.items.len = top_k;
             },
 
             .callers_of => |sym| {
@@ -151,24 +163,19 @@ pub const SemanticStore = struct {
             },
 
             .cross_language_path => |clp| {
-                // Cross-language resolution: find all nodes reachable from `from`
-                // that match `to_lang` via any edge.
-                var it = self.g.nodes.iterator();
-                while (it.next()) |entry| {
-                    const node = entry.value_ptr.*;
-                    if (!std.mem.eql(u8, node.lang, clp.to_lang)) continue;
-                    // Check if there is an edge from clp.from to this node.
-                    for (self.g.edges.items) |edge| {
-                        if (edge.from.toU128() == clp.from.toU128() and
-                            edge.to.toU128() == node.id.toU128())
-                        {
-                            try hits.append(alloc, .{
-                                .symbol_id = node.id,
-                                .name = node.name,
-                                .kind = node.kind,
-                                .score = 0.8,
-                            });
-                            break;
+                // Traverse only the source node's adjacency list. The previous
+                // implementation scanned every node and every edge (O(V*E)).
+                if (self.g.out_index.get(clp.from)) |outgoing| {
+                    for (outgoing.items) |edge| {
+                        if (self.g.lookupNode(edge.to)) |node| {
+                            if (std.mem.eql(u8, node.lang, clp.to_lang)) {
+                                try hits.append(alloc, .{
+                                    .symbol_id = node.id,
+                                    .name = node.name,
+                                    .kind = node.kind,
+                                    .score = 0.8,
+                                });
+                            }
                         }
                     }
                 }
