@@ -72,9 +72,9 @@ class DocGeneratorAgent {
       temperature: 0.3,
     );
 
-    if (response.containsKey('error')) return '# Project\n\nDocumentation generation failed.';
+    if (response.containsKey('error')) throw StateError(response['error']?.toString() ?? 'AI provider error');
     final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) return '# Project\n\nNo response from model.';
+    if (choices.isEmpty) throw StateError('AI provider returned no choices.');
     return (choices.first as Map)['message']?['content']?.toString() ?? '';
   }
 
@@ -101,9 +101,9 @@ class DocGeneratorAgent {
       temperature: 0.2,
     );
 
-    if (response.containsKey('error')) return '## Changelog\n\nGeneration failed.';
+    if (response.containsKey('error')) throw StateError(response['error']?.toString() ?? 'AI provider error');
     final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) return '## Changelog\n\nNo response.';
+    if (choices.isEmpty) throw StateError('AI provider returned no choices.');
     return (choices.first as Map)['message']?['content']?.toString() ?? '';
   }
 
