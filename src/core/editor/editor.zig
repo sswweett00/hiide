@@ -222,16 +222,13 @@ pub const Editor = struct {
 
             // Match positions remain non-overlapping, matching the previous
             // startsWith-based implementation.
-            var matched_end = match_pos + query.len;
-            while (matched_end > match_pos) {
-                const c = text[matched_end - 1];
+            for (text[match_pos .. match_pos + query.len]) |c| {
                 if (c == '\\n') {
                     line += 1;
                     col = 1;
                 } else {
                     col += 1;
                 }
-                matched_end -= 1;
             }
             search_pos = match_pos + query.len;
         }
