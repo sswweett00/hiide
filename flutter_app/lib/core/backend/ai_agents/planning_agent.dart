@@ -493,7 +493,7 @@ failure paths, security/performance implications and rollback. Match the user's 
     return {
       'error': lastError == null
           ? 'Planning AI request failed.'
-          : HiideFailure.from(lastError!, lastStack).toString(),
+          : HiideFailure.from(lastError, lastStack).toString(),
     };
   }
 
