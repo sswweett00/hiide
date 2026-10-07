@@ -256,14 +256,6 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     return null;
   }
 
-  /// Debounced recompute after typing (keystrokes arrive faster than the diff).
-  void _scheduleDiffRefresh(EditorTab tab) {
-    _diffDebounce?.cancel();
-    _diffDebounce = Timer(const Duration(milliseconds: 250), () {
-      _refreshDiff(tab);
-    });
-  }
-
   /// Ensures the diff for `tab` is computed (once per session) without a
   /// timer, for the initial load / external-reload path.
   void _ensureDiffScheduled(EditorTab tab) {
@@ -323,41 +315,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     );
   }
 
-  void _updateActiveTabContent(EditorTab tab, String newContent) {
-    final tabs = ref.read(openTabsProvider);
-    final index = tabs.indexWhere((t) => t.id == tab.id);
-    if (index >= 0) {
-      final updated = tabs[index].copyWith(
-        content: newContent,
-        isModified: true,
-      );
-      final newTabs = List<EditorTab>.from(tabs)..[index] = updated;
-      ref.read(openTabsProvider.notifier).state = newTabs;
-    }
-  }
-
   /// Updates provider state and mirrors the change into the Zig engine buffer.
   void _sync(EditorTab tab, String newContent) {
     // Source files are agent-managed. UI edits are intentionally ignored.
     // Agent mutations are persisted through AgentController/tool calls.
-    _ = tab;
-    _ = newContent;
-  }
-
-  // ─── Auto-save ────────────────────────────────────────────────────────────
-
-  /// Debounced silent save: while the user types, the timer keeps resetting;
-  /// 1.5s of stillness writes the file (no snackbar). Disabled by the
-  /// Auto Save setting or when the tab has no disk path.
-  void _scheduleAutoSave(EditorTab tab) {
-    // Source persistence belongs to the agent transaction pipeline.
-    _ = tab;
-    _autoSaveTimer?.cancel();
-  }
-
-  Future<void> _autoSaveNow(EditorTab tab) async {
-    // Intentionally disabled for agent-only source editing.
-    _ = tab;
   }
 
   // ─── AI inline completion (Ctrl+Space) ────────────────────────────────────
@@ -513,23 +474,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     );
   }
 
-  /// Mirrors a programmatic edit (find-replace) into the provider tab, the
-  /// engine buffer, the gutter diff and the auto-save timer — the same path
-  /// a keystroke takes, minus the TextField onChanged event (which does not
-  /// fire for programmatic controller writes).
-  void _applyProgrammaticEdit(
-      EditorTab tab, EditorSession session, String newText) {
-    // Compatibility shim: source mutation must happen through the agent.
-    _ = tab;
-    _ = session;
-    _ = newText;
-  }
-
   /// Key handling for the editor text field: Tab accepts the AI completion,
   /// Escape dismisses it, Ctrl+Space requests one. Also supports Tab key
   /// for inserting spaces when no completion is active.
   KeyEventResult _handleEditorKeyEvent(FocusNode node, KeyEvent event) {
-    _ = node;
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
     final ctrl = HardwareKeyboard.instance.isControlPressed;
