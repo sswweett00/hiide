@@ -60,7 +60,21 @@ void _cleanupManagedEngine() {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final backendService = await _createBackendService();
+  BackendService? backendService;
+  Object? startupError;
+  try {
+    backendService = await _createBackendService();
+  } catch (error, stack) {
+    startupError = error;
+    debugPrint('Hiide startup failed: $error');
+    debugPrintStack(stackTrace: stack);
+  }
+
+  if (backendService == null) {
+    runApp(_StartupFailureApp(error: startupError));
+    return;
+  }
+
   final agentTaskStore = await AgentTaskStore.load();
 
   // Restore the last workspace (when it still exists) so the IDE opens where
@@ -201,6 +215,36 @@ Future<void> main() async {
       child: HiideApp(backendService: backendService),
     ),
   );
+}
+
+class _StartupFailureApp extends StatelessWidget {
+  const _StartupFailureApp({required this.error});
+  final Object? error;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppThemes.darkTheme,
+      home: Scaffold(
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 760),
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: SelectableText(
+                'Hiide native engine could not start.\\n\\n'
+                '$error\\n\\n'
+                'Build/package hiide-ipc-server and place it beside the '
+                'application executable, or set HIIDE_ENGINE_PATH.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class HiideApp extends ConsumerWidget {
