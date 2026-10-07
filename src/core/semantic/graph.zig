@@ -106,6 +106,8 @@ pub const SemanticGraph = struct {
     /// Reverse call index: callee -> callers. Keeps callers_of queries O(degree)
     /// instead of scanning the entire edge store on every query.
     call_index: std.AutoHashMapUnmanaged(SymbolId, std.ArrayListUnmanaged(SymbolId)),
+    /// Name -> node ids index for exact symbol lookup without scanning all nodes.
+    name_index: std.StringHashMapUnmanaged(std.ArrayListUnmanaged(SymbolId)),
     /// Source-node adjacency index for graph traversals.
     out_index: std.AutoHashMapUnmanaged(SymbolId, std.ArrayListUnmanaged(EdgeRecord)),
     strings: StringPool,
@@ -117,6 +119,7 @@ pub const SemanticGraph = struct {
             .nodes = .{},
             .edges = .empty,
             .call_index = .{},
+            .name_index = .{},
             .out_index = .{},
             .strings = StringPool.init(),
             .current_snapshot = 0,
@@ -126,6 +129,9 @@ pub const SemanticGraph = struct {
     pub fn deinit(self: *SemanticGraph) void {
         self.nodes.deinit(self.allocator);
         self.edges.deinit(self.allocator);
+        var name_it = self.name_index.iterator();
+        while (name_it.next()) |entry| entry.value_ptr.deinit(self.allocator);
+        self.name_index.deinit(self.allocator);
         var call_it = self.call_index.iterator();
         while (call_it.next()) |entry| entry.value_ptr.deinit(self.allocator);
         self.call_index.deinit(self.allocator);
@@ -168,7 +174,8 @@ pub const SemanticGraph = struct {
         }
         self.edges.shrinkRetainingCapacity(write_idx);
 
-        // Keep the reverse call index consistent after edge/node removal.
+        // Keep secondary indexes consistent using the same O(E + R) removal set
+        // used by the primary edge store. This avoids the old O(E * R) scan.
         if (delta.removed_edges.len > 0 or delta.removed_ids.len > 0) {
             var out_it = self.out_index.iterator();
             while (out_it.next()) |entry| {
@@ -176,7 +183,7 @@ pub const SemanticGraph = struct {
                 for (entry.value_ptr.items) |edge| {
                     if (!removed_node_set.contains(edge.from) and
                         !removed_node_set.contains(edge.to) and
-                        !edgeWasRemoved(delta.removed_edges, edge.from, edge.to))
+                        !removed_edge_set.contains(edge))
                     {
                         entry.value_ptr.items[write] = edge;
                         write += 1;
@@ -189,9 +196,10 @@ pub const SemanticGraph = struct {
             while (call_it.next()) |entry| {
                 var write: usize = 0;
                 for (entry.value_ptr.items) |caller| {
+                    const edge = EdgeRecord{ .from = caller, .to = entry.key_ptr.*, .kind = .calls };
                     if (!removed_node_set.contains(caller) and
                         !removed_node_set.contains(entry.key_ptr.*) and
-                        !edgeWasRemoved(delta.removed_edges, caller, entry.key_ptr.*))
+                        !removed_edge_set.contains(edge))
                     {
                         entry.value_ptr.items[write] = caller;
                         write += 1;
@@ -200,13 +208,17 @@ pub const SemanticGraph = struct {
                 entry.value_ptr.shrinkRetainingCapacity(write);
             }
 
-            var empty_it = self.call_index.iterator();
-            while (empty_it.next()) |entry| {
-                if (entry.value_ptr.items.len == 0) {
-                    // Removal is deferred until after iteration.
+            var name_it = self.name_index.iterator();
+            while (name_it.next()) |entry| {
+                var write: usize = 0;
+                for (entry.value_ptr.items) |id| {
+                    if (!removed_node_set.contains(id)) {
+                        entry.value_ptr.items[write] = id;
+                        write += 1;
+                    }
                 }
+                entry.value_ptr.shrinkRetainingCapacity(write);
             }
-            // Empty buckets are harmless and avoid churn during incremental updates.
         }
 
         // 3. Yeni Düğümleri Ekle (String Interning Yapılarak)
@@ -223,6 +235,10 @@ pub const SemanticGraph = struct {
                 .lang = interned_lang,
                 .parent = node.parent,
             });
+
+            const name_bucket = try self.name_index.getOrPut(self.allocator, interned_name);
+            if (!name_bucket.found_existing) name_bucket.value_ptr.* = .empty;
+            try name_bucket.value_ptr.append(self.allocator, node.id);
         }
 
         // 4. Yeni Kenarları Ekle
@@ -264,13 +280,6 @@ pub const SemanticGraph = struct {
         return self.edges.items.len;
     }
 };
-
-fn edgeWasRemoved(removed: []const EdgeRecord, from: SymbolId, to: SymbolId) bool {
-    for (removed) |edge| {
-        if (edge.kind == .calls and edge.from == from and edge.to == to) return true;
-    }
-    return false;
-}
 
 // --- Testler ---
 
