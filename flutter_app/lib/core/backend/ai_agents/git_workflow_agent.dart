@@ -153,10 +153,10 @@ Keep it concise but informative. Use Markdown formatting.''',
       temperature: 0.2,
     );
 
-    if (response.containsKey('error')) return 'Error generating PR description.';
+    if (response.containsKey('error')) {\n      throw StateError(response['error']?.toString() ?? 'AI provider error');\n    }
 
     final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) return 'No response from model.';
+    if (choices.isEmpty) throw StateError('AI provider returned no choices.');
 
     return (choices.first as Map)['message']?['content']?.toString() ?? '';
   }
@@ -227,7 +227,7 @@ Keep it concise but informative. Use Markdown formatting.''',
       }
       final start = json.indexOf('[');
       final end = json.lastIndexOf(']');
-      if (start < 0 || end < 0) return [];
+      if (start < 0 || end < 0) throw const FormatException('AI returned invalid branch suggestion JSON.');
       json = json.substring(start, end + 1);
       final decoded = jsonDecode(json) as List;
       return decoded.map((item) {
