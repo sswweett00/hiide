@@ -78,11 +78,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Setup Zig
+        uses: xyzzylabs/setup-zig@v1
+        with:
+          version: 0.16.0
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.0'
           cache: true
+
+      - name: Build native engine for desktop bundle
+        run: zig build -Doptimize=ReleaseSafe --summary all
 
       - name: Restore packages
         run: flutter pub get
@@ -94,7 +102,15 @@ jobs:
         run: flutter test --reporter expanded
 
       - name: Build Linux desktop
-        run: flutter build linux --debug
+        run: flutter build linux --release
+
+      - name: Bundle native engine
+        run: |
+          set -euo pipefail
+          bundle="build/linux/x64/release/bundle"
+          test -x "../zig-out/bin/hiide-ipc-server"
+          install -m 0755 "../zig-out/bin/hiide-ipc-server" "$bundle/hiide-ipc-server"
+          test -x "$bundle/hiide-ipc-server"
 
   integration:
     name: Flutter ⇄ Zig integration
