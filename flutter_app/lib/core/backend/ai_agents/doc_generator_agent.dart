@@ -41,9 +41,9 @@ class DocGeneratorAgent {
       temperature: 0.2,
     );
 
-    if (response.containsKey('error')) return '// Documentation generation failed';
+    if (response.containsKey('error')) {\n      throw StateError(response['error']?.toString() ?? 'AI provider error');\n    }
     final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) return '// No response';
+    if (choices.isEmpty) throw StateError('AI provider returned no choices.');
     return (choices.first as Map)['message']?['content']?.toString() ?? '';
   }
 
