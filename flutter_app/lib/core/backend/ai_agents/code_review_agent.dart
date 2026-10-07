@@ -87,22 +87,12 @@ Score the file 0-100 (100 = perfect). Output ONLY valid JSON.''',
     );
 
     if (response.containsKey('error')) {
-      return ReviewResult(
-        filePath: filePath,
-        findings: [],
-        score: 50,
-        summary: 'Review failed: ${response['error']}',
-      );
+      throw StateError('Code review provider failed: ${response['error']}');
     }
 
-    final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) {
-      return ReviewResult(
-        filePath: filePath,
-        findings: [],
-        score: 50,
-        summary: 'No response from model.',
-      );
+    final choices = response['choices'];
+    if (choices is! List || choices.isEmpty) {
+      throw StateError('Code review provider returned no choices.');
     }
 
     final text = (choices.first as Map)['message']?['content']?.toString() ?? '';
@@ -118,7 +108,9 @@ Score the file 0-100 (100 = perfect). Output ONLY valid JSON.''',
         {'path': '.'},
         workspaceRoot: _workspaceRoot,
       );
-      if (!result.ok) return results;
+      if (!result.ok) {
+        throw StateError('Workspace listing failed: ${result.error}');
+      }
 
       final decoded = jsonDecode(result.output) as List;
       for (final item in decoded) {
@@ -127,16 +119,16 @@ Score the file 0-100 (100 = perfect). Output ONLY valid JSON.''',
         final name = map['name']?.toString() ?? '';
         if (_skipFile(name)) continue;
 
-        try {
-          final fileResult = await _backend.executeAgentTool(
-            'file.read',
-            {'path': name},
-            workspaceRoot: _workspaceRoot,
-          );
-          if (fileResult.ok && fileResult.output.length < 100000) {
-            results.add(await reviewFile(name, fileResult.output));
-          }
-        } catch (_) {}
+        final fileResult = await _backend.executeAgentTool(
+          'file.read',
+          {'path': name},
+          workspaceRoot: _workspaceRoot,
+        );
+        if (!fileResult.ok) {
+          throw StateError('Failed to read $name: ${fileResult.error}');
+        }
+        if (fileResult.output.length >= 100000) continue;
+        results.add(await reviewFile(name, fileResult.output));
       }
     } catch (_) {}
     return results;
@@ -160,12 +152,7 @@ Score the file 0-100 (100 = perfect). Output ONLY valid JSON.''',
       final start = json.indexOf('[');
       final end = json.lastIndexOf(']');
       if (start < 0 || end < 0) {
-        return ReviewResult(
-          filePath: filePath,
-          findings: [],
-          score: 50,
-          summary: text,
-        );
+        throw FormatException('Code review model did not return valid JSON findings.');
       }
       json = json.substring(start, end + 1);
       final decoded = jsonDecode(json) as List;
@@ -206,13 +193,7 @@ Score the file 0-100 (100 = perfect). Output ONLY valid JSON.''',
             '$errorCount errors, $warningCount warnings). Score: $score/100.',
       );
     } catch (e) {
-      debugPrint('Review parse error: $e');
-      return ReviewResult(
-        filePath: filePath,
-        findings: [],
-        score: 50,
-        summary: 'Parse error: $e',
-      );
+      throw FormatException('Code review response could not be parsed: $e');
     }
   }
 }
