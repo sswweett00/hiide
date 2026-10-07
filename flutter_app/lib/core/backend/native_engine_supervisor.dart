@@ -29,31 +29,31 @@ class NativeEngineSupervisor {
       await existing.disconnect();
     }
 
+    String? lastError;
     for (final candidate in await _candidates()) {
       if (!await File(candidate).exists()) continue;
       Process? process;
       try {
-        process = await Process.start(
-          candidate,
-          const [],
-          runInShell: false,
-        );
+        process = await Process.start(candidate, const [], runInShell: false);
         unawaited(process.stdout.drain<void>().catchError((_) {}));
         unawaited(process.stderr.drain<void>().catchError((_) {}));
 
         final backend = HiideBackendService(host: host, port: port);
         final deadline = DateTime.now().add(_startupTimeout);
-        for (var attempt = 0; attempt < 20 && DateTime.now().isBefore(deadline); attempt++) {
+        for (var attempt = 0;
+            attempt < 20 && DateTime.now().isBefore(deadline);
+            attempt++) {
           try {
             await backend.connect();
             return NativeEngineLaunch(backend: backend, process: process);
-          } catch (_) {
+          } catch (error) {
+            lastError = '$error';
             await backend.disconnect();
             await Future<void>.delayed(const Duration(milliseconds: 150));
           }
         }
-      } catch (_) {
-        // Try the next well-known location.
+      } catch (error) {
+        lastError = '$error';
       }
 
       process?.kill();
@@ -64,7 +64,12 @@ class NativeEngineSupervisor {
       }
     }
 
-    throw StateError('Hiide native engine could not be started or reached at $host:$port. Build/package hiide-ipc-server and ensure it is available beside the application executable. Last error: $lastError');
+    final detail = lastError == null ? '' : ' Last error: $lastError';
+    throw StateError(
+      'Hiide native engine could not be started or reached at $host:$port. '
+      'Build/package hiide-ipc-server and ensure it is available beside the '
+      'application executable.$detail',
+    );
   }
 
   Future<List<String>> _candidates() async {
