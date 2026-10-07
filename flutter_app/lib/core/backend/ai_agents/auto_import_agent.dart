@@ -66,10 +66,14 @@ for standard library types that are already available. Output ONLY valid JSON.''
       temperature: 0.1,
     );
 
-    if (response.containsKey('error')) return [];
+    if (response.containsKey('error')) {
+      throw StateError('Import resolution provider failed: ${response['error']}');
+    }
 
-    final choices = (response['choices'] as List?) ?? [];
-    if (choices.isEmpty) return [];
+    final choices = response['choices'];
+    if (choices is! List || choices.isEmpty) {
+      throw StateError('Import resolution provider returned no choices.');
+    }
 
     final text = (choices.first as Map)['message']?['content']?.toString() ?? '';
     return _parseImports(text);
@@ -140,7 +144,9 @@ for standard library types that are already available. Output ONLY valid JSON.''
       }
       final start = json.indexOf('[');
       final end = json.lastIndexOf(']');
-      if (start < 0 || end < 0) return [];
+      if (start < 0 || end < 0) {
+        throw FormatException('Import resolver returned no JSON array.');
+      }
       json = json.substring(start, end + 1);
 
       final decoded = jsonDecode(json) as List;
@@ -154,8 +160,7 @@ for standard library types that are already available. Output ONLY valid JSON.''
         );
       }).toList();
     } catch (e) {
-      debugPrint('Import parse error: $e');
-      return [];
+      throw FormatException('Import resolver response could not be parsed: $e');
     }
   }
 }
