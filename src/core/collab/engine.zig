@@ -277,9 +277,8 @@ pub const SharedAgentOrchestrator = struct {
         req_description: []const u8,
     ) CollabError!u128 {
         // Only executors can trigger side-effecting agent tasks.
-        if (sess.role == .observer or sess.role == .commenter) {
-            // Commenters can request plans but not execute them.
-            if (sess.role == .observer) return CollabError.PermissionDenied;
+        if (sess.role != .executor) {
+            return CollabError.PermissionDenied;
         }
 
         // Generate a deterministic task id from session + request.
@@ -330,6 +329,21 @@ test "collab: insert and delete" {
     };
     try engine.applyRemote(sess, delete_op);
     try std.testing.expectEqualStrings("hello", engine.getContent("main.zig").?);
+}
+
+test "collab: commenter cannot start side-effecting shared agent task" {
+    const sess = CollaborationSession{
+        .session_id = "commenter-task",
+        .doc_id = "shared.zig",
+        .role = .commenter,
+        .shared_index_key_id = "k",
+    };
+
+    var orchestrator = SharedAgentOrchestrator{};
+    try std.testing.expectError(
+        CollabError.PermissionDenied,
+        orchestrator.startShared(sess, "apply patch"),
+    );
 }
 
 test "collab: observer cannot mutate" {

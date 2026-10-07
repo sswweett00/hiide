@@ -10,6 +10,7 @@ import 'backend_service.dart';
 import '../mechanics/agent_context.dart';
 import '../mechanics/agent_guard.dart';
 import '../mechanics/error_taxonomy.dart';
+import 'agent_transaction.dart';
 
 // ─── Agent loop types ─────────────────────────────────────────────────────────
 
@@ -60,19 +61,23 @@ class AgentDoneEvent extends AgentEvent {
 
 class AgentErrorEvent extends AgentEvent {
   final String message;
-  const AgentErrorEvent(this.message);
+  final AgentRollbackReport? rollback;
+  const AgentErrorEvent(this.message, {this.rollback});
 }
 
 class AgentStoppedEvent extends AgentEvent {
-  const AgentStoppedEvent();
+  final AgentRollbackReport? rollback;
+  const AgentStoppedEvent({this.rollback});
 }
 
 class AgentIterationLimitEvent extends AgentEvent {
   final int iterations;
   final String reason;
+  final AgentRollbackReport? rollback;
   const AgentIterationLimitEvent(
     this.iterations, [
     this.reason = 'Agent iteration limit reached.',
+    this.rollback,
   ]);
 }
 
@@ -137,6 +142,7 @@ class AgentController {
   bool _verificationFailed = false;
   bool _verificationNudgeSent = false;
   List<Map<String, dynamic>> _workingMessages = [];
+  AgentTransaction? _transaction;
 
   /// Asks the loop to stop after the current step completes.
   void stop() => _stopRequested = true;
@@ -343,6 +349,10 @@ Guidelines:
     _verificationFailed = false;
     _verificationNudgeSent = false;
     _workingMessages = _sanitizeHistory(messages);
+    _transaction = AgentTransaction(
+      backend: _backend,
+      workspaceRoot: _workspaceRoot,
+    );
     final apiMessages = <Map<String, dynamic>>[
       {'role': 'system', 'content': _systemPrompt},
       ..._workingMessages,
@@ -365,12 +375,12 @@ Guidelines:
     while (true) {
       final budgetFailure = guard.checkRunBudget(iterations: iterations);
       if (budgetFailure != null) {
-        yield AgentIterationLimitEvent(iterations, budgetFailure);
+        yield await _limitEvent(iterations, budgetFailure);
         return;
       }
 
       if (_stopRequested) {
-        yield const AgentStoppedEvent();
+        yield await _stoppedEvent();
         return;
       }
 
@@ -386,7 +396,7 @@ Guidelines:
       );
 
       if (_stopRequested) {
-        yield const AgentStoppedEvent();
+        yield await _stoppedEvent();
         return;
       }
 
@@ -415,24 +425,24 @@ Guidelines:
               '($toolFailRetries/$maxToolFailRetries)');
           continue;
         }
-        yield AgentErrorEvent(err);
+        yield await _errorEvent(err);
         return;
       }
 
       if (iterations >= maxIterations) {
-        yield AgentIterationLimitEvent(iterations);
+        yield await _limitEvent(iterations);
         return;
       }
       iterations++;
 
       final choices = response['choices'];
       if (choices is! List || choices.isEmpty) {
-        yield const AgentErrorEvent('Model returned an empty response.');
+        yield await _errorEvent('Model returned an empty response.');
         return;
       }
       final firstChoice = choices.first;
       if (firstChoice is! Map) {
-        yield const AgentErrorEvent('Model returned an invalid response shape.');
+        yield await _errorEvent('Model returned an invalid response shape.');
         return;
       }
       final rawMessage = firstChoice['message'];
@@ -441,7 +451,7 @@ Guidelines:
           : <String, dynamic>{};
       final rawToolCalls = message['tool_calls'];
       if (rawToolCalls != null && rawToolCalls is! List) {
-        yield const AgentErrorEvent('Model returned invalid tool-call data.');
+        yield await _errorEvent('Model returned invalid tool-call data.');
         return;
       }
       final toolCalls = rawToolCalls is List
@@ -470,17 +480,18 @@ Guidelines:
             });
             continue;
           }
-          yield AgentErrorEvent(
+          yield await _errorEvent(
             _verificationFailed
                 ? 'Verification failed; the agent could not establish a passing final state.'
-                : 'Workspace changes were not successfully verified.',
+                : 'Verification failed; workspace changes were not successfully verified.',
           );
           return;
         }
 
-        final content = message?['content']?.toString() ?? '';
+        final content = message['content']?.toString() ?? '';
         _workingMessages.add({'role': 'assistant', 'content': content});
         yield* _emitTypedText(content);
+        _transaction?.commit();
         yield AgentDoneEvent(content);
         return;
       }
@@ -491,13 +502,13 @@ Guidelines:
       final normalizedToolCalls = <Map<String, dynamic>>[];
       for (final rawCall in toolCalls) {
         if (rawCall is! Map) {
-          yield const AgentErrorEvent('Model returned an invalid tool call.');
+          yield await _errorEvent('Model returned an invalid tool call.');
           return;
         }
         final callMap = Map<String, dynamic>.from(rawCall);
         final rawFunction = callMap['function'];
         if (rawFunction is! Map) {
-          yield const AgentErrorEvent('Model returned a tool call without a valid function.');
+          yield await _errorEvent('Model returned an invalid tool call: tool call without a valid function.');
           return;
         }
         callMap['function'] = Map<String, dynamic>.from(rawFunction);
@@ -582,11 +593,41 @@ Guidelines:
         yield AgentToolFinishedEvent(call);
 
         if (_stopRequested) {
-          yield const AgentStoppedEvent();
+          yield await _stoppedEvent();
           return;
         }
       }
     }
+  }
+
+  Future<AgentRollbackReport?> _rollbackCurrentRun() async {
+    final transaction = _transaction;
+    if (transaction == null || !transaction.hasChanges) return null;
+    return transaction.rollback();
+  }
+
+  Future<AgentErrorEvent> _errorEvent(String message) async {
+    return AgentErrorEvent(
+      message,
+      rollback: await _rollbackCurrentRun(),
+    );
+  }
+
+  Future<AgentStoppedEvent> _stoppedEvent() async {
+    return AgentStoppedEvent(
+      rollback: await _rollbackCurrentRun(),
+    );
+  }
+
+  Future<AgentIterationLimitEvent> _limitEvent(
+    int iterations, [
+    String reason = 'Agent iteration limit reached.',
+  ]) async {
+    return AgentIterationLimitEvent(
+      iterations,
+      reason,
+      await _rollbackCurrentRun(),
+    );
   }
 
   bool _isMutationTool(String name) {
@@ -674,6 +715,7 @@ Guidelines:
         case 'write_file':
           final path = args['path']?.toString() ?? '';
           final content = args['content']?.toString() ?? '';
+          await _transaction?.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.write',
             {'path': _relPath(path), 'content': content},
@@ -682,6 +724,7 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction?.recordWrite(_relPath(path), content);
           final size = _jsonField(result.output, 'size') ?? content.length;
           return _ToolResult('Wrote $size characters to ${_relPath(path)}');
 
@@ -691,6 +734,7 @@ Guidelines:
             return const _ToolResult('(error) No path provided.',
                 success: false);
           }
+          await _transaction?.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.delete',
             {'path': _relPath(path)},
@@ -699,6 +743,7 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction?.recordDelete(_relPath(path));
           return _ToolResult('Deleted ${_relPath(path)}');
 
         case 'create_directory':
@@ -707,6 +752,7 @@ Guidelines:
             return const _ToolResult('(error) No path provided.',
                 success: false);
           }
+          await _transaction?.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.mkdir',
             {'path': _relPath(path)},
@@ -715,10 +761,12 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction?.recordDirectoryCreate(_relPath(path));
           return _ToolResult('Created directory ${_relPath(path)}');
 
         case 'apply_diff':
           final path = args['path']?.toString() ?? '';
+          await _transaction?.captureBeforeMutation(_relPath(path));
           final result = await _backend.executeAgentTool(
             'file.apply_diff',
             {
@@ -731,6 +779,7 @@ Guidelines:
           if (!result.ok) {
             return _ToolResult('(error) ${result.error}', success: false);
           }
+          await _transaction?.recordPatchedFile(_relPath(path));
           return _ToolResult('Applied edit to ${_relPath(path)}');
 
         case 'list_directory':
@@ -1044,7 +1093,7 @@ Guidelines:
     return <String, dynamic>{
       'error': lastError == null
           ? 'AI provider request failed.'
-          : _formatAgentFailure(lastError!, lastStack),
+          : _formatAgentFailure(lastError, lastStack),
     };
   }
 

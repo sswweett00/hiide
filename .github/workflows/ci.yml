@@ -36,10 +36,23 @@ jobs:
         run: |
           test "$(zig version)" = "0.16.0"
 
-      - name: Check Zig formatting
-        continue-on-error: true
+      - name: Check changed Zig formatting
+        shell: bash
         run: |
-          git ls-files -z '*.zig' | xargs -0 zig fmt --check
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            mapfile -t zig_files < <(git diff --name-only "${{ github.event.pull_request.base.sha }}..."${{ github.sha }} -- '*.zig')
+          else
+            mapfile -t zig_files < <(git diff --name-only "${{ github.event.before }}..."${{ github.sha }} -- '*.zig')
+          fi
+          if [ "${#zig_files[@]}" -eq 0 ]; then
+            echo "No changed Zig files."
+            exit 0
+          fi
+          printf '%s\0' "${zig_files[@]}" | xargs -0 zig fmt --check
+
+      - name: Check patch whitespace
+        run: git diff --check
 
       - name: Run unit tests
         run: zig build test --summary all

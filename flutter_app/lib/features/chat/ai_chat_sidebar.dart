@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/agent_controller.dart';
+import '../../core/backend/agent_transaction.dart';
 import '../../core/backend/ai_agents/planning_agent.dart';
 import '../../core/backend/agent_mode.dart';
 import '../../core/backend/agent_task_store.dart';
@@ -10,7 +11,6 @@ import '../../core/backend/ai_memory/memory_store.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../core/backend/ai_providers/provider_manager.dart';
-import '../../features/terminal/terminal_screen.dart';
 import '../../shared/models/chat_message.dart';
 import '../../shared/models/editor_tab.dart';
 import '../../shared/providers/editor_providers.dart';
@@ -261,10 +261,11 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + e.toString(), timestamp: DateTime.now()));
     } finally {
       _stopActiveAgent = null;
-      if (!mounted) return;
-      _finishStreamingText();
-      ref.read(streamingMessageProvider.notifier).state = '';
-      ref.read(isAiThinkingProvider.notifier).state = false;
+      if (mounted) {
+        _finishStreamingText();
+        ref.read(streamingMessageProvider.notifier).state = '';
+        ref.read(isAiThinkingProvider.notifier).state = false;
+      }
     }
   }
 
@@ -598,7 +599,8 @@ At the end report changed areas, verification commands, unresolved failures, and
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
           if (event.text.trim().isNotEmpty) _addMessage(ChatMessage(role: ChatRole.assistant, content: event.text, timestamp: DateTime.now()));
-        case AgentErrorEvent(:final message):
+        case AgentErrorEvent(:final message, :final rollback):
+          _recordRollback(store, taskId, rollback);
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
@@ -607,7 +609,8 @@ At the end report changed areas, verification commands, unresolved failures, and
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
           _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + message, timestamp: DateTime.now()));
-        case AgentStoppedEvent():
+        case AgentStoppedEvent(:final rollback):
+          _recordRollback(store, taskId, rollback);
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           if (taskId != null) {
@@ -616,7 +619,12 @@ At the end report changed areas, verification commands, unresolved failures, and
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
           _addMessage(ChatMessage(role: ChatRole.system, content: '⏹ Stopped by user.', timestamp: DateTime.now()));
-        case AgentIterationLimitEvent(:final iterations, :final reason):
+        case AgentIterationLimitEvent(
+              :final iterations,
+              :final reason,
+              :final rollback,
+            ):
+          _recordRollback(store, taskId, rollback);
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
           final message = reason + ' (iteration ' + iterations.toString() + ').';
@@ -635,6 +643,30 @@ At the end report changed areas, verification commands, unresolved failures, and
       store.replaceTranscript(taskId, controller.workingMessages);
       ref.read(agentTaskVersionProvider.notifier).state++;
     }
+  }
+
+  void _recordRollback(
+    AgentTaskStore store,
+    String? taskId,
+    AgentRollbackReport? rollback,
+  ) {
+    if (taskId == null || rollback == null || !rollback.hasChanges) return;
+    final detail = [
+      'Restored: ' + rollback.restored.toString(),
+      'Skipped: ' + rollback.skipped.toString(),
+      if (rollback.errors.isNotEmpty)
+        'Details: ' + rollback.errors.join(' | '),
+    ].join('\n');
+    store.addEvent(
+      taskId,
+      kind: rollback.complete ? 'rollback' : 'rollback_partial',
+      title: rollback.complete
+          ? 'Agent changes rolled back'
+          : 'Rollback completed with conflicts',
+      detail: detail,
+      success: rollback.complete,
+    );
+    ref.read(agentTaskVersionProvider.notifier).state++;
   }
 
   bool _isVerificationCommand(String command) {

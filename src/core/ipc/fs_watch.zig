@@ -463,7 +463,7 @@ fn rebuildWatches(fd: i32, wd_map: *std.AutoHashMap(i32, []u8)) void {
 
     var it = wd_map.iterator();
     while (it.next()) |entry| {
-        std.posix.inotify_rm_watch(fd, entry.key_ptr.*);
+        _ = linux.inotify_rm_watch(fd, entry.key_ptr.*);
         allocator.free(entry.value_ptr.*);
     }
     wd_map.clearRetainingCapacity();
@@ -499,10 +499,17 @@ fn rebuildWatches(fd: i32, wd_map: *std.AutoHashMap(i32, []u8)) void {
 
 /// Adds an inotify watch for `path` and records wd → path (owned copy).
 fn addWatch(fd: i32, wd_map: *std.AutoHashMap(i32, []u8), path: []const u8) !void {
-    const wd = std.posix.inotify_add_watch(fd, path, WATCH_MASK) catch return;
+    const c_path = try allocator.dupeZ(u8, path);
+    defer allocator.free(c_path);
+
+    const raw_wd = linux.inotify_add_watch(fd, c_path, WATCH_MASK);
+    if (@as(isize, @bitCast(@as(usize, raw_wd))) < 0) {
+        return error.WatchAddFailed;
+    }
+    const wd: i32 = @intCast(raw_wd);
     const owned = try allocator.dupe(u8, path);
     wd_map.put(wd, owned) catch {
-        std.posix.inotify_rm_watch(fd, wd);
+        _ = linux.inotify_rm_watch(fd, wd);
         allocator.free(owned);
         return;
     };
