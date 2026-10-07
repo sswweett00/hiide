@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hiide_flutter/core/backend/ai_agents/planning_agent.dart';
 import 'package:hiide_flutter/core/backend/ai_chat_client.dart';
-import 'package:hiide_flutter/core/backend/mock_backend_service.dart';
+import 'support/mock_backend_service.dart';
 
 
 class _FakePlanAi implements AiChatClient {
