@@ -187,7 +187,10 @@ pub const Editor = struct {
     pub fn search(self: *const Editor, allocator: std.mem.Allocator, query: []const u8) ![]SearchResult {
         if (query.len == 0) return try allocator.alloc(SearchResult, 0);
         var results = compat.ManagedArrayList(SearchResult).init(allocator);
-        errdefer results.deinit();
+        errdefer {
+            for (results.items) |result| allocator.free(result.text);
+            results.deinit();
+        }
 
         const text = try self.buffer.slice(0, self.buffer.size());
         defer allocator.free(text);
@@ -214,10 +217,12 @@ pub const Editor = struct {
                 }
             }
 
+            const match_text = try allocator.dupe(u8, text[match_pos..][0..query.len]);
+            errdefer allocator.free(match_text);
             try results.append(.{
                 .line = line,
                 .col = col,
-                .text = try allocator.dupe(u8, text[match_pos..][0..query.len]),
+                .text = match_text,
             });
 
             // Match positions remain non-overlapping, matching the previous
