@@ -192,29 +192,48 @@ pub const Editor = struct {
         const text = try self.buffer.slice(0, self.buffer.size());
         defer allocator.free(text);
 
-        // Track line/col incrementally as we scan — O(n) total instead of
-        // O(matches × n) from re-scanning from position 0 per match.
+        // Use the standard substring search primitive instead of testing
+        // every byte with startsWith. This keeps the search loop linear in the
+        // input size for typical workloads while preserving non-overlapping
+        // match semantics and incremental line/column tracking.
         var line: usize = 1;
         var col: usize = 1;
-        var i: usize = 0;
-        while (i < text.len) {
-            if (std.mem.startsWith(u8, text[i..], query)) {
-                try results.append(.{
-                    .line = line,
-                    .col = col,
-                    .text = try allocator.dupe(u8, text[i..][0..query.len]),
-                });
-                i += query.len;
-                col += query.len;
-            } else {
-                if (text[i] == '\n') {
+        var search_pos: usize = 0;
+        while (search_pos < text.len) {
+            const match_pos = std.mem.indexOfPos(u8, text, search_pos, query) orelse break;
+
+            // Advance the line/column cursor only to the next match rather than
+            // rescanning from the beginning for every result.
+            var cursor = search_pos;
+            while (cursor < match_pos) : (cursor += 1) {
+                if (text[cursor] == '\\n') {
                     line += 1;
                     col = 1;
                 } else {
                     col += 1;
                 }
-                i += 1;
             }
+
+            try results.append(.{
+                .line = line,
+                .col = col,
+                .text = try allocator.dupe(u8, text[match_pos..][0..query.len]),
+            });
+
+            // Match positions remain non-overlapping, matching the previous
+            // startsWith-based implementation.
+            var matched_end = match_pos + query.len;
+            while (matched_end > match_pos) {
+                const c = text[matched_end - 1];
+                if (c == '\\n') {
+                    line += 1;
+                    col = 1;
+                } else {
+                    col += 1;
+                }
+                matched_end -= 1;
+            }
+            search_pos = match_pos + query.len;
         }
         return results.toOwnedSlice();
     }
