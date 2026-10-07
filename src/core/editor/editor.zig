@@ -252,6 +252,24 @@ test "editor: empty search is a safe zero-result operation" {
     try testing.expectEqual(@as(usize, 0), results.len);
 }
 
+test "editor: search preserves line and column across non-overlapping matches" {
+    var ed = try Editor.init(std.testing.allocator);
+    defer ed.deinit();
+
+    try ed.load("alpha\\nneedle x needle\\nomega");
+    const results = try ed.search(std.testing.allocator, "needle");
+    defer {
+        for (results) |result| std.testing.allocator.free(result.text);
+        std.testing.allocator.free(results);
+    }
+
+    try std.testing.expectEqual(@as(usize, 2), results.len);
+    try std.testing.expectEqual(@as(usize, 2), results[0].line);
+    try std.testing.expectEqual(@as(usize, 1), results[0].col);
+    try std.testing.expectEqual(@as(usize, 2), results[1].line);
+    try std.testing.expectEqual(@as(usize, 10), results[1].col);
+}
+
 test "editor: insert/delete/undo/redo lifecycle does not double-free" {
     var ed = try Editor.init(std.testing.allocator);
     defer ed.deinit();
