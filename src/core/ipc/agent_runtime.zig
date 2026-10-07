@@ -14,6 +14,14 @@ const workspace_tools = @import("../agent/framework/workspace_tools.zig");
 const cancel_mod = @import("../agent/framework/cancel.zig");
 const clock_mod = @import("../agent/framework/clock.zig");
 const compat = @import("../compat.zig");
+const context_mod = @import("../agent/framework/context.zig");
+const types = @import("../agent/types.zig");
+const journal_mod = @import("../agent/journal.zig");
+const blackboard_mod = @import("../agent/framework/blackboard.zig");
+const policy_mod = @import("../security/policy.zig");
+const telemetry_mod = @import("../telemetry/collector.zig");
+const approval_mod = @import("../agent/framework/approval.zig");
+const budget_mod = @import("../agent/framework/budget.zig");
 
 /// Result of one tool invocation, with allocator-owned strings.
 pub const ToolResponse = struct {
@@ -70,28 +78,100 @@ pub fn executeTool(
     try ensureRegistry();
 
     const tool = registry.get(tool_id) orelse return error.ToolNotFound;
+    const needs_approval = tool.spec.needsApproval();
+    if (needs_approval and !approvalGranted(allocator, input)) {
+        return ToolResponse{
+            .ok = false,
+            .output = try allocator.dupe(u8, ""),
+            .error_message = try allocator.dupe(u8, "approval_required"),
+        };
+    }
 
-    // Per-invocation arena: the framework contract is that tool output lives
-    // in the caller-provided arena, so we dupe it into the response allocator
-    // before the arena is torn down.
+    // The IPC boundary must use the same mediation pipeline as the native
+    // executor. Direct Tool.invoke bypasses classification, policy, approval,
+    // journaling, telemetry, and audit; keeping that path alive would make the
+    // security contract dependent on the caller behaving honestly.
     var arena = std.heap.ArenaAllocator.init(allocator);
     defer arena.deinit();
+    const arena_alloc = arena.allocator();
+
+    var board = blackboard_mod.Blackboard.init(allocator, clock_mod.system());
+    defer board.deinit();
+
+    var journal = journal_mod.SideEffectJournal.init(allocator);
+    defer journal.deinit();
+
+    var policy = policy_mod.PolicyEngine.init(allocator);
+    defer policy.deinit();
+    try policy.loadDefaults();
+
+    var ledger = policy_mod.AuditLedger.init(allocator);
+    defer ledger.deinit();
+
+    var telemetry = telemetry_mod.TelemetrySink.init(allocator, .basic);
+    defer telemetry.deinit();
+
+    // IPC has already received the explicit approval token for dangerous
+    // operations, so the gate itself is deterministic and never waits on a UI
+    // thread. Policy/classifier still decides whether the operation is legal.
+    var gate = approval_mod.Gate.init(
+        allocator,
+        clock_mod.system(),
+        .auto_approve,
+    );
+    defer gate.deinit();
 
     var sys_clock = clock_mod.SystemClock{};
     const clock = sys_clock.clock();
     const deadline: ?i64 = if (timeout_ms) |ms| clock.deadlineIn(ms) else null;
     var token = cancel_mod.Token.init(deadline);
+    var meter = budget_mod.Meter.init(types.TokenBudget.defaultPlanning());
 
-    var tool_ctx = tool_mod.ToolContext{
-        .allocator = arena.allocator(),
-        .task_id = 0,
-        .agent_id = "ipc-agent",
-        .cancel = &token,
+    var services = context_mod.Services{
+        .allocator = allocator,
         .clock = clock,
+        .board = &board,
+        .tools = &registry,
+        .journal = &journal,
+        .policy = &policy,
+        .ledger = &ledger,
+        .telemetry = &telemetry,
+        .approvals = &gate,
         .workspace_root = workspace_root,
+        .identity = .{
+            .user_id = "ipc-agent",
+            .workspace_id = workspace_root,
+            .tenant_id = "local",
+        },
     };
 
-    const result = tool.invoke(&tool_ctx, input) catch |err| {
+    var ctx = context_mod.AgentContext{
+        .allocator = arena_alloc,
+        .services = &services,
+        .task = .{
+            .id = 0,
+            .parent_id = null,
+            .kind = .coder,
+            .mode = .sequential,
+            .state = .running,
+            .budget = types.TokenBudget.defaultPlanning(),
+            .memory = .{
+                .symbol_snapshot_id = 0,
+                .task_graph_id = 0,
+                .policy_snapshot_id = 0,
+                .artifact_set_id = 0,
+            },
+            .prompt_template_id = 0,
+            .rollback_journal_id = 0,
+            .title = "IPC tool invocation",
+        },
+        .agent_id = "ipc-agent",
+        .kind = .coder,
+        .cancel = &token,
+        .budget = &meter,
+    };
+
+    const result = ctx.invokeTool(tool_id, input) catch |err| {
         return ToolResponse{
             .ok = false,
             .output = try allocator.dupe(u8, ""),
@@ -106,6 +186,7 @@ pub fn executeTool(
             .error_message = try allocator.dupe(u8, result.error_message),
         };
     }
+
     return ToolResponse{
         .ok = true,
         .output = try allocator.dupe(u8, result.output),
