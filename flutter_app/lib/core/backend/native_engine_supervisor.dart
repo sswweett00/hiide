@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'backend_service.dart';
 import 'hiide_backend_service.dart';
-import 'mock_backend_service.dart';
 
 class NativeEngineLaunch {
   final BackendService backend;
@@ -65,7 +64,7 @@ class NativeEngineSupervisor {
       }
     }
 
-    return NativeEngineLaunch(backend: MockBackendService());
+    throw StateError('Hiide native engine could not be started or reached at $host:$port. Build/package hiide-ipc-server and ensure it is available beside the application executable. Last error: $lastError');
   }
 
   Future<List<String>> _candidates() async {
