@@ -10,7 +10,6 @@ import '../../core/backend/ai_memory/memory_store.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../core/backend/ai_providers/provider_manager.dart';
-import '../../features/terminal/terminal_screen.dart';
 import '../../shared/models/chat_message.dart';
 import '../../shared/models/editor_tab.dart';
 import '../../shared/providers/editor_providers.dart';
