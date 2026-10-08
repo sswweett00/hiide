@@ -38,19 +38,20 @@ pub const IpcServer = struct {
     running: bool,
     auth_token: ?[]u8,
 
-    pub fn init(allocator: std.mem.Allocator, port: u16) !IpcServer {
-        const auth_token = std.process.getEnvVarOwned(allocator, "HIIDE_IPC_TOKEN") catch |err| switch (err) {
-            error.EnvironmentVariableNotFound => null,
-            else => return err,
-        };
-        errdefer if (auth_token) |token| allocator.free(token);
+    pub fn init(
+        allocator: std.mem.Allocator,
+        port: u16,
+        auth_token: ?[]const u8,
+    ) !IpcServer {
+        const owned_auth_token = if (auth_token) |token| try allocator.dupe(u8, token) else null;
+        errdefer if (owned_auth_token) |token| allocator.free(token);
         const server = try TcpServer.init(port);
         return .{
             .allocator = allocator,
             .listener = server,
             .port = port,
             .running = true,
-            .auth_token = auth_token,
+            .auth_token = owned_auth_token,
         };
     }
 
