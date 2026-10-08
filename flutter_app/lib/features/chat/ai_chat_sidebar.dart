@@ -191,6 +191,16 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     'olanı',
   };
 
+  String _buildAgentPrompt(String message) {
+    final selectedPath = ref.read(selectedWorkspacePathProvider);
+    if (selectedPath == null || selectedPath.trim().isEmpty) return message;
+    return message +
+        '\n\n--- Selected workspace context target ---\n' +
+        selectedPath +
+        '\n--- End selected target ---\n' +
+        'Read the target yourself with read_file before making conclusions.';
+  }
+
   Future<void> _sendMessage([String? preset]) async {
     final text = (preset ?? _inputController.text).trim();
     if (text.isEmpty || ref.read(isAiThinkingProvider)) return;
@@ -256,7 +266,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     final ai = providerManager;
     final workspace = ref.read(workspaceServiceProvider);
     final backend = ref.read(backendServiceProvider);
-    var userContent = _buildUserPrompt(text, _activeTabNow());
+    var userContent = _buildAgentPrompt(text);
     final memory = await _memoryContext(text, workspace.rootPath);
     if (!mounted) return;
     if (memory.isNotEmpty) {
@@ -835,66 +845,6 @@ At the end report changed areas, verification commands, unresolved failures, and
     ref.read(chatMessagesProvider.notifier).state =
         List<ChatMessage>.from(messages)..[index] = updated;
     _scrollToBottom();
-  }
-
-  /// If the agent created, edited or deleted a file, update tabs and file tree
-  /// so the user immediately sees the change in the IDE.
-  void _refreshOpenTabAfterTool(AgentToolCall call) {
-    if (call.status != AgentToolStatus.success) return;
-    final path = call.arguments['path']?.toString();
-    final workspaceService = ref.read(workspaceServiceProvider);
-
-    if (call.name == 'create_directory') {
-      ref.invalidate(fileTreeProvider);
-      return;
-    }
-
-    if (call.name == 'delete_file') {
-      ref.invalidate(fileTreeProvider);
-      if (path != null && path.isNotEmpty) {
-        final absPath =
-            path.startsWith('/') ? path : '${workspaceService.rootPath}/$path';
-        final tabs = ref.read(openTabsProvider);
-        final remainingTabs = tabs.where((t) {
-          final p = t.path;
-          if (p == null) return true;
-          return p != absPath && p != path && !p.startsWith('$absPath/');
-        }).toList();
-
-        if (remainingTabs.length != tabs.length) {
-          ref.read(openTabsProvider.notifier).state = remainingTabs;
-          final activeId = ref.read(activeTabIdProvider);
-          if (remainingTabs.isEmpty) {
-            ref.read(activeTabIdProvider.notifier).state = null;
-          } else if (!remainingTabs.any((t) => t.id == activeId)) {
-            ref.read(activeTabIdProvider.notifier).state =
-                remainingTabs.last.id;
-          }
-        }
-      }
-      return;
-    }
-
-    if (call.name != 'write_file' && call.name != 'apply_diff') return;
-    if (path == null || path.isEmpty) return;
-
-    // The model may have addressed the file by a workspace-relative path;
-    // tabs are keyed by absolute paths, so resolve before reading.
-    final absPath =
-        path.startsWith('/') ? path : '${workspaceService.rootPath}/$path';
-    workspaceService.readFile(absPath).then((content) {
-      if (!mounted) return;
-      final tabs = ref.read(openTabsProvider);
-      final idx = tabs.indexWhere((t) => t.path == absPath || t.path == path);
-      if (idx >= 0) {
-        final updated = tabs[idx].copyWith(content: content, isModified: false);
-        ref.read(openTabsProvider.notifier).state = List<EditorTab>.from(tabs)
-          ..[idx] = updated;
-      }
-      ref.invalidate(fileTreeProvider);
-    }).catchError((_) {
-      ref.invalidate(fileTreeProvider);
-    });
   }
 
   void _clearChat() {
