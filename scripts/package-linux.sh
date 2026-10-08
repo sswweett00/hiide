@@ -52,6 +52,9 @@ echo "==> Restoring Flutter packages"
   flutter pub get
 )
 
+echo "==> Cleaning previous Flutter Linux bundle"
+rm -rf "$ROOT/flutter_app/build/linux"
+
 echo "==> Building Flutter Linux release bundle"
 (
   cd "$ROOT/flutter_app"
