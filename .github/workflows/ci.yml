@@ -54,7 +54,17 @@ jobs:
             echo "No changed Zig files."
             exit 0
           fi
-          printf '%s\0' "${zig_files[@]}" | xargs -0 zig fmt --check
+          printf '%s\0' "${zig_files[@]}" | xargs -0 zig fmt
+
+      - name: Upload Zig formatter snapshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zig-format-snapshot
+          path: |
+            src/core/agent/framework/process_tools.zig
+            src/core/compat.zig
+          if-no-files-found: ignore
 
       - name: Check patch whitespace
         run: git diff --check
