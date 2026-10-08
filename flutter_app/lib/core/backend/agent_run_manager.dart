@@ -89,9 +89,15 @@ class AgentRunManager {
     required String model,
     required AgentProfile profile,
   }) async {
-    if (!_startingTasks.add(taskId) || _runs.containsKey(taskId)) {
+    if (_runs.containsKey(taskId) || _startingTasks.contains(taskId)) {
       throw StateError('Agent task is already running: ' + taskId);
     }
+    if (_startingTasks.isNotEmpty) {
+      throw StateError(
+        'Another agent task is still initializing. Start this task after initialization completes.',
+      );
+    }
+    _startingTasks.add(taskId);
 
     _workspaceByTask[taskId] = workspaceRoot;
     final activeRoots = _workspaceByTask.values.toSet();
