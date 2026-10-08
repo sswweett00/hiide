@@ -145,6 +145,5 @@ This keeps the AI-native rule enforceable below the UI layer.
 - `packaging/linux/` — desktop metadata and AppImage launcher
 - `scripts/package-linux.sh` — self-contained Linux package builder
 - `.github/workflows/linux-packages.yml` — automated Linux release packaging
-- `ENTERPRISE_IDE_SPEC.md` — architecture and delivery specification
 
 The key design constraint is deliberate: **Hiide is an AI workspace, not a source-code editor.**
