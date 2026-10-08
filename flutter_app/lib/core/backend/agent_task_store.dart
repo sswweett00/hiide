@@ -235,9 +235,12 @@ class AgentTaskStore {
   List<AgentTaskRecord> _tasks;
   bool _persistRunning = false;
   bool _persistRequested = false;
+  String? _persistenceError;
   Completer<void>? _persistWaiter;
 
   List<AgentTaskRecord> get tasks => List.unmodifiable(_tasks);
+  String? get persistenceError => _persistenceError;
+  bool get persistenceHealthy => _prefs != null && _persistenceError == null;
 
   static Future<AgentTaskStore> load() async {
     late final SharedPreferences prefs;
@@ -395,8 +398,9 @@ class AgentTaskStore {
         if (prefs != null) {
           try {
             await prefs.setString(_prefsKey, snapshot);
-          } catch (_) {
-            // Persistence is best-effort; in-memory task state remains intact.
+            _persistenceError = null;
+          } catch (error) {
+            _persistenceError = error.toString();
           }
         }
       }
