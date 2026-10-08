@@ -54,7 +54,11 @@ class MockBackendService implements BackendService {
   Future<int> editorInsert(int handle, int pos, String text) async {
     await Future.delayed(const Duration(milliseconds: 50));
     final content = _buffers[handle];
-    if (content == null) return 0;
+    if (content == null) {
+      throw StateError('invalid editor handle');
+    }
+    final totalBytes = utf8.encode(content).length;
+    if (pos > totalBytes) throw RangeError('insert position exceeds buffer size');
     final codeUnitPos = _byteOffsetToCodeUnitIndex(content, pos);
     _recordEdit(handle, content);
     _buffers[handle] =
@@ -66,7 +70,11 @@ class MockBackendService implements BackendService {
   Future<int> editorDelete(int handle, int pos, int len) async {
     await Future.delayed(const Duration(milliseconds: 50));
     final content = _buffers[handle];
-    if (content == null) return 0;
+    if (content == null) {
+      throw StateError('invalid editor handle');
+    }
+    final totalBytes = utf8.encode(content).length;
+    if (pos + len > totalBytes) throw RangeError('delete range exceeds buffer size');
     final start = _byteOffsetToCodeUnitIndex(content, pos);
     final end = _byteOffsetToCodeUnitIndex(content, pos + len);
     _recordEdit(handle, content);
@@ -118,14 +126,20 @@ class MockBackendService implements BackendService {
   Future<int> editorSize(int handle) async {
     await Future.delayed(const Duration(milliseconds: 50));
     final content = _buffers[handle];
-    return content == null ? 0 : utf8.encode(content).length;
+    if (content == null) {
+      throw StateError('invalid editor handle');
+    }
+    return utf8.encode(content).length;
   }
 
   @override
   Future<List<EditorSearchResult>> editorSearch(
       int handle, String query) async {
     await Future.delayed(const Duration(milliseconds: 50));
-    final content = _buffers[handle] ?? '';
+    final content = _buffers[handle];
+    if (content == null) {
+      throw StateError('invalid editor handle');
+    }
     final lowered = query.toLowerCase();
     final results = <EditorSearchResult>[];
     final lines = content.split('\n');
