@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../shared/models/file_tree_item.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/providers/workspace_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
 import '../../shared/widgets/ide_shell.dart';
 
