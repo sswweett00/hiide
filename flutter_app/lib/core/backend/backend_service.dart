@@ -1,5 +1,9 @@
 import 'dart:async';
 
+/// Wire contract shared with the native Zig IPC server.
+const int hiideIpcProtocolVersion = 1;
+const String hiideIpcTransport = 'ndjson-json-rpc';
+
 /// A single match inside an open editor buffer (computed by the Zig engine).
 class EditorSearchResult {
   final int line;
@@ -179,7 +183,7 @@ abstract class BackendService {
   Future<AgentToolResult> executeAgentTool(
     String toolId,
     Map<String, dynamic> input, {
-    String? workspaceRoot,
+    required String workspaceRoot,
     Duration? timeout,
   });
 
