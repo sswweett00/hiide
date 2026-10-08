@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/agent_controller.dart';
 import '../../core/backend/agent_orchestrator.dart';
+import '../../core/backend/agent_run_manager.dart';
 import '../../core/backend/agent_run_manager_provider.dart';
 import '../../core/backend/agent_profile.dart';
 import '../../core/backend/skill_registry.dart';
