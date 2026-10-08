@@ -59,6 +59,7 @@ class AgentRunManager {
   final void Function()? onChanged;
 
   final Map<String, AgentController> _controllers = <String, AgentController>{};
+  final Map<String, String> _workspaceByTask = <String, String>{};
   final Map<String, Future<void>> _runs = <String, Future<void>>{};
   final Map<String, Completer<bool>> _approvalWaiters =
       <String, Completer<bool>>{};
@@ -90,7 +91,14 @@ class AgentRunManager {
       throw StateError('Agent task is already running: ' + taskId);
     }
 
+    final activeRoots = _workspaceByTask.values.toSet();
+    if (activeRoots.any((root) => root != workspaceRoot)) {
+      throw StateError(
+        'Cannot start an MCP-enabled task in another workspace while a background task is active.',
+      );
+    }
     await mcpManager.loadWorkspace(workspaceRoot);
+    _workspaceByTask[taskId] = workspaceRoot;
 
     taskStore.update(
       taskId,
@@ -136,6 +144,7 @@ class AgentRunManager {
     run.whenComplete(() {
       _runs.remove(taskId);
       _controllers.remove(taskId);
+      _workspaceByTask.remove(taskId);
     });
 
     return AgentRunHandle(
@@ -608,6 +617,7 @@ class AgentRunManager {
     }
     _approvalWaiters.clear();
     _pendingApprovals.clear();
+    _workspaceByTask.clear();
     await _approvalController.close();
   }
 }
