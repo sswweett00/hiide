@@ -17,7 +17,6 @@ import 'core/backend/ai_providers/ai_provider.dart';
 import 'core/backend/ai_providers/provider_manager.dart';
 import 'core/localization/app_localizations.dart';
 import 'shared/providers/workspace_providers.dart';
-import 'features/settings/settings_screen.dart';
 
 ThemeData _resolveDarkTheme(AppThemePreference preference) {
   return switch (preference) {
