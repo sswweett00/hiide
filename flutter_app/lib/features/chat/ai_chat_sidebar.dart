@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/agent_controller.dart';
 import '../../core/backend/agent_orchestrator.dart';
+import '../../core/backend/agent_run_manager_provider.dart';
 import '../../core/backend/agent_profile.dart';
 import '../../core/backend/skill_registry.dart';
 import '../../core/backend/agent_transaction.dart';
@@ -76,13 +77,31 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
   final ScrollController _scrollController = ScrollController();
   VoidCallback? _stopActiveAgent;
   Timer? _streamFlushTimer;
+  StreamSubscription<AgentApprovalRequest>? _agentApprovalSubscription;
   final StringBuffer _streamBuffer = StringBuffer();
+
+  @override
+  void initState() {
+    super.initState();
+    final manager = ref.read(agentRunManagerProvider);
+    _agentApprovalSubscription = manager.approvalRequests.listen(
+      _showAgentApprovalRequest,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      for (final request in manager.pendingApprovals) {
+        unawaited(_showAgentApprovalRequest(request));
+      }
+    });
+  }
 
   @override
   void dispose() {
     _streamFlushTimer?.cancel();
     _streamFlushTimer = null;
     _streamBuffer.clear();
+    _agentApprovalSubscription?.cancel();
+    _agentApprovalSubscription = null;
     _inputController.dispose();
     _scrollController.dispose();
     super.dispose();
