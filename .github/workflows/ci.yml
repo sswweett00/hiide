@@ -16,7 +16,7 @@ env:
   ZIG_GLOBAL_CACHE_DIR: ${{ github.workspace }}/.zig-global-cache
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   verify:
@@ -33,25 +33,6 @@ jobs:
         uses: xyzzylabs/setup-zig@v1
         with:
           version: 0.16.0
-
-      - name: Canonicalize native Zig sources
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          zig fmt src/core/agent/framework/process_tools.zig src/core/compat.zig
-
-      - name: Commit canonical Zig formatting
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git diff --quiet -- src/core/agent/framework/process_tools.zig src/core/compat.zig; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f src/core/agent/framework/process_tools.zig src/core/compat.zig
-          git commit -m "style: format Zig sources"
-          git push
 
       - name: Verify toolchain contract
         run: test "$(zig version)" = "0.16.0"
@@ -73,17 +54,8 @@ jobs:
             echo "No changed Zig files."
             exit 0
           fi
-          printf '%s\0' "${zig_files[@]}" | xargs -0 zig fmt
+          printf '%s\0' "${zig_files[@]}" | xargs -0 zig fmt --check
 
-      - name: Upload Zig formatter snapshot
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zig-format-snapshot
-          path: |
-            src/core/agent/framework/process_tools.zig
-            src/core/compat.zig
-          if-no-files-found: ignore
 
       - name: Check patch whitespace
         run: git diff --check
