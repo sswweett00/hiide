@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import '../ai_chat_client.dart';
-// ignore: unused_import
-import 'package:http/http.dart' as http;
 
 // ─── Documentation Generator Agent ───────────────────────────────────────────
 
@@ -41,7 +39,9 @@ class DocGeneratorAgent {
       temperature: 0.2,
     );
 
-    if (response.containsKey('error')) {\n      throw StateError(response['error']?.toString() ?? 'AI provider error');\n    }
+    if (response.containsKey('error')) {
+      throw StateError(response['error']?.toString() ?? 'AI provider error');
+    }
     final choices = (response['choices'] as List?) ?? [];
     if (choices.isEmpty) throw StateError('AI provider returned no choices.');
     return (choices.first as Map)['message']?['content']?.toString() ?? '';

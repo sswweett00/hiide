@@ -65,7 +65,7 @@ pub fn workspaceSearch(
     defer allocator.free(lowered);
     for (query, 0..) |c, i| lowered[i] = std.ascii.toLower(c);
 
-    var dir = try compat.cwd().openDir(io, abs_root, .{ .iterate = true });
+    var dir = try std.Io.Dir.openDirAbsolute(io, abs_root, .{ .iterate = true });
     defer dir.close(io);
 
     var results = compat.ManagedArrayList(WorkspaceHit).init(allocator);
@@ -249,7 +249,7 @@ pub fn workspaceTree(
     const abs_root = compat.realpathAlloc(allocator, root) catch return error.DirNotFound;
     defer allocator.free(abs_root);
 
-    var dir = try compat.cwd().openDir(io, abs_root, .{ .iterate = true });
+    var dir = try std.Io.Dir.openDirAbsolute(io, abs_root, .{ .iterate = true });
     defer dir.close(io);
 
     var out = compat.ManagedArrayList(WorkspaceEntry).init(allocator);

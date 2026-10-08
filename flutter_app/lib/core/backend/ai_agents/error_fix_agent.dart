@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 import '../ai_chat_client.dart';
 import '../backend_service.dart';
 
@@ -85,7 +83,9 @@ Rules:
       temperature: 0.1,
     );
 
-    if (response.containsKey('error')) {\n      throw StateError(response['error']?.toString() ?? 'AI provider error');\n    }
+    if (response.containsKey('error')) {
+      throw StateError(response['error']?.toString() ?? 'AI provider error');
+    }
 
     final choices = (response['choices'] as List?) ?? [];
     if (choices.isEmpty) throw StateError('AI provider returned no choices.');
@@ -126,7 +126,9 @@ Focus on the first 5 most critical errors. Output ONLY valid JSON.''',
       temperature: 0.1,
     );
 
-    if (response.containsKey('error')) {\n      throw StateError(response['error']?.toString() ?? 'AI provider error');\n    }
+    if (response.containsKey('error')) {
+      throw StateError(response['error']?.toString() ?? 'AI provider error');
+    }
 
     final choices = (response['choices'] as List?) ?? [];
     if (choices.isEmpty) throw StateError('AI provider returned no choices.');

@@ -141,7 +141,9 @@ Keep it concise but informative. Use Markdown formatting.''',
       temperature: 0.2,
     );
 
-    if (response.containsKey('error')) {\n      throw StateError(response['error']?.toString() ?? 'AI provider error');\n    }
+    if (response.containsKey('error')) {
+      throw StateError(response['error']?.toString() ?? 'AI provider error');
+    }
 
     final choices = (response['choices'] as List?) ?? [];
     if (choices.isEmpty) throw StateError('AI provider returned no choices.');
