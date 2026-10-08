@@ -66,22 +66,6 @@ class SettingsService {
     }
   }
 
-  int? _safeGetInt(String key) {
-    try {
-      return _prefs.getInt(key);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  bool? _safeGetBool(String key) {
-    try {
-      return _prefs.getBool(key);
-    } catch (_) {
-      return null;
-    }
-  }
-
   Future<String> getApiKey() async {
     return getAiApiKey('groq');
   }
