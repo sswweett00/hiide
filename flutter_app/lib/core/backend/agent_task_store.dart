@@ -435,29 +435,6 @@ class AgentTaskStore {
     return next;
   }
 
-  String _redactSensitiveText(String value) {
-    var sanitized = value;
-    final patterns = <RegExp>[
-      RegExp(
-        r'''(api[_-]?key|apikey|password|secret)\s*[:=]\s*["']?[^\s,"'}]+''',
-        caseSensitive: false,
-      ),
-      RegExp(
-        r'bearer\s+[A-Za-z0-9._~+\-/]+=*',
-        caseSensitive: false,
-      ),
-      RegExp(
-        r'''-----BEGIN [A-Z ]+ PRIVATE KEY-----[\s\S]*?-----END [A-Z ]+ PRIVATE KEY-----''',
-        caseSensitive: false,
-      ),
-    ];
-    for (final pattern in patterns) {
-      sanitized =
-          sanitized.replaceAllMapped(pattern, (_) => '[REDACTED]');
-    }
-    return sanitized;
-  }
-
   Map<String, dynamic> _sanitizeMessage(Map<String, dynamic> message) {
     return message.map(
       (key, value) => MapEntry(key, _sanitizeValue(value, depth: 0)),
