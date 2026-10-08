@@ -28,9 +28,9 @@ ThemeData _resolveDarkTheme(AppThemePreference preference) {
   };
 }
 
-/// Connects to the native Zig engine and starts a bundled/local engine when
-/// the server is not already running. The in-memory mock remains the final
-/// fallback for tests and engine-less environments.
+/// Connects to the native Zig engine and starts the bundled/local engine when
+/// the server is not already running. Production never falls back to a mock
+/// backend; tests provide their own test-only backend implementation.
 Process? _spawnedEngineProcess;
 Future<BackendService> _createBackendService() async {
   final launch = await NativeEngineSupervisor().connectOrStart();
