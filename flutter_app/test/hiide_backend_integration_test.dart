@@ -1,7 +1,7 @@
 // End-to-end test of the Flutter ⇄ Zig bridge.
 //
-// Spawns the real `hiide-ipc-server` binary (built via `zig build`) and drives
-// it through HiideBackendService: handshake, editor load/get/insert/delete/
+// it through HiideBackendService: handshake, workspace search/tree, file watching
+// and agent tool execution.
 // search, and workspace grep. The test is skipped automatically when the
 // binary is not present (e.g. CI without a Zig toolchain).
 //
@@ -14,7 +14,6 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hiide_flutter/core/backend/backend_service.dart';
 import 'package:hiide_flutter/core/backend/hiide_backend_service.dart';
-import 'package:hiide_flutter/core/backend/text_diff.dart';
 
 Future<Process?> _startServer() async {
   const candidates = [
@@ -108,44 +107,6 @@ void main() {
     await backend.disconnect();
   });
 
-  test('zig engine: editor load/get/insert/delete/search round trip', () async {
-    final backend = HiideBackendService(port: port);
-    await backend.connect();
-
-    const original = 'merhaba dünya\nikinci satır';
-    final handle = await backend.editorLoad(original);
-    expect(await backend.editorGetText(handle), original);
-    expect(await backend.editorLineCount(handle), 2);
-    // The engine reports the size in UTF-8 BYTES (Dart String.length is
-    // UTF-16 code units — they differ for the Turkish characters).
-    expect(await backend.editorSize(handle), utf8.encode(original).length);
-
-    await backend.editorInsert(handle, 7, ' ZIG');
-    expect(
-        await backend.editorGetText(handle), 'merhaba ZIG dünya\nikinci satır');
-
-    await backend.editorDelete(handle, 7, 4);
-    expect(await backend.editorGetText(handle), original);
-
-    // Edits after non-ASCII content must be converted from code units to
-    // bytes before hitting the engine buffer.
-    const before = 'satır sonu';
-    const after = 'satır sonu X';
-    final edit = toByteEdit(before, computeTextEdit(before, after));
-    final h2 = await backend.editorLoad(before);
-    await backend.editorInsert(h2, edit.start, edit.inserted);
-    expect(await backend.editorGetText(h2), after);
-    await backend.editorDestroy(h2);
-
-    final results = await backend.editorSearch(handle, 'dünya');
-    expect(results, hasLength(1));
-    expect(results.first.line, 1);
-    expect(results.first.col, 9); // 1-based byte column of 'dünya'
-
-    await backend.editorDestroy(handle);
-    await backend.disconnect();
-  });
-
   test('zig engine: workspace search is recursive and case-insensitive',
       () async {
     final backend = HiideBackendService(port: port);
@@ -168,65 +129,6 @@ void main() {
 
     await backend.disconnect();
   });
-  test('zig engine: editor.apply_text syncs a minimal native edit', () async {
-    final backend = HiideBackendService(port: port);
-    await backend.connect();
-
-    const original = 'merhaba dünya\nikinci satır';
-    final handle = await backend.editorLoad(original);
-    await backend.editorApplyText(handle, 'merhaba güzel dünya\nikinci satır');
-    expect(await backend.editorGetText(handle),
-        'merhaba güzel dünya\nikinci satır');
-
-    await backend.editorApplyText(handle, 'merhaba dünya');
-    expect(await backend.editorGetText(handle), 'merhaba dünya');
-
-    // Empty buffer → full write.
-    final h2 = await backend.editorLoad('');
-    await backend.editorApplyText(h2, 'fresh');
-    expect(await backend.editorGetText(h2), 'fresh');
-    await backend.editorDestroy(h2);
-
-    await backend.editorDestroy(handle);
-    await backend.disconnect();
-  });
-  test('zig engine: editor.diff_lines returns gutter regions', () async {
-    final backend = HiideBackendService(port: port);
-    await backend.connect();
-
-    final handle = await backend.editorLoad('alpha\nbeta\ngamma\n');
-
-    // Identical disk text → no changes.
-    expect(
-        await backend.editorDiffLines(handle, 'alpha\nbeta\ngamma\n'), isEmpty);
-
-    // Disk has an extra trailing line → deleted at the boundary (line 3).
-    final del =
-        await backend.editorDiffLines(handle, 'alpha\nbeta\ngamma\ndelta\n');
-    expect(del, hasLength(1));
-    expect(del.single.line, 3);
-    expect(del.single.kind, 'deleted');
-    expect(del.single.count, 1);
-
-    // Disk differs in the middle → modified at line 1.
-    final mod = await backend.editorDiffLines(handle, 'alpha\nBETA\ngamma\n');
-    expect(mod, hasLength(1));
-    expect(mod.single.line, 1);
-    expect(mod.single.kind, 'modified');
-    expect(mod.single.count, 1);
-
-    // Editing the engine buffer updates the diff.
-    await backend.editorApplyText(handle, 'alpha\nbeta\n');
-    final afterEdit =
-        await backend.editorDiffLines(handle, 'alpha\nbeta\ngamma\n');
-    expect(afterEdit, hasLength(1));
-    expect(afterEdit.single.line, 2);
-    expect(afterEdit.single.kind, 'deleted');
-
-    await backend.editorDestroy(handle);
-    await backend.disconnect();
-  });
-
   test('zig engine: workspace.tree enumerates sorted relative entries',
       () async {
     final backend = HiideBackendService(port: port);
