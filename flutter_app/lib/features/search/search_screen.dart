@@ -8,7 +8,7 @@ import '../../core/backend/workspace_service.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../shared/models/editor_tab.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/providers/workspace_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
 
 final searchResultsProvider = StateProvider<List<Map<String, dynamic>>>((ref) => []);
@@ -151,33 +151,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Future<void> _openSearchResult(Map<String, dynamic> result) async {
     final path = result['path']?.toString() ?? '';
-    if (path.isEmpty) return;
-    final workspace = ref.read(workspaceServiceProvider);
-    final content = await _safeRead(workspace, path);
-    if (!mounted) return;
-    if (content == null) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('File could not be read.')));
-      return;
-    }
-
-    final tabs = ref.read(openTabsProvider);
-    final existing = tabs.indexWhere((tab) => tab.path == path);
-    if (existing >= 0) {
-      ref.read(activeTabIdProvider.notifier).state = tabs[existing].id;
-    } else {
-      final tab = EditorTab(
-        id: 'search_${DateTime.now().microsecondsSinceEpoch}',
-        title: result['file']?.toString() ?? pathBasename(path),
-        path: path,
-        content: content,
-        icon: result['icon'] as IconData? ?? Icons.code,
-      );
-      ref.read(openTabsProvider.notifier).state = [...tabs, tab];
-      ref.read(activeTabIdProvider.notifier).state = tab.id;
-      trackRecentFile(ref, tab);
-    }
-    ref.read(cursorLineProvider.notifier).state = (result['line'] as int? ?? 1).clamp(1, 1000000);
-    if (mounted) context.go('/editor');
+    if (path.isEmpty || !mounted) return;
+    ref.read(selectedWorkspacePathProvider.notifier).state = path;
+    context.go('/agent');
   }
 
   Future<String?> _safeRead(WorkspaceService workspace, String path) async {
