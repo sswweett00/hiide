@@ -79,7 +79,7 @@ pub const TcpServer = struct {
             .family = linux.AF.INET,
             .port = @byteSwap(port),
             .addr = @byteSwap(@as(u32, 0x7f000001)), // 127.0.0.1
-            .zero = .{0, 0, 0, 0, 0, 0, 0, 0},
+            .zero = .{ 0, 0, 0, 0, 0, 0, 0, 0 },
         };
         const rc_bind = linux.bind(
             fd,

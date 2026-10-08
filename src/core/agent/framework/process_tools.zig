@@ -132,7 +132,6 @@ test "process.run: reports failure for bad commands" {
     try std.testing.expect(!result.ok);
 }
 
-
 test "process.run: enforces the execution timeout" {
     const allocator = std.testing.allocator;
     const tool = processRunTool();
@@ -159,7 +158,6 @@ test "process.run: enforces the execution timeout" {
     try std.testing.expectEqualStrings("command timed out", result.error_message);
     try std.testing.expect(elapsed < 900);
 }
-
 
 test "process.run: executes from the workspace root" {
     const allocator = std.testing.allocator;
