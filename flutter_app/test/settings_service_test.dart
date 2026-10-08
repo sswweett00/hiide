@@ -158,6 +158,25 @@ void main() {
     expect(prefs.getString('groq_api_key'), isNull);
   });
 
+  test('updating one provider never deletes another legacy credential', () async {
+    settingsService.resetForTesting();
+    SharedPreferences.setMockInitialValues({
+      'ai_api_keys_v2': jsonEncode({
+        'groq': 'legacy-groq',
+        'deepseek': 'legacy-deepseek',
+      }),
+    });
+
+    await settingsService.setAiApiKey('openrouter', 'new-router');
+
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('ai_api_keys_v2');
+    expect(raw, isNull);
+
+    expect(await settingsService.getAiApiKey('openrouter'), 'new-router');
+    expect(await settingsService.getAiApiKey('deepseek'), 'legacy-deepseek');
+  });
+
   test('AI provider model selections round-trip and tolerate corrupt data',
       () async {
     settingsService.resetForTesting();
