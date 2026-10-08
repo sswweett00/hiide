@@ -8,7 +8,7 @@ String _redactSensitiveText(String value) {
   var sanitized = value;
   final patterns = <RegExp>[
     RegExp(
-      r'''(api[_-]?key|apikey|password|secret)\s*[:=]\s*["']?[^\s,"'}]+''',
+      r'''["']?(api[_-]?key|apikey|password|secret|access[_-]?token|refresh[_-]?token)["']?\s*[:=]\s*["']?[^\s,"'}]+''',
       caseSensitive: false,
     ),
     RegExp(
