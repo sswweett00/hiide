@@ -1,20 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:hiide_flutter/core/backend/backend_service.dart';
-import 'package:hiide_flutter/core/backend/line_diff.dart';
 
 /// In-memory backend test double. This file is test-only and must never be used by the production application.
 class MockBackendService implements BackendService {
   bool _connected = false;
   final _controller = StreamController<String>.broadcast();
-  final Map<int, String> _buffers = {};
-  final Map<int, List<String>> _undoStacks = {};
-  final Map<int, List<String>> _redoStacks = {};
-  static const int _maxUndoDepth = 100;
-  int _nextHandle = 1;
-
   @override
   Stream<String> get outputStream => _controller.stream;
 
@@ -35,161 +27,6 @@ class MockBackendService implements BackendService {
   }
 
   @override
-  Future<int> editorLoad(String text) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    final handle = _nextHandle++;
-    _buffers[handle] = text;
-    _undoStacks[handle] = <String>[];
-    _redoStacks[handle] = <String>[];
-    return handle;
-  }
-
-  @override
-  Future<String> editorGetText(int handle) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    return _buffers[handle] ?? '// Mock file content for handle $handle\n';
-  }
-
-  @override
-  Future<int> editorInsert(int handle, int pos, String text) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    final content = _buffers[handle];
-    if (content == null) {
-      throw StateError('invalid editor handle');
-    }
-    final totalBytes = utf8.encode(content).length;
-    if (pos > totalBytes) throw RangeError('insert position exceeds buffer size');
-    final codeUnitPos = _byteOffsetToCodeUnitIndex(content, pos);
-    _recordEdit(handle, content);
-    _buffers[handle] =
-        content.substring(0, codeUnitPos) + text + content.substring(codeUnitPos);
-    return utf8.encode(_buffers[handle]!).length;
-  }
-
-  @override
-  Future<int> editorDelete(int handle, int pos, int len) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    final content = _buffers[handle];
-    if (content == null) {
-      throw StateError('invalid editor handle');
-    }
-    final totalBytes = utf8.encode(content).length;
-    if (pos + len > totalBytes) throw RangeError('delete range exceeds buffer size');
-    final start = _byteOffsetToCodeUnitIndex(content, pos);
-    final end = _byteOffsetToCodeUnitIndex(content, pos + len);
-    _recordEdit(handle, content);
-    _buffers[handle] = content.substring(0, start) + content.substring(end);
-    return utf8.encode(_buffers[handle]!).length;
-  }
-
-  @override
-  Future<void> editorUndo(int handle) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    final stack = _undoStacks[handle];
-    final current = _buffers[handle];
-    if (stack == null || stack.isEmpty || current == null) return;
-    _redoStacks[handle]!.add(current);
-    _buffers[handle] = stack.removeLast();
-  }
-
-  @override
-  Future<void> editorRedo(int handle) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    final stack = _redoStacks[handle];
-    final current = _buffers[handle];
-    if (stack == null || stack.isEmpty || current == null) return;
-    final next = stack.removeLast();
-    _undoStacks[handle]!.add(current);
-    _buffers[handle] = next;
-  }
-
-  void _recordEdit(int handle, String previous) {
-    final stack = _undoStacks[handle];
-    if (stack == null) return;
-    if (stack.isNotEmpty && stack.last == previous) return;
-    if (stack.length >= _maxUndoDepth) {
-      stack.removeAt(0);
-    }
-    stack.add(previous);
-    _redoStacks[handle]?.clear();
-  }
-
-  @override
-  Future<int> editorLineCount(int handle) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    final content = _buffers[handle];
-    if (content == null || content.isEmpty) return 0;
-    return content.split('\n').length;
-  }
-
-  @override
-  Future<int> editorSize(int handle) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    final content = _buffers[handle];
-    if (content == null) {
-      throw StateError('invalid editor handle');
-    }
-    return utf8.encode(content).length;
-  }
-
-  @override
-  Future<List<EditorSearchResult>> editorSearch(
-      int handle, String query) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    final content = _buffers[handle];
-    if (content == null) {
-      throw StateError('invalid editor handle');
-    }
-    final lowered = query.toLowerCase();
-    final results = <EditorSearchResult>[];
-    final lines = content.split('\n');
-    for (int i = 0; i < lines.length; i++) {
-      final line = lines[i];
-      final col = line.toLowerCase().indexOf(lowered);
-      if (col != -1) {
-        final byteCol =
-            utf8.encode(line.substring(0, col)).length + 1;
-        results.add(EditorSearchResult(
-          line: i + 1,
-          col: byteCol,
-          text: query,
-        ));
-      }
-    }
-    return results;
-  }
-
-  @override
-  Future<String> editorHighlight(int handle, String lang) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    final content = _buffers[handle] ?? '';
-    return '<span class="tok-keyword">$content</span>';
-  }
-
-  @override
-  Future<void> editorDestroy(int handle) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    _buffers.remove(handle);
-    _undoStacks.remove(handle);
-    _redoStacks.remove(handle);
-  }
-
-  @override
-  Future<void> editorApplyText(int handle, String text) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    final current = _buffers[handle];
-    if (current == text) return;
-    if (current != null) _recordEdit(handle, current);
-    _buffers[handle] = text;
-  }
-
-  @override
-  Future<List<EditorDiffRegion>> editorDiffLines(
-      int handle, String diskText) async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    return computeLineDiff(diskText, _buffers[handle] ?? '');
-  }
-
   @override
   Future<List<WorkspaceFile>> workspaceTree(
     String root, {
