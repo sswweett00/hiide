@@ -281,7 +281,7 @@ test "agent runtime: secret tool output is redacted before IPC egress" {
     const write = try executeTool(
         allocator,
         "file.write",
-        "{"path":"secret.txt","content":"api_key=sk-super-secret-value"}",
+        "{\"path\":\"secret.txt\",\"content\":\"api_key=sk-super-secret-value\"}",
         root,
         null,
     );
