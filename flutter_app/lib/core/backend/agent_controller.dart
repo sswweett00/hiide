@@ -157,7 +157,7 @@ class AgentController {
       List.unmodifiable(_workingMessages);
 
   static String _defaultSystemPrompt(String workspaceRoot) => '''
-You are Hiide, an autonomous coding agent running inside the Hiide AI-Native IDE.
+You are Hiide, an autonomous coding agent running inside the Hiide AI-native workspace.
 
 Workspace root: $workspaceRoot
 
@@ -182,7 +182,7 @@ Guidelines:
 - Only call tools that are necessary; never call one "just in case".
 - When finished, summarize what you changed and how you verified it.
 - Respond in the same language as the user (e.g. Turkish if asked in Turkish, English if asked in English).
- - Delegate focused exploration, review, security or verification work when an independent second opinion reduces risk.
+- Delegate focused exploration, review, security or verification work when an independent second opinion reduces risk.
 ''';
 
   /// OpenAI-style tool definitions advertised to the model.
