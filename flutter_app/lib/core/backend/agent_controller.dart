@@ -12,6 +12,7 @@ import '../mechanics/agent_guard.dart';
 import '../mechanics/error_taxonomy.dart';
 import 'agent_transaction.dart';
 import 'agent_profile.dart';
+import 'mcp_manager.dart';
 
 // ─── Agent loop types ─────────────────────────────────────────────────────────
 
@@ -116,6 +117,7 @@ class AgentController {
     this.maxContextCharacters = 120000,
     this.approvalHandler,
     this.allowedTools,
+    this.mcpManager,
   })  : _ai = ai,
         _backend = backend,
         _workspaceRoot = workspaceRoot,
@@ -139,6 +141,9 @@ class AgentController {
   final Future<bool> Function(String toolName, Map<String, dynamic> arguments)? approvalHandler;
   /// Optional per-agent tool permission set. Disallowed tools are hidden from the model and blocked at execution time.
   final Set<String>? allowedTools;
+  /// Optional project-local MCP tool registry. MCP tools are namespaced and
+  /// remain disabled for profiles that do not explicitly allow `mcp`.
+  final HiideMcpManager? mcpManager;
 
   bool _stopRequested = false;
   bool _workspaceMutated = false;
@@ -370,16 +375,28 @@ Guidelines:
 
   List<Map<String, dynamic>> get _advertisedToolDefinitions {
     final allowed = allowedTools;
-    if (allowed == null) return toolDefinitions;
-    return toolDefinitions.where((tool) {
-      final fn = tool['function'];
-      final name = fn is Map ? fn['name']?.toString() : null;
-      return name != null && allowed.contains(name);
-    }).toList(growable: false);
+    final builtin = allowed == null
+        ? toolDefinitions
+        : toolDefinitions.where((tool) {
+            final fn = tool['function'];
+            final name = fn is Map ? fn['name']?.toString() : null;
+            return name != null && allowed.contains(name);
+          });
+    final mcpTools = (mcpManager != null &&
+            (allowed == null || allowed.contains('mcp')))
+        ? mcpManager!.openAiToolDefinitions()
+        : const <Map<String, dynamic>>[];
+    return <Map<String, dynamic>>[
+      ...builtin,
+      ...mcpTools,
+    ];
   }
 
-  bool _toolAllowed(String name) =>
-      allowedTools == null || allowedTools!.contains(name);
+  bool _toolAllowed(String name) {
+    if (allowedTools == null) return true;
+    if (allowedTools!.contains(name)) return true;
+    return name.startsWith('mcp_') && allowedTools!.contains('mcp');
+  }
 
   /// Runs the agent loop. [messages] is the conversation history without the
   /// system prompt (the controller prepends its own).
@@ -896,6 +913,23 @@ Guidelines:
           return _delegateToAgent(agent, task);
 
         default:
+          if (name.startsWith('mcp_') && mcpManager != null) {
+            if (approvalHandler == null) {
+              return const _ToolResult(
+                '(approval required) MCP tool calls require an explicit approval handler.',
+                success: false,
+              );
+            }
+            final approved = await approvalHandler!(name, args);
+            if (!approved) {
+              return const _ToolResult(
+                '(approval rejected) The user did not approve this MCP tool call.',
+                success: false,
+              );
+            }
+            final result = await mcpManager!.call(name, args);
+            return _ToolResult(result.output, success: result.success);
+          }
           return _ToolResult('(error) Unknown tool: $name', success: false);
       }
     } catch (e) {
