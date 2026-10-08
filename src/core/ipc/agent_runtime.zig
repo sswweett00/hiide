@@ -294,7 +294,7 @@ test "agent runtime: secret tool output is redacted before IPC egress" {
     const read = try executeTool(
         allocator,
         "file.read",
-        "{"path":"secret.txt"}",
+        "{\"path\":\"secret.txt\"}",
         root,
         null,
     );
