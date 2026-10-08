@@ -4,19 +4,6 @@ import 'dart:async';
 const int hiideIpcProtocolVersion = 1;
 const String hiideIpcTransport = 'ndjson-json-rpc';
 
-/// A single match inside an open editor buffer (computed by the Zig engine).
-class EditorSearchResult {
-  final int line;
-  final int col;
-  final String text;
-
-  const EditorSearchResult({
-    required this.line,
-    required this.col,
-    required this.text,
-  });
-}
-
 /// A single match across the workspace (computed by the Zig engine grep).
 class WorkspaceSearchResult {
   final String path;
@@ -44,28 +31,6 @@ class WorkspaceFile {
     required this.path,
     required this.isDirectory,
     this.size = 0,
-  });
-}
-
-/// One line-based change region between the editor buffer and the on-disk
-/// reference (computed by the Zig engine's native Myers diff).
-class EditorDiffRegion {
-  /// 0-based buffer line where the region starts. For `deleted` this is the
-  /// buffer line at the deletion boundary (== buffer line count when the
-  /// deletion sits at the end of the file).
-  final int line;
-
-  /// One of `modified`, `added`, `deleted`.
-  final String kind;
-
-  /// Number of affected buffer lines (`deleted`: number of removed disk
-  /// lines, since the buffer has no line to mark).
-  final int count;
-
-  const EditorDiffRegion({
-    required this.line,
-    required this.kind,
-    required this.count,
   });
 }
 
