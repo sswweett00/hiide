@@ -4,14 +4,18 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum AgentTaskStatus { queued, planning, executing, verifying, waitingApproval, succeeded, failed, canceled }
+enum AgentTaskStatus { queued, planning, executing, verifying, waitingApproval, succeeded, succeededWithWarnings, failed, canceled }
 
 extension AgentTaskStatusX on AgentTaskStatus {
-  String get label => name == 'waitingApproval'
-      ? 'Waiting approval'
-      : name[0].toUpperCase() + name.substring(1);
+  String get label => switch (this) {
+        AgentTaskStatus.waitingApproval => 'Waiting approval',
+        AgentTaskStatus.succeededWithWarnings => 'Succeeded with warnings',
+        _ => name[0].toUpperCase() + name.substring(1),
+      };
+
   bool get terminal =>
       this == AgentTaskStatus.succeeded ||
+      this == AgentTaskStatus.succeededWithWarnings ||
       this == AgentTaskStatus.failed ||
       this == AgentTaskStatus.canceled;
 }
