@@ -1,5 +1,5 @@
-/// hiide — AI-native IDE engine root module.
-/// Re-exports all subsystems implementing the Enterprise IDE Specification.
+/// hiide — AI-native workspace engine root module.
+/// Re-exports the native agent, workspace, security and provider subsystems.
 const std = @import("std");
 pub const compat = @import("core/compat.zig");
 
