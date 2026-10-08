@@ -76,8 +76,21 @@ pub const IpcServer = struct {
             }
 
             const allocator = self.allocator;
+            const connection_auth_token = if (self.auth_token) |token|
+                allocator.dupe(u8, token) catch {
+                    _ = active_connections.fetchSub(1, .acq_rel);
+                    connection.stream.close();
+                    continue;
+                }
+            else
+                null;
             std.debug.print("IPC: accepted connection\n", .{});
-            const thread = std.Thread.spawn(.{}, handleConnection, .{ connection, allocator, self.auth_token }) catch {
+            const thread = std.Thread.spawn(
+                .{},
+                handleConnection,
+                .{ connection, allocator, connection_auth_token },
+            ) catch {
+                if (connection_auth_token) |token| allocator.free(token);
                 _ = active_connections.fetchSub(1, .acq_rel);
                 connection.stream.close();
                 continue;
@@ -87,9 +100,10 @@ pub const IpcServer = struct {
     }
 };
 
-fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator, auth_token: ?[]const u8) void {
+fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator, auth_token: ?[]u8) void {
     defer _ = active_connections.fetchSub(1, .acq_rel);
     defer conn.stream.close();
+    defer if (auth_token) |token| allocator.free(token);
 
     // File-watcher pushes share this socket: every write (responses and fs
     // events) goes through this mutex so lines never interleave.
@@ -145,7 +159,7 @@ fn handleLine(
     line: []const u8,
     write_mutex: *compat.Mutex,
     conn_id: u64,
-    auth_token: ?[]const u8,
+    auth_token: ?[]u8,
 ) void {
     var parsed = json.parseFromSlice(IpcMessage, allocator, line, .{}) catch |err| {
         writeResponse(allocator, conn, write_mutex, IpcResponse{ .id = 0, .err = @errorName(err) });
