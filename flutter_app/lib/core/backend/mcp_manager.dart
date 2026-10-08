@@ -45,14 +45,25 @@ class McpServerConfig {
         : const <String>[];
     final workingDirectory = json['workingDirectory']?.toString().trim();
 
-    if (transport == 'stdio' && (command == null || command.isEmpty)) {
+    if (transport == 'stdio' &&
+        (command == null || command.isEmpty || command.length > 512)) {
+      return null;
+    }
+    if (workingDirectory != null && workingDirectory.length > 1024) {
       return null;
     }
     if (transport == 'streamable-http') {
       final parsedUrl = url == null ? null : Uri.tryParse(url);
       if (parsedUrl == null ||
           parsedUrl.host.isEmpty ||
+          parsedUrl.path.length > 2048 ||
           (parsedUrl.scheme != 'http' && parsedUrl.scheme != 'https')) {
+        return null;
+      }
+      if (parsedUrl.scheme == 'http' &&
+          parsedUrl.host != '127.0.0.1' &&
+          parsedUrl.host != 'localhost' &&
+          parsedUrl.host != '::1') {
         return null;
       }
     }
@@ -164,8 +175,19 @@ class HiideMcpManager {
     }
   }
 
-  List<Map<String, dynamic>> openAiToolDefinitions() =>
-      List.unmodifiable(_bindings.values.map((binding) => binding.definition));
+  List<Map<String, dynamic>> openAiToolDefinitions() {
+    const maxTools = 512;
+    return List.unmodifiable(
+      _bindings.values.take(maxTools).map((binding) => binding.definition),
+    );
+  }
+
+  String _boundOutput(String value) {
+    const max = 12000;
+    if (value.length <= max) return value;
+    return value.substring(0, max) +
+        '\n[MCP output truncated by Hiide after 12000 characters]';
+  }
 
   String _redactSensitiveOutput(String output) {
     var value = output;
@@ -217,14 +239,15 @@ class HiideMcpManager {
         ),
         options: const RequestOptions(timeout: Duration(seconds: 120)),
       );
+      final sanitized = _redactSensitiveOutput(jsonEncode(result.toJson()));
       return McpToolCallResult(
         success: !result.isError,
-        output: _redactSensitiveOutput(jsonEncode(result.toJson())),
+        output: _boundOutput(sanitized),
       );
     } catch (error) {
       return McpToolCallResult(
         success: false,
-        output: _redactSensitiveOutput('MCP tool call failed: ' + error.toString()),
+        output: _boundOutput(_redactSensitiveOutput('MCP tool call failed: ' + error.toString())),
       );
     }
   }
