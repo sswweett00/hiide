@@ -9,7 +9,10 @@ abstract class SecretStore {
 class FlutterSecretStore implements SecretStore {
   FlutterSecretStore({
     FlutterSecureStorage? storage,
-  }) : _storage = storage ?? const FlutterSecureStorage();
+  }) : _storage = storage ??
+            const FlutterSecureStorage(
+              webOptions: WebOptions(useSessionStorage: true),
+            );
 
   final FlutterSecureStorage _storage;
 
