@@ -226,5 +226,28 @@ void main() {
       },
     ]);
   });
+  test('rejects insecure remote AI provider endpoints', () async {
+    settingsService.resetForTesting();
+    SharedPreferences.setMockInitialValues({});
+
+    expect(
+      () => settingsService.setAiProviderBaseUrl(
+        'remote',
+        'http://example.com/v1',
+      ),
+      throwsStateError,
+    );
+
+    await settingsService.setAiProviderBaseUrl(
+      'local',
+      'http://127.0.0.1:8000/v1',
+    );
+    expect(
+      await settingsService.getAiProviderBaseUrls(),
+      {'local': 'http://127.0.0.1:8000/v1'},
+    );
+  });
+
+
 
 }
