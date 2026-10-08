@@ -36,14 +36,20 @@ pub const IpcServer = struct {
     listener: TcpServer,
     port: u16,
     running: bool,
+    auth_token: ?[]u8,
 
     pub fn init(allocator: std.mem.Allocator, port: u16) !IpcServer {
         const server = try TcpServer.init(port);
+        const auth_token = std.process.getEnvVarOwned(allocator, "HIIDE_IPC_TOKEN") catch |err| switch (err) {
+            error.EnvironmentVariableNotFound => null,
+            else => return err,
+        };
         return .{
             .allocator = allocator,
             .listener = server,
             .port = port,
             .running = true,
+            .auth_token = auth_token,
         };
     }
 
@@ -68,7 +74,7 @@ pub const IpcServer = struct {
 
             const allocator = self.allocator;
             std.debug.print("IPC: accepted connection\n", .{});
-            const thread = std.Thread.spawn(.{}, handleConnection, .{ connection, allocator }) catch {
+            const thread = std.Thread.spawn(.{}, handleConnection, .{ connection, allocator, self.auth_token }) catch {
                 _ = active_connections.fetchSub(1, .acq_rel);
                 connection.stream.close();
                 continue;
@@ -78,7 +84,7 @@ pub const IpcServer = struct {
     }
 };
 
-fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator) void {
+fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator, auth_token: ?[]const u8) void {
     defer _ = active_connections.fetchSub(1, .acq_rel);
     defer conn.stream.close();
 
@@ -110,7 +116,7 @@ fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator) void {
                 writeResponse(allocator, conn, &write_mutex, IpcResponse{ .id = 0, .err = "line too large" });
                 return;
             }
-            handleLine(allocator, conn, line, &write_mutex, conn_id);
+            handleLine(allocator, conn, line, &write_mutex, conn_id, auth_token);
         }
 
         // Keep the (possibly partial) remainder for the next read.
@@ -126,6 +132,8 @@ const DispatchContext = struct {
     conn: TcpConnection,
     write_mutex: *compat.Mutex,
     conn_id: u64,
+    auth_token: ?[]const u8,
+    authenticated: bool,
 };
 
 fn handleLine(
@@ -134,6 +142,7 @@ fn handleLine(
     line: []const u8,
     write_mutex: *compat.Mutex,
     conn_id: u64,
+    auth_token: ?[]const u8,
 ) void {
     var parsed = json.parseFromSlice(IpcMessage, allocator, line, .{}) catch |err| {
         writeResponse(allocator, conn, write_mutex, IpcResponse{ .id = 0, .err = @errorName(err) });
@@ -141,7 +150,13 @@ fn handleLine(
     };
     defer parsed.deinit();
 
-    var ctx = DispatchContext{ .conn = conn, .write_mutex = write_mutex, .conn_id = conn_id };
+    var ctx = DispatchContext{
+        .conn = conn,
+        .write_mutex = write_mutex,
+        .conn_id = conn_id,
+        .auth_token = auth_token,
+        .authenticated = auth_token == null,
+    };
     var resp = dispatch(allocator, parsed.value, &ctx) catch |err| {
         writeResponse(allocator, conn, write_mutex, IpcResponse{ .id = parsed.value.id, .err = @errorName(err) });
         return;
@@ -256,15 +271,42 @@ fn dupStr(allocator: std.mem.Allocator, s: []const u8) !json.Value {
     return .{ .string = try allocator.dupe(u8, s) };
 }
 
+fn authTokenMatches(expected: []const u8, params: ?json.Value) bool {
+    const obj = switch (params orelse return false) {
+        .object => |value| value,
+        else => return false,
+    };
+    const supplied = obj.get("auth_token") orelse return false;
+    const token = stringValue(supplied) catch return false;
+    return std.mem.eql(u8, expected, token);
+}
+
 fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContext) !IpcResponse {
+    if (!std.mem.eql(u8, req.method, "hello")) {
+        if (ctx) |dctx| {
+            if (dctx.auth_token != null and !dctx.authenticated) {
+                return errResp(req.id, "unauthorized");
+            }
+        }
+    }
+
     if (req.method.len == 0) return errResp(req.id, "missing method");
 
     if (std.mem.eql(u8, req.method, "hello")) {
+        if (ctx) |dctx| {
+            if (dctx.auth_token) |expected| {
+                if (!authTokenMatches(expected, req.params)) {
+                    return errResp(req.id, "unauthorized");
+                }
+                dctx.authenticated = true;
+            }
+        }
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
             .{ "service", try dupStr(allocator, "hiide-zig-engine") },
             .{ "version", try dupStr(allocator, "0.1.0") },
             .{ "protocol_version", .{ .integer = ipc_protocol.protocol_version } },
             .{ "transport", try dupStr(allocator, "ndjson-json-rpc") },
+            .{ "auth_required", .{ .bool = if (ctx) |dctx| dctx.auth_token != null else false } },
         }) });
     }
 
@@ -433,6 +475,22 @@ test "dispatch: invalid numeric limits return errors instead of panicking" {
     var tree = try runDispatch(testing.allocator, "workspace.tree", .{ .object = tree_obj });
     defer cleanupResponse(testing.allocator, &tree);
     try testing.expectEqualStrings("max_entries must be an integer", tree.err.?);
+}
+
+test "ipc auth token validation" {
+    const params: json.Value = .{ .object = blk: {
+        var obj = json.ObjectMap.empty;
+        try obj.put(std.testing.allocator, "auth_token", .{ .string = "secret" });
+        break :blk obj;
+    }};
+    defer {
+        var copy = params;
+        copy.object.deinit(std.testing.allocator);
+    }
+
+    try std.testing.expect(authTokenMatches("secret", params));
+    try std.testing.expect(!authTokenMatches("other", params));
+    try std.testing.expect(!authTokenMatches("secret", null));
 }
 
 test "dispatch: hello and ping" {
