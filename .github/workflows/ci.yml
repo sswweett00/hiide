@@ -22,10 +22,12 @@ jobs:
   verify:
     name: Zig tests and build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
 
       - name: Setup Zig
         uses: xyzzylabs/setup-zig@v1
@@ -45,10 +47,210 @@ jobs:
             diff_range="${{ github.event.pull_request.base.sha }}...${{ github.sha }}"
           else
             previous="${{ github.event.before }}"
-            if git cat-file -e "${previous}^{commit}" 2>/dev/null; then
+            if [ -n "$previous" ] && ! printf '%s' "$previous" | grep -Eq '^0+
+          mapfile -t zig_files < <(git diff --name-only "$diff_range" -- '*.zig')
+          if [ "${#zig_files[@]}" -eq 0 ]; then
+            echo "No changed Zig files."
+            exit 0
+          fi
+          printf '%s\0' "${zig_files[@]}" | xargs -0 zig fmt --check
+
+      - name: Check patch whitespace
+        run: git diff --check
+
+      - name: Run unit tests
+        run: zig build test --summary all
+
+      - name: Build release artifacts
+        run: zig build -Doptimize=ReleaseSafe --summary all
+
+      - name: Ensure generated state is not tracked
+        run: |
+          ! git ls-files --error-unmatch .dart-tool >/dev/null 2>&1
+          ! git ls-files --error-unmatch .dartServer >/dev/null 2>&1
+          ! git ls-files --error-unmatch zig-out >/dev/null 2>&1
+          ! git ls-files --error-unmatch .zig-cache >/dev/null 2>&1
+
+  flutter:
+    name: Flutter analyze and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: flutter_app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Zig
+        uses: xyzzylabs/setup-zig@v1
+        with:
+          version: 0.16.0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.0'
+          cache: true
+
+      - name: Build native engine for desktop bundle
+        run: zig build -Doptimize=ReleaseSafe --summary all
+
+      - name: Restore packages
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        run: flutter test --reporter expanded
+
+      - name: Build Linux desktop
+        run: flutter build linux --release
+
+      - name: Bundle native engine
+        run: |
+          set -euo pipefail
+          bundle="build/linux/x64/release/bundle"
+          test -x "../zig-out/bin/hiide-ipc-server"
+          install -m 0755 "../zig-out/bin/hiide-ipc-server" "$bundle/hiide-ipc-server"
+          test -x "$bundle/hiide-ipc-server"
+
+  integration:
+    name: Flutter ⇄ Zig integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Zig
+        uses: xyzzylabs/setup-zig@v1
+        with:
+          version: 0.16.0
+
+      - name: Verify Zig version
+        run: test "$(zig version)" = "0.16.0"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.0'
+          cache: true
+
+      - name: Build engine
+        run: zig build -Doptimize=Debug --summary all
+
+      - name: Run real IPC integration suite
+        working-directory: flutter_app
+        run: flutter pub get && flutter test test/hiide_backend_integration_test.dart --reporter expanded
+; then
+              git fetch --no-tags --depth=1 origin "$previous" || true
+            fi
+            if [ -n "$previous" ] && ! printf '%s' "$previous" | grep -Eq '^0+
+          mapfile -t zig_files < <(git diff --name-only "$diff_range" -- '*.zig')
+          if [ "${#zig_files[@]}" -eq 0 ]; then
+            echo "No changed Zig files."
+            exit 0
+          fi
+          printf '%s\0' "${zig_files[@]}" | xargs -0 zig fmt --check
+
+      - name: Check patch whitespace
+        run: git diff --check
+
+      - name: Run unit tests
+        run: zig build test --summary all
+
+      - name: Build release artifacts
+        run: zig build -Doptimize=ReleaseSafe --summary all
+
+      - name: Ensure generated state is not tracked
+        run: |
+          ! git ls-files --error-unmatch .dart-tool >/dev/null 2>&1
+          ! git ls-files --error-unmatch .dartServer >/dev/null 2>&1
+          ! git ls-files --error-unmatch zig-out >/dev/null 2>&1
+          ! git ls-files --error-unmatch .zig-cache >/dev/null 2>&1
+
+  flutter:
+    name: Flutter analyze and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: flutter_app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Zig
+        uses: xyzzylabs/setup-zig@v1
+        with:
+          version: 0.16.0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.0'
+          cache: true
+
+      - name: Build native engine for desktop bundle
+        run: zig build -Doptimize=ReleaseSafe --summary all
+
+      - name: Restore packages
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        run: flutter test --reporter expanded
+
+      - name: Build Linux desktop
+        run: flutter build linux --release
+
+      - name: Bundle native engine
+        run: |
+          set -euo pipefail
+          bundle="build/linux/x64/release/bundle"
+          test -x "../zig-out/bin/hiide-ipc-server"
+          install -m 0755 "../zig-out/bin/hiide-ipc-server" "$bundle/hiide-ipc-server"
+          test -x "$bundle/hiide-ipc-server"
+
+  integration:
+    name: Flutter ⇄ Zig integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Zig
+        uses: xyzzylabs/setup-zig@v1
+        with:
+          version: 0.16.0
+
+      - name: Verify Zig version
+        run: test "$(zig version)" = "0.16.0"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.0'
+          cache: true
+
+      - name: Build engine
+        run: zig build -Doptimize=Debug --summary all
+
+      - name: Run real IPC integration suite
+        working-directory: flutter_app
+        run: flutter pub get && flutter test test/hiide_backend_integration_test.dart --reporter expanded
+ && git cat-file -e "${previous}^{commit}" 2>/dev/null; then
               diff_range="${previous}...${{ github.sha }}"
+            elif git rev-parse HEAD^ >/dev/null 2>&1; then
+              diff_range="$(git rev-parse HEAD^) ... ${{ github.sha }}"
+              diff_range="${diff_range// /}"
             else
-              diff_range="HEAD^...${{ github.sha }}"
+              diff_range="${{ github.sha }}"
             fi
           fi
           mapfile -t zig_files < <(git diff --name-only "$diff_range" -- '*.zig')

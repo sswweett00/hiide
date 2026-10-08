@@ -96,6 +96,7 @@ class SettingsService {
     try {
       const envNames = <String, String>{
         'groq': 'GROQ_API_KEY',
+        'azure-openai': 'AZURE_OPENAI_API_KEY',
         'openai': 'OPENAI_API_KEY',
         'openrouter': 'OPENROUTER_API_KEY',
         'deepseek': 'DEEPSEEK_API_KEY',
@@ -501,17 +502,23 @@ class SettingsService {
 
   Future<String> getOllamaUrl() async {
     await init();
-    final value = _safeGetString(_keyOllamaUrl)?.trim();
-    return value == null || value.isEmpty ? 'http://127.0.0.1:11434' : value;
+    const fallback = 'http://127.0.0.1:11434';
+    final value = _safeGetString(_keyOllamaUrl)?.trim() ?? '';
+    return value.isEmpty || !_isSafeAiEndpoint(Uri.tryParse(value))
+        ? fallback
+        : value;
   }
 
   Future<void> setOllamaUrl(String url) async {
     await init();
-    final normalized = url.trim();
-    await _prefs.setString(
-      _keyOllamaUrl,
-      normalized.isEmpty ? 'http://127.0.0.1:11434' : normalized,
-    );
+    const fallback = 'http://127.0.0.1:11434';
+    final normalized = url.trim().isEmpty ? fallback : url.trim();
+    if (!_isSafeAiEndpoint(Uri.tryParse(normalized))) {
+      throw StateError(
+        'Ollama endpoints must use HTTPS unless they target loopback.',
+      );
+    }
+    await _prefs.setString(_keyOllamaUrl, normalized);
   }
 }
 

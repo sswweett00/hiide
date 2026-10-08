@@ -94,6 +94,7 @@ void main() {
   });
 
   AgentController makeController(AiChatClient ai, {int maxIterations = 15}) {
+    unawaited(backend.watchWorkspace(tempDir.path));
     return AgentController(
       ai: ai,
       backend: backend,

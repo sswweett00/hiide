@@ -17,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hiide_flutter/core/backend/groq_ai_service.dart';
 import 'package:hiide_flutter/core/backend/settings_service.dart';
 import 'package:hiide_flutter/features/settings/settings_screen.dart';
-import 'package:hiide_flutter/shared/providers/editor_providers.dart';
+import 'package:hiide_flutter/shared/providers/workspace_providers.dart';
 
 /// Scripted /models response: includes a model that is NOT in the curated
 /// list (proves the live list is used), a curated-only model that is NOT on

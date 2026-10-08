@@ -5,6 +5,7 @@ import 'agent_task_store.dart';
 import 'mcp_manager.dart';
 import 'ai_providers/provider_manager.dart';
 import 'backend_service.dart';
+import '../providers/backend_provider.dart';
 
 final agentRunManagerProvider = Provider<AgentRunManager>((ref) {
   final manager = AgentRunManager(

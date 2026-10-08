@@ -415,7 +415,7 @@ failure paths, security/performance implications and rollback. Match the user's 
         case 'search_workspace':
           final query = args['query']?.toString().trim() ?? '';
           if (query.isEmpty) return '(error) query is required';
-          final hits = await _backend.workspaceSearch(_workspaceRoot, query, maxResults: 80);
+          final hits = await _backend.workspaceSearch(query, maxResults: 80);
           if (hits.isEmpty) return '(no matches)';
           final out = StringBuffer();
           for (final hit in hits) {

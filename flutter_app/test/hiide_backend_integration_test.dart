@@ -114,8 +114,8 @@ void main() {
 
     // The workspace root here is the flutter_app test dir itself; search for a
     // string that definitely exists in this very file.
+    await backend.watchWorkspace(Directory.current.path);
     final hits = await backend.workspaceSearch(
-      '.',
       'hiide_backend_integration_test',
       maxResults: 10,
     );

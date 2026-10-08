@@ -14,7 +14,6 @@ import 'package:hiide_flutter/features/command_palette/command_palette_screen.da
 import 'package:hiide_flutter/features/dashboard/dashboard_screen.dart';
 import 'package:hiide_flutter/features/debug/debug_screen.dart';
 import 'package:hiide_flutter/features/diff_viewer/diff_viewer_screen.dart';
-import 'package:hiide_flutter/features/editor/editor_screen.dart';
 import 'package:hiide_flutter/features/explorer/explorer_screen.dart';
 import 'package:hiide_flutter/features/extensions/extensions_screen.dart';
 import 'package:hiide_flutter/features/keyboard_shortcuts/keyboard_shortcuts_screen.dart';
@@ -23,7 +22,6 @@ import 'package:hiide_flutter/features/notification_center/notification_center_s
 import 'package:hiide_flutter/features/output/output_screen.dart';
 import 'package:hiide_flutter/features/plugin_manager/plugin_manager_screen.dart';
 import 'package:hiide_flutter/features/problems/problems_screen.dart';
-import 'package:hiide_flutter/features/quick_open/quick_open_screen.dart';
 import 'package:hiide_flutter/features/search/search_screen.dart';
 import 'package:hiide_flutter/features/settings/settings_screen.dart';
 import 'package:hiide_flutter/features/source_control/source_control_screen.dart';
@@ -56,7 +54,6 @@ void main() {
   // (e.g. via IdeShell) throws "No Material widget found".
   final screens = <String, WidgetBuilder>{
     'DashboardScreen': (_) => const DashboardScreen(),
-    'EditorScreen': (_) => const EditorScreen(),
     'ExplorerScreen': (_) => const ExplorerScreen(),
     'SearchScreen': (_) => const SearchScreen(),
     'SourceControlScreen': (_) => const SourceControlScreen(),
@@ -72,7 +69,6 @@ void main() {
     'KeyboardShortcutsScreen': (_) => const KeyboardShortcutsScreen(),
     'CommandPaletteScreen': (_) => const CommandPaletteScreen(),
     'NotificationCenterScreen': (_) => const NotificationCenterScreen(),
-    'QuickOpenScreen': (_) => const QuickOpenScreen(),
     'DiffViewerScreen': (_) => const DiffViewerScreen(),
     'MergeViewScreen': (_) => const MergeViewScreen(),
   };

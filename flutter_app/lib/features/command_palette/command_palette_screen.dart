@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,6 +64,37 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
     _executeCommand(context, ref, label);
   }
 
+  void _executeCommand(BuildContext context, WidgetRef ref, String label) {
+    switch (label) {
+      case 'Agent: New Task':
+      case 'Go: Agent Workspace':
+        context.go('/agent');
+      case 'View: Toggle Terminal':
+        ref.read(selectedBottomPanelProvider.notifier).state = 'terminal';
+      case 'View: Toggle AI Chat':
+        ref.read(selectedBottomPanelProvider.notifier).state = 'ai_chat';
+      case 'Go: Explorer':
+        context.go('/explorer');
+      case 'Go: Search':
+        context.go('/search');
+      case 'Go: Source Control':
+        context.go('/source-control');
+      case 'Go: Dashboard':
+        context.go('/dashboard');
+      case 'Help: Keyboard Shortcuts':
+        context.go('/keyboard-shortcuts');
+      case 'Help: About Hiide':
+        showAboutDialog(
+          context: context,
+          applicationName: 'Hiide',
+          applicationVersion: '1.0.0',
+          applicationLegalese: 'AI-native development workspace. Project files are changed through agents.',
+        );
+      default:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -72,26 +102,13 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
     if (_selectedIndex >= commands.length && commands.isNotEmpty) {
       _selectedIndex = commands.length - 1;
     }
-
     return Focus(
       autofocus: true,
       onKeyEvent: (_, event) {
-        if (event.logicalKey == LogicalKeyboardKey.escape) {
-          Navigator.of(context).maybePop();
-          return KeyEventResult.handled;
-        }
-        if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-          _moveSelection(1);
-          return KeyEventResult.handled;
-        }
-        if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          _moveSelection(-1);
-          return KeyEventResult.handled;
-        }
-        if (event.logicalKey == LogicalKeyboardKey.enter) {
-          _executeSelected();
-          return KeyEventResult.handled;
-        }
+        if (event.logicalKey == LogicalKeyboardKey.escape) { Navigator.of(context).maybePop(); return KeyEventResult.handled; }
+        if (event.logicalKey == LogicalKeyboardKey.arrowDown) { _moveSelection(1); return KeyEventResult.handled; }
+        if (event.logicalKey == LogicalKeyboardKey.arrowUp) { _moveSelection(-1); return KeyEventResult.handled; }
+        if (event.logicalKey == LogicalKeyboardKey.enter) { _executeSelected(); return KeyEventResult.handled; }
         return KeyEventResult.ignored;
       },
       child: Container(
@@ -104,29 +121,23 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
               padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
               child: TextField(
                 autofocus: true,
-                onChanged: (value) {
-                  ref.read(commandPaletteQueryProvider.notifier).state = value;
-                  setState(() => _selectedIndex = 0);
-                },
+                onChanged: (value) { ref.read(commandPaletteQueryProvider.notifier).state = value; setState(() => _selectedIndex = 0); },
                 decoration: InputDecoration(
-                  hintText: 'Type a command…',
+                  hintText: 'Search commands…',
                   prefixIcon: Icon(Icons.search, size: DesignTokens.iconMD, color: cs.onSurfaceVariant),
                 ),
               ),
             ),
             const SizedBox(height: DesignTokens.space3),
             ...commands.map((command) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
-                  child: _CommandItem(
-                    label: command['label']!,
-                    shortcut: command['shortcut']!,
-                    selected: commands.indexOf(command) == _selectedIndex,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      _executeCommand(context, ref, command['label']!);
-                    },
-                  ),
-                )),
+              padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space4),
+              child: _CommandItem(
+                label: command['label']!,
+                shortcut: command['shortcut']!,
+                selected: commands.indexOf(command) == _selectedIndex,
+                onTap: () { Navigator.of(context).pop(); _executeCommand(context, ref, command['label']!); },
+              ),
+            )),
             const SizedBox(height: DesignTokens.space4),
           ],
         ),
@@ -136,11 +147,11 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
 }
 
 class _CommandItem extends StatelessWidget {
+  const _CommandItem({required this.label, required this.shortcut, required this.selected, this.onTap});
   final String label;
   final String shortcut;
   final bool selected;
   final VoidCallback? onTap;
-  const _CommandItem({required this.label, required this.shortcut, required this.selected, this.onTap});
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -155,12 +166,11 @@ class _CommandItem extends StatelessWidget {
         child: Row(
           children: [
             Expanded(child: Text(label, style: TextStyle(color: selected ? cs.primary : cs.onSurface, fontSize: DesignTokens.fontSizeMD))),
-            if (shortcut.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space2, vertical: DesignTokens.space1),
-                decoration: BoxDecoration(color: cs.surfaceContainerHighest, borderRadius: BorderRadius.circular(DesignTokens.radiusSM), border: Border.all(color: cs.outlineVariant)),
-                child: Text(shortcut, style: TextStyle(color: cs.onSurfaceVariant, fontSize: DesignTokens.fontSizeXS)),
-              ),
+            if (shortcut.isNotEmpty) Container(
+              padding: const EdgeInsets.symmetric(horizontal: DesignTokens.space2, vertical: DesignTokens.space1),
+              decoration: BoxDecoration(color: cs.surfaceContainerHighest, borderRadius: BorderRadius.circular(DesignTokens.radiusSM), border: Border.all(color: cs.outlineVariant)),
+              child: Text(shortcut, style: TextStyle(color: cs.onSurfaceVariant, fontSize: DesignTokens.fontSizeXS)),
+            ),
           ],
         ),
       ),

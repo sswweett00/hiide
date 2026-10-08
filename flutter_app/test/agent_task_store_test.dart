@@ -112,7 +112,7 @@ void main() {
     );
     store.addArtifact(
       task.id,
-      const AgentArtifact(
+      AgentArtifact(
         id: 'secret-artifact',
         type: AgentArtifactType.note,
         title: 'password=artifact-title-secret',

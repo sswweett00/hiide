@@ -4,6 +4,7 @@ import 'agent_controller.dart';
 import 'agent_orchestrator.dart';
 import 'agent_profile.dart';
 import 'agent_task_store.dart';
+import 'agent_transaction.dart';
 import 'ai_chat_client.dart';
 import 'ai_memory/memory_store.dart';
 import 'backend_service.dart';

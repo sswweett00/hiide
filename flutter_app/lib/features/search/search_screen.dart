@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/backend/workspace_service.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
-import '../../shared/models/editor_tab.dart';
 import '../../shared/providers/workspace_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
 
@@ -66,7 +65,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     try {
       if (backend.isConnected) {
         final root = ref.read(workspaceRootProvider);
-        final hits = await backend.workspaceSearch(root, query, maxResults: _maxResults);
+        final hits = await backend.workspaceSearch(query, maxResults: _maxResults);
         if (!mounted || token != _generation) return;
         for (final hit in hits.take(_maxResults)) {
           results.add({
@@ -154,14 +153,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     if (path.isEmpty || !mounted) return;
     ref.read(selectedWorkspacePathProvider.notifier).state = path;
     context.go('/agent');
-  }
-
-  Future<String?> _safeRead(WorkspaceService workspace, String path) async {
-    try {
-      return await workspace.readFile(path);
-    } catch (_) {
-      return null;
-    }
   }
 
   @override

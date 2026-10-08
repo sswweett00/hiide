@@ -266,8 +266,11 @@ class HiideBackendService implements BackendService {
     return value;
   }
   @override
-  @override
-  Future<List<WorkspaceSearchResult>> workspaceSearch(String root, String query, {int maxResults = 200}) async {
+  Future<List<WorkspaceSearchResult>> workspaceSearch(String query, {int maxResults = 200}) async {
+    final root = _watchedRoot;
+    if (root == null || root.isEmpty) {
+      throw StateError('No workspace is being watched; open a workspace before searching.');
+    }
     final limit = maxResults.clamp(1, _maxSearchResults);
     final raw = _requiredList(
       _expectResult(

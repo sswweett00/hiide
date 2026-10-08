@@ -10,7 +10,7 @@ import 'support/mock_backend_service.dart';
 import 'package:hiide_flutter/core/providers/backend_provider.dart';
 import 'package:hiide_flutter/core/theme/app_themes.dart';
 import 'package:hiide_flutter/features/agent_workspace/agent_workspace_screen.dart';
-import 'package:hiide_flutter/shared/providers/editor_providers.dart';
+import 'package:hiide_flutter/shared/providers/workspace_providers.dart';
 
 void main() {
   testWidgets('agent workspace is task-first rather than IDE-first', (tester) async {

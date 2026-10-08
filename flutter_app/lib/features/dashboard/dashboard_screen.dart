@@ -1,413 +1,179 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/backend/web_workspace.dart';
+
+import '../../core/backend/agent_task_store.dart';
 import '../../core/design_system/tokens.dart';
-import '../../features/bottom_panels/bottom_panels.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/providers/workspace_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
-
-// ─── Providers ────────────────────────────────────────────────────────────────
-
-final dashboardStatsProvider =
-    FutureProvider<Map<String, dynamic>>((ref) async {
-  final root = ref.watch(workspaceRootProvider);
-  final openTabs = ref.watch(openTabsProvider);
-
-  final stats = <String, dynamic>{
-    'openTabs': openTabs.length,
-    'gitBranch': 'main',
-    'gitBranches': 0,
-    'modifiedFiles': 0,
-    'totalFiles': 0,
-  };
-
-  if (kIsWeb) {
-    // No processes on the web: report the browser-picked folder instead.
-    final ws = webWorkspaceStore.workspace;
-    stats['totalFiles'] = ws?.files.length ?? 0;
-    return stats;
-  }
-
-  // Git branch info
-  try {
-    final branchResult = await Process.run(
-        'git', ['rev-parse', '--abbrev-ref', 'HEAD'],
-        workingDirectory: root);
-    if (branchResult.exitCode == 0) {
-      stats['gitBranch'] = branchResult.stdout.toString().trim();
-    }
-
-    final allBranchesResult =
-        await Process.run('git', ['branch', '--list'], workingDirectory: root);
-    if (allBranchesResult.exitCode == 0) {
-      final lines = allBranchesResult.stdout
-          .toString()
-          .split('\n')
-          .where((l) => l.trim().isNotEmpty)
-          .length;
-      stats['gitBranches'] = lines;
-    }
-
-    final statusResult = await Process.run('git', ['status', '--porcelain'],
-        workingDirectory: root);
-    if (statusResult.exitCode == 0) {
-      final changed = statusResult.stdout
-          .toString()
-          .split('\n')
-          .where((l) => l.trim().isNotEmpty)
-          .length;
-      stats['modifiedFiles'] = changed;
-    }
-  } catch (_) {}
-
-  // File count
-  try {
-    final countResult = await Process.run(
-        'find',
-        [
-          root,
-          '-type',
-          'f',
-          '!',
-          '-path',
-          '*/.git/*',
-          '!',
-          '-path',
-          '*/.zig-cache/*',
-          '!',
-          '-path',
-          '*/build/*',
-          '!',
-          '-path',
-          '*/.dart_tool/*'
-        ],
-        workingDirectory: root);
-    if (countResult.exitCode == 0) {
-      final count = countResult.stdout
-          .toString()
-          .split('\n')
-          .where((l) => l.trim().isNotEmpty)
-          .length;
-      stats['totalFiles'] = count;
-    }
-  } catch (_) {}
-
-  return stats;
-});
-
-// ─── Screen ───────────────────────────────────────────────────────────────────
+import '../../shared/widgets/ide_shell.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
-    final statsAsync = ref.watch(dashboardStatsProvider);
-    final workspaceRoot = ref.watch(workspaceRootProvider);
+    ref.watch(agentTaskVersionProvider);
+    final store = ref.watch(agentTaskStoreProvider);
+    final tasks = store.tasks;
+    final workspace = ref.watch(workspaceRootProvider);
+    final running = tasks.where((task) => !task.status.terminal).length;
+    final succeeded = tasks.where((task) =>
+        task.status == AgentTaskStatus.succeeded ||
+        task.status == AgentTaskStatus.succeededWithWarnings).length;
+    final failed = tasks.where((task) => task.status == AgentTaskStatus.failed).length;
+    final changedFiles = tasks.expand((task) => task.changedFiles).toSet().take(12).toList();
 
-    return Container(
-      color: cs.surface,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Faint aurora wash behind the dashboard content.
-          Positioned.fill(
-            child: IgnorePointer(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Positioned(
-                    top: -160,
-                    right: -120,
-                    child: Container(
-                      width: 360,
-                      height: 360,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color:
-                                DesignTokens.aiViolet.withValues(alpha: 0.08),
-                            blurRadius: 200,
-                            spreadRadius: 60,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: -180,
-                    left: -100,
-                    child: Container(
-                      width: 320,
-                      height: 320,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: DesignTokens.aiCyan.withValues(alpha: 0.07),
-                            blurRadius: 180,
-                            spreadRadius: 50,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(DesignTokens.space6),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ── Title ────────────────────────────────────────────────────
-                AiPageHeader(
-                  icon: Icons.space_dashboard_outlined,
-                  title: 'Dashboard',
-                  subtitle: workspaceRoot,
-                  actions: [
-                    IconButton(
-                      onPressed: () => ref.invalidate(dashboardStatsProvider),
-                      icon: const Icon(Icons.refresh),
-                      tooltip: 'Refresh stats',
-                    ),
-                  ],
-                ),
-                const SizedBox(height: DesignTokens.space6),
-
-                // ── Stats Cards ───────────────────────────────────────────────────
-                statsAsync.when(
-                  loading: () => const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                  error: (e, _) =>
-                      Text('Error: $e', style: TextStyle(color: cs.error)),
-                  data: (stats) => Wrap(
-                    spacing: DesignTokens.space4,
-                    runSpacing: DesignTokens.space4,
-                    children: [
-                      _StatCard(
-                        title: 'Open Tabs',
-                        value: '${stats['openTabs']}',
-                        icon: Icons.tab_outlined,
-                        color: const Color(0xFF58A6FF),
-                        subtitle: 'Active editor tabs',
-                      ),
-                      _StatCard(
-                        title: 'Git Branch',
-                        value: '${stats['gitBranch']}',
-                        icon: Icons.account_tree_outlined,
-                        color: const Color(0xFF3FB950),
-                        subtitle: '${stats['gitBranches']} branches total',
-                      ),
-                      _StatCard(
-                        title: 'Changed Files',
-                        value: '${stats['modifiedFiles']}',
-                        icon: Icons.edit_note_outlined,
-                        color: const Color(0xFFD29922),
-                        subtitle: 'Uncommitted changes',
-                      ),
-                      _StatCard(
-                        title: 'Total Files',
-                        value: '${stats['totalFiles']}',
-                        icon: Icons.folder_outlined,
-                        color: const Color(0xFFBC8CFF),
-                        subtitle: 'In workspace',
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: DesignTokens.space8),
-
-                // ── Quick Actions ─────────────────────────────────────────────────
-                const AiSectionHeader(title: 'Quick Actions'),
-                const SizedBox(height: DesignTokens.space2),
-                Wrap(
-                  spacing: DesignTokens.space3,
-                  runSpacing: DesignTokens.space3,
-                  children: [
-                    _ActionButton(
-                      label: 'Open File (Ctrl+P)',
-                      icon: Icons.search,
-                      onTap: () => context.go('/quick-open'),
-                    ),
-                    _ActionButton(
-                      label: 'New Terminal (Ctrl+`)',
-                      icon: Icons.terminal,
-                      onTap: () {
-                        ref.read(selectedBottomPanelProvider.notifier).state =
-                            'terminal';
-                      },
-                    ),
-                    _ActionButton(
-                      label: 'Git Status',
-                      icon: Icons.source,
-                      onTap: () => context.go('/source-control'),
-                    ),
-                    _ActionButton(
-                      label: 'View Diff',
-                      icon: Icons.difference,
-                      onTap: () => context.go('/diff'),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: DesignTokens.space8),
-
-                // ── AI Tips ───────────────────────────────────────────────────────
-                AiGlowCard(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const AiOrb(
-                        icon: Icons.auto_awesome,
-                        size: 48,
-                        iconSize: 24,
-                      ),
-                      const SizedBox(width: DesignTokens.space3),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'AI Assistant Tips',
-                              style: TextStyle(
-                                color: cs.onSurface,
-                                fontWeight: FontWeight.bold,
-                                fontSize: DesignTokens.fontSizeMD,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Ask the AI sidebar to read files, write code, run commands, and analyze your codebase. '
-                              'Try: "Read the main.dart file and explain it" or "Write a test for this function".',
-                              style: TextStyle(
-                                  color: cs.onSurfaceVariant,
-                                  fontSize: DesignTokens.fontSizeMD,
-                                  height: 1.5),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+    return IdeShell(
+      showAiSidebar: true,
+      child: Container(
+        color: Theme.of(context).colorScheme.surface,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            AiPageHeader(
+              icon: Icons.dashboard_outlined,
+              title: 'Dashboard',
+              actions: [
+                FilledButton.icon(
+                  onPressed: () => context.go('/agent'),
+                  icon: const Icon(Icons.auto_awesome, size: 17),
+                  label: const Text('Agent Workspace'),
                 ),
               ],
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AiGlowCard(
+                    wash: false,
+                    child: Row(
+                      children: [
+                        const AiOrb(icon: Icons.folder_copy_outlined, size: 42, iconSize: 21),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Active workspace', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+                              const SizedBox(height: 3),
+                              Text(
+                                workspace.isEmpty ? 'No workspace selected' : workspace,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
+                        OutlinedButton(onPressed: () => context.go('/workspace-picker'), child: const Text('Change')),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      _Metric(label: 'Tasks', value: tasks.length, icon: Icons.list_alt_outlined),
+                      _Metric(label: 'Running', value: running, icon: Icons.bolt_outlined),
+                      _Metric(label: 'Succeeded', value: succeeded, icon: Icons.check_circle_outline),
+                      _Metric(label: 'Failed', value: failed, icon: Icons.error_outline),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text('AI WORKFLOW', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ActionChip(avatar: const Icon(Icons.auto_awesome, size: 16), label: const Text('Start a task'), onPressed: () => context.go('/agent')),
+                      ActionChip(avatar: const Icon(Icons.search, size: 16), label: const Text('Search workspace'), onPressed: () => context.go('/search')),
+                      ActionChip(avatar: const Icon(Icons.folder_outlined, size: 16), label: const Text('Inspect files'), onPressed: () => context.go('/explorer')),
+                      ActionChip(avatar: const Icon(Icons.account_tree_outlined, size: 16), label: const Text('Review source control'), onPressed: () => context.go('/source-control')),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text('RECENT TASKS', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                  const SizedBox(height: 8),
+                  if (tasks.isEmpty)
+                    const AiEmptyState(
+                      icon: Icons.auto_awesome,
+                      title: 'Ready for your first mission',
+                      subtitle: 'Describe a goal in Agent Workspace. Hiide will inspect, change, run verification and report the result.',
+                    )
+                  else
+                    ...tasks.take(8).map((task) => _TaskRow(task: task)),
+                  if (changedFiles.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    Text('RECENT CHANGES', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                    const SizedBox(height: 8),
+                    AiGlowCard(
+                      wash: false,
+                      child: Column(
+                        children: changedFiles.map((path) => ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: const Icon(Icons.description_outlined), title: Text(path, maxLines: 1, overflow: TextOverflow.ellipsis))).toList(),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-// ─── Widgets ──────────────────────────────────────────────────────────────────
-
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
+class _Metric extends StatelessWidget {
+  const _Metric({required this.label, required this.value, required this.icon});
+  final String label;
+  final int value;
   final IconData icon;
-  final Color color;
-  final String subtitle;
-
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.color,
-    required this.subtitle,
-  });
-
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Container(
-      width: 200,
-      padding: const EdgeInsets.all(DesignTokens.space4),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color.withValues(alpha: 0.16),
-            cs.surfaceContainerHighest,
-          ],
-        ),
-        borderRadius: BorderRadius.circular(DesignTokens.radiusLG),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: color, size: 20),
-              ),
-              const Spacer(),
-            ],
-          ),
-          const SizedBox(height: DesignTokens.space3),
-          Text(
-            value,
-            style: TextStyle(
-              color: cs.onSurface,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'JetBrains Mono',
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-                color: cs.onSurface,
-                fontWeight: FontWeight.w600,
-                fontSize: DesignTokens.fontSizeMD),
-          ),
-          Text(
-            subtitle,
-            style: TextStyle(
-                color: cs.onSurfaceVariant, fontSize: DesignTokens.fontSizeSM),
-          ),
-        ],
-      ),
-    );
+    return SizedBox(width: 150, child: AiGlowCard(wash: false, child: Row(children: [Icon(icon, size: 18, color: cs.primary), const SizedBox(width: 10), Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(value.toString(), style: TextStyle(color: cs.onSurface, fontSize: 20, fontWeight: FontWeight.w700)), Text(label, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 11))])])));
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _ActionButton(
-      {required this.label, required this.icon, required this.onTap});
-
+class _TaskRow extends StatelessWidget {
+  const _TaskRow({required this.task});
+  final AgentTaskRecord task;
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: onTap,
-      icon: Icon(icon, size: 16),
-      label: Text(label),
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    final cs = Theme.of(context).colorScheme;
+    final color = switch (task.status) {
+      AgentTaskStatus.succeeded => cs.primary,
+      AgentTaskStatus.succeededWithWarnings => cs.tertiary,
+      AgentTaskStatus.failed => cs.error,
+      AgentTaskStatus.canceled => cs.onSurfaceVariant,
+      _ => cs.primary,
+    };
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: AiGlowCard(
+        wash: false,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.auto_awesome, size: 17, color: color),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(task.objective.replaceAll('\n', ' '), maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: cs.onSurface, fontSize: 12, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(task.status.label + ' · ' + task.changedFiles.length.toString() + ' changed files · ' + task.toolCalls.toString() + ' tool calls', style: TextStyle(color: cs.onSurfaceVariant, fontSize: 10)),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

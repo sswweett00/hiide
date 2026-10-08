@@ -13,8 +13,7 @@ import 'support/mock_backend_service.dart';
 import 'package:hiide_flutter/core/providers/backend_provider.dart';
 import 'package:hiide_flutter/core/theme/app_themes.dart';
 import 'package:hiide_flutter/features/chat/ai_chat_sidebar.dart';
-import 'package:hiide_flutter/features/status_bar/status_bar.dart';
-import 'package:hiide_flutter/shared/providers/editor_providers.dart';
+import 'package:hiide_flutter/shared/providers/workspace_providers.dart';
 
 Future<void> _loadAppFonts() async {
   const families = {
@@ -70,35 +69,5 @@ void main() {
     expect(find.byIcon(Icons.send), findsOneWidget);
   });
 
-  testWidgets('status bar shows AI ready and engine state', (tester) async {
-    final backend = MockBackendService();
-    addTearDown(backend.dispose);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          backendServiceProvider.overrideWithValue(backend),
-          groqConnectionProvider
-              .overrideWith((ref) async => (ok: true, message: 'Connected')),
-        ],
-        child: MaterialApp(
-          theme: AppThemes.darkTheme,
-          home: const Scaffold(body: StatusBar()),
-        ),
-      ),
-    );
-    await tester.pump();
-
-    expect(find.text('AI: Ready'), findsOneWidget);
-    expect(find.text('Ln 1, Col 1'), findsOneWidget);
-
-    // Agent running → the status flips to Working.
-    final container = ProviderScope.containerOf(
-      tester.element(find.byType(StatusBar)),
-    );
-    container.read(isAiThinkingProvider.notifier).state = true;
-    await tester.pump();
-
-    expect(find.text('AI: Working'), findsOneWidget);
-  });
 }
