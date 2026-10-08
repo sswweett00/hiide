@@ -52,6 +52,7 @@ class AgentProfile {
       'run_command',
       'search_workspace',
       'delegate_agent',
+      'mcp',
     },
     systemPrompt: '''
 You are the Hiide Build agent.
