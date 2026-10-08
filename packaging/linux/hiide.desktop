@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Hiide
+Comment=Agent-native software development workspace
+Exec=hiide
+Icon=hiide
+Terminal=false
+Categories=Development;IDE;
+Keywords=AI;Agent;IDE;Code;Development;
+StartupWMClass=com.hiide.ide
