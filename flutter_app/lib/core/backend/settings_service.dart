@@ -403,15 +403,37 @@ class SettingsService {
     await init();
     final id = providerId.trim().toLowerCase();
     if (id.isEmpty) return;
-    final values = await getAiProviderBaseUrls();
     final normalized = baseUrl.trim();
     if (normalized.isEmpty) {
+      final values = await getAiProviderBaseUrls();
       values.remove(id);
-    } else if (normalized.length <= 512) {
-      values[id] = normalized;
+      await _prefs.setString(_keyAiBaseUrls, jsonEncode(values));
+      return;
     }
-    await _prefs.setString(_keyAiBaseUrls, jsonEncode(values));
+
+    final parsed = Uri.tryParse(normalized);
+    if (!_isSafeAiEndpoint(parsed)) {
+      throw StateError(
+        'AI provider endpoints must use HTTPS unless they target loopback.',
+      );
+    }
+
+    final values = await getAiProviderBaseUrls();
+    if (normalized.length <= 512) {
+      values[id] = normalized;
+      await _prefs.setString(_keyAiBaseUrls, jsonEncode(values));
+    }
   }
+
+  bool _isSafeAiEndpoint(Uri? uri) {
+    if (uri == null || uri.host.isEmpty) return false;
+    if (uri.scheme == 'https') return true;
+    if (uri.scheme != 'http') return false;
+    return uri.host == '127.0.0.1' ||
+        uri.host == 'localhost' ||
+        uri.host == '::1';
+  }
+
 
   Future<List<Map<String, String>>> getCustomAiProviders() async {
     await init();
