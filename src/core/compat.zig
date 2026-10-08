@@ -405,16 +405,13 @@ pub fn runCommandWithTimeout(
     // deadlock on a lock owned by a vanished thread.
     var arg_zs: [64][:0]const u8 = undefined;
     var arg_count: usize = 0;
-    var args_owned = true;
-    errdefer {
-        if (args_owned) {
-            for (arg_zs[0..arg_count]) |arg| {
-                std.heap.page_allocator.free(arg);
-            }
-        }
-    }
     for (argv, 0..) |arg, i| {
-        arg_zs[i] = try std.heap.page_allocator.dupeSentinel(u8, arg, 0);
+        arg_zs[i] = std.heap.page_allocator.dupeSentinel(u8, arg, 0) catch |err| {
+            for (arg_zs[0..arg_count]) |owned_arg| {
+                std.heap.page_allocator.free(owned_arg);
+            }
+            return err;
+        };
         arg_count += 1;
     }
     var arg_ptrs: [65:null]?[*:0]const u8 = undefined;
@@ -454,12 +451,20 @@ pub fn runCommandWithTimeout(
     env_ptrs[env_count] = null;
 
     var stdout_pipe: [2]i32 = undefined;
-    if (linux.pipe(&stdout_pipe) != 0) return error.PipeFailed;
+    if (linux.pipe(&stdout_pipe) != 0) {
+        for (arg_zs[0..arg_count]) |owned_arg| {
+            std.heap.page_allocator.free(owned_arg);
+        }
+        return error.PipeFailed;
+    }
 
     const pid_result = linux.fork();
     if (pid_result > @as(usize, @intCast(std.math.maxInt(i32) - 1))) {
         _ = linux.close(stdout_pipe[0]);
         _ = linux.close(stdout_pipe[1]);
+        for (arg_zs[0..arg_count]) |owned_arg| {
+            std.heap.page_allocator.free(owned_arg);
+        }
         return error.ForkFailed;
     }
 
@@ -487,11 +492,8 @@ pub fn runCommandWithTimeout(
 
     // Parent owns all remaining heap allocations and pipe state.
     defer {
-        if (args_owned) {
-            for (arg_zs[0..arg_count]) |arg| {
-                std.heap.page_allocator.free(arg);
-            }
-            args_owned = false;
+        for (arg_zs[0..arg_count]) |owned_arg| {
+            std.heap.page_allocator.free(owned_arg);
         }
     }
 
