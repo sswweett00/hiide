@@ -7,6 +7,6 @@
 const std = @import("std");
 const server_main = @import("core/ipc/server_main.zig");
 
-pub fn main() !void {
-    try server_main.main();
+pub fn main(init: std.process.Init) !void {
+    try server_main.main(init);
 }
