@@ -16,14 +16,6 @@ pub const agent = struct {
 /// §1 Agent framework, re-exported at the root for ergonomic imports.
 pub const framework = agent.framework;
 
-// §1 Editor Core (Zig-native)
-pub const editor = struct {
-    pub const buffer = @import("core/editor/buffer.zig");
-    pub const highlighter = @import("core/editor/highlighter.zig");
-    pub const editor = @import("core/editor/editor.zig");
-    pub const c_api = @import("core/editor/c_api.zig");
-};
-
 // §1 IPC / C ABI
 pub const ipc = struct {
     pub const protocol = @import("core/ipc/protocol.zig");
@@ -87,7 +79,6 @@ pub const bench = struct {
 // in the object file) — host consumers link against those symbols directly.
 pub const c_api = struct {
     pub const agent = @import("core/agent/c_api.zig");
-    pub const editor = @import("core/editor/c_api.zig");
     pub const ipc = @import("core/ipc/c_api.zig");
     pub const server_ipc = @import("core/ipc/server_c_api.zig");
     pub const groq = @import("core/provider/groq_c_api.zig");
