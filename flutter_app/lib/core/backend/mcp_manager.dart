@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'mcp_platform.dart';
 
 import 'package:mcp_dart/mcp_dart.dart';
 
@@ -116,16 +116,8 @@ class HiideMcpManager {
     if (_loadedWorkspaceRoot == workspaceRoot) return;
     await closeAll();
 
-    final file = File(
-      workspaceRoot +
-          Platform.pathSeparator +
-          '.hiide' +
-          Platform.pathSeparator +
-          'mcp.json',
-    );
-    if (!await file.exists()) return;
-
-    final raw = await file.readAsString();
+    final raw = await readWorkspaceMcpConfig(workspaceRoot);
+    if (raw == null) return;
     final decoded = jsonDecode(raw);
     if (decoded is! Map) {
       throw const FormatException('.hiide/mcp.json must contain an object.');
@@ -323,7 +315,7 @@ class HiideMcpManager {
 
     final envName = config.bearerTokenEnv;
     if (envName != null) {
-      final token = Platform.environment[envName]?.trim();
+      final token = platformEnvironment(envName)?.trim();
       if (token != null && token.isNotEmpty) return token;
       throw StateError(
         'Configured MCP bearer environment variable is unavailable: ' + envName,
