@@ -97,7 +97,31 @@ class AgentRunManager {
         'Cannot start an MCP-enabled task in another workspace while a background task is active.',
       );
     }
-    await mcpManager.loadWorkspace(workspaceRoot);
+    try {
+      await mcpManager.loadWorkspace(
+        workspaceRoot,
+        approvalHandler: (config) => _requestMcpServerApproval(
+          taskId,
+          config,
+        ),
+      );
+    } catch (error) {
+      taskStore.update(
+        taskId,
+        status: AgentTaskStatus.failed,
+        error: error.toString(),
+        summary: 'MCP server initialization failed.',
+      );
+      taskStore.addEvent(
+        taskId,
+        kind: 'mcp.error',
+        title: 'MCP initialization failed',
+        detail: error.toString(),
+        success: false,
+      );
+      _changed();
+      rethrow;
+    }
     _workspaceByTask[taskId] = workspaceRoot;
 
     taskStore.update(
@@ -195,6 +219,24 @@ class AgentRunManager {
       );
       _changed();
     }
+  }
+
+  Future<bool> _requestMcpServerApproval(
+    String taskId,
+    McpServerConfig config,
+  ) async {
+    final detail = config.transport == 'stdio'
+        ? config.command.toString() + ' ' + config.args.join(' ')
+        : (config.url ?? config.id);
+    return _requestApproval(
+      taskId,
+      'mcp_server.start',
+      <String, dynamic>{
+        'server_id': config.id,
+        'transport': config.transport,
+        'detail': detail,
+      },
+    );
   }
 
   Future<bool> _requestApproval(
