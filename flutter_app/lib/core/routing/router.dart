@@ -5,10 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../backend/web_picker.dart';
 import '../backend/workspace_service.dart';
 import '../design_system/tokens.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/providers/workspace_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
 import '../../shared/widgets/folder_browser_dialog.dart';
-import '../../features/editor/editor_screen.dart';
 import '../../features/explorer/explorer_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../features/source_control/source_control_screen.dart';
@@ -35,7 +34,6 @@ enum RoutePath {
   workspacePicker('/workspace-picker'),
   dashboard('/dashboard'),
   agent('/agent'),
-  editor('/editor'),
   explorer('/explorer'),
   search('/search'),
   sourceControl('/source-control'),
@@ -81,10 +79,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/agent',
         builder: (context, state) => const AgentWorkspaceScreen(),
-      ),
-      GoRoute(
-        path: '/editor',
-        builder: (context, state) => const EditorScreen(),
       ),
       GoRoute(
         path: '/explorer',
