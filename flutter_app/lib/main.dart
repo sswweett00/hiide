@@ -50,14 +50,33 @@ Future<BackendService> _createBackendService() async {
   return launch.backend;
 }
 
-void _cleanupManagedEngine() {
-  final process = _spawnedEngineProcess;
-  _spawnedEngineProcess = null;
-  process?.kill();
+$marker
+
+class _EngineLifecycleObserver extends WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached) {
+      _cleanupManagedEngine();
+    }
+  }
+}
+
+void _installEngineCleanupHooks() {
+  final observer = _EngineLifecycleObserver();
+  WidgetsBinding.instance.addObserver(observer);
+  for (final signal in <ProcessSignal>[
+    ProcessSignal.sigint,
+    ProcessSignal.sigterm,
+  ]) {
+    signal.watch().listen((_) {
+      _cleanupManagedEngine();
+    });
+  }
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  _installEngineCleanupHooks();
 
   BackendService? backendService;
   Object? startupError;
