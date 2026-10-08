@@ -143,6 +143,16 @@ class AgentRunManager {
 
   void stop(String taskId) {
     _controllers[taskId]?.stop();
+    final pending = <String>[];
+    for (final entry in _approvalWaiters.entries) {
+      if (entry.key.startsWith(taskId + ':')) pending.add(entry.key);
+    }
+    for (final requestId in pending) {
+      final waiter = _approvalWaiters.remove(requestId);
+      if (waiter != null && !waiter.isCompleted) waiter.complete(false);
+      _pendingApprovals.remove(requestId);
+    }
+    if (pending.isNotEmpty) _changed();
   }
 
   Future<void> resolveApproval(String requestId, bool approved) async {
