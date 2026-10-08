@@ -103,45 +103,11 @@ Future<void> main() async {
     debugPrint('Could not restore recent workspaces: $e');
   }
 
-  var uiMode = UiMode.aiNative;
-  try {
-    uiMode = await settingsService.getUiMode();
-  } catch (e) {
-    debugPrint('Could not restore UI mode: $e');
-  }
-
-  var autoSave = true;
-  try {
-    autoSave = await settingsService.getAutoSave();
-  } catch (e) {
-    debugPrint('Could not restore auto-save: $e');
-  }
-
-  double fontSize = 14.0;
-  int tabSize = 4;
-  bool wordWrap = false;
-  bool minimap = true;
-  try {
-    fontSize = (await settingsService.getFontSize()).toDouble();
-  } catch (_) {}
-  try {
-    tabSize = await settingsService.getTabSize();
-  } catch (_) {}
-  try {
-    wordWrap = await settingsService.getWordWrap();
-  } catch (_) {}
-  try {
-    minimap = await settingsService.getMinimap();
-  } catch (_) {}
-
   String aiProviderId = 'groq';
   Map<String, String> aiProviderKeys = const <String, String>{};
   Map<String, String> aiProviderModels = const <String, String>{};
   List<Map<String, String>> customAiProviders = const <Map<String, String>>[];
   Map<String, String> aiProviderBaseUrls = const <String, String>{};
-  String openaiKey = '';
-  String anthropicKey = '';
-  String ollamaUrl = 'http://127.0.0.1:11434';
   try {
     aiProviderId = await settingsService.getAiProvider();
   } catch (_) {}
@@ -181,21 +147,6 @@ Future<void> main() async {
         ),
         recentWorkspacesProvider.overrideWith((ref) => recentWorkspaces),
         workspaceRestoredProvider.overrideWith((ref) => restoredWorkspace),
-        uiModeProvider.overrideWith((ref) => uiMode),
-        autoSaveEnabledProvider.overrideWith((ref) => autoSave),
-        editorFontSizeProvider.overrideWith((ref) => fontSize.clamp(10.0, 32.0)),
-        editorTabSizeProvider.overrideWith((ref) => tabSize.clamp(1, 16)),
-        editorWordWrapProvider.overrideWith((ref) => wordWrap),
-        settingsProvider.overrideWith((ref) => {
-          'theme': 'Dark',
-          'fontSize': fontSize.clamp(10.0, 32.0).toInt(),
-          'tabSize': tabSize.clamp(1, 16),
-          'wordWrap': wordWrap,
-          'minimap': minimap,
-          'aiSuggestions': true,
-          'autoSave': autoSave,
-          'formatOnSave': true,
-        }),
         aiProviderIdProvider.overrideWith((ref) => aiProviderId),
         aiProviderTypeProvider.overrideWith(
           (ref) => aiProviderTypeFromId(aiProviderId),
