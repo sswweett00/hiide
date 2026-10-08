@@ -147,3 +147,18 @@ This keeps the AI-native rule enforceable below the UI layer.
 - `.github/workflows/linux-packages.yml` — automated Linux release packaging
 
 The key design constraint is deliberate: **Hiide is an AI workspace, not a source-code editor.**
+
+## Agent OS
+
+Hiide uses an agent-first runtime rather than an editor-with-chat architecture.
+The workspace ships with project-local `.hiide/agents` and `.hiide/skills` conventions.
+Build is the only mutation-capable primary agent. Explore, Reviewer and Security
+specialists are read-only and can run in parallel; Tester can run verification
+commands without file mutation. The main agent can also delegate focused tasks
+through `delegate_agent`.
+
+Every agent task persists its transcript, timeline and artifacts. The runtime
+also keeps project memory and loads relevant skills on demand, so procedural
+knowledge does not have to be stuffed into every prompt.
+
+See `.hiide/README.md` for the project-local Agent OS contract.
