@@ -10,6 +10,7 @@ final agentRunManagerProvider = Provider<AgentRunManager>((ref) {
     ai: ref.watch(providerManagerProvider),
     backend: ref.watch(backendServiceProvider),
     taskStore: ref.watch(agentTaskStoreProvider),
+    onChanged: () => ref.read(agentTaskVersionProvider.notifier).state++,
   );
   ref.onDispose(() {
     manager.dispose();
