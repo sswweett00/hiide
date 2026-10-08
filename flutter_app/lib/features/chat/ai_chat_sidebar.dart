@@ -278,6 +278,16 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
           memory +
           '\n--- End reference memory ---';
     }
+    final skillContext = await const HiideSkillRegistry().contextFor(
+      workspace.rootPath,
+      text,
+      maxSkills: 3,
+      maxChars: 9000,
+    );
+    if (!mounted) return;
+    if (skillContext.isNotEmpty) {
+      userContent += '\n\n' + skillContext;
+    }
     final planner = PlanningAgent(ai: ai, backend: backend, workspaceRoot: workspace.rootPath);
     _stopActiveAgent = planner.stop;
     String? createdPlan;
@@ -435,11 +445,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     if (lastPlan != null && lastPlan.trim().isNotEmpty && _looksLikePlanExecutionRequest(text)) {
       userContent += '\n\n--- Latest Hiide Plan ---\n' + lastPlan + '\n--- End Latest Hiide Plan ---';
     }
-    final history = <Map<String, dynamic>>[
-      ...ref.read(agentMessagesProvider),
-      {'role': 'user', 'content': userContent},
-    ];
-
     final skillContext = await const HiideSkillRegistry().contextFor(
       workspace.rootPath,
       text,
@@ -450,6 +455,12 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     if (skillContext.isNotEmpty) {
       userContent += '\n\n' + skillContext;
     }
+
+    final history = <Map<String, dynamic>>[
+      ...ref.read(agentMessagesProvider),
+      {'role': 'user', 'content': userContent},
+    ];
+
     final codeSystemPrompt = AgentProfile.build.systemPrompt;
 
     final controller = AgentController(
