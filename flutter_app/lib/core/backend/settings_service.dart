@@ -3,18 +3,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Persists IDE settings including AI provider keys and editor preferences.
+/// Persists AI provider credentials, models and workspace preferences.
 class SettingsService {
   static const _keyApiKey = 'groq_api_key';
   static const _keyModel = 'groq_model';
   static const _keyLastWorkspace = 'last_workspace';
   static const _keyRecentWorkspaces = 'recent_workspaces';
-  static const _keyFontSize = 'editor_font_size';
-  static const _keyTabSize = 'editor_tab_size';
-  static const _keyWordWrap = 'editor_word_wrap';
-  static const _keyMinimap = 'editor_minimap';
-  static const _keyAutoSave = 'editor_auto_save';
-  static const _keyUiMode = 'ui_mode';
   static const _keyAiProvider = 'ai_provider';
   static const _keyOpenaiApiKey = 'openai_api_key';
   static const _keyAnthropicApiKey = 'anthropic_api_key';
@@ -245,71 +239,6 @@ class SettingsService {
     await _prefs.setString(_keyModel, normalized);
   }
 
-  Future<int> getFontSize() async {
-    await init();
-    return (_safeGetInt(_keyFontSize) ?? 14).clamp(minFontSize, maxFontSize);
-  }
-
-  Future<void> setFontSize(int size) async {
-    await init();
-    await _prefs.setInt(_keyFontSize, size.clamp(minFontSize, maxFontSize));
-  }
-
-  Future<int> getTabSize() async {
-    await init();
-    return (_safeGetInt(_keyTabSize) ?? 4).clamp(minTabSize, maxTabSize);
-  }
-
-  Future<void> setTabSize(int size) async {
-    await init();
-    await _prefs.setInt(_keyTabSize, size.clamp(minTabSize, maxTabSize));
-  }
-
-  Future<bool> getWordWrap() async {
-    await init();
-    return _safeGetBool(_keyWordWrap) ?? false;
-  }
-
-  Future<void> setWordWrap(bool value) async {
-    await init();
-    await _prefs.setBool(_keyWordWrap, value);
-  }
-
-  Future<bool> getMinimap() async {
-    await init();
-    return _safeGetBool(_keyMinimap) ?? true;
-  }
-
-  Future<void> setMinimap(bool value) async {
-    await init();
-    await _prefs.setBool(_keyMinimap, value);
-  }
-
-  Future<bool> getAutoSave() async {
-    await init();
-    return _safeGetBool(_keyAutoSave) ?? true;
-  }
-
-  Future<void> setAutoSave(bool value) async {
-    await init();
-    await _prefs.setBool(_keyAutoSave, value);
-  }
-
-  Future<UiMode> getUiMode() async {
-    await init();
-    final stored = _safeGetString(_keyUiMode);
-    return switch (stored) {
-      'aiNative' => UiMode.aiNative,
-      'ide' => UiMode.ide,
-      _ => UiMode.aiNative,
-    };
-  }
-
-  Future<void> setUiMode(UiMode mode) async {
-    await init();
-    await _prefs.setString(_keyUiMode, mode.name);
-  }
-
   Future<String> getAiProvider() async {
     await init();
     final provider = _safeGetString(_keyAiProvider)?.trim().toLowerCase();
@@ -464,6 +393,5 @@ class SettingsService {
   }
 }
 
-enum UiMode { aiNative, ide }
 
 final settingsService = SettingsService();
