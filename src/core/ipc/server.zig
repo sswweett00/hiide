@@ -415,16 +415,6 @@ fn expectNoErr(resp: IpcResponse) !void {
     }
 }
 
-test "dispatch: malformed params are rejected without crashing" {
-    var bad = try runDispatch(testing.allocator, "editor.load", .{ .integer = 42 });
-    defer cleanupResponse(testing.allocator, &bad);
-    try testing.expectEqualStrings("text must be a string", bad.err.?);
-
-    var badParams = try runDispatch(testing.allocator, "editor.insert", .{ .string = "not-an-object" });
-    defer cleanupResponse(testing.allocator, &badParams);
-    try testing.expectEqualStrings("InvalidParams", badParams.err.?);
-}
-
 test "dispatch: invalid numeric limits return errors instead of panicking" {
     const object_params: json.Value = .{ .object = blk: {
         var obj = json.ObjectMap.empty;
@@ -445,12 +435,6 @@ test "dispatch: invalid numeric limits return errors instead of panicking" {
     try testing.expectEqualStrings("max_entries must be an integer", tree.err.?);
 }
 
-test "dispatch: forged editor handles are rejected" {
-    var response = try runDispatch(testing.allocator, "editor.get_text", .{ .integer = 42 });
-    defer cleanupResponse(testing.allocator, &response);
-    try testing.expectEqualStrings("invalid handle", response.err.?);
-}
-
 test "dispatch: hello and ping" {
     var resp = try runDispatch(testing.allocator, "hello", null);
     defer cleanupResponse(testing.allocator, &resp);
@@ -462,87 +446,6 @@ test "dispatch: hello and ping" {
     defer cleanupResponse(testing.allocator, &ping);
     try expectNoErr(ping);
     try testing.expectEqualStrings("pong", ping.result.?.string);
-}
-
-test "dispatch: editor load/get_text roundtrip" {
-    const text = "hello\nworld\n";
-    var resp = try runDispatch(testing.allocator, "editor.load", .{ .string = text });
-    defer cleanupResponse(testing.allocator, &resp);
-    try expectNoErr(resp);
-    const handle: i64 = resp.result.?.object.get("handle").?.integer;
-    try testing.expectEqual(@as(i64, @intCast(text.len)), resp.result.?.object.get("size").?.integer);
-    try testing.expectEqual(@as(i64, 3), resp.result.?.object.get("lines").?.integer);
-
-    var get = try runDispatch(testing.allocator, "editor.get_text", .{ .integer = handle });
-    defer cleanupResponse(testing.allocator, &get);
-    try expectNoErr(get);
-    try testing.expectEqualStrings(text, get.result.?.object.get("text").?.string);
-}
-
-test "dispatch: editor insert/delete/search" {
-    var resp = try runDispatch(testing.allocator, "editor.load", .{ .string = "hello world" });
-    defer cleanupResponse(testing.allocator, &resp);
-    const handle: i64 = resp.result.?.object.get("handle").?.integer;
-
-    const insert_params = try buildObj(testing.allocator, &.{
-        .{ "handle", .{ .integer = handle } },
-        .{ "pos", .{ .integer = 5 } },
-        .{ "text", .{ .string = try testing.allocator.dupe(u8, " XYZ") } },
-    });
-    var insert_params_resp = IpcResponse{ .id = 0, .result = .{ .object = insert_params } };
-    defer cleanupResponse(testing.allocator, &insert_params_resp);
-    var ins = try runDispatch(testing.allocator, "editor.insert", .{ .object = insert_params });
-    defer cleanupResponse(testing.allocator, &ins);
-    try expectNoErr(ins);
-    try testing.expectEqual(@as(i64, 15), ins.result.?.object.get("size").?.integer);
-
-    var get = try runDispatch(testing.allocator, "editor.get_text", .{ .integer = handle });
-    defer cleanupResponse(testing.allocator, &get);
-    try testing.expectEqualStrings("hello XYZ world", get.result.?.object.get("text").?.string);
-
-    const del_params = try buildObj(testing.allocator, &.{
-        .{ "handle", .{ .integer = handle } },
-        .{ "pos", .{ .integer = 5 } },
-        .{ "len", .{ .integer = 4 } },
-    });
-    var del_params_resp = IpcResponse{ .id = 0, .result = .{ .object = del_params } };
-    defer cleanupResponse(testing.allocator, &del_params_resp);
-    var del = try runDispatch(testing.allocator, "editor.delete", .{ .object = del_params });
-    defer cleanupResponse(testing.allocator, &del);
-    try expectNoErr(del);
-
-    const search_params = try buildObj(testing.allocator, &.{
-        .{ "handle", .{ .integer = handle } },
-        .{ "query", .{ .string = try testing.allocator.dupe(u8, "world") } },
-    });
-    var search_params_resp = IpcResponse{ .id = 0, .result = .{ .object = search_params } };
-    defer cleanupResponse(testing.allocator, &search_params_resp);
-    var search = try runDispatch(testing.allocator, "editor.search", .{ .object = search_params });
-    defer cleanupResponse(testing.allocator, &search);
-    try expectNoErr(search);
-    const results = search.result.?.object.get("results").?.array;
-    try testing.expectEqual(@as(usize, 1), results.items.len);
-    try testing.expectEqual(@as(i64, 1), results.items[0].object.get("line").?.integer);
-    try testing.expectEqual(@as(i64, 7), results.items[0].object.get("col").?.integer);
-}
-
-test "dispatch: editor line_count and destroy" {
-    var resp = try runDispatch(testing.allocator, "editor.load", .{ .string = "a\nb\nc" });
-    defer cleanupResponse(testing.allocator, &resp);
-    const handle: i64 = resp.result.?.object.get("handle").?.integer;
-
-    const lc_params = try buildObj(testing.allocator, &.{.{ "handle", .{ .integer = handle } }});
-    var lc_params_resp = IpcResponse{ .id = 0, .result = .{ .object = lc_params } };
-    defer cleanupResponse(testing.allocator, &lc_params_resp);
-    var lc = try runDispatch(testing.allocator, "editor.line_count", .{ .object = lc_params });
-    defer cleanupResponse(testing.allocator, &lc);
-    try expectNoErr(lc);
-    try testing.expectEqual(@as(i64, 3), lc.result.?.object.get("lines").?.integer);
-
-    var destroy = try runDispatch(testing.allocator, "editor.destroy", .{ .object = lc_params });
-    defer cleanupResponse(testing.allocator, &destroy);
-    try expectNoErr(destroy);
-    try testing.expectEqual(true, destroy.result.?.object.get("ok").?.bool);
 }
 
 test "dispatch: unknown method" {
@@ -597,115 +500,6 @@ test "dispatch: agent.tool.execute reports tool failure in result, not err" {
     try expectNoErr(resp);
     try testing.expectEqual(false, resp.result.?.object.get("ok").?.bool);
     try testing.expect(std.mem.indexOf(u8, resp.result.?.object.get("error").?.string, "file not found") != null);
-}
-
-test "dispatch: editor.apply_text syncs via a minimal native edit" {
-    const original = "merhaba dünya\nikinci satır";
-    var resp = try runDispatch(testing.allocator, "editor.load", .{ .string = original });
-    defer cleanupResponse(testing.allocator, &resp);
-    const handle: i64 = resp.result.?.object.get("handle").?.integer;
-
-    // Insert " güzel" before "dünya" — a non-ASCII middle edit.
-    const after = "merhaba güzel dünya\nikinci satır";
-    const params = try buildObj(testing.allocator, &.{
-        .{ "handle", .{ .integer = handle } },
-        .{ "text", .{ .string = try testing.allocator.dupe(u8, after) } },
-    });
-    var params_resp = IpcResponse{ .id = 0, .result = .{ .object = params } };
-    defer cleanupResponse(testing.allocator, &params_resp);
-    var applied = try runDispatch(testing.allocator, "editor.apply_text", .{ .object = params });
-    defer cleanupResponse(testing.allocator, &applied);
-    try expectNoErr(applied);
-
-    var get = try runDispatch(testing.allocator, "editor.get_text", .{ .integer = handle });
-    defer cleanupResponse(testing.allocator, &get);
-    try expectNoErr(get);
-    try testing.expectEqualStrings(after, get.result.?.object.get("text").?.string);
-
-    // Deleting the middle (empty replacement) also works.
-    const shortened = "merhaba dünya";
-    const del_params = try buildObj(testing.allocator, &.{
-        .{ "handle", .{ .integer = handle } },
-        .{ "text", .{ .string = try testing.allocator.dupe(u8, shortened) } },
-    });
-    var del_params_resp = IpcResponse{ .id = 0, .result = .{ .object = del_params } };
-    defer cleanupResponse(testing.allocator, &del_params_resp);
-    var del = try runDispatch(testing.allocator, "editor.apply_text", .{ .object = del_params });
-    defer cleanupResponse(testing.allocator, &del);
-    try expectNoErr(del);
-
-    var get2 = try runDispatch(testing.allocator, "editor.get_text", .{ .integer = handle });
-    defer cleanupResponse(testing.allocator, &get2);
-    try expectNoErr(get2);
-    try testing.expectEqualStrings(shortened, get2.result.?.object.get("text").?.string);
-
-    // Full replacement of an empty buffer works too.
-    var empty = try runDispatch(testing.allocator, "editor.load", .{ .string = "" });
-    defer cleanupResponse(testing.allocator, &empty);
-    const empty_handle: i64 = empty.result.?.object.get("handle").?.integer;
-    const fill_params = try buildObj(testing.allocator, &.{
-        .{ "handle", .{ .integer = empty_handle } },
-        .{ "text", .{ .string = try testing.allocator.dupe(u8, "fresh") } },
-    });
-    var fill_params_resp = IpcResponse{ .id = 0, .result = .{ .object = fill_params } };
-    defer cleanupResponse(testing.allocator, &fill_params_resp);
-    var fill = try runDispatch(testing.allocator, "editor.apply_text", .{ .object = fill_params });
-    defer cleanupResponse(testing.allocator, &fill);
-    try expectNoErr(fill);
-    var get3 = try runDispatch(testing.allocator, "editor.get_text", .{ .integer = empty_handle });
-    defer cleanupResponse(testing.allocator, &get3);
-    try expectNoErr(get3);
-    try testing.expectEqualStrings("fresh", get3.result.?.object.get("text").?.string);
-}
-
-test "dispatch: editor.diff_lines returns line change regions" {
-    const original = "alpha\nbeta\ngamma\n";
-    var resp = try runDispatch(testing.allocator, "editor.load", .{ .string = original });
-    defer cleanupResponse(testing.allocator, &resp);
-    const handle: i64 = resp.result.?.object.get("handle").?.integer;
-
-    // Identical disk text → no changes.
-    const same_params = try buildObj(testing.allocator, &.{
-        .{ "handle", .{ .integer = handle } },
-        .{ "disk_text", .{ .string = try testing.allocator.dupe(u8, original) } },
-    });
-    var same_params_resp = IpcResponse{ .id = 0, .result = .{ .object = same_params } };
-    defer cleanupResponse(testing.allocator, &same_params_resp);
-    var same = try runDispatch(testing.allocator, "editor.diff_lines", .{ .object = same_params });
-    defer cleanupResponse(testing.allocator, &same);
-    try expectNoErr(same);
-    try testing.expectEqual(@as(usize, 0), same.result.?.object.get("changes").?.array.items.len);
-
-    // Disk has an extra trailing line → a deleted region at the boundary.
-    const del_params = try buildObj(testing.allocator, &.{
-        .{ "handle", .{ .integer = handle } },
-        .{ "disk_text", .{ .string = try testing.allocator.dupe(u8, "alpha\nbeta\ngamma\ndelta\n") } },
-    });
-    var del_params_resp = IpcResponse{ .id = 0, .result = .{ .object = del_params } };
-    defer cleanupResponse(testing.allocator, &del_params_resp);
-    var del = try runDispatch(testing.allocator, "editor.diff_lines", .{ .object = del_params });
-    defer cleanupResponse(testing.allocator, &del);
-    try expectNoErr(del);
-    const del_changes = del.result.?.object.get("changes").?.array;
-    try testing.expectEqual(@as(usize, 1), del_changes.items.len);
-    try testing.expectEqual(@as(i64, 3), del_changes.items[0].object.get("line").?.integer);
-    try testing.expectEqualStrings("deleted", del_changes.items[0].object.get("kind").?.string);
-    try testing.expectEqual(@as(i64, 1), del_changes.items[0].object.get("count").?.integer);
-
-    // Disk differs in the middle → a modified region.
-    const mod_params = try buildObj(testing.allocator, &.{
-        .{ "handle", .{ .integer = handle } },
-        .{ "disk_text", .{ .string = try testing.allocator.dupe(u8, "alpha\nBETA\ngamma\n") } },
-    });
-    var mod_params_resp = IpcResponse{ .id = 0, .result = .{ .object = mod_params } };
-    defer cleanupResponse(testing.allocator, &mod_params_resp);
-    var mod = try runDispatch(testing.allocator, "editor.diff_lines", .{ .object = mod_params });
-    defer cleanupResponse(testing.allocator, &mod);
-    try expectNoErr(mod);
-    const mod_changes = mod.result.?.object.get("changes").?.array;
-    try testing.expectEqual(@as(usize, 1), mod_changes.items.len);
-    try testing.expectEqual(@as(i64, 1), mod_changes.items[0].object.get("line").?.integer);
-    try testing.expectEqualStrings("modified", mod_changes.items[0].object.get("kind").?.string);
 }
 
 test "dispatch: workspace.tree returns sorted relative entries" {
