@@ -4,10 +4,8 @@
 #   2. Starts the hiide-ipc-server on 127.0.0.1:4879
 #   3. Runs the Flutter IDE, which connects to the engine automatically
 #
-# The Flutter app falls back to an in-memory mock backend when the engine is
-# not running, so `flutter run` alone still works — but for the real
-# performance path (gap buffer, native grep, syntax highlighting) start the
-# engine first.
+# The production Flutter app requires the native engine. Test-only mocks live
+# under flutter_app/test and are not used by the desktop application.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
