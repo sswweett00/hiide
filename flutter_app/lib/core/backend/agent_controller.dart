@@ -11,6 +11,7 @@ import '../mechanics/agent_context.dart';
 import '../mechanics/agent_guard.dart';
 import '../mechanics/error_taxonomy.dart';
 import 'agent_transaction.dart';
+import 'agent_profile.dart';
 
 // ─── Agent loop types ─────────────────────────────────────────────────────────
 
@@ -181,6 +182,7 @@ Guidelines:
 - Only call tools that are necessary; never call one "just in case".
 - When finished, summarize what you changed and how you verified it.
 - Respond in the same language as the user (e.g. Turkish if asked in Turkish, English if asked in English).
+ - Delegate focused exploration, review, security or verification work when an independent second opinion reduces risk.
 ''';
 
   /// OpenAI-style tool definitions advertised to the model.
@@ -338,6 +340,29 @@ Guidelines:
             },
           },
           'required': ['query'],
+        },
+      },
+    },
+    {
+      'type': 'function',
+      'function': {
+        'name': 'delegate_agent',
+        'description':
+            'Delegate a focused task to a read-only or verification specialist: explore, reviewer, security, tester, researcher.',
+        'parameters': {
+          'type': 'object',
+          'properties': {
+            'agent': {
+              'type': 'string',
+              'enum': ['explore', 'reviewer', 'security', 'tester', 'researcher'],
+              'description': 'Specialist profile to invoke.',
+            },
+            'task': {
+              'type': 'string',
+              'description': 'Focused task for the specialist.',
+            },
+          },
+          'required': ['agent', 'task'],
         },
       },
     },
@@ -862,6 +887,14 @@ Guidelines:
           }
           return _ToolResult(await _searchWorkspace(query));
 
+        case 'delegate_agent':
+          final agent = args['agent']?.toString().trim().toLowerCase() ?? '';
+          final task = args['task']?.toString().trim() ?? '';
+          if (agent.isEmpty || task.isEmpty) {
+            return const _ToolResult('(error) agent and task are required.', success: false);
+          }
+          return _delegateToAgent(agent, task);
+
         default:
           return _ToolResult('(error) Unknown tool: $name', success: false);
       }
@@ -873,6 +906,82 @@ Guidelines:
   /// Socket ceiling for a single agent tool call. The engine's `process.run`
   /// watchdog kills long commands well before this.
   static const _agentToolTimeout = Duration(seconds: 180);
+
+  Future<_ToolResult> _delegateToAgent(String id, String task) async {
+    final profile = switch (id) {
+      'explore' => AgentProfile.explore,
+      'reviewer' => AgentProfile.reviewer,
+      'security' => AgentProfile.security,
+      'tester' => AgentProfile.tester,
+      'researcher' => AgentProfile.researcher,
+      _ => null,
+    };
+    if (profile == null) {
+      return _ToolResult('(error) Unknown specialist agent: ' + id, success: false);
+    }
+
+    final specialist = AgentController(
+      ai: _ai,
+      backend: _backend,
+      workspaceRoot: _workspaceRoot,
+      model: _model,
+      systemPrompt: profile.systemPrompt,
+      allowedTools: profile.allowedTools,
+      maxIterations: profile.maxIterations,
+      approvalHandler: approvalHandler,
+    );
+
+    final output = StringBuffer();
+    var success = true;
+    try {
+      await for (final event in specialist.run([
+        {
+          'role': 'user',
+          'content':
+              'You are a delegated specialist. Work only on this focused task:\n' +
+              task +
+              '\n\nDo not modify files unless your profile explicitly permits it. ' +
+              'Return evidence-backed findings to the parent agent.',
+        },
+      ])) {
+        switch (event) {
+          case AgentTextTokenEvent(:final token):
+            output.write(token);
+          case AgentDoneEvent(:final text):
+            if (text.trim().isNotEmpty) {
+              if (output.isNotEmpty) output.write('\n');
+              output.write(text);
+            }
+          case AgentErrorEvent(:final message):
+            success = false;
+            if (output.isNotEmpty) output.write('\n');
+            output.write(message);
+          case AgentStoppedEvent():
+            success = false;
+          case AgentIterationLimitEvent(:final reason):
+            success = false;
+            if (output.isNotEmpty) output.write('\n');
+            output.write(reason);
+          case AgentToolStartedEvent():
+          case AgentToolFinishedEvent():
+        }
+      }
+    } catch (error) {
+      success = false;
+      if (output.isNotEmpty) output.write('\n');
+      output.write(error.toString());
+    }
+
+    var result = output.toString().trim();
+    if (result.isEmpty) result = 'Specialist produced no report.';
+    if (result.length > 10000) {
+      result = result.substring(0, 10000) + '\n…[delegated report truncated]';
+    }
+    return _ToolResult(
+      '[' + profile.label + ']\n' + result,
+      success: success,
+    );
+  }
 
   /// Workspace grep through the engine's `workspace.search` tool, with an
   /// offline fallback scan when the engine is unavailable or finds nothing.
