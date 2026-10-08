@@ -131,10 +131,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CommandPaletteScreen(),
       ),
       GoRoute(
-        path: '/quick-open',
-        builder: (context, state) => const QuickOpenScreen(),
-      ),
-      GoRoute(
         path: '/diff',
         builder: (context, state) => const DiffViewerScreen(),
       ),
