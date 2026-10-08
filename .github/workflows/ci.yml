@@ -35,12 +35,12 @@ jobs:
           version: 0.16.0
 
       - name: Canonicalize native Zig sources
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'style: format Zig sources')
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'style: format Zig sources') }}
         run: |
           zig fmt src/core/agent/framework/process_tools.zig src/core/compat.zig
 
       - name: Commit canonical Zig formatting
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'style: format Zig sources')
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'style: format Zig sources') }}
         shell: bash
         run: |
           set -euo pipefail
