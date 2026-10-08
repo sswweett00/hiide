@@ -35,6 +35,12 @@ class NativeEngineSupervisor {
     } catch (error) {
       await existing.disconnect();
       final message = error.toString();
+      if (message.contains('unauthorized')) {
+        throw StateError(
+          'A protected Hiide IPC engine is already running on $host:$port '
+          'but its session token is unavailable to this application.',
+        );
+      }
       if (message.contains('Incompatible Hiide IPC') ||
           message.contains('IPC contract violation')) {
         // An engine is reachable but speaks an incompatible wire contract.
