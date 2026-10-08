@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/agent_controller.dart';
+import '../../core/backend/agent_orchestrator.dart';
+import '../../core/backend/agent_profile.dart';
 import '../../core/backend/agent_transaction.dart';
 import '../../core/backend/ai_agents/planning_agent.dart';
 import '../../core/backend/agent_mode.dart';
@@ -419,7 +421,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     final model = providerManager.activeModel;
     final workspace = ref.read(workspaceServiceProvider);
     final backend = ref.read(backendServiceProvider);
-    var userContent = _buildUserPrompt(text, _activeTabNow());
+    var userContent = _buildAgentPrompt(text);
     final memory = await _memoryContext(text, workspace.rootPath);
     if (!mounted) return;
     if (memory.isNotEmpty) {
@@ -437,18 +439,17 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       {'role': 'user', 'content': userContent},
     ];
 
-    const codeSystemPrompt = '''
-You are Hiide Code Mode, an autonomous senior software engineer.
-
-Execute the request in the actual workspace, not only as prose.
-First inspect the relevant files and diagnostics. Then make the smallest safe changes.
-After every meaningful edit, re-read or otherwise verify the affected state.
-Run focused tests/build/lint/type-check commands and react to failures until the root cause is resolved.
-Do not claim success when verification is missing or failing.
-Keep unrelated files untouched. Prefer apply_diff for surgical edits.
-Never escape the workspace. Preserve compatibility unless a breaking change is requested.
-At the end report changed areas, verification commands, unresolved failures, and assumptions.
-''';
+    final skillContext = await const HiideSkillRegistry().contextFor(
+      workspace.rootPath,
+      text,
+      maxSkills: 3,
+      maxChars: 9000,
+    );
+    if (!mounted) return;
+    if (skillContext.isNotEmpty) {
+      userContent += '\n\n' + skillContext;
+    }
+    final codeSystemPrompt = AgentProfile.build.systemPrompt;
 
     final controller = AgentController(
       ai: ai,
@@ -457,6 +458,7 @@ At the end report changed areas, verification commands, unresolved failures, and
       model: model,
       systemPrompt: codeSystemPrompt,
       approvalHandler: _requestAgentApproval,
+      allowedTools: AgentProfile.build.allowedTools,
     );
     _stopActiveAgent = controller.stop;
     await for (final event in controller.run(history)) {
@@ -477,7 +479,11 @@ At the end report changed areas, verification commands, unresolved failures, and
           }
         case AgentToolFinishedEvent():
           _updateToolBubble(event.toolCall);
-          _refreshOpenTabAfterTool(event.toolCall);
+          ref.invalidate(fileTreeProvider);
+          final changedPath = event.toolCall.arguments['path']?.toString();
+          if (changedPath != null && changedPath.isNotEmpty) {
+            ref.read(selectedWorkspacePathProvider.notifier).state = changedPath;
+          }
           if (taskId != null) {
             final current = store.byId(taskId);
             final count = (current?.toolCalls ?? 0) + 1;
