@@ -96,6 +96,62 @@ void main() {
     expect((args['arguments'] as String).length, lessThanOrEqualTo(4025));
   });
 
+  test('redacts secrets from persisted task content', () async {
+    final store = await AgentTaskStore.load();
+    final task = store.create(
+      objective: 'Use api_key=super-task-secret to configure the provider',
+      workspace: '/workspace/demo',
+      mode: 'code',
+    );
+
+    store.addEvent(
+      task.id,
+      kind: 'tool.start',
+      title: 'run_command',
+      detail: 'curl -H "Authorization: Bearer super-command-secret"',
+    );
+    store.addArtifact(
+      task.id,
+      const AgentArtifact(
+        id: 'secret-artifact',
+        type: AgentArtifactType.note,
+        title: 'password=artifact-title-secret',
+        content: 'password=artifact-content-secret',
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+    store.replaceTranscript(task.id, const [
+      {
+        'role': 'user',
+        'content': 'secret=transcript-secret',
+      },
+    ]);
+    store.update(
+      task.id,
+      error: 'api_key=error-secret',
+      summary: 'secret=summary-secret',
+    );
+    await store.flush();
+
+    final restored = await AgentTaskStore.load();
+    final saved = restored.byId(task.id)!;
+
+    expect(saved.objective, contains('[REDACTED]'));
+    expect(saved.timeline.single.detail, contains('[REDACTED]'));
+    expect(saved.artifacts.single.title, contains('[REDACTED]'));
+    expect(saved.artifacts.single.content, contains('[REDACTED]'));
+    expect(saved.transcript.single['content'], contains('[REDACTED]'));
+    expect(saved.error, contains('[REDACTED]'));
+    expect(saved.summary, contains('[REDACTED]'));
+
+    final persisted = (await SharedPreferences.getInstance())
+        .getString('hiide.agent_tasks.v1');
+    expect(persisted, isNot(contains('super-task-secret')));
+    expect(persisted, isNot(contains('super-command-secret')));
+    expect(persisted, isNot(contains('transcript-secret')));
+    expect(persisted, isNot(contains('error-secret')));
+  });
+
   test('marks interrupted non-terminal tasks canceled after restart', () async {
     final store = await AgentTaskStore.load();
     final task = store.create(
