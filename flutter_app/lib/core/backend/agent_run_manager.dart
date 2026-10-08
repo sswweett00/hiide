@@ -58,6 +58,8 @@ class AgentRunManager {
   final Map<String, Future<void>> _runs = <String, Future<void>>{};
   final Map<String, Completer<bool>> _approvalWaiters =
       <String, Completer<bool>>{};
+  final Map<String, AgentApprovalRequest> _pendingApprovals =
+      <String, AgentApprovalRequest>{};
 
   final StreamController<AgentApprovalRequest> _approvalController =
       StreamController<AgentApprovalRequest>.broadcast();
@@ -66,6 +68,9 @@ class AgentRunManager {
       _approvalController.stream;
 
   bool isRunning(String taskId) => _runs.containsKey(taskId);
+
+  List<AgentApprovalRequest> get pendingApprovals =>
+      List.unmodifiable(_pendingApprovals.values);
 
   AgentRunHandle startBuild({
     required String taskId,
@@ -140,6 +145,7 @@ class AgentRunManager {
     if (waiter == null || waiter.isCompleted) return;
 
     waiter.complete(approved);
+    _pendingApprovals.remove(requestId);
 
     final taskId = _taskIdForApproval(requestId);
     if (taskId != null) {
@@ -183,14 +189,14 @@ class AgentRunManager {
       success: false,
     );
 
-    _approvalController.add(
-      AgentApprovalRequest(
-        id: requestId,
-        taskId: taskId,
-        toolName: toolName,
-        arguments: Map<String, dynamic>.from(arguments),
-      ),
+    final request = AgentApprovalRequest(
+      id: requestId,
+      taskId: taskId,
+      toolName: toolName,
+      arguments: Map<String, dynamic>.from(arguments),
     );
+    _pendingApprovals[requestId] = request;
+    _approvalController.add(request);
 
     return waiter.future;
   }
@@ -206,7 +212,6 @@ class AgentRunManager {
   }) async {
     try {
       await for (final event in controller.run(history)) {
-        output.add(event);
         _checkpointEvent(taskId, controller, event);
 
         switch (event) {
@@ -218,7 +223,9 @@ class AgentRunManager {
               model: model,
               summary: text,
             );
+            output.add(event);
           case AgentErrorEvent(:final message):
+            output.add(event);
             taskStore.update(
               taskId,
               status: AgentTaskStatus.failed,
@@ -226,12 +233,14 @@ class AgentRunManager {
               summary: 'Agent execution failed.',
             );
           case AgentStoppedEvent():
+            output.add(event);
             taskStore.update(
               taskId,
               status: AgentTaskStatus.canceled,
               summary: 'Agent stopped by user.',
             );
           case AgentIterationLimitEvent(:final iterations, :final reason):
+            output.add(event);
             final message = reason + ' (iteration ' + iterations.toString() + ').';
             taskStore.update(
               taskId,
@@ -240,9 +249,12 @@ class AgentRunManager {
               summary: 'Agent budget limit reached.',
             );
           case AgentTextTokenEvent():
+            output.add(event);
           case AgentToolStartedEvent():
+            output.add(event);
           case AgentToolFinishedEvent():
-            break;
+            output.add(event);
+
         }
 
         taskStore.replaceTranscript(taskId, controller.workingMessages);
@@ -546,6 +558,7 @@ class AgentRunManager {
       }
     }
     _approvalWaiters.clear();
+    _pendingApprovals.clear();
     await _approvalController.close();
   }
 }
