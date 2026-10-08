@@ -114,6 +114,7 @@ class AgentController {
     this.maxContextMessages = 48,
     this.maxContextCharacters = 120000,
     this.approvalHandler,
+    this.allowedTools,
   })  : _ai = ai,
         _backend = backend,
         _workspaceRoot = workspaceRoot,
@@ -135,6 +136,8 @@ class AgentController {
   final int maxContextMessages;
   final int maxContextCharacters;
   final Future<bool> Function(String toolName, Map<String, dynamic> arguments)? approvalHandler;
+  /// Optional per-agent tool permission set. Disallowed tools are hidden from the model and blocked at execution time.
+  final Set<String>? allowedTools;
 
   bool _stopRequested = false;
   bool _workspaceMutated = false;
@@ -340,6 +343,19 @@ Guidelines:
     },
   ];
 
+  List<Map<String, dynamic>> get _advertisedToolDefinitions {
+    final allowed = allowedTools;
+    if (allowed == null) return toolDefinitions;
+    return toolDefinitions.where((tool) {
+      final fn = tool['function'];
+      final name = fn is Map ? fn['name']?.toString() : null;
+      return name != null && allowed.contains(name);
+    }).toList(growable: false);
+  }
+
+  bool _toolAllowed(String name) =>
+      allowedTools == null || allowedTools!.contains(name);
+
   /// Runs the agent loop. [messages] is the conversation history without the
   /// system prompt (the controller prepends its own).
   Stream<AgentEvent> run(List<Map<String, dynamic>> messages) async* {
@@ -391,7 +407,7 @@ Guidelines:
 
       final response = await _chatCompletionWithRecovery(
         messages: apiMessages,
-        tools: toolDefinitions,
+        tools: _advertisedToolDefinitions,
         model: _model,
       );
 
@@ -694,6 +710,13 @@ Guidelines:
 
   Future<_ToolResult> _executeTool(
       String name, Map<String, dynamic> args) async {
+    if (!_toolAllowed(name)) {
+      return _ToolResult(
+        '(permission denied) Tool "$name" is not enabled for this agent profile.',
+        success: false,
+      );
+    }
+
     final argumentError = args['__hiide_argument_error']?.toString();
     if (argumentError != null && argumentError.isNotEmpty) {
       return _ToolResult('(invalid arguments) ' + argumentError, success: false);
