@@ -48,9 +48,13 @@ class McpServerConfig {
     if (transport == 'stdio' && (command == null || command.isEmpty)) {
       return null;
     }
-    if (transport == 'streamable-http' &&
-        (url == null || Uri.tryParse(url) == null)) {
-      return null;
+    if (transport == 'streamable-http') {
+      final parsedUrl = url == null ? null : Uri.tryParse(url);
+      if (parsedUrl == null ||
+          parsedUrl.host.isEmpty ||
+          (parsedUrl.scheme != 'http' && parsedUrl.scheme != 'https')) {
+        return null;
+      }
     }
 
     return McpServerConfig(
@@ -111,7 +115,10 @@ class HiideMcpManager {
 
   List<McpToolBinding> get tools => List.unmodifiable(_bindings.values);
 
-  Future<void> loadWorkspace(String workspaceRoot) async {
+  Future<void> loadWorkspace(
+    String workspaceRoot, {
+    Future<bool> Function(McpServerConfig config)? approvalHandler,
+  }) async {
     _ensureNotDisposed();
     if (_loadedWorkspaceRoot == workspaceRoot) return;
     await closeAll();
@@ -142,6 +149,12 @@ class HiideMcpManager {
 
     try {
       for (final config in configs) {
+        if (approvalHandler == null || !await approvalHandler(config)) {
+          throw StateError(
+            'User approval is required before starting MCP server "' +
+                config.id + '".',
+          );
+        }
         await _connect(config, workspaceRoot);
       }
       _loadedWorkspaceRoot = workspaceRoot;
