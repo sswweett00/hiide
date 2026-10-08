@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/theme_provider.dart';
 import '../../core/backend/settings_service.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/providers/workspace_providers.dart'
 import '../../shared/widgets/ai_widgets.dart';
 import '../../shared/widgets/ide_shell.dart';
 import '../../shared/widgets/hiide_widgets.dart';
@@ -13,13 +13,7 @@ import '../../core/backend/ai_providers/provider_manager.dart';
 
 final settingsProvider = StateProvider<Map<String, dynamic>>((ref) => {
       'theme': 'Dark',
-      'fontSize': 14,
-      'tabSize': 4,
-      'wordWrap': false,
-      'minimap': true,
       'aiSuggestions': true,
-      'autoSave': true,
-      'formatOnSave': true,
     });
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -27,7 +21,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
   /// When true the page is rendered outside the IDE shell (welcome-flow
   /// style: aurora backdrop, centered card, back button) instead of inside
-  /// the full IDE chrome.
+  /// the full workspace chrome.
   final bool standalone;
 
   @override
@@ -140,7 +134,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           AiPageHeader(
             icon: Icons.settings_outlined,
             title: 'Settings',
-            subtitle: 'Tune your IDE and AI provider',
+            subtitle: 'Configure the AI-native workspace and providers',
             actions: widget.standalone
                 ? [
                     IconButton(
@@ -868,77 +862,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ),
                   ),
-                  _SettingsItem(
-                    title: 'Font Size',
-                    description: 'Adjust the editor font size',
-                    trailing: HiideTextField(
-                      hintText: '${settings['fontSize']}',
-                      maxLines: 1,
-                      onChanged: (value) {
-                        final fontSize =
-                            int.tryParse(value) ?? settings['fontSize'];
-                        ref.read(settingsProvider.notifier).state = {
-                          ...settings,
-                          'fontSize': fontSize
-                        };
-                        // Live-update the editor font size and persist.
-                        ref.read(editorFontSizeProvider.notifier).state =
-                            fontSize.toDouble();
-                        settingsService.setFontSize(fontSize);
-                      },
-                    ),
-                  ),
-                ]),
-                _SettingsSection(title: 'Editor', children: [
-                  _SettingsItem(
-                    title: 'Tab Size',
-                    description: 'Number of spaces per tab',
-                    trailing: HiideTextField(
-                      hintText: '${settings['tabSize']}',
-                      maxLines: 1,
-                      onChanged: (value) {
-                        final tabSize =
-                            int.tryParse(value) ?? settings['tabSize'];
-                        ref.read(settingsProvider.notifier).state = {
-                          ...settings,
-                          'tabSize': tabSize
-                        };
-                        // Live-update the editor tab size and persist.
-                        ref.read(editorTabSizeProvider.notifier).state = tabSize;
-                        settingsService.setTabSize(tabSize);
-                      },
-                    ),
-                  ),
-                  _SettingsItem(
-                    title: 'Word Wrap',
-                    description: 'Wrap lines at viewport width',
-                    trailing: Switch(
-                      value: settings['wordWrap'] as bool,
-                      onChanged: (value) {
-                        ref.read(settingsProvider.notifier).state = {
-                          ...settings,
-                          'wordWrap': value
-                        };
-                        // Live-toggle word wrap in the editor and persist.
-                        ref.read(editorWordWrapProvider.notifier).state = value;
-                        settingsService.setWordWrap(value);
-                      },
-                    ),
-                  ),
-                  _SettingsItem(
-                    title: 'Minimap',
-                    description: 'Show minimap in editor',
-                    trailing: Switch(
-                      value: settings['minimap'] as bool,
-                      onChanged: (value) {
-                        ref.read(settingsProvider.notifier).state = {
-                          ...settings,
-                          'minimap': value
-                        };
-                        settingsService.setMinimap(value);
-                      },
-                    ),
-                  ),
                 ]),
                 _SettingsSection(title: 'AI Features', children: [
                   _SettingsItem(
@@ -950,36 +873,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ref.read(settingsProvider.notifier).state = {
                           ...settings,
                           'aiSuggestions': value
-                        };
-                      },
-                    ),
-                  ),
-                  _SettingsItem(
-                    title: 'Auto Save',
-                    description: 'Automatically save files',
-                    trailing: Switch(
-                      value: settings['autoSave'] as bool,
-                      onChanged: (value) {
-                        ref.read(settingsProvider.notifier).state = {
-                          ...settings,
-                          'autoSave': value
-                        };
-                        // Live-toggle the editor behavior and persist it.
-                        ref.read(autoSaveEnabledProvider.notifier).state =
-                            value;
-                        settingsService.setAutoSave(value);
-                      },
-                    ),
-                  ),
-                  _SettingsItem(
-                    title: 'Format on Save',
-                    description: 'Auto-format code when saving',
-                    trailing: Switch(
-                      value: settings['formatOnSave'] as bool,
-                      onChanged: (value) {
-                        ref.read(settingsProvider.notifier).state = {
-                          ...settings,
-                          'formatOnSave': value
                         };
                       },
                     ),
