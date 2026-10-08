@@ -387,13 +387,16 @@ class SettingsService {
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! Map) return <String, String>{};
-      return {
-        for (final entry in decoded.entries)
-          if (entry.key.toString().trim().isNotEmpty &&
-              (entry.value?.toString().trim() ?? '').isNotEmpty)
-            entry.key.toString().trim().toLowerCase():
-                entry.value.toString().trim(),
-      };
+      final result = <String, String>{};
+      for (final entry in decoded.entries) {
+        final id = entry.key.toString().trim().toLowerCase();
+        final value = entry.value?.toString().trim() ?? '';
+        if (id.isEmpty || value.isEmpty) continue;
+        if (_isSafeAiEndpoint(Uri.tryParse(value))) {
+          result[id] = value;
+        }
+      }
+      return result;
     } catch (_) {
       return <String, String>{};
     }
@@ -451,6 +454,7 @@ class SettingsService {
         final baseUrl = item['baseUrl']?.toString().trim() ?? '';
         final model = item['model']?.toString().trim() ?? '';
         if (id.isEmpty || name.isEmpty || baseUrl.isEmpty || model.isEmpty) continue;
+        if (!_isSafeAiEndpoint(Uri.tryParse(baseUrl))) continue;
         if (!seen.add(id)) continue;
         result.add({
           'id': id,
@@ -476,6 +480,7 @@ class SettingsService {
       final baseUrl = raw['baseUrl']?.trim() ?? '';
       final model = raw['model']?.trim() ?? '';
       if (id.isEmpty || name.isEmpty || baseUrl.isEmpty || model.isEmpty) continue;
+      if (!_isSafeAiEndpoint(Uri.tryParse(baseUrl))) continue;
       if (id.length > 128 || name.length > 120 ||
           baseUrl.length > 512 || model.length > 256) {
         continue;
