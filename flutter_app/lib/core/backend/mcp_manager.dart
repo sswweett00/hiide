@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:mcp_dart/mcp_dart.dart';
 
+import 'secret_store.dart';
+
 class McpServerConfig {
   const McpServerConfig({
     required this.id,
@@ -12,6 +14,8 @@ class McpServerConfig {
     this.args = const [],
     this.workingDirectory,
     this.url,
+    this.bearerTokenEnv,
+    this.bearerTokenSecret,
     this.enabled = true,
   });
 
@@ -21,6 +25,8 @@ class McpServerConfig {
   final List<String> args;
   final String? workingDirectory;
   final String? url;
+  final String? bearerTokenEnv;
+  final String? bearerTokenSecret;
   final bool enabled;
 
   static McpServerConfig? fromJson(Map<String, dynamic> json) {
@@ -32,6 +38,8 @@ class McpServerConfig {
     final enabled = json['enabled'] is bool ? json['enabled'] as bool : true;
     final command = json['command']?.toString().trim();
     final url = json['url']?.toString().trim();
+    final bearerTokenEnv = json['bearerTokenEnv']?.toString().trim();
+    final bearerTokenSecret = json['bearerTokenSecret']?.toString().trim();
     final args = json['args'] is List
         ? (json['args'] as List).map((v) => v.toString()).take(64).toList()
         : const <String>[];
@@ -55,6 +63,11 @@ class McpServerConfig {
               ? null
               : workingDirectory,
       url: url,
+      bearerTokenEnv:
+          bearerTokenEnv == null || bearerTokenEnv.isEmpty ? null : bearerTokenEnv,
+      bearerTokenSecret: bearerTokenSecret == null || bearerTokenSecret.isEmpty
+          ? null
+          : bearerTokenSecret,
       enabled: enabled,
     );
   }
@@ -82,7 +95,10 @@ class McpToolCallResult {
 }
 
 class HiideMcpManager {
-  HiideMcpManager();
+  HiideMcpManager({SecretStore? secretStore})
+      : _secretStore = secretStore ?? FlutterSecretStore();
+
+  final SecretStore _secretStore;
 
   final Map<String, McpClient> _clients = <String, McpClient>{};
   final Map<String, McpToolBinding> _bindings = <String, McpToolBinding>{};
@@ -146,6 +162,19 @@ class HiideMcpManager {
   List<Map<String, dynamic>> openAiToolDefinitions() =>
       List.unmodifiable(_bindings.values.map((binding) => binding.definition));
 
+  String _redactSensitiveOutput(String output) {
+    var value = output;
+    final patterns = <RegExp>[
+      RegExp(r'(?i)(api[_-]?key|apikey|password|secret)\\s*[:=]\\s*["\\']?[^\\s,"\\'}]+'),
+      RegExp(r'(?i)bearer\\s+[A-Za-z0-9._~+\\-/]+=*'),
+      RegExp(r'-----BEGIN [A-Z ]+ PRIVATE KEY-----[\\s\\S]*?-----END [A-Z ]+ PRIVATE KEY-----'),
+    ];
+    for (final pattern in patterns) {
+      value = value.replaceAllMapped(pattern, (_) => '[REDACTED]');
+    }
+    return value;
+  }
+
   Future<McpToolCallResult> call(
     String fullName,
     Map<String, dynamic> arguments,
@@ -177,12 +206,12 @@ class HiideMcpManager {
       );
       return McpToolCallResult(
         success: !result.isError,
-        output: jsonEncode(result.toJson()),
+        output: _redactSensitiveOutput(jsonEncode(result.toJson())),
       );
     } catch (error) {
       return McpToolCallResult(
         success: false,
-        output: 'MCP tool call failed: ' + error.toString(),
+        output: _redactSensitiveOutput('MCP tool call failed: ' + error.toString()),
       );
     }
   }
@@ -221,7 +250,21 @@ class HiideMcpManager {
         ),
       );
     } else {
-      transport = StreamableHttpClientTransport(Uri.parse(config.url!));
+      final headers = <String, dynamic>{};
+      final bearer = await _resolveBearerToken(config);
+      if (bearer != null) {
+        headers['Authorization'] = 'Bearer ' + bearer;
+      }
+      transport = headers.isEmpty
+          ? StreamableHttpClientTransport(Uri.parse(config.url!))
+          : StreamableHttpClientTransport(
+              Uri.parse(config.url!),
+              opts: StreamableHttpClientTransportOptions(
+                requestInit: <String, dynamic>{
+                  'headers': headers,
+                },
+              ),
+            );
     }
 
     final client = McpClient(
@@ -257,6 +300,29 @@ class HiideMcpManager {
       await client.close();
       rethrow;
     }
+  }
+
+  Future<String?> _resolveBearerToken(McpServerConfig config) async {
+    final secretName = config.bearerTokenSecret;
+    if (secretName != null) {
+      final values = await _secretStore.readAll();
+      final token = values['hiide.mcp.bearer.' + secretName]?.trim();
+      if (token != null && token.isNotEmpty) return token;
+      throw StateError(
+        'Configured MCP bearer secret is unavailable: ' + secretName,
+      );
+    }
+
+    final envName = config.bearerTokenEnv;
+    if (envName != null) {
+      final token = Platform.environment[envName]?.trim();
+      if (token != null && token.isNotEmpty) return token;
+      throw StateError(
+        'Configured MCP bearer environment variable is unavailable: ' + envName,
+      );
+    }
+
+    return null;
   }
 
   String _uniqueToolName(String serverId, String toolName) {
