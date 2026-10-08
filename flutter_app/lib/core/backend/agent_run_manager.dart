@@ -608,6 +608,8 @@ class AgentRunManager {
     if (path != null && path.isNotEmpty) return path;
     final query = arguments['query']?.toString();
     if (query != null && query.isNotEmpty) return query;
+    final detail = arguments['detail']?.toString();
+    if (detail != null && detail.isNotEmpty) return detail;
     return toolName;
   }
 
