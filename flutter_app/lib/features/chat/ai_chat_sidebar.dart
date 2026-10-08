@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/agent_controller.dart';
 import '../../core/backend/agent_orchestrator.dart';
 import '../../core/backend/agent_profile.dart';
+import '../../core/backend/skill_registry.dart';
 import '../../core/backend/agent_transaction.dart';
 import '../../core/backend/ai_agents/planning_agent.dart';
 import '../../core/backend/agent_mode.dart';
@@ -558,38 +559,124 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
           );
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
+
+          var reviewResults = const <AgentSpecialistResult>[];
           if (taskId != null) {
             final current = store.byId(taskId);
             final verificationFailed = current?.verificationPassed == false;
+            final changedFiles = List<String>.from(
+              current?.changedFiles ?? const <String>[],
+            );
+
+            if (!verificationFailed) {
+              store.update(taskId, status: AgentTaskStatus.verifying);
+              store.addEvent(
+                taskId,
+                kind: 'specialist.start',
+                title: 'Uzman agent incelemeleri başlatıldı',
+                detail: 'Explore + Reviewer + Security paralel çalışıyor.',
+              );
+              ref.read(agentTaskVersionProvider.notifier).state++;
+
+              reviewResults = await _runSpecialistReviews(
+                text,
+                changedFiles: changedFiles,
+              );
+
+              for (final result in reviewResults) {
+                store.addArtifact(
+                  taskId,
+                  AgentArtifact(
+                    id: 'artifact_' +
+                        result.profile.id.name +
+                        '_' +
+                        DateTime.now().microsecondsSinceEpoch.toString(),
+                    type: AgentArtifactType.report,
+                    title: result.profile.label + ' specialist report',
+                    content: result.output,
+                    createdAt: DateTime.now(),
+                  ),
+                );
+                store.addEvent(
+                  taskId,
+                  kind: 'specialist.finish',
+                  title: result.profile.label + ' tamamlandı',
+                  detail: result.output,
+                  success: result.success,
+                );
+              }
+              ref.read(agentTaskVersionProvider.notifier).state++;
+            }
+
             final finalStatus = verificationFailed
                 ? AgentTaskStatus.failed
                 : AgentTaskStatus.succeeded;
             final finalSummary = verificationFailed
                 ? 'Agent completed the conversation, but the latest recorded verification failed.'
                 : event.text;
+            final reviewSummary = reviewResults.isEmpty
+                ? 'Specialist review: not run.'
+                : reviewResults
+                    .map(
+                      (result) =>
+                          result.profile.label +
+                          ': ' +
+                          (result.success ? 'completed' : 'failed'),
+                    )
+                    .join(' | ');
             final report = [
               'Objective: ' + (current?.objective ?? text),
-              'Changed files: ' + ((current?.changedFiles ?? const []).isEmpty ? 'none' : current!.changedFiles.join(', ')),
-              'Verification: ' + ((current?.verificationCommands ?? const []).isEmpty ? 'none recorded' : current!.verificationCommands.join(' | ')),
-              'Verification result: ' + (current?.verificationPassed == null ? 'not recorded' : (current!.verificationPassed! ? 'passed' : 'failed')),
+              'Changed files: ' +
+                  (changedFiles.isEmpty ? 'none' : changedFiles.join(', ')),
+              'Verification: ' +
+                  ((current?.verificationCommands ?? const []).isEmpty
+                      ? 'none recorded'
+                      : current!.verificationCommands.join(' | ')),
+              'Verification result: ' +
+                  (current?.verificationPassed == null
+                      ? 'not recorded'
+                      : (current!.verificationPassed! ? 'passed' : 'failed')),
+              reviewSummary,
               '',
               event.text.trim(),
             ].join('\n');
-            store.update(taskId, status: finalStatus, summary: finalSummary);
+            store.update(
+              taskId,
+              status: finalStatus,
+              summary: finalSummary,
+            );
             store.addArtifact(
               taskId,
               AgentArtifact(
-                id: 'artifact_report_' + DateTime.now().microsecondsSinceEpoch.toString(),
+                id: 'artifact_report_' +
+                    DateTime.now().microsecondsSinceEpoch.toString(),
                 type: AgentArtifactType.report,
                 title: 'Execution report',
                 content: report,
                 createdAt: DateTime.now(),
               ),
             );
-            store.addEvent(taskId, kind: verificationFailed ? 'completed_with_failure' : 'completed', title: verificationFailed ? 'Görev doğrulama hatasıyla sonlandı' : 'Görev tamamlandı', success: !verificationFailed);
+            store.addEvent(
+              taskId,
+              kind: verificationFailed
+                  ? 'completed_with_failure'
+                  : 'completed',
+              title: verificationFailed
+                  ? 'Görev doğrulama hatasıyla sonlandı'
+                  : 'Görev tamamlandı ve uzman incelemeleri kaydedildi',
+              success: !verificationFailed,
+            );
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
-          if (event.text.trim().isNotEmpty) _addMessage(ChatMessage(role: ChatRole.assistant, content: event.text, timestamp: DateTime.now()));
+          if (event.text.trim().isNotEmpty) {
+            _addMessage(
+              ChatMessage(
+                role: ChatRole.assistant,
+                content: event.text,
+                timestamp: DateTime.now(),
+              ),
+            );
+          }
         case AgentErrorEvent(:final message, :final rollback):
           _recordRollback(store, taskId, rollback);
           _finishStreamingText();
@@ -634,6 +721,23 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       store.replaceTranscript(taskId, controller.workingMessages);
       ref.read(agentTaskVersionProvider.notifier).state++;
     }
+  }
+
+  Future<List<AgentSpecialistResult>> _runSpecialistReviews(
+    String objective, {
+    required List<String> changedFiles,
+  }) async {
+    final providerManager = ref.read(providerManagerProvider);
+    final orchestrator = AgentOrchestrator(
+      ai: providerManager,
+      backend: ref.read(backendServiceProvider),
+      workspaceRoot: ref.read(workspaceServiceProvider).rootPath,
+      model: providerManager.activeModel,
+    );
+    return orchestrator.runParallelReadOnlyReview(
+      objective: objective,
+      changedFiles: changedFiles,
+    );
   }
 
   void _recordRollback(
