@@ -50,7 +50,8 @@ class McpServerConfig {
     final environment = <String, String>{};
     if (rawEnvironment != null) {
       if (rawEnvironment is! Map) return null;
-      for (final entry in rawEnvironment.entries.take(64)) {
+      if (rawEnvironment.length > 64) return null;
+      for (final entry in rawEnvironment.entries) {
         final key = entry.key.toString().trim();
         final value = entry.value.toString();
         if (!RegExp(r'^[A-Za-z_][A-Za-z0-9_]{0,127}$').hasMatch(key) ||
@@ -61,8 +62,11 @@ class McpServerConfig {
       }
     }
 
-    final args = json['args'] is List
-        ? (json['args'] as List).map((value) => value.toString()).take(64).toList()
+    final rawArgs = json['args'];
+    if (rawArgs != null && rawArgs is! List) return null;
+    if (rawArgs is List && rawArgs.length > 64) return null;
+    final args = rawArgs is List
+        ? rawArgs.map((value) => value.toString()).toList()
         : const <String>[];
 
     if (transport == 'stdio' &&
@@ -187,7 +191,10 @@ class HiideMcpManager {
 
     final configs = <McpServerConfig>[];
     final seen = <String>{};
-    for (final rawServer in rawServers.take(32)) {
+    if (rawServers.length > 32) {
+      throw const FormatException('MCP server limit is 32.');
+    }
+    for (final rawServer in rawServers) {
       if (rawServer is! Map) {
         throw const FormatException('MCP server entries must be objects.');
       }
@@ -499,7 +506,7 @@ class HiideMcpManager {
     var value = output;
     final patterns = <RegExp>[
       RegExp(
-        r'''(api[_-]?key|apikey|password|secret)\s*[:=]\s*["']?[^\s,"'}]+''',
+        r'''["']?(api[_-]?key|apikey|password|secret|access[_-]?token|refresh[_-]?token)["']?\s*[:=]\s*["']?[^\s,"'}]+''',
         caseSensitive: false,
       ),
       RegExp(
