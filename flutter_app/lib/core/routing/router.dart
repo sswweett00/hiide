@@ -24,7 +24,6 @@ import '../../features/plugin_manager/plugin_manager_screen.dart';
 import '../../features/keyboard_shortcuts/keyboard_shortcuts_screen.dart';
 import '../../features/command_palette/command_palette_screen.dart';
 import '../../features/notification_center/notification_center_screen.dart';
-import '../../features/quick_open/quick_open_screen.dart';
 import '../../features/diff_viewer/diff_viewer_screen.dart';
 import '../../features/merge_view/merge_view_screen.dart';
 
@@ -47,7 +46,6 @@ enum RoutePath {
   keyboardShortcuts('/keyboard-shortcuts'),
   commandPalette('/command-palette'),
   notificationCenter('/notifications'),
-  quickOpen('/quick-open'),
   diffViewer('/diff'),
   mergeView('/merge');
 
@@ -131,10 +129,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/command-palette',
         builder: (context, state) => const CommandPaletteScreen(),
-      ),
-      GoRoute(
-        path: '/notifications',
-        builder: (context, state) => const NotificationCenterScreen(),
       ),
       GoRoute(
         path: '/quick-open',
