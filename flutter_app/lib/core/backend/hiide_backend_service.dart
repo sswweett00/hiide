@@ -435,7 +435,7 @@ class HiideBackendService implements BackendService {
   Future<AgentToolResult> executeAgentTool(String toolId, Map<String, dynamic> input, {required String workspaceRoot, Duration? timeout}) async {
     late String encoded;
     try { encoded = jsonEncode(input); } catch (error) { return AgentToolResult(ok: false, output: '', error: 'Invalid tool input: $error'); }
-    final response = await _request('agent.tool.execute', {'tool': toolId, 'input': encoded, if (workspaceRoot != null) 'workspace_root': workspaceRoot, 'timeout_ms': (timeout ?? _agentToolTimeout).inMilliseconds}, timeout: timeout ?? _agentToolTimeout);
+    final response = await _request('agent.tool.execute', {'tool': toolId, 'input': encoded, 'workspace_root': workspaceRoot, 'timeout_ms': (timeout ?? _agentToolTimeout).inMilliseconds}, timeout: timeout ?? _agentToolTimeout);
     final result = _expectResult(response);
     return AgentToolResult(
       ok: _requiredBool(result, 'ok'),
