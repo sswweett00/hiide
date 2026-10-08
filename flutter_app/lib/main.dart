@@ -50,7 +50,11 @@ Future<BackendService> _createBackendService() async {
   return launch.backend;
 }
 
-$marker
+void _cleanupManagedEngine() {
+  final process = _spawnedEngineProcess;
+  _spawnedEngineProcess = null;
+  process?.kill();
+}
 
 class _EngineLifecycleObserver extends WidgetsBindingObserver {
   @override
@@ -154,10 +158,6 @@ Future<void> main() async {
     ollamaUrl = await settingsService.getOllamaUrl();
   } catch (_) {}
 
-  if (_spawnedEngineProcess != null && !kIsWeb) {
-    ProcessSignal.sigint.watch().listen((_) => _cleanupManagedEngine());
-    ProcessSignal.sigterm.watch().listen((_) => _cleanupManagedEngine());
-  }
 
   runApp(
     ProviderScope(
