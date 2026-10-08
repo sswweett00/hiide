@@ -617,12 +617,18 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
               ref.read(agentTaskVersionProvider.notifier).state++;
             }
 
+            final specialistFailed =
+                reviewResults.any((result) => !result.success);
             final finalStatus = verificationFailed
                 ? AgentTaskStatus.failed
-                : AgentTaskStatus.succeeded;
+                : specialistFailed
+                    ? AgentTaskStatus.succeededWithWarnings
+                    : AgentTaskStatus.succeeded;
             final finalSummary = verificationFailed
                 ? 'Agent completed the conversation, but the latest recorded verification failed.'
-                : event.text;
+                : specialistFailed
+                    ? 'Implementation completed, but at least one independent specialist review did not complete successfully.'
+                    : event.text;
             final reviewSummary = reviewResults.isEmpty
                 ? 'Specialist review: not run.'
                 : reviewResults
@@ -672,8 +678,10 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                   : 'completed',
               title: verificationFailed
                   ? 'Görev doğrulama hatasıyla sonlandı'
-                  : 'Görev tamamlandı ve uzman incelemeleri kaydedildi',
-              success: !verificationFailed,
+                  : specialistFailed
+                      ? 'Görev tamamlandı; uzman incelemesi eksik'
+                      : 'Görev tamamlandı ve uzman incelemeleri kaydedildi',
+              success: !verificationFailed && !specialistFailed,
             );
             ref.read(agentTaskVersionProvider.notifier).state++;
           }
