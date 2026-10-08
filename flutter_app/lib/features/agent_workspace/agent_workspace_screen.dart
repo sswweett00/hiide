@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-
 import '../../core/backend/agent_mode.dart';
 import '../../core/backend/agent_task_store.dart';
 import '../../shared/models/chat_message.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/providers/workspace_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
 import '../chat/ai_chat_sidebar.dart';
 
@@ -47,7 +45,6 @@ class AgentWorkspaceScreen extends ConsumerWidget {
               workspace: workspace,
               isThinking: isThinking,
               onNewTask: () => _newTask(ref),
-              onOpenEditor: () => context.go('/editor'),
               onWorkspace: () => context.go('/workspace-picker'),
             ),
             Expanded(
@@ -87,7 +84,7 @@ class AgentWorkspaceScreen extends ConsumerWidget {
                             workspace: workspace,
                             isThinking: isThinking,
                             lastPlan: lastPlan,
-                            activeTab: _activeTab(ref),
+                            selectedPath: ref.watch(selectedWorkspacePathProvider),
                             toolCount: toolCount,
                             task: activeTask,
                           ),
@@ -133,35 +130,18 @@ class AgentWorkspaceScreen extends ConsumerWidget {
     ref.read(streamingMessageProvider.notifier).state = '';
   }
 
-  EditorTabView? _activeTab(WidgetRef ref) {
-    final id = ref.read(activeTabIdProvider);
-    final tabs = ref.read(openTabsProvider);
-    if (id == null || tabs.isEmpty) return null;
-    final tab = tabs.firstWhere(
-      (t) => t.id == id,
-      orElse: () => tabs.first,
-    );
-    return EditorTabView(path: tab.path ?? tab.title);
-  }
-}
-
-class EditorTabView {
-  final String path;
-  const EditorTabView({required this.path});
 }
 
 class _AgentTopBar extends StatelessWidget {
   final String workspace;
   final bool isThinking;
   final VoidCallback onNewTask;
-  final VoidCallback onOpenEditor;
   final VoidCallback onWorkspace;
 
   const _AgentTopBar({
     required this.workspace,
     required this.isThinking,
     required this.onNewTask,
-    required this.onOpenEditor,
     required this.onWorkspace,
   });
 
@@ -238,12 +218,6 @@ class _AgentTopBar extends StatelessWidget {
                   onPressed: onWorkspace,
                   icon: const Icon(Icons.folder_open_rounded, size: 19),
                   tooltip: 'Çalışma alanını değiştir',
-                ),
-              if (!compact)
-                IconButton(
-                  onPressed: onOpenEditor,
-                  icon: const Icon(Icons.code_rounded, size: 19),
-                  tooltip: 'Kod yüzeyini aç',
                 ),
               const SizedBox(width: 5),
               FilledButton.icon(
@@ -420,7 +394,7 @@ class _AgentContextRail extends StatelessWidget {
   final String workspace;
   final bool isThinking;
   final String? lastPlan;
-  final EditorTabView? activeTab;
+  final String? selectedPath;
   final int toolCount;
   final AgentTaskRecord? task;
 
@@ -429,7 +403,7 @@ class _AgentContextRail extends StatelessWidget {
     required this.workspace,
     required this.isThinking,
     required this.lastPlan,
-    required this.activeTab,
+    required this.selectedPath,
     required this.toolCount,
     required this.task,
   });
@@ -449,7 +423,7 @@ class _AgentContextRail extends StatelessWidget {
           const SizedBox(height: 8),
           _InfoCard(icon: mode.icon, title: 'Mode', value: mode.label + (isThinking ? ' · working' : ' · ready')),
           const SizedBox(height: 8),
-          _InfoCard(icon: Icons.description_outlined, title: 'Active file', value: activeTab?.path ?? 'No file selected'),
+          _InfoCard(icon: Icons.description_outlined, title: 'AI focus', value: selectedPath ?? 'Agent selects files from the workspace'),
           const SizedBox(height: 8),
           _InfoCard(icon: Icons.flag_outlined, title: 'Task status', value: current?.status.label ?? 'No task selected'),
           const SizedBox(height: 8),
