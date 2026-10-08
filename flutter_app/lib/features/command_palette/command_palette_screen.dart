@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,23 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/design_system/tokens.dart';
-import '../../shared/models/editor_tab.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/providers/workspace_providers.dart';
 import '../bottom_panels/bottom_panels.dart';
 import '../../shared/widgets/ai_widgets.dart';
 
 final commandPaletteQueryProvider = StateProvider<String>((ref) => '');
 
 const _allCommands = <Map<String, String>>[
+  {'label': 'Agent: New Task', 'shortcut': '', 'category': 'Agent'},
   {'label': 'View: Toggle Terminal', 'shortcut': 'Ctrl+`', 'category': 'View'},
   {'label': 'View: Toggle AI Chat', 'shortcut': 'Ctrl+J', 'category': 'View'},
-  {'label': 'View: Toggle Zen Mode', 'shortcut': 'Ctrl+K Z', 'category': 'View'},
-  {'label': 'File: Save', 'shortcut': 'Ctrl+S', 'category': 'File'},
-  {'label': 'File: Close Editor', 'shortcut': 'Ctrl+W', 'category': 'File'},
-  {'label': 'Edit: Find', 'shortcut': 'Ctrl+F', 'category': 'Edit'},
-  {'label': 'Edit: Replace', 'shortcut': 'Ctrl+H', 'category': 'Edit'},
-  {'label': 'Go: Go to File', 'shortcut': 'Ctrl+P', 'category': 'Go'},
-  {'label': 'Go: Go to Line', 'shortcut': 'Ctrl+G', 'category': 'Go'},
+  {'label': 'Go: Agent Workspace', 'shortcut': '', 'category': 'Go'},
   {'label': 'Go: Explorer', 'shortcut': 'Ctrl+Shift+E', 'category': 'Go'},
   {'label': 'Go: Search', 'shortcut': 'Ctrl+Shift+F', 'category': 'Go'},
   {'label': 'Go: Source Control', 'shortcut': 'Ctrl+Shift+G', 'category': 'Go'},
@@ -140,124 +133,6 @@ class _CommandPaletteScreenState extends ConsumerState<CommandPaletteScreen> {
         ),
       ),
     );
-  }
-}
-
-Future<void> _saveActiveTab(WidgetRef ref, BuildContext context) async {
-  final id = ref.read(activeTabIdProvider);
-  final tabs = ref.read(openTabsProvider);
-  if (id == null) return;
-  final index = tabs.indexWhere((tab) => tab.id == id);
-  if (index < 0) return;
-  final tab = tabs[index];
-  if (tab.path == null || tab.path!.isEmpty || tab.title.startsWith('Untitled')) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This tab has no file path yet.')),
-      );
-    }
-    return;
-  }
-  try {
-    await ref.read(workspaceServiceProvider).writeFile(tab.path!, tab.content);
-    if (!context.mounted) return;
-    final updated = tab.copyWith(isModified: false);
-    ref.read(openTabsProvider.notifier).state = List<EditorTab>.from(tabs)..[index] = updated;
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Saved ${tab.title}')));
-    }
-  } catch (error) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Save failed: $error')));
-    }
-  }
-}
-
-Future<void> _showGoToLine(BuildContext context, WidgetRef ref) async {
-  final controller = TextEditingController(text: '${ref.read(cursorLineProvider)}');
-  try {
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Go to Line'),
-        content: TextField(controller: controller, autofocus: true, keyboardType: TextInputType.number),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () {
-              final line = int.tryParse(controller.text.trim());
-              if (line != null && line > 0) {
-                ref.read(cursorLineProvider.notifier).state = line;
-              }
-              Navigator.of(dialogContext).pop();
-            },
-            child: const Text('Go'),
-          ),
-        ],
-      ),
-    );
-  } finally {
-    controller.dispose();
-  }
-}
-
-void _executeCommand(BuildContext context, WidgetRef ref, String label) {
-  switch (label) {
-    case 'View: Toggle Terminal':
-      final current = ref.read(selectedBottomPanelProvider);
-      ref.read(selectedBottomPanelProvider.notifier).state = current == 'terminal' ? null : 'terminal';
-      break;
-    case 'View: Toggle AI Chat':
-      final current = ref.read(selectedBottomPanelProvider);
-      ref.read(selectedBottomPanelProvider.notifier).state = current == 'ai_chat' ? null : 'ai_chat';
-      break;
-    case 'View: Toggle Zen Mode':
-      ref.read(zenModeProvider.notifier).state = !ref.read(zenModeProvider);
-      break;
-    case 'File: Save':
-      unawaited(_saveActiveTab(ref, context));
-      break;
-    case 'File: Close Editor':
-      final id = ref.read(activeTabIdProvider);
-      final tabs = ref.read(openTabsProvider);
-      if (id != null) {
-        final updated = tabs.where((tab) => tab.id != id).toList();
-        ref.read(openTabsProvider.notifier).state = updated;
-        ref.read(activeTabIdProvider.notifier).state = updated.isEmpty ? null : updated.last.id;
-      }
-      break;
-    case 'Edit: Find':
-      ref.read(findBarOpenProvider.notifier).state = true;
-      ref.read(findReplaceModeProvider.notifier).state = false;
-      break;
-    case 'Edit: Replace':
-      ref.read(findBarOpenProvider.notifier).state = true;
-      ref.read(findReplaceModeProvider.notifier).state = true;
-      break;
-    case 'Go: Go to File':
-      context.go('/quick-open');
-      break;
-    case 'Go: Go to Line':
-      unawaited(_showGoToLine(context, ref));
-      break;
-    case 'Go: Explorer':
-      context.go('/explorer');
-      break;
-    case 'Go: Search':
-      context.go('/search');
-      break;
-    case 'Go: Source Control':
-      context.go('/source-control');
-      break;
-    case 'Go: Dashboard':
-      context.go('/dashboard');
-      break;
-    case 'Help: Keyboard Shortcuts':
-      context.go('/keyboard-shortcuts');
-      break;
-    case 'Help: About Hiide':
-      showAboutDialog(context: context, applicationName: 'Hiide AI IDE', applicationVersion: '0.1.0');
-      break;
   }
 }
 
