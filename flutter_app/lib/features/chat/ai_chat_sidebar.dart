@@ -709,86 +709,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     _resetStreamingText();
   }
 
-  /// Saves the conversation as a Markdown file in the workspace root
-  /// (`chat-export-<timestamp>.md`) and confirms with a snackbar.
-  Future<void> _exportChat() async {
-    final messages = ref.read(chatMessagesProvider);
-    if (messages.isEmpty) return;
-    final workspace = ref.read(workspaceServiceProvider);
-
-    final ts = DateTime.now();
-    String two(int n) => n.toString().padLeft(2, '0');
-    final stamp =
-        '${ts.year}${two(ts.month)}${two(ts.day)}-${two(ts.hour)}${two(ts.minute)}${two(ts.second)}';
-    final fileName = 'chat-export-$stamp.md';
-
-    final buffer = StringBuffer()
-      ..writeln('# Hiide AI — Sohbet Dışa Aktarımı')
-      ..writeln()
-      ..writeln('*${ts.toLocal()}*')
-      ..writeln();
-    for (final m in messages) {
-      switch (m.role) {
-        case ChatRole.user:
-          buffer
-            ..writeln('## 🧑 Kullanıcı')
-            ..writeln()
-            ..writeln(m.content)
-            ..writeln();
-        case ChatRole.assistant:
-          buffer
-            ..writeln('## 🤖 Hiide AI')
-            ..writeln()
-            ..writeln(m.content)
-            ..writeln();
-        case ChatRole.error:
-          buffer
-            ..writeln('## ⚠️ Hata')
-            ..writeln()
-            ..writeln(m.content)
-            ..writeln();
-        case ChatRole.system:
-          buffer
-            ..writeln('> _${m.content}_')
-            ..writeln();
-        case ChatRole.tool:
-          final call = m.toolCall;
-          if (call != null) {
-            buffer
-              ..writeln('> ⚙️ **${call.toolName}**'
-                  '${call.isRunning ? ' _(çalışıyor…)_' : ''}')
-              ..writeln();
-            if (call.result != null && call.result!.isNotEmpty) {
-              buffer
-                ..writeln('```')
-                ..writeln(call.result!)
-                ..writeln('```')
-                ..writeln();
-            }
-          }
-      }
-    }
-
-    try {
-      final path = '${workspace.rootPath}/$fileName';
-      await workspace.writeFile(path, buffer.toString());
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Dışa aktarıldı: $fileName'),
-          duration: const Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-        ));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Dışa aktarma başarısız: $e'),
-          backgroundColor: Colors.red,
-        ));
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider);
@@ -892,17 +812,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                         color: cs.onSurfaceVariant,
                         fontSize: DesignTokens.fontSizeXS)),
                 const SizedBox(width: DesignTokens.space2),
-                IconButton(
-                  icon: Icon(Icons.save_alt,
-                      size: DesignTokens.iconSM, color: cs.onSurfaceVariant),
-                  onPressed:
-                      isThinking || messages.isEmpty ? null : _exportChat,
-                  tooltip: 'Sohbeti dışa aktar (Markdown)',
-                  visualDensity: VisualDensity.compact,
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 24, minHeight: 24),
-                ),
                 IconButton(
                   icon: Icon(Icons.delete_outline,
                       size: DesignTokens.iconSM, color: cs.onSurfaceVariant),
