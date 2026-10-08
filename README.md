@@ -357,3 +357,30 @@ Frontend and desktop commands require Node and Rust toolchains (both available).
 cd apps/desktop
 npm run tauri dev
 ```
+
+## Linux distribution packages
+
+The release build is fully local: the Flutter desktop bundle and the Zig
+`hiide-ipc-server` are shipped together. End users do not download or host a
+separate Hiide backend.
+
+Build both Linux distribution formats locally with:
+
+```sh
+bash scripts/package-linux.sh
+```
+
+The script produces:
+
+- `dist/hiide_<version>_<arch>.deb`
+- `dist/Hiide-<version>-<arch>.AppImage`
+
+The Debian package installs the complete Flutter application, the native Zig
+engine, desktop integration and required Linux runtime dependencies. The
+AppImage contains the same application bundle and native engine as a single
+executable file.
+
+Pushing a `v*` tag runs `.github/workflows/linux-packages.yml` and publishes
+the generated `.deb` and `.AppImage` as GitHub release assets. The application
+starts the bundled local Zig engine automatically; no Hiide-hosted application
+backend is required.
