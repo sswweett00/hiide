@@ -41,10 +41,17 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            mapfile -t zig_files < <(git diff --name-only "${{ github.event.pull_request.base.sha }}..."${{ github.sha }} -- '*.zig')
+            git fetch --no-tags --depth=1 origin "${{ github.event.pull_request.base.sha }}"
+            diff_range="${{ github.event.pull_request.base.sha }}...${{ github.sha }}"
           else
-            mapfile -t zig_files < <(git diff --name-only "${{ github.event.before }}..."${{ github.sha }} -- '*.zig')
+            previous="${{ github.event.before }}"
+            if git cat-file -e "${previous}^{commit}" 2>/dev/null; then
+              diff_range="${previous}...${{ github.sha }}"
+            else
+              diff_range="HEAD^...${{ github.sha }}"
+            fi
           fi
+          mapfile -t zig_files < <(git diff --name-only "$diff_range" -- '*.zig')
           if [ "${#zig_files[@]}" -eq 0 ]; then
             echo "No changed Zig files."
             exit 0
