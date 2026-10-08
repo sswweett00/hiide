@@ -225,6 +225,12 @@ class SettingsService {
     await init();
     final id = providerId.trim().toLowerCase();
     if (id.isEmpty) return;
+
+    // Give legacy credentials a chance to migrate first. Never delete
+    // unrelated legacy credentials just because one provider was updated.
+    final existing = await _readSecureApiKeys();
+    await _migrateLegacyApiKeys(existing);
+
     final normalized = key.trim();
     final secureKey = _secretPrefix + id;
 
@@ -240,12 +246,38 @@ class SettingsService {
       );
     }
 
-    // Remove all legacy plaintext copies for this provider after the secure
-    // value is confirmed written/deleted.
-    await _prefs.remove(_keyAiApiKeys);
-    await _prefs.remove(_keyApiKey);
-    await _prefs.remove(_keyOpenaiApiKey);
-    await _prefs.remove(_keyAnthropicApiKey);
+    await _removeLegacyApiKey(id);
+  }
+
+  Future<void> _removeLegacyApiKey(String providerId) async {
+    final normalized = providerId.trim().toLowerCase();
+    if (normalized.isEmpty) return;
+
+    final raw = _safeGetString(_keyAiApiKeys);
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map) {
+          final remaining = <String, dynamic>{};
+          for (final entry in decoded.entries) {
+            final id = entry.key.toString().trim().toLowerCase();
+            if (id != normalized) {
+              remaining[id] = entry.value;
+            }
+          }
+          if (remaining.isEmpty) {
+            await _prefs.remove(_keyAiApiKeys);
+          } else {
+            await _prefs.setString(_keyAiApiKeys, jsonEncode(remaining));
+          }
+        }
+      } catch (_) {}
+    }
+
+    final legacyKey = _legacyPlaintextKeys[normalized];
+    if (legacyKey != null) {
+      await _prefs.remove(legacyKey);
+    }
   }
 
   Future<void> setApiKey(String key) => setAiApiKey('groq', key);
