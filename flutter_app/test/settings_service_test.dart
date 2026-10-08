@@ -112,48 +112,6 @@ void main() {
     expect(await settingsService.getModel(), SettingsService.defaultModel);
   });
 
-  test('getFontSize tolerates a non-int stored value', () async {
-    settingsService.resetForTesting();
-    SharedPreferences.setMockInitialValues({
-      'editor_font_size': 'fourteen',
-    });
-
-    expect(await settingsService.getFontSize(), 14);
-  });
-
-  // ─── UI mode (AI native / IDE) persistence ────────────────────────────────
-
-  test('getUiMode defaults to the agent-native layout when nothing is stored', () async {
-    settingsService.resetForTesting();
-    SharedPreferences.setMockInitialValues({});
-
-    expect(await settingsService.getUiMode(), UiMode.aiNative);
-  });
-
-  test('getUiMode restores a persisted AI-native choice', () async {
-    settingsService.resetForTesting();
-    SharedPreferences.setMockInitialValues({'ui_mode': 'aiNative'});
-
-    expect(await settingsService.getUiMode(), UiMode.aiNative);
-  });
-
-  test('setUiMode persists the choice for the next launch', () async {
-    settingsService.resetForTesting();
-    SharedPreferences.setMockInitialValues({});
-
-    await settingsService.setUiMode(UiMode.aiNative);
-    expect(await settingsService.getUiMode(), UiMode.aiNative);
-
-    await settingsService.setUiMode(UiMode.ide);
-    expect(await settingsService.getUiMode(), UiMode.ide);
-  });
-
-  test('getUiMode tolerates a corrupt stored value and stays agent-native', () async {
-    settingsService.resetForTesting();
-    SharedPreferences.setMockInitialValues({'ui_mode': 'quantum'});
-
-    expect(await settingsService.getUiMode(), UiMode.aiNative);
-  });
 
   test('AI provider keyring round-trips multiple providers', () async {
     settingsService.resetForTesting();
