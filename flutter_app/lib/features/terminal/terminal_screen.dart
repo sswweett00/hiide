@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/backend/terminal_service.dart';
 import '../../features/bottom_panels/bottom_panels.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/providers/workspace_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
 
 class TerminalScreen extends ConsumerStatefulWidget {
