@@ -146,7 +146,7 @@ pub fn subscribe(
     // Capture the baseline before publishing the subscription. Otherwise a
     // file created immediately after the IPC response can become part of the
     // watcher thread's first snapshot and never be reported as "created".
-    var initial = workspace_tools.workspaceTree(allocator, root, max_entries) catch return error.InvalidWatchRoot;
+    const initial = workspace_tools.workspaceTree(allocator, root, max_entries) catch return error.InvalidWatchRoot;
     var initial_owned = true;
     defer if (initial_owned) freeEntries(initial);
 
@@ -170,7 +170,7 @@ pub fn subscribe(
         .write_mutex = write_mutex,
     });
     errdefer {
-        const removed = registry.pop();
+        const removed = registry.pop() orelse unreachable;
         allocator.free(removed.root);
     }
 
