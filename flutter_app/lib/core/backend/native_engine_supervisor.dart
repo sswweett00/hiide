@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'backend_service.dart';
 import 'hiide_backend_service.dart';
@@ -21,7 +23,12 @@ class NativeEngineSupervisor {
   static const Duration _startupTimeout = Duration(seconds: 4);
 
   Future<NativeEngineLaunch> connectOrStart() async {
-    final existing = HiideBackendService(host: host, port: port);
+    final inheritedToken = Platform.environment['HIIDE_IPC_TOKEN'];
+    final existing = HiideBackendService(
+      host: host,
+      port: port,
+      ipcToken: inheritedToken,
+    );
     try {
       await existing.connect();
       return NativeEngineLaunch(backend: existing);
@@ -41,11 +48,24 @@ class NativeEngineSupervisor {
       if (!await File(candidate).exists()) continue;
       Process? process;
       try {
-        process = await Process.start(candidate, const [], runInShell: false);
+        final ipcToken = _generateIpcToken();
+        process = await Process.start(
+          candidate,
+          const [],
+          environment: <String, String>{
+            ...Platform.environment,
+            'HIIDE_IPC_TOKEN': ipcToken,
+          },
+          runInShell: false,
+        );
         unawaited(process.stdout.drain<void>().catchError((_) {}));
         unawaited(process.stderr.drain<void>().catchError((_) {}));
 
-        final backend = HiideBackendService(host: host, port: port);
+        final backend = HiideBackendService(
+          host: host,
+          port: port,
+          ipcToken: ipcToken,
+        );
         final deadline = DateTime.now().add(_startupTimeout);
         for (var attempt = 0;
             attempt < 20 && DateTime.now().isBefore(deadline);
@@ -77,6 +97,12 @@ class NativeEngineSupervisor {
       'Build/package hiide-ipc-server and ensure it is available beside the '
       'application executable.$detail',
     );
+  }
+
+  String _generateIpcToken() {
+    final random = Random.secure();
+    final bytes = List<int>.generate(32, (_) => random.nextInt(256));
+    return base64UrlEncode(bytes).replaceAll('=', '');
   }
 
   Future<List<String>> _candidates() async {
