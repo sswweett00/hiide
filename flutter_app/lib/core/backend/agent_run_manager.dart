@@ -54,7 +54,7 @@ class AgentRunManager {
   final AiChatClient ai;
   final BackendService backend;
   final AgentTaskStore taskStore;
-  final VoidCallback? onChanged;
+  final void Function()? onChanged;
 
   final Map<String, AgentController> _controllers = <String, AgentController>{};
   final Map<String, Future<void>> _runs = <String, Future<void>>{};
