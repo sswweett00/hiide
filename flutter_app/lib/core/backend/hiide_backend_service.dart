@@ -5,9 +5,10 @@ import 'dart:io';
 import 'backend_service.dart';
 
 class HiideBackendService implements BackendService {
-  HiideBackendService({this.host = '127.0.0.1', this.port = 4879});
+  HiideBackendService({this.host = '127.0.0.1', this.port = 4879, this.ipcToken});
   final String host;
   final int port;
+  final String? ipcToken;
   static const Duration _connectTimeout = Duration(seconds: 3);
   static const Duration _requestTimeout = Duration(seconds: 15);
   static const Duration _agentToolTimeout = Duration(seconds: 180);
@@ -55,7 +56,11 @@ class HiideBackendService implements BackendService {
         .listen(_handleLine, onDone: _onDisconnected, onError: _onSocketError);
     try {
       final hello = _expectResult(
-        await _request('hello', null, timeout: _requestTimeout),
+        await _request(
+          'hello',
+          ipcToken == null ? null : <String, dynamic>{'auth_token': ipcToken},
+          timeout: _requestTimeout,
+        ),
       );
       final protocolVersion = _requiredInt(hello, 'protocol_version');
       if (protocolVersion != hiideIpcProtocolVersion) {
