@@ -51,6 +51,7 @@ class AgentProfile {
       'list_directory',
       'run_command',
       'search_workspace',
+      'delegate_agent',
     },
     systemPrompt: '''
 You are the Hiide Build agent.
