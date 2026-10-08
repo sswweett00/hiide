@@ -24,6 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Zig
+        uses: xyzzylabs/setup-zig@v1
+        with:
+          version: 0.16.0
+
       - name: Canonicalize native Zig sources
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'style: format Zig sources')
         run: |
@@ -42,16 +52,6 @@ jobs:
           git add src/core/agent/framework/process_tools.zig src/core/compat.zig
           git commit -m "style: format Zig sources"
           git push
-
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Setup Zig
-        uses: xyzzylabs/setup-zig@v1
-        with:
-          version: 0.16.0
 
       - name: Verify toolchain contract
         run: test "$(zig version)" = "0.16.0"
