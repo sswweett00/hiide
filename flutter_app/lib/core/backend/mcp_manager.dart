@@ -99,7 +99,6 @@ class HiideMcpManager {
     _ensureNotDisposed();
     if (_loadedWorkspaceRoot == workspaceRoot) return;
     await closeAll();
-    _loadedWorkspaceRoot = workspaceRoot;
 
     final file = File(
       workspaceRoot +
@@ -133,8 +132,14 @@ class HiideMcpManager {
       configs.add(config);
     }
 
-    for (final config in configs) {
-      await _connect(config, workspaceRoot);
+    try {
+      for (final config in configs) {
+        await _connect(config, workspaceRoot);
+      }
+      _loadedWorkspaceRoot = workspaceRoot;
+    } catch (_) {
+      await closeAll();
+      rethrow;
     }
   }
 
