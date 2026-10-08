@@ -221,44 +221,6 @@ pub fn executeTool(
     }
 
     return ToolResponse{
-            .ok = false,
-            .output = try allocator.dupe(u8, result.output),
-            .error_message = try allocator.dupe(u8, result.error_message),
-        };
-    }
-
-    // Tool output is the boundary where workspace data can leave the local
-    // engine and enter the model provider. Never return detected secrets or
-    // regulated identifiers to the Flutter agent loop.
-    if (result.output.len > 0) {
-        const classification = classifier.ContentClassifier.classify(
-            result.output,
-            arena_alloc,
-        ) catch {
-            return ToolResponse{
-                .ok = false,
-                .output = try allocator.dupe(u8, ""),
-                .error_message = try allocator.dupe(u8, "tool output classification failed"),
-            };
-        };
-        defer arena_alloc.free(classification.spans);
-
-        if (@intFromEnum(classification.max_class) >= @intFromEnum(classifier.Classification.regulated)) {
-            result.output = classifier.ContentClassifier.redact(
-                result.output,
-                classification.spans,
-                arena_alloc,
-            ) catch {
-                return ToolResponse{
-                    .ok = false,
-                    .output = try allocator.dupe(u8, ""),
-                    .error_message = try allocator.dupe(u8, "tool output redaction failed"),
-                };
-            };
-        }
-    }
-
-    return ToolResponse{
         .ok = true,
         .output = try allocator.dupe(u8, result.output),
         .error_message = try allocator.dupe(u8, ""),
