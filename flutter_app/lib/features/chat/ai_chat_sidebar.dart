@@ -572,30 +572,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     }
   }
 
-  void _recordRollback(
-    AgentTaskStore store,
-    String? taskId,
-    AgentRollbackReport? rollback,
-  ) {
-    if (taskId == null || rollback == null || !rollback.hasChanges) return;
-    final detail = [
-      'Restored: ' + rollback.restored.toString(),
-      'Skipped: ' + rollback.skipped.toString(),
-      if (rollback.errors.isNotEmpty)
-        'Details: ' + rollback.errors.join(' | '),
-    ].join('\n');
-    store.addEvent(
-      taskId,
-      kind: rollback.complete ? 'rollback' : 'rollback_partial',
-      title: rollback.complete
-          ? 'Agent changes rolled back'
-          : 'Rollback completed with conflicts',
-      detail: detail,
-      success: rollback.complete,
-    );
-    ref.read(agentTaskVersionProvider.notifier).state++;
-  }
-
   bool _isVerificationCommand(String command) {
     final lower = command.toLowerCase();
     const markers = <String>[
@@ -611,22 +587,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       'fmt',
     ];
     return markers.any(lower.contains);
-  }
-
-  String _toolDetail(Map<String, dynamic> args) {
-    final path = args['path']?.toString();
-    final command = args['command']?.toString();
-    final query = args['query']?.toString();
-    if (path != null && path.isNotEmpty) return path;
-    if (command != null && command.isNotEmpty) return command;
-    if (query != null && query.isNotEmpty) return query;
-    return '';
-  }
-
-  String _truncateTaskDetail(String value) {
-    const max = 500;
-    if (value.length <= max) return value;
-    return value.substring(0, max) + '\n…[truncated]';
   }
 
   bool _looksLikePlanExecutionRequest(String text) {
