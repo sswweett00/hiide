@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/design_system/tokens.dart';
 import '../../shared/models/file_tree_item.dart';
-import '../../shared/models/editor_tab.dart';
-import '../../shared/providers/editor_providers.dart';
+import '../../shared/providers/workspace_providers.dart';
 
 class FileTree extends ConsumerWidget {
   const FileTree({super.key});
@@ -51,7 +50,7 @@ class _FileTreeView extends ConsumerWidget {
           isExpanded: isExpanded,
           onTap: () {
             if (item.isFile) {
-              _openFile(context, ref, item);
+              _selectFile(ref, item);
             } else {
               _toggleExpand(context, ref, item);
             }
@@ -77,35 +76,10 @@ class _FileTreeView extends ConsumerWidget {
     ref.read(expandedPathsProvider.notifier).state = newExpanded;
   }
 
-  Future<void> _openFile(
-      BuildContext context, WidgetRef ref, FileTreeItem item) async {
-    final existingTabs = ref.read(openTabsProvider);
-    final existingIndex = existingTabs.indexWhere((t) => t.path == item.path);
-
-    if (existingIndex >= 0) {
-      ref.read(activeTabIdProvider.notifier).state =
-          existingTabs[existingIndex].id;
-    } else {
-      final workspaceService = ref.read(workspaceServiceProvider);
-      String content = '';
-      try {
-        content = await workspaceService.readFile(item.path);
-      } catch (e) {
-        content = '// Error reading file: $e';
-      }
-      if (!context.mounted) return;
-
-      final newTab = EditorTab(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: item.name,
-        path: item.path,
-        content: content,
-        icon: item.icon,
-      );
-      ref.read(openTabsProvider.notifier).state = [...existingTabs, newTab];
-      ref.read(activeTabIdProvider.notifier).state = newTab.id;
-    }
+  void _selectFile(WidgetRef ref, FileTreeItem item) {
+    ref.read(selectedWorkspacePathProvider.notifier).state = item.path;
   }
+
 }
 
 class _FileTreeItemTile extends StatelessWidget {
