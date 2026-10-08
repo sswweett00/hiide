@@ -3,8 +3,13 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'secret_store.dart';
+
 /// Persists AI provider credentials, models and workspace preferences.
 class SettingsService {
+  SettingsService({SecretStore? secretStore})
+      : _secretStore = secretStore ?? FlutterSecretStore();
+
   static const _keyApiKey = 'groq_api_key';
   static const _keyModel = 'groq_model';
   static const _keyLastWorkspace = 'last_workspace';
@@ -47,6 +52,7 @@ class SettingsService {
   static const int maxTabSize = 16;
 
   late SharedPreferences _prefs;
+  final SecretStore _secretStore;
   bool _initialized = false;
 
   Future<void> init() async {
@@ -70,36 +76,19 @@ class SettingsService {
     return getAiApiKey('groq');
   }
 
+  static const _secretPrefix = 'hiide.ai.api_key.';
+  static const _legacyPlaintextKeys = <String, String>{
+    'groq': _keyApiKey,
+    'openai': _keyOpenaiApiKey,
+    'anthropic': _keyAnthropicApiKey,
+  };
+
   Future<Map<String, String>> getAiApiKeys() async {
     await init();
-    final values = <String, String>{};
 
-    final raw = _safeGetString(_keyAiApiKeys);
-    if (raw != null && raw.isNotEmpty) {
-      try {
-        final decoded = jsonDecode(raw);
-        if (decoded is Map) {
-          for (final entry in decoded.entries) {
-            final id = entry.key.toString().trim().toLowerCase();
-            final value = entry.value?.toString().trim() ?? '';
-            if (id.isNotEmpty && value.isNotEmpty) values[id] = value;
-          }
-        }
-      } catch (_) {}
-    }
-
-    final legacy = <String, String?>{
-      'groq': _safeGetString(_keyApiKey),
-      'openai': _safeGetString(_keyOpenaiApiKey),
-      'anthropic': _safeGetString(_keyAnthropicApiKey),
-    };
-    for (final entry in legacy.entries) {
-      if ((values[entry.key] ?? '').isEmpty &&
-          entry.value != null &&
-          entry.value!.trim().isNotEmpty) {
-        values[entry.key] = entry.value!.trim();
-      }
-    }
+    final secure = await _readSecureApiKeys();
+    final migrated = await _migrateLegacyApiKeys(secure);
+    final values = <String, String>{...secure, ...migrated};
 
     try {
       const envNames = <String, String>{
@@ -138,6 +127,84 @@ class SettingsService {
     return values;
   }
 
+  Future<Map<String, String>> _readSecureApiKeys() async {
+    try {
+      final raw = await _secretStore.readAll();
+      final values = <String, String>{};
+      for (final entry in raw.entries) {
+        if (!entry.key.startsWith(_secretPrefix)) continue;
+        final id = entry.key.substring(_secretPrefix.length).trim().toLowerCase();
+        final value = entry.value.trim();
+        if (id.isNotEmpty && value.isNotEmpty) values[id] = value;
+      }
+      return values;
+    } on Exception {
+      // Never fall back to plaintext storage when the secure store is
+      // unavailable. Environment variables/local providers remain usable.
+      return <String, String>{};
+    }
+  }
+
+  Future<Map<String, String>> _migrateLegacyApiKeys(
+    Map<String, String> existing,
+  ) async {
+    final legacy = <String, String>{};
+
+    try {
+      final raw = _safeGetString(_keyAiApiKeys);
+      if (raw != null && raw.isNotEmpty) {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map) {
+          for (final entry in decoded.entries) {
+            final id = entry.key.toString().trim().toLowerCase();
+            final value = entry.value?.toString().trim() ?? '';
+            if (id.isNotEmpty && value.isNotEmpty) legacy[id] = value;
+          }
+        }
+      }
+    } catch (_) {}
+
+    for (final entry in _legacyPlaintextKeys.entries) {
+      final value = _safeGetString(entry.value)?.trim() ?? '';
+      if (value.isNotEmpty) legacy.putIfAbsent(entry.key, () => value);
+    }
+
+    if (legacy.isEmpty) return <String, String>{};
+
+    try {
+      final secureRaw = await _secretStore.readAll();
+      final toMigrate = <MapEntry<String, String>>[];
+      for (final entry in legacy.entries) {
+        if ((existing[entry.key] ?? '').isNotEmpty) continue;
+        final secureKey = _secretPrefix + entry.key;
+        if (!secureRaw.containsKey(secureKey)) {
+          toMigrate.add(MapEntry(secureKey, entry.value));
+        }
+      }
+
+      for (final entry in toMigrate) {
+        await _secretStore.write(entry.key, entry.value);
+      }
+
+      // Only remove plaintext copies after every secure write succeeds.
+      if (toMigrate.isNotEmpty) {
+        await _prefs.remove(_keyAiApiKeys);
+        for (final key in _legacyPlaintextKeys.values) {
+          await _prefs.remove(key);
+        }
+      }
+
+      return {
+        for (final entry in legacy.entries)
+          if ((existing[entry.key] ?? '').isEmpty) entry.key: entry.value,
+      };
+    } on Exception {
+      // Secure-store failures must never trigger plaintext writes or deletes.
+      // The legacy data stays untouched for a future successful migration.
+      return <String, String>{};
+    }
+  }
+
   Future<String> getAiApiKey(String providerId) async {
     final id = providerId.trim().toLowerCase();
     if (id.isEmpty) return '';
@@ -154,22 +221,30 @@ class SettingsService {
     await init();
     final id = providerId.trim().toLowerCase();
     if (id.isEmpty) return;
-    final values = await getAiApiKeys();
     final normalized = key.trim();
-    if (normalized.isEmpty) {
-      values.remove(id);
-    } else {
-      values[id] = normalized;
+    final secureKey = _secretPrefix + id;
+
+    try {
+      if (normalized.isEmpty) {
+        await _secretStore.delete(secureKey);
+      } else {
+        await _secretStore.write(secureKey, normalized);
+      }
+    } on Exception catch (error) {
+      throw StateError(
+        'Secure AI credential storage is unavailable: $error',
+      );
     }
-    await _prefs.setString(_keyAiApiKeys, jsonEncode(values));
+
+    // Remove all legacy plaintext copies for this provider after the secure
+    // value is confirmed written/deleted.
+    await _prefs.remove(_keyAiApiKeys);
+    await _prefs.remove(_keyApiKey);
+    await _prefs.remove(_keyOpenaiApiKey);
+    await _prefs.remove(_keyAnthropicApiKey);
   }
 
-
-  Future<void> setApiKey(String key) async {
-    await setAiApiKey('groq', key);
-    await init();
-    await _prefs.setString(_keyApiKey, key.trim());
-  }
+  Future<void> setApiKey(String key) => setAiApiKey('groq', key);
 
   Future<String?> getLastWorkspace() async {
     await init();
