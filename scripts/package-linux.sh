@@ -116,7 +116,7 @@ Architecture: $DEB_ARCH
 Maintainer: Hiide Project <noreply@hiide.local>
 Description: Agent-native software development workspace
  Hiide is an AI-native desktop development workspace with a local Zig engine,
- agent tools, an integrated editor and BYOK AI provider support.
+ agent tools, an agent-operated workspace and BYOK AI provider support.
 Depends: libc6, libstdc++6, libgtk-3-0 | libgtk-3-0t64, libglib2.0-0 | libglib2.0-0t64
 EOF
 

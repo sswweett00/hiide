@@ -380,8 +380,8 @@ pub const ChildResult = struct {
     timed_out: bool = false,
 
     pub fn deinit(self: *ChildResult, allocator: std.mem.Allocator) void {
-        allocator.free(self.stdout);
-        allocator.free(self.stderr);
+        if (self.stdout.len > 0) allocator.free(self.stdout);
+        if (self.stderr.len > 0) allocator.free(self.stderr);
     }
 };
 
@@ -565,8 +565,10 @@ pub fn runCommandWithTimeout(
 
     if (watchdog_thread) |*thread| thread.join();
 
-    const stdout = try stdout_list.toOwnedSlice(allocator);
-    const stderr = try allocator.alloc(u8, 0);
+    // Always duplicate the final payload before releasing the temporary list.
+    // This keeps ownership explicit across allocator implementations.
+    const stdout = try allocator.dupe(u8, stdout_list.items);
+    const stderr: []u8 = &[_]u8{};
     return .{
         .stdout = stdout,
         .stderr = stderr,

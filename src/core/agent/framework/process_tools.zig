@@ -43,10 +43,14 @@ pub fn processRunTool() tool_mod.Tool {
                 ctx.workspace_root,
                 parsed.value.command,
             };
-            var result = compat.runCommandWithTimeout(allocator, &argv, timeout_ms) catch |err| {
+            // Keep OS-process scratch allocations outside the per-agent arena.
+            // The child runner may reallocate and free buffers during process
+            // teardown; returning only an arena-owned copy makes the lifetime
+            // boundary explicit and prevents allocator-specific double frees.
+            var result = compat.runCommandWithTimeout(std.heap.page_allocator, &argv, timeout_ms) catch |err| {
                 return tool_mod.ToolResult.failure(@errorName(err));
             };
-            defer result.deinit(allocator);
+            defer result.deinit(std.heap.page_allocator);
 
             // Build the combined, trimmed output the model will see.
             const out_trimmed = std.mem.trim(u8, result.stdout, " \t\r\n");
@@ -63,7 +67,7 @@ pub fn processRunTool() tool_mod.Tool {
                 try combined.appendSlice("(command completed with no output)");
             }
 
-            const output = try combined.toOwnedSlice();
+            const output = try allocator.dupe(u8, combined.items);
             if (result.timed_out) {
                 return .{ .ok = false, .output = output, .error_message = "command timed out" };
             }
