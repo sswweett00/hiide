@@ -6,7 +6,7 @@ pub const ServerHandle = *ipc.IpcServer;
 pub export fn hiide_ipc_start(port: u16) callconv(.C) ?ServerHandle {
     const allocator = std.heap.c_allocator;
     const server = allocator.create(ipc.IpcServer) catch return null;
-    server.* = ipc.IpcServer.init(allocator, port) catch {
+    server.* = ipc.IpcServer.init(allocator, port, null) catch {
         allocator.destroy(server);
         return null;
     };
