@@ -406,9 +406,11 @@ pub fn runCommandWithTimeout(
     var arg_zs: [64][:0]const u8 = undefined;
     var arg_count: usize = 0;
     var args_owned = true;
-    errdefer if (args_owned) {
-        for (arg_zs[0..arg_count]) |arg| {
-            std.heap.page_allocator.free(arg);
+    errdefer {
+        if (args_owned) {
+            for (arg_zs[0..arg_count]) |arg| {
+                std.heap.page_allocator.free(arg);
+            }
         }
     }
     for (argv, 0..) |arg, i| {
@@ -484,11 +486,13 @@ pub fn runCommandWithTimeout(
     }
 
     // Parent owns all remaining heap allocations and pipe state.
-    defer if (args_owned) {
-        for (arg_zs[0..arg_count]) |arg| {
-            std.heap.page_allocator.free(arg);
+    defer {
+        if (args_owned) {
+            for (arg_zs[0..arg_count]) |arg| {
+                std.heap.page_allocator.free(arg);
+            }
+            args_owned = false;
         }
-        args_owned = false;
     }
 
     _ = linux.close(stdout_pipe[1]);
