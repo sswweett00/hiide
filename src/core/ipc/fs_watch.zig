@@ -143,16 +143,12 @@ pub fn subscribe(
     conn: compat.TcpConnection,
     write_mutex: *compat.Mutex,
 ) !void {
-    // Validate the root before retaining it. This also rejects files and
-    // vanished paths instead of letting the watcher silently spin forever.
-    const probe = workspace_tools.workspaceTree(allocator, root, 1) catch return error.InvalidWatchRoot;
-    defer {
-        for (probe) |entry| {
-            allocator.free(entry.name);
-            allocator.free(entry.path);
-        }
-        allocator.free(probe);
-    }
+    // Capture the baseline before publishing the subscription. Otherwise a
+    // file created immediately after the IPC response can become part of the
+    // watcher thread's first snapshot and never be reported as "created".
+    var initial = workspace_tools.workspaceTree(allocator, root, max_entries) catch return error.InvalidWatchRoot;
+    var initial_owned = true;
+    defer if (initial_owned) freeEntries(initial);
 
     registry_mutex.lock();
     defer registry_mutex.unlock();
@@ -173,6 +169,20 @@ pub fn subscribe(
         .conn = conn,
         .write_mutex = write_mutex,
     });
+    errdefer {
+        const removed = registry.pop();
+        allocator.free(removed.root);
+    }
+
+    // The watcher thread will diff against this baseline when it observes the
+    // new subscription, so events cannot be lost during watcher startup.
+    if (!snapshots.contains(root)) {
+        const key = try allocator.dupe(u8, root);
+        errdefer allocator.free(key);
+        try snapshots.put(allocator, key, initial);
+        initial_owned = false;
+    }
+
     _ = subs_version.fetchAdd(1, .acq_rel);
 }
 
