@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/design_system/tokens.dart';
 import '../../core/providers/theme_provider.dart';
 import '../../core/backend/settings_service.dart';
-import '../../shared/providers/workspace_providers.dart'
 import '../../shared/widgets/ai_widgets.dart';
 import '../../shared/widgets/ide_shell.dart';
 import '../../shared/widgets/hiide_widgets.dart';
@@ -19,7 +18,7 @@ final settingsProvider = StateProvider<Map<String, dynamic>>((ref) => {
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key, this.standalone = false});
 
-  /// When true the page is rendered outside the IDE shell (welcome-flow
+  /// When true the page is rendered outside the workspace shell (welcome-flow
   /// style: aurora backdrop, centered card, back button) instead of inside
   /// the full workspace chrome.
   final bool standalone;
