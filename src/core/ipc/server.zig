@@ -2,8 +2,6 @@ const std = @import("std");
 const compat = @import("../compat.zig");
 const builtin = @import("builtin");
 const json = std.json;
-const ipc_c_api = @import("../editor/c_api.zig");
-const editor_diff = @import("../editor/diff.zig");
 const agent_runtime = @import("agent_runtime.zig");
 const fs_watch = @import("fs_watch.zig");
 const workspace_tools = @import("../agent/framework/workspace_tools.zig");
@@ -27,71 +25,6 @@ pub const IpcResponse = struct {
 
 const max_connections: u32 = 64;
 var active_connections: std.atomic.Value(u32) = std.atomic.Value(u32).init(0);
-
-const EditorRecord = struct {
-    owner: u64,
-    handle: ipc_c_api.EditorHandle,
-};
-
-const EditorRegistry = struct {
-    mutex: compat.Mutex = .init,
-    next_id: std.atomic.Value(u64) = std.atomic.Value(u64).init(1),
-    handles: std.AutoHashMapUnmanaged(u64, EditorRecord) = .{},
-
-    fn create(self: *EditorRegistry, owner: u64, text: []const u8) !u64 {
-        const handle = ipc_c_api.hiide_editor_create() orelse return error.EditorCreateFailed;
-        errdefer ipc_c_api.hiide_editor_destroy(handle);
-        ipc_c_api.hiide_editor_load(handle, text.ptr, text.len);
-
-        const id = self.next_id.fetchAdd(1, .monotonic);
-        if (id == 0) return error.EditorHandleExhausted;
-
-        self.mutex.lock();
-        defer self.mutex.unlock();
-        try self.handles.put(std.heap.c_allocator, id, .{ .owner = owner, .handle = handle });
-        return id;
-    }
-
-    fn get(self: *EditorRegistry, owner: u64, id: u64) !ipc_c_api.EditorHandle {
-        self.mutex.lock();
-        defer self.mutex.unlock();
-        const record = self.handles.get(id) orelse return error.InvalidHandle;
-        if (owner != 0 and record.owner != owner) return error.InvalidHandle;
-        return record.handle;
-    }
-
-    fn destroy(self: *EditorRegistry, owner: u64, id: u64) !void {
-        self.mutex.lock();
-        defer self.mutex.unlock();
-        const kv = self.handles.fetchRemove(id) orelse return error.InvalidHandle;
-        if (owner != 0 and kv.value.owner != owner) {
-            try self.handles.put(std.heap.c_allocator, id, kv.value);
-            return error.InvalidHandle;
-        }
-        ipc_c_api.hiide_editor_destroy(kv.value.handle);
-    }
-
-    fn destroyOwner(self: *EditorRegistry, owner: u64) void {
-        self.mutex.lock();
-        defer self.mutex.unlock();
-        while (true) {
-            var victim: ?u64 = null;
-            var it = self.handles.iterator();
-            while (it.next()) |entry| {
-                if (entry.value_ptr.owner == owner) {
-                    victim = entry.key_ptr.*;
-                    break;
-                }
-            }
-            const id = victim orelse break;
-            if (self.handles.fetchRemove(id)) |kv| {
-                ipc_c_api.hiide_editor_destroy(kv.value.handle);
-            } else break;
-        }
-    }
-};
-
-var editor_registry = EditorRegistry{};
 
 /// Wire protocol: newline-delimited JSON.
 /// The client writes exactly one JSON object per line; the server replies with
@@ -153,7 +86,6 @@ fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator) void {
     // events) goes through this mutex so lines never interleave.
     var write_mutex: compat.Mutex = .init;
     const conn_id = fs_watch.newConnectionId();
-    defer editor_registry.destroyOwner(conn_id);
     defer fs_watch.unsubscribeAll(conn_id);
 
     var buf: [65536]u8 = undefined;
@@ -308,17 +240,6 @@ fn ownerId(ctx: ?*DispatchContext) u64 {
     return if (ctx) |dctx| dctx.conn_id else 0;
 }
 
-fn handleValue(ctx: ?*DispatchContext, value: json.Value) !ipc_c_api.EditorHandle {
-    const raw = try intValue(value);
-    if (raw < 1) return error.InvalidHandle;
-    return editor_registry.get(ownerId(ctx), @intCast(raw));
-}
-
-fn paramHandle(ctx: ?*DispatchContext, obj: json.ObjectMap, key: []const u8) !ipc_c_api.EditorHandle {
-    const value = obj.get(key) orelse return error.MissingHandle;
-    return handleValue(ctx, value);
-}
-
 fn paramUint(obj: json.ObjectMap, key: []const u8) !usize {
     const value = obj.get(key) orelse return error.MissingParam;
     const raw = try intValue(value);
@@ -349,200 +270,6 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
     if (std.mem.eql(u8, req.method, "ping")) {
         return okResp(req.id, try dupStr(allocator, "pong"));
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.load")) {
-        const raw = req.params orelse return errResp(req.id, "missing text");
-        const text = stringValue(raw) catch return errResp(req.id, "text must be a string");
-        const handle_id = editor_registry.create(ownerId(ctx), text) catch return errResp(req.id, "editor create failed");
-        const handle = editor_registry.get(ownerId(ctx), handle_id) catch return errResp(req.id, "editor create failed");
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "handle", .{ .integer = @intCast(handle_id) } },
-            .{ "size", .{ .integer = @intCast(ipc_c_api.hiide_editor_size(handle)) } },
-            .{ "lines", .{ .integer = @intCast(ipc_c_api.hiide_editor_line_count(handle)) } },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.get_text")) {
-        const raw = req.params orelse return errResp(req.id, "missing handle");
-        const handle = handleValue(ctx, raw) catch return errResp(req.id, "invalid handle");
-        const text_ptr = ipc_c_api.hiide_editor_get_text(handle) orelse return errResp(req.id, "get text failed");
-        const text = std.mem.span(text_ptr);
-        defer ipc_c_api.hiide_editor_free(@constCast(text_ptr));
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "text", try dupStr(allocator, text) },
-            .{ "size", .{ .integer = @intCast(ipc_c_api.hiide_editor_size(handle)) } },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.insert")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        const pos = try paramUint(params, "pos");
-        const text = try paramStr(params, "text");
-        ipc_c_api.hiide_editor_insert(handle, pos, text.ptr, text.len);
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "size", .{ .integer = @intCast(ipc_c_api.hiide_editor_size(handle)) } },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.delete")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        const pos = try paramUint(params, "pos");
-        const len = try paramUint(params, "len");
-        ipc_c_api.hiide_editor_delete(handle, pos, len);
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "size", .{ .integer = @intCast(ipc_c_api.hiide_editor_size(handle)) } },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.undo")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        ipc_c_api.hiide_editor_undo(handle);
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{}) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.redo")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        ipc_c_api.hiide_editor_redo(handle);
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{}) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.line_count")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "lines", .{ .integer = @intCast(ipc_c_api.hiide_editor_line_count(handle)) } },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.size")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "size", .{ .integer = @intCast(ipc_c_api.hiide_editor_size(handle)) } },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.search")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        const query = try paramStr(params, "query");
-        const max = 10000;
-        const out = try allocator.alloc(ipc_c_api.SearchResult, max);
-        defer allocator.free(out);
-        const count = ipc_c_api.hiide_editor_search(handle, query.ptr, query.len, out.ptr, max);
-
-        var arr = json.Array.init(allocator);
-        errdefer {
-            for (arr.items) |*item| deinitValue(allocator, item);
-            arr.deinit();
-        }
-        for (out[0..count]) |r| {
-            var map: json.ObjectMap = .empty;
-            errdefer deinitObject(allocator, &map);
-            try map.put(allocator, "line", .{ .integer = @intCast(r.line) });
-            try map.put(allocator, "col", .{ .integer = @intCast(r.col) });
-            try map.put(allocator, "text", try dupStr(allocator, query));
-            try arr.append(.{ .object = map });
-        }
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "results", .{ .array = arr } },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.highlight")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        const lang = try paramStr(params, "lang");
-        const html_ptr = ipc_c_api.hiide_editor_highlight(handle, lang.ptr, lang.len) orelse return errResp(req.id, "highlight failed");
-        const html = std.mem.span(html_ptr);
-        defer ipc_c_api.hiide_editor_free(@constCast(html_ptr));
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "html", try dupStr(allocator, html) },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.destroy")) {
-        const params = try objParams(req);
-        const value = params.get("handle") orelse return errResp(req.id, "missing handle");
-        const raw = intValue(value) catch return errResp(req.id, "invalid handle");
-        if (raw < 1) return errResp(req.id, "invalid handle");
-        editor_registry.destroy(ownerId(ctx), @intCast(raw)) catch return errResp(req.id, "invalid handle");
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "ok", .{ .bool = true } },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.apply_text")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        const new_text = try paramStr(params, "text");
-
-        // Minimal single-region edit computed natively in bytes: longest
-        // common prefix + longest common suffix, then one delete + one insert.
-        // This replaces the Dart-side diff + UTF-8 offset conversion with a
-        // single IPC round trip.
-        const old_ptr = ipc_c_api.hiide_editor_get_text(handle);
-        const old = if (old_ptr) |p| std.mem.span(p) else "";
-        defer {
-            if (old_ptr) |p| ipc_c_api.hiide_editor_free(@constCast(p));
-        }
-
-        var prefix: usize = 0;
-        const max_prefix = @min(old.len, new_text.len);
-        while (prefix < max_prefix and old[prefix] == new_text[prefix]) prefix += 1;
-
-        var old_suf = old.len;
-        var new_suf = new_text.len;
-        while (old_suf > prefix and new_suf > prefix and old[old_suf - 1] == new_text[new_suf - 1]) {
-            old_suf -= 1;
-            new_suf -= 1;
-        }
-
-        if (old_suf > prefix) ipc_c_api.hiide_editor_delete(handle, prefix, old_suf - prefix);
-        if (new_suf > prefix) ipc_c_api.hiide_editor_insert(handle, prefix, new_text.ptr + prefix, new_suf - prefix);
-
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "size", .{ .integer = @intCast(ipc_c_api.hiide_editor_size(handle)) } },
-        }) });
-    }
-
-    if (std.mem.eql(u8, req.method, "editor.diff_lines")) {
-        const params = try objParams(req);
-        const handle = try paramHandle(ctx, params, "handle");
-        const disk_text = try paramStr(params, "disk_text");
-
-        const old_ptr = ipc_c_api.hiide_editor_get_text(handle);
-        const buffer_text = if (old_ptr) |p| std.mem.span(p) else "";
-        defer {
-            if (old_ptr) |p| ipc_c_api.hiide_editor_free(@constCast(p));
-        }
-
-        const regions = editor_diff.computeRegions(allocator, disk_text, buffer_text) catch |err| {
-            return errResp(req.id, @errorName(err));
-        };
-        defer allocator.free(regions);
-
-        var arr = json.Array.init(allocator);
-        errdefer {
-            for (arr.items) |*item| deinitValue(allocator, item);
-            arr.deinit();
-        }
-        for (regions) |r| {
-            var map = json.ObjectMap.empty;
-            errdefer deinitObject(allocator, &map);
-            try map.put(allocator, "line", .{ .integer = @intCast(r.line) });
-            try map.put(allocator, "kind", try dupStr(allocator, @tagName(r.kind)));
-            try map.put(allocator, "count", .{ .integer = @intCast(r.count) });
-            try arr.append(.{ .object = map });
-        }
-        return okResp(req.id, .{ .object = try buildObj(allocator, &.{
-            .{ "changes", .{ .array = arr } },
-        }) });
     }
 
     if (std.mem.eql(u8, req.method, "workspace.search")) {
