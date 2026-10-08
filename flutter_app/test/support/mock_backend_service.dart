@@ -54,21 +54,24 @@ class MockBackendService implements BackendService {
   Future<int> editorInsert(int handle, int pos, String text) async {
     await Future.delayed(const Duration(milliseconds: 50));
     final content = _buffers[handle];
-    if (content == null || pos > content.length) return 0;
+    if (content == null) return 0;
+    final codeUnitPos = _byteOffsetToCodeUnitIndex(content, pos);
     _recordEdit(handle, content);
     _buffers[handle] =
-        content.substring(0, pos) + text + content.substring(pos);
-    return _buffers[handle]!.length;
+        content.substring(0, codeUnitPos) + text + content.substring(codeUnitPos);
+    return utf8.encode(_buffers[handle]!).length;
   }
 
   @override
   Future<int> editorDelete(int handle, int pos, int len) async {
     await Future.delayed(const Duration(milliseconds: 50));
     final content = _buffers[handle];
-    if (content == null || pos + len > content.length) return 0;
+    if (content == null) return 0;
+    final start = _byteOffsetToCodeUnitIndex(content, pos);
+    final end = _byteOffsetToCodeUnitIndex(content, pos + len);
     _recordEdit(handle, content);
-    _buffers[handle] = content.substring(0, pos) + content.substring(pos + len);
-    return _buffers[handle]!.length;
+    _buffers[handle] = content.substring(0, start) + content.substring(end);
+    return utf8.encode(_buffers[handle]!).length;
   }
 
   @override
@@ -114,7 +117,8 @@ class MockBackendService implements BackendService {
   @override
   Future<int> editorSize(int handle) async {
     await Future.delayed(const Duration(milliseconds: 50));
-    return _buffers[handle]?.length ?? 0;
+    final content = _buffers[handle];
+    return content == null ? 0 : utf8.encode(content).length;
   }
 
   @override
@@ -129,7 +133,13 @@ class MockBackendService implements BackendService {
       final line = lines[i];
       final col = line.toLowerCase().indexOf(lowered);
       if (col != -1) {
-        results.add(EditorSearchResult(line: i + 1, col: col + 1, text: query));
+        final byteCol =
+            utf8.encode(line.substring(0, col)).length + 1;
+        results.add(EditorSearchResult(
+          line: i + 1,
+          col: byteCol,
+          text: query,
+        ));
       }
     }
     return results;
@@ -289,10 +299,10 @@ class MockBackendService implements BackendService {
   Future<AgentToolResult> executeAgentTool(
     String toolId,
     Map<String, dynamic> input, {
-    String? workspaceRoot,
+    required String workspaceRoot,
     Duration? timeout,
   }) async {
-    final root = workspaceRoot ?? Directory.current.path;
+    final root = workspaceRoot;
     final delay = timeout ?? const Duration(seconds: 60);
     try {
       switch (toolId) {
@@ -320,7 +330,10 @@ class MockBackendService implements BackendService {
           await File(path).parent.create(recursive: true);
           await File(path).writeAsString(content);
           return AgentToolResult(
-              ok: true, output: '{"written":true,"size":' + content.length.toString() + '}');
+            ok: true,
+            output:
+                '{"written":true,"size":${utf8.encode(content).length}}',
+          );
 
         case 'file.delete':
           final path = _resolve(root, input['path']?.toString() ?? '');
@@ -431,9 +444,22 @@ class MockBackendService implements BackendService {
           }
 
         case 'workspace.search':
-          // Engine-less fallback: empty result — the caller falls back to a
-          // local scan, matching the engine-offline behavior.
-          return const AgentToolResult(ok: true, output: '');
+          final query = input['query']?.toString() ?? '';
+          final maxResults = (input['max_results'] as num?)?.toInt() ?? 50;
+          final hits = await workspaceSearch(
+            root,
+            query,
+            maxResults: maxResults.clamp(1, 10000).toInt(),
+          );
+          final payload = hits
+              .map((hit) => {
+                    'path': hit.path,
+                    'line': hit.line,
+                    'col': hit.col,
+                    'text': hit.text,
+                  })
+              .toList();
+          return AgentToolResult(ok: true, output: jsonEncode(payload));
 
         default:
           return AgentToolResult(
@@ -447,6 +473,26 @@ class MockBackendService implements BackendService {
     } catch (e) {
       return AgentToolResult(ok: false, output: '', error: '$e');
     }
+  }
+
+  int _byteOffsetToCodeUnitIndex(String text, int byteOffset) {
+    if (byteOffset < 0) {
+      throw RangeError.index(byteOffset, text);
+    }
+    var bytes = 0;
+    var codeUnits = 0;
+    for (final rune in text.runes) {
+      final chunk = String.fromCharCode(rune);
+      final chunkBytes = utf8.encode(chunk).length;
+      if (byteOffset == bytes) return codeUnits;
+      if (byteOffset < bytes + chunkBytes) {
+        throw RangeError('byte offset splits a UTF-8 code point');
+      }
+      bytes += chunkBytes;
+      codeUnits += rune > 0xFFFF ? 2 : 1;
+    }
+    if (byteOffset == bytes) return codeUnits;
+    throw RangeError('byte offset $byteOffset exceeds $bytes bytes');
   }
 
   String _resolve(String root, String raw) {
