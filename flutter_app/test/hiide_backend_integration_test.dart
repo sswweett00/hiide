@@ -92,9 +92,19 @@ void main() {
 
   test('zig engine: hello + ping handshake', () async {
     final backend = HiideBackendService(port: port);
+    final messages = <String>[];
+    final output = backend.outputStream.listen(messages.add);
+
     await backend.connect();
     expect(backend.isConnected, isTrue);
+    expect(
+      messages.any((message) => message.contains('(IPC v1)')),
+      isTrue,
+      reason: 'frontend did not observe a compatible IPC v1 handshake: $messages',
+    );
     expect(await backend.ping(), 'pong');
+
+    await output.cancel();
     await backend.disconnect();
   });
 
