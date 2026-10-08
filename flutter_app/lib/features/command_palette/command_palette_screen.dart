@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/design_system/tokens.dart';
-import '../../shared/providers/workspace_providers.dart';
 import '../bottom_panels/bottom_panels.dart';
 import '../../shared/widgets/ai_widgets.dart';
 
