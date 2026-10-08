@@ -38,6 +38,8 @@ dependencies:
 
   # Storage
   shared_preferences: ^2.3.2
+  flutter_secure_storage: ^11.2.0
+  flutter_secure_storage_linux_secret_service: ^0.1.0
 
   # HTTP
   http: ^1.2.2
