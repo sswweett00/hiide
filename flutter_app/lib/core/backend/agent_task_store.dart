@@ -4,6 +4,28 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String _redactSensitiveText(String value) {
+  var sanitized = value;
+  final patterns = <RegExp>[
+    RegExp(
+      r'''(api[_-]?key|apikey|password|secret)\s*[:=]\s*["']?[^\s,"'}]+''',
+      caseSensitive: false,
+    ),
+    RegExp(
+      r'bearer\s+[A-Za-z0-9._~+\-/]+=*',
+      caseSensitive: false,
+    ),
+    RegExp(
+      r'''-----BEGIN [A-Z ]+ PRIVATE KEY-----[\s\S]*?-----END [A-Z ]+ PRIVATE KEY-----''',
+      caseSensitive: false,
+    ),
+  ];
+  for (final pattern in patterns) {
+    sanitized = sanitized.replaceAllMapped(pattern, (_) => '[REDACTED]');
+  }
+  return sanitized;
+}
+
 enum AgentTaskStatus { queued, planning, executing, verifying, waitingApproval, succeeded, succeededWithWarnings, failed, canceled }
 
 extension AgentTaskStatusX on AgentTaskStatus {
@@ -48,8 +70,8 @@ class AgentArtifact {
           (v) => v.name == json['type'],
           orElse: () => AgentArtifactType.note,
         ),
-        title: json['title']?.toString() ?? 'Artifact',
-        content: json['content']?.toString() ?? '',
+        title: _redactSensitiveText(json['title']?.toString() ?? 'Artifact'),
+        content: _redactSensitiveText(json['content']?.toString() ?? ''),
         createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
       );
 }
@@ -80,8 +102,8 @@ class AgentTimelineEvent {
   factory AgentTimelineEvent.fromJson(Map<String, dynamic> json) => AgentTimelineEvent(
         id: json['id']?.toString() ?? '',
         kind: json['kind']?.toString() ?? 'event',
-        title: json['title']?.toString() ?? '',
-        detail: json['detail']?.toString() ?? '',
+        title: _redactSensitiveText(json['title']?.toString() ?? ''),
+        detail: _redactSensitiveText(json['detail']?.toString() ?? ''),
         createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
         success: json['success'] != false,
       );
@@ -189,7 +211,7 @@ class AgentTaskRecord {
         : <Map<String, dynamic>>[];
     return AgentTaskRecord(
       id: json['id']?.toString() ?? '',
-      objective: json['objective']?.toString() ?? '',
+      objective: _redactSensitiveText(json['objective']?.toString() ?? ''),
       workspace: json['workspace']?.toString() ?? '',
       mode: json['mode']?.toString() ?? 'code',
       status: AgentTaskStatus.values.firstWhere(
@@ -198,9 +220,15 @@ class AgentTaskRecord {
       ),
       createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updatedAt']?.toString() ?? '') ?? DateTime.now(),
-      summary: json['summary']?.toString(),
-      error: json['error']?.toString(),
-      plan: json['plan']?.toString(),
+      summary: json['summary'] == null
+          ? null
+          : _redactSensitiveText(json['summary'].toString()),
+      error: json['error'] == null
+          ? null
+          : _redactSensitiveText(json['error'].toString()),
+      plan: json['plan'] == null
+          ? null
+          : _redactSensitiveText(json['plan'].toString()),
       changedFiles: strings(json['changedFiles']),
       verificationCommands: strings(json['verificationCommands']),
       artifacts: (json['artifacts'] as List? ?? const [])
