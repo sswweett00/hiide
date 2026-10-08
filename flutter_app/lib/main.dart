@@ -16,7 +16,7 @@ import 'core/backend/agent_task_store.dart';
 import 'core/backend/ai_providers/ai_provider.dart';
 import 'core/backend/ai_providers/provider_manager.dart';
 import 'core/localization/app_localizations.dart';
-import 'shared/providers/editor_providers.dart';
+import 'shared/providers/workspace_providers.dart';
 import 'features/settings/settings_screen.dart';
 
 ThemeData _resolveDarkTheme(AppThemePreference preference) {
@@ -108,6 +108,9 @@ Future<void> main() async {
   Map<String, String> aiProviderModels = const <String, String>{};
   List<Map<String, String>> customAiProviders = const <Map<String, String>>[];
   Map<String, String> aiProviderBaseUrls = const <String, String>{};
+  String openaiKey = '';
+  String anthropicKey = '';
+  String ollamaUrl = 'http://127.0.0.1:11434';
   try {
     aiProviderId = await settingsService.getAiProvider();
   } catch (_) {}
