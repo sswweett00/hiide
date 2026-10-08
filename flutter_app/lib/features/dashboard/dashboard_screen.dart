@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/backend/agent_task_store.dart';
-import '../../core/design_system/tokens.dart';
 import '../../shared/providers/workspace_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
 import '../../shared/widgets/ide_shell.dart';

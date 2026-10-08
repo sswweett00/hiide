@@ -119,9 +119,11 @@ top, followed by concrete file paths and the highest-value observations.
           case AgentTextTokenEvent(:final token):
             output.write(token);
           case AgentDoneEvent(:final text):
-            if (text.trim().isNotEmpty) output
+            if (text.trim().isNotEmpty) {
+              output
               ..write(output.isEmpty ? '' : '\n')
               ..write(text);
+            }
           case AgentErrorEvent(:final message):
             success = false;
             output

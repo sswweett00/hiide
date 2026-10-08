@@ -94,7 +94,6 @@ void main() {
   });
 
   AgentController makeController(AiChatClient ai, {int maxIterations = 15}) {
-    unawaited(backend.watchWorkspace(tempDir.path));
     return AgentController(
       ai: ai,
       backend: backend,
@@ -598,109 +597,25 @@ void main() {
   });
 }
 
-/// Delegates to a [MockBackendService] while recording every agent tool call.
+/// Delegates to a backend while recording the tool calls.
 class _RecordingBackend implements BackendService {
   _RecordingBackend(this._inner, this.onTool);
-
   final BackendService _inner;
   final void Function(String toolId, Map<String, dynamic> input) onTool;
-
   @override
-  Future<AgentToolResult> executeAgentTool(
-    String toolId,
-    Map<String, dynamic> input, {
-    String? workspaceRoot,
-    Duration? timeout,
-  }) {
+  Future<AgentToolResult> executeAgentTool(String toolId, Map<String, dynamic> input, {required String workspaceRoot, Duration? timeout}) {
     onTool(toolId, input);
-    return _inner.executeAgentTool(toolId, input,
-        workspaceRoot: workspaceRoot, timeout: timeout);
+    return _inner.executeAgentTool(toolId, input, workspaceRoot: workspaceRoot, timeout: timeout);
   }
-
-  @override
-  Future<void> connect() => _inner.connect();
-
-  @override
-  Future<void> disconnect() => _inner.disconnect();
-
-  @override
-  void dispose() => _inner.dispose();
-
-  @override
-  Future<int> editorDelete(int handle, int pos, int len) =>
-      _inner.editorDelete(handle, pos, len);
-
-  @override
-  Future<void> editorApplyText(int handle, String text) =>
-      _inner.editorApplyText(handle, text);
-
-  @override
-  Future<void> editorDestroy(int handle) => _inner.editorDestroy(handle);
-
-  @override
-  Future<List<EditorDiffRegion>> editorDiffLines(int handle, String diskText) =>
-      _inner.editorDiffLines(handle, diskText);
-
-  @override
-  Future<String> editorGetText(int handle) => _inner.editorGetText(handle);
-
-  @override
-  Future<String> editorHighlight(int handle, String lang) =>
-      _inner.editorHighlight(handle, lang);
-
-  @override
-  Future<int> editorInsert(int handle, int pos, String text) =>
-      _inner.editorInsert(handle, pos, text);
-
-  @override
-  Future<int> editorLineCount(int handle) => _inner.editorLineCount(handle);
-
-  @override
-  Future<int> editorLoad(String text) => _inner.editorLoad(text);
-
-  @override
-  Future<void> editorRedo(int handle) => _inner.editorRedo(handle);
-
-  @override
-  Future<List<EditorSearchResult>> editorSearch(int handle, String query) =>
-      _inner.editorSearch(handle, query);
-
-  @override
-  Future<int> editorSize(int handle) => _inner.editorSize(handle);
-
-  @override
-  Future<void> editorUndo(int handle) => _inner.editorUndo(handle);
-
-  @override
-  bool get isConnected => _inner.isConnected;
-
-  @override
-  Stream<FsChange> get fsChangeStream => _inner.fsChangeStream;
-
-  @override
-  Future<void> watchWorkspace(String root) => _inner.watchWorkspace(root);
-
-  @override
-  Future<void> unwatchWorkspace() => _inner.unwatchWorkspace();
-
-  @override
-  Stream<String> get outputStream => _inner.outputStream;
-
-  @override
-  Future<String> ping() => _inner.ping();
-
-  @override
-  Future<List<WorkspaceSearchResult>> workspaceSearch(
-    String root,
-    String query, {
-    int maxResults = 200,
-  }) =>
-      _inner.workspaceSearch(root, query, maxResults: maxResults);
-
-  @override
-  Future<List<WorkspaceFile>> workspaceTree(
-    String root, {
-    int maxEntries = 50000,
-  }) =>
-      _inner.workspaceTree(root, maxEntries: maxEntries);
+  @override Future<void> connect() => _inner.connect();
+  @override Future<void> disconnect() => _inner.disconnect();
+  @override Future<String> ping() => _inner.ping();
+  @override Future<List<WorkspaceSearchResult>> workspaceSearch(String query, {int maxResults = 200}) => _inner.workspaceSearch(query, maxResults: maxResults);
+  @override Future<List<WorkspaceFile>> workspaceTree(String root, {int maxEntries = 50000}) => _inner.workspaceTree(root, maxEntries: maxEntries);
+  @override Future<void> watchWorkspace(String root) => _inner.watchWorkspace(root);
+  @override Future<void> unwatchWorkspace() => _inner.unwatchWorkspace();
+  @override Stream<FsChange> get fsChangeStream => _inner.fsChangeStream;
+  @override Stream<String> get outputStream => _inner.outputStream;
+  @override bool get isConnected => _inner.isConnected;
+  @override void dispose() => _inner.dispose();
 }

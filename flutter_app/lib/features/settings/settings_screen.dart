@@ -6,7 +6,6 @@ import '../../core/providers/theme_provider.dart';
 import '../../core/backend/settings_service.dart';
 import '../../shared/widgets/ai_widgets.dart';
 import '../../shared/widgets/ide_shell.dart';
-import '../../shared/widgets/hiide_widgets.dart';
 import '../../core/backend/ai_providers/ai_provider.dart';
 import '../../core/backend/ai_providers/provider_manager.dart';
 

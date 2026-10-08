@@ -7,7 +7,6 @@ import '../../core/backend/agent_run_manager.dart';
 import '../../core/backend/agent_run_manager_provider.dart';
 import '../../core/backend/agent_profile.dart';
 import '../../core/backend/skill_registry.dart';
-import '../../core/backend/agent_transaction.dart';
 import '../../core/backend/ai_agents/planning_agent.dart';
 import '../../core/backend/agent_mode.dart';
 import '../../core/backend/agent_task_store.dart';
@@ -572,22 +571,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     }
   }
 
-  bool _isVerificationCommand(String command) {
-    final lower = command.toLowerCase();
-    const markers = <String>[
-      'test',
-      'build',
-      'analyze',
-      'lint',
-      'typecheck',
-      'type-check',
-      'check',
-      'verify',
-      'compile',
-      'fmt',
-    ];
-    return markers.any(lower.contains);
-  }
+
 
   bool _looksLikePlanExecutionRequest(String text) {
     final lower = text.toLowerCase();

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/design_system/tokens.dart';
 import '../../shared/models/todo_issue.dart';
 import '../../shared/providers/workspace_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';

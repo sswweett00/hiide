@@ -95,6 +95,7 @@ void main() {
     final output = backend.outputStream.listen(messages.add);
 
     await backend.connect();
+    await Future<void>.delayed(Duration.zero);
     expect(backend.isConnected, isTrue);
     expect(
       messages.any((message) => message.contains('(IPC v1)')),

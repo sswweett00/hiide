@@ -8,6 +8,7 @@ import 'agent_transaction.dart';
 import 'ai_chat_client.dart';
 import 'ai_memory/memory_store.dart';
 import 'backend_service.dart';
+import 'mcp_manager.dart';
 
 class AgentApprovalRequest {
   const AgentApprovalRequest({
@@ -191,7 +192,7 @@ class AgentRunManager {
       taskId: taskId,
       events: eventController.stream,
       done: run,
-      controller.stop,
+      _stop: controller.stop,
     );
   }
 
