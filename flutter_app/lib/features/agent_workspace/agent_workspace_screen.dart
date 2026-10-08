@@ -367,6 +367,7 @@ class _MissionRail extends StatelessWidget {
         AgentTaskStatus.verifying => Icons.fact_check_outlined,
         AgentTaskStatus.waitingApproval => Icons.pan_tool_outlined,
         AgentTaskStatus.succeeded => Icons.check_circle_outline,
+        AgentTaskStatus.succeededWithWarnings => Icons.warning_amber_outlined,
         AgentTaskStatus.failed => Icons.error_outline,
         AgentTaskStatus.canceled => Icons.stop_circle_outlined,
       };
@@ -375,6 +376,7 @@ class _MissionRail extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return switch (status) {
       AgentTaskStatus.succeeded => cs.primary,
+      AgentTaskStatus.succeededWithWarnings => cs.tertiary,
       AgentTaskStatus.failed => cs.error,
       AgentTaskStatus.canceled => cs.onSurfaceVariant,
       _ => cs.primary,
