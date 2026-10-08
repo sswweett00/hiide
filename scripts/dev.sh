@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ── hiide: run the full desktop stack ─────────────────────────────────────────
-#   1. Builds the Zig engine (editor core + agent framework + C ABI)
+#   1. Builds the Zig engine (agent framework + workspace/IPC runtime + C ABI)
 #   2. Starts the hiide-ipc-server on 127.0.0.1:4879
 #   3. Runs the Flutter IDE, which connects to the engine automatically
 #
