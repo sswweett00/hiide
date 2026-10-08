@@ -481,7 +481,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     ];
 
     final manager = ref.read(agentRunManagerProvider);
-    final handle = manager.startBuild(
+    final handle = await manager.startBuild(
       taskId: taskId,
       objective: text,
       history: history,
