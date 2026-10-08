@@ -52,7 +52,7 @@ class SettingsService {
   static const int maxTabSize = 16;
 
   late SharedPreferences _prefs;
-  final SecretStore _secretStore;
+  SecretStore _secretStore;
   bool _initialized = false;
 
   Future<void> init() async {
@@ -62,7 +62,10 @@ class SettingsService {
   }
 
   @visibleForTesting
-  void resetForTesting() => _initialized = false;
+  void resetForTesting() {
+    _initialized = false;
+    _secretStore = InMemorySecretStore();
+  }
 
   String? _safeGetString(String key) {
     try {
@@ -186,8 +189,9 @@ class SettingsService {
         await _secretStore.write(entry.key, entry.value);
       }
 
-      // Only remove plaintext copies after every secure write succeeds.
-      if (toMigrate.isNotEmpty) {
+      // Once the secure store is reachable and contains every legacy value,
+      // plaintext copies are no longer necessary.
+      if (toMigrate.isNotEmpty || legacy.isNotEmpty) {
         await _prefs.remove(_keyAiApiKeys);
         for (final key in _legacyPlaintextKeys.values) {
           await _prefs.remove(key);
