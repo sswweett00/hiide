@@ -39,11 +39,12 @@ pub const IpcServer = struct {
     auth_token: ?[]u8,
 
     pub fn init(allocator: std.mem.Allocator, port: u16) !IpcServer {
-        const server = try TcpServer.init(port);
         const auth_token = std.process.getEnvVarOwned(allocator, "HIIDE_IPC_TOKEN") catch |err| switch (err) {
             error.EnvironmentVariableNotFound => null,
             else => return err,
         };
+        errdefer if (auth_token) |token| allocator.free(token);
+        const server = try TcpServer.init(port);
         return .{
             .allocator = allocator,
             .listener = server,
@@ -56,6 +57,8 @@ pub const IpcServer = struct {
     pub fn deinit(self: *IpcServer) void {
         self.running = false;
         self.listener.deinit();
+        if (self.auth_token) |token| self.allocator.free(token);
+        self.* = undefined;
     }
 
     pub fn run(self: *IpcServer) !void {
@@ -483,10 +486,7 @@ test "ipc auth token validation" {
         try obj.put(std.testing.allocator, "auth_token", .{ .string = "secret" });
         break :blk obj;
     }};
-    defer {
-        var copy = params;
-        copy.object.deinit(std.testing.allocator);
-    }
+    defer @constCast(&params).object.deinit(std.testing.allocator);
 
     try std.testing.expect(authTokenMatches("secret", params));
     try std.testing.expect(!authTokenMatches("other", params));
