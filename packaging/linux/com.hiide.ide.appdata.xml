@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.hiide.ide</id>
+  <name>Hiide</name>
+  <summary>Agent-native software development workspace</summary>
+  <description>
+    <p>
+      Hiide is an AI-native development workspace with a local Zig engine,
+      agent tool execution, an integrated editor, terminal, workspace search,
+      verification and BYOK AI provider support.
+    </p>
+  </description>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Proprietary</project_license>
+  <launchable type="desktop-id">hiide.desktop</launchable>
+  <provides>
+    <binary>hiide</binary>
+  </provides>
+</component>
