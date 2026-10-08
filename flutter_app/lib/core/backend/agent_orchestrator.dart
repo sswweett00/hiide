@@ -1,7 +1,6 @@
 import 'agent_controller.dart';
 import 'agent_profile.dart';
-import 'ai_providers/ai_provider.dart';
-import 'ai_providers/provider_manager.dart';
+import 'ai_chat_client.dart';
 import 'backend_service.dart';
 import 'skill_registry.dart';
 
