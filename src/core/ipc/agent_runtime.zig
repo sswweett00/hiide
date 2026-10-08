@@ -22,6 +22,7 @@ const policy_mod = @import("../security/policy.zig");
 const telemetry_mod = @import("../telemetry/collector.zig");
 const approval_mod = @import("../agent/framework/approval.zig");
 const budget_mod = @import("../agent/framework/budget.zig");
+const classifier = @import("../security/classifier.zig");
 
 /// Result of one tool invocation, with allocator-owned strings.
 pub const ToolResponse = struct {
@@ -171,7 +172,7 @@ pub fn executeTool(
         .budget = &meter,
     };
 
-    const result = ctx.invokeTool(tool_id, input) catch |err| {
+    var result = ctx.invokeTool(tool_id, input) catch |err| {
         return ToolResponse{
             .ok = false,
             .output = try allocator.dupe(u8, ""),
@@ -185,6 +186,37 @@ pub fn executeTool(
             .output = try allocator.dupe(u8, result.output),
             .error_message = try allocator.dupe(u8, result.error_message),
         };
+    }
+
+    // Tool output is the boundary where workspace data can leave the local
+    // engine and enter the model provider. Never return detected secrets or
+    // regulated identifiers to the Flutter agent loop.
+    if (result.output.len > 0) {
+        const classification = classifier.ContentClassifier.classify(
+            result.output,
+            arena_alloc,
+        ) catch {
+            return ToolResponse{
+                .ok = false,
+                .output = try allocator.dupe(u8, ""),
+                .error_message = try allocator.dupe(u8, "tool output classification failed"),
+            };
+        };
+        defer arena_alloc.free(classification.spans);
+
+        if (@intFromEnum(classification.max_class) >= @intFromEnum(classifier.Classification.regulated)) {
+            result.output = classifier.ContentClassifier.redact(
+                result.output,
+                classification.spans,
+                arena_alloc,
+            ) catch {
+                return ToolResponse{
+                    .ok = false,
+                    .output = try allocator.dupe(u8, ""),
+                    .error_message = try allocator.dupe(u8, "tool output redaction failed"),
+                };
+            };
+        }
     }
 
     return ToolResponse{
@@ -235,6 +267,43 @@ test "agent runtime: file.write + file.read round trip inside the workspace" {
     }
     try std.testing.expect(read.ok);
     try std.testing.expect(std.mem.indexOf(u8, read.output, "runtime-works") != null);
+}
+
+test "agent runtime: secret tool output is redacted before IPC egress" {
+    const allocator = std.testing.allocator;
+
+    var tmp = std.testing.tmpDir(.{});
+    defer tmp.cleanup();
+    const root = try std.fs.path.join(allocator, &.{ ".zig-cache", "tmp", &tmp.sub_path });
+    defer allocator.free(root);
+
+    const write = try executeTool(
+        allocator,
+        "file.write",
+        "{"path":"secret.txt","content":"api_key=sk-super-secret-value"}",
+        root,
+        null,
+    );
+    defer {
+        allocator.free(write.output);
+        allocator.free(write.error_message);
+    }
+    try std.testing.expect(write.ok);
+
+    const read = try executeTool(
+        allocator,
+        "file.read",
+        "{"path":"secret.txt"}",
+        root,
+        null,
+    );
+    defer {
+        allocator.free(read.output);
+        allocator.free(read.error_message);
+    }
+    try std.testing.expect(read.ok);
+    try std.testing.expect(std.mem.indexOf(u8, read.output, "super-secret-value") == null);
+    try std.testing.expect(std.mem.indexOf(u8, read.output, "[REDACTED]") != null);
 }
 
 test "agent runtime: path escaping the workspace is rejected" {
