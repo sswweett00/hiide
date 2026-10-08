@@ -192,7 +192,7 @@ class AgentRunManager {
       taskId: taskId,
       events: eventController.stream,
       done: run,
-      _stop: controller.stop,
+      stop: controller.stop
     );
   }
 
