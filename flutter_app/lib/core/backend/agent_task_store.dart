@@ -280,7 +280,7 @@ class AgentTaskStore {
     final now = DateTime.now();
     final task = AgentTaskRecord(
       id: 'task_' + now.microsecondsSinceEpoch.toString(),
-      objective: objective,
+      objective: _redactSensitiveText(objective),
       workspace: workspace,
       mode: mode,
       status: AgentTaskStatus.queued,
@@ -310,9 +310,9 @@ class AgentTaskStore {
     if (task == null) return null;
     return _replace(task.copyWith(
       status: status,
-      summary: summary,
-      error: error,
-      plan: plan,
+      summary: summary == null ? null : _redactSensitiveText(summary),
+      error: error == null ? null : _redactSensitiveText(error),
+      plan: plan == null ? null : _redactSensitiveText(plan),
       changedFiles: changedFiles,
       verificationCommands: verificationCommands,
       toolCalls: toolCalls,
@@ -330,10 +330,12 @@ class AgentTaskStore {
     final safe = AgentArtifact(
       id: artifact.id,
       type: artifact.type,
-      title: artifact.title.length > 240
-          ? artifact.title.substring(0, 240)
-          : artifact.title,
-      content: content,
+      title: _redactSensitiveText(
+        artifact.title.length > 240
+            ? artifact.title.substring(0, 240)
+            : artifact.title,
+      ),
+      content: _redactSensitiveText(content),
       createdAt: artifact.createdAt,
     );
     return _replace(task.copyWith(
@@ -355,8 +357,8 @@ class AgentTaskStore {
     final event = AgentTimelineEvent(
       id: 'event_' + DateTime.now().microsecondsSinceEpoch.toString(),
       kind: kind,
-      title: title,
-      detail: detail,
+      title: _redactSensitiveText(title),
+      detail: _redactSensitiveText(detail),
       createdAt: DateTime.now(),
       success: success,
     );
@@ -433,6 +435,29 @@ class AgentTaskStore {
     return next;
   }
 
+  String _redactSensitiveText(String value) {
+    var sanitized = value;
+    final patterns = <RegExp>[
+      RegExp(
+        r'''(api[_-]?key|apikey|password|secret)\s*[:=]\s*["']?[^\s,"'}]+''',
+        caseSensitive: false,
+      ),
+      RegExp(
+        r'bearer\s+[A-Za-z0-9._~+\-/]+=*',
+        caseSensitive: false,
+      ),
+      RegExp(
+        r'''-----BEGIN [A-Z ]+ PRIVATE KEY-----[\s\S]*?-----END [A-Z ]+ PRIVATE KEY-----''',
+        caseSensitive: false,
+      ),
+    ];
+    for (final pattern in patterns) {
+      sanitized =
+          sanitized.replaceAllMapped(pattern, (_) => '[REDACTED]');
+    }
+    return sanitized;
+  }
+
   Map<String, dynamic> _sanitizeMessage(Map<String, dynamic> message) {
     return message.map(
       (key, value) => MapEntry(key, _sanitizeValue(value, depth: 0)),
@@ -442,8 +467,9 @@ class AgentTaskStore {
   dynamic _sanitizeValue(dynamic value, {required int depth}) {
     if (value is String) {
       const limit = 4000;
-      if (value.length <= limit) return value;
-      return value.substring(0, limit) + '\n…[transcript-truncated]';
+      final sanitized = _redactSensitiveText(value);
+      if (sanitized.length <= limit) return sanitized;
+      return sanitized.substring(0, limit) + '\n…[transcript-truncated]';
     }
     if (value is num || value is bool || value == null) return value;
 
