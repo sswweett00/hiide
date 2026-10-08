@@ -62,7 +62,8 @@ const PlannerFactory = struct {
 };
 
 pub const Options = struct {
-    approval_mode: approval_mod.Mode = .auto_approve,
+    /// Production defaults to explicit human approval; tests/headless callers opt into auto modes explicitly.
+  approval_mode: approval_mod.Mode = .manual,
     telemetry_level: telemetry_mod.TelemetryLevel = .basic,
     manual_clock: bool = false,
     executor: executor_mod.Options = .{},
