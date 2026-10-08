@@ -7,6 +7,7 @@ const editor_diff = @import("../editor/diff.zig");
 const agent_runtime = @import("agent_runtime.zig");
 const fs_watch = @import("fs_watch.zig");
 const workspace_tools = @import("../agent/framework/workspace_tools.zig");
+const ipc_protocol = @import("protocol.zig");
 
 // std.net was removed in Zig 0.17; use the compat shims backed by raw POSIX.
 const TcpServer = compat.TcpServer;
@@ -341,6 +342,8 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         return okResp(req.id, .{ .object = try buildObj(allocator, &.{
             .{ "service", try dupStr(allocator, "hiide-zig-engine") },
             .{ "version", try dupStr(allocator, "0.1.0") },
+            .{ "protocol_version", .{ .integer = ipc_protocol.protocol_version } },
+            .{ "transport", try dupStr(allocator, "ndjson-json-rpc") },
         }) });
     }
 
