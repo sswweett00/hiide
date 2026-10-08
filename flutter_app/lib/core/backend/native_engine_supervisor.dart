@@ -25,8 +25,15 @@ class NativeEngineSupervisor {
     try {
       await existing.connect();
       return NativeEngineLaunch(backend: existing);
-    } catch (_) {
+    } catch (error) {
       await existing.disconnect();
+      final message = error.toString();
+      if (message.contains('Incompatible Hiide IPC') ||
+          message.contains('IPC contract violation')) {
+        // An engine is reachable but speaks an incompatible wire contract.
+        // Starting another process on the same port cannot repair that state.
+        rethrow;
+      }
     }
 
     String? lastError;
