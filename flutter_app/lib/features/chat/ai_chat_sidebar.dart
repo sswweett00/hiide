@@ -12,9 +12,8 @@ import '../../core/design_system/tokens.dart';
 import '../../core/providers/backend_provider.dart';
 import '../../core/backend/ai_providers/provider_manager.dart';
 import '../../shared/models/chat_message.dart';
-import '../../shared/models/editor_tab.dart';
-import '../../shared/providers/editor_providers.dart';
 import '../../shared/widgets/ai_widgets.dart';
+import '../../shared/providers/workspace_providers.dart';
 
 final chatMessagesProvider = StateProvider<List<ChatMessage>>((ref) => []);
 final chatInputProvider = StateProvider<String>((ref) => '');
@@ -25,12 +24,11 @@ final streamingMessageProvider = StateProvider<String>((ref) => '');
 final agentMessagesProvider =
     StateProvider<List<Map<String, dynamic>>>((ref) => []);
 
-/// One-shot prompt injected by the editor ("Ask AI" actions). The chat
+/// One-shot prompt injected by the agent workspace or quick actions.
 /// sidebar watches this and sends it automatically.
 final aiPromptProvider = StateProvider<String?>((ref) => null);
 
-/// Max characters of the active file injected as context per turn.
-const _activeFileContextChars = 3000;
+/// Optional selected workspace path; the agent reads file contents itself.
 const _maxVisibleChatMessages = 300;
 const _maxAgentHistoryMessages = 160;
 
@@ -192,29 +190,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     'daha',
     'olanı',
   };
-
-  EditorTab? _activeTabNow() {
-    final activeId = ref.read(activeTabIdProvider);
-    final tabs = ref.read(openTabsProvider);
-    if (activeId == null || tabs.isEmpty) return null;
-    return tabs.firstWhere(
-      (t) => t.id == activeId,
-      orElse: () => tabs.first,
-    );
-  }
-
-  /// Appends active-file context to the user message so the agent sees what
-  /// the user is looking at.
-  String _buildUserPrompt(String message, EditorTab? tab) {
-    if (tab == null || tab.content.isEmpty) return message;
-    final preview = tab.content.length > _activeFileContextChars
-        ? '${tab.content.substring(0, _activeFileContextChars)}\n…[truncated]'
-        : tab.content;
-    return '$message\n\n'
-        '--- Context: active file ${tab.path ?? tab.title} '
-        '(first $_activeFileContextChars chars) ---\n'
-        '$preview';
-  }
 
   Future<void> _sendMessage([String? preset]) async {
     final text = (preset ?? _inputController.text).trim();
