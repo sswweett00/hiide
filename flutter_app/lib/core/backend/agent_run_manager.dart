@@ -110,6 +110,7 @@ class AgentRunManager {
       taskId: taskId,
       objective: objective,
       workspaceRoot: workspaceRoot,
+      model: model,
       history: history,
       controller: controller,
       output: eventController,
@@ -198,6 +199,7 @@ class AgentRunManager {
     required String taskId,
     required String objective,
     required String workspaceRoot,
+    required String model,
     required List<Map<String, dynamic>> history,
     required AgentController controller,
     required StreamController<AgentEvent> output,
@@ -213,6 +215,7 @@ class AgentRunManager {
               taskId: taskId,
               objective: objective,
               workspaceRoot: workspaceRoot,
+              model: model,
               summary: text,
             );
           case AgentErrorEvent(:final message):
@@ -336,6 +339,7 @@ class AgentRunManager {
     required String taskId,
     required String objective,
     required String workspaceRoot,
+    required String model,
     required String summary,
   }) async {
     final current = taskStore.byId(taskId);
@@ -358,7 +362,7 @@ class AgentRunManager {
         ai: ai,
         backend: backend,
         workspaceRoot: workspaceRoot,
-        model: (ai as dynamic).activeModel?.toString() ?? '',
+        model: model,
       );
 
       specialistResults = await specialists.runParallelReadOnlyReview(
