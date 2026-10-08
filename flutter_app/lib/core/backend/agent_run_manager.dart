@@ -48,12 +48,14 @@ class AgentRunManager {
     required this.ai,
     required this.backend,
     required this.taskStore,
+    required this.mcpManager,
     this.onChanged,
   });
 
   final AiChatClient ai;
   final BackendService backend;
   final AgentTaskStore taskStore;
+  final HiideMcpManager mcpManager;
   final void Function()? onChanged;
 
   final Map<String, AgentController> _controllers = <String, AgentController>{};
@@ -76,7 +78,7 @@ class AgentRunManager {
   List<AgentApprovalRequest> get pendingApprovals =>
       List.unmodifiable(_pendingApprovals.values);
 
-  AgentRunHandle startBuild({
+  Future<AgentRunHandle> startBuild({
     required String taskId,
     required String objective,
     required List<Map<String, dynamic>> history,
@@ -87,6 +89,8 @@ class AgentRunManager {
     if (isRunning(taskId)) {
       throw StateError('Agent task is already running: ' + taskId);
     }
+
+    await mcpManager.loadWorkspace(workspaceRoot);
 
     taskStore.update(
       taskId,
@@ -109,6 +113,7 @@ class AgentRunManager {
       systemPrompt: profile.systemPrompt,
       maxIterations: profile.maxIterations,
       allowedTools: profile.allowedTools,
+      mcpManager: mcpManager,
       approvalHandler: (toolName, arguments) =>
           _requestApproval(taskId, toolName, arguments),
     );
