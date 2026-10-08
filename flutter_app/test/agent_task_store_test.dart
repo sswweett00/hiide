@@ -115,6 +115,14 @@ void main() {
     expect(recovered.summary, 'Interrupted by application restart.');
   });
 
+  test('treats succeeded-with-warnings as terminal and explicit', () {
+    expect(AgentTaskStatus.succeededWithWarnings.terminal, isTrue);
+    expect(
+      AgentTaskStatus.succeededWithWarnings.label,
+      'Succeeded with warnings',
+    );
+  });
+
   test('keeps terminal tasks intact during recovery', () async {
     final store = await AgentTaskStore.load();
     final task = store.create(
