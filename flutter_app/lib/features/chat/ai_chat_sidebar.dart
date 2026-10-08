@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/backend/agent_controller.dart';
-import '../../core/backend/agent_orchestrator.dart';
 import '../../core/backend/agent_run_manager.dart';
 import '../../core/backend/agent_run_manager_provider.dart';
 import '../../core/backend/agent_profile.dart';
@@ -439,17 +438,12 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
 
   Future<void> _runCodeMode(String text) async {
     final taskId = ref.read(activeAgentTaskIdProvider);
+    if (taskId == null) return;
+
     final store = ref.read(agentTaskStoreProvider);
-    if (taskId != null) {
-      store.update(taskId, status: AgentTaskStatus.executing, clearError: true);
-      store.addEvent(taskId, kind: 'execution', title: 'Agent workspace üzerinde çalışmaya başladı');
-      ref.read(agentTaskVersionProvider.notifier).state++;
-    }
     final providerManager = ref.read(providerManagerProvider);
-    final ai = providerManager;
-    final model = providerManager.activeModel;
     final workspace = ref.read(workspaceServiceProvider);
-    final backend = ref.read(backendServiceProvider);
+
     var userContent = _buildAgentPrompt(text);
     final memory = await _memoryContext(text, workspace.rootPath);
     if (!mounted) return;
@@ -459,10 +453,17 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
           memory +
           '\n--- End reference memory ---';
     }
+
     final lastPlan = ref.read(lastPlanProvider);
-    if (lastPlan != null && lastPlan.trim().isNotEmpty && _looksLikePlanExecutionRequest(text)) {
-      userContent += '\n\n--- Latest Hiide Plan ---\n' + lastPlan + '\n--- End Latest Hiide Plan ---';
+    if (lastPlan != null &&
+        lastPlan.trim().isNotEmpty &&
+        _looksLikePlanExecutionRequest(text)) {
+      userContent +=
+          '\n\n--- Latest Hiide Plan ---\n' +
+          lastPlan +
+          '\n--- End Latest Hiide Plan ---';
     }
+
     final skillContext = await const HiideSkillRegistry().contextFor(
       workspace.rootPath,
       text,
@@ -479,302 +480,96 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       {'role': 'user', 'content': userContent},
     ];
 
-    final codeSystemPrompt = AgentProfile.build.systemPrompt;
-
-    final controller = AgentController(
-      ai: ai,
-      backend: backend,
+    final manager = ref.read(agentRunManagerProvider);
+    final handle = manager.startBuild(
+      taskId: taskId,
+      objective: text,
+      history: history,
       workspaceRoot: workspace.rootPath,
-      model: model,
-      systemPrompt: codeSystemPrompt,
-      approvalHandler: _requestAgentApproval,
-      allowedTools: AgentProfile.build.allowedTools,
+      model: providerManager.activeModel,
+      profile: AgentProfile.build,
     );
-    _stopActiveAgent = controller.stop;
-    await for (final event in controller.run(history)) {
+    _stopActiveAgent = handle.stop;
+
+    await for (final event in handle.events) {
       if (!mounted) break;
+
       switch (event) {
-        case AgentTextTokenEvent():
-          _queueStreamingToken(event.token);
-        case AgentToolStartedEvent():
-          _addToolBubble(event.toolCall);
-          if (taskId != null) {
-            store.addEvent(
-              taskId,
-              kind: 'tool.start',
-              title: event.toolCall.name,
-              detail: _toolDetail(event.toolCall.arguments),
-            );
-            ref.read(agentTaskVersionProvider.notifier).state++;
-          }
-        case AgentToolFinishedEvent():
-          _updateToolBubble(event.toolCall);
+        case AgentTextTokenEvent(:final token):
+          _queueStreamingToken(token);
+        case AgentToolStartedEvent(:final toolCall):
+          _addToolBubble(toolCall);
+        case AgentToolFinishedEvent(:final toolCall):
+          _updateToolBubble(toolCall);
           ref.invalidate(fileTreeProvider);
-          final changedPath = event.toolCall.arguments['path']?.toString();
+          final changedPath = toolCall.arguments['path']?.toString();
           if (changedPath != null && changedPath.isNotEmpty) {
-            ref.read(selectedWorkspacePathProvider.notifier).state = changedPath;
+            ref.read(selectedWorkspacePathProvider.notifier).state =
+                changedPath;
           }
-          if (taskId != null) {
-            final current = store.byId(taskId);
-            final count = (current?.toolCalls ?? 0) + 1;
-            final path = event.toolCall.arguments['path']?.toString();
-            final changed = <String>[...(current?.changedFiles ?? const [])];
-            if (event.toolCall.status == AgentToolStatus.success &&
-                path != null &&
-                path.isNotEmpty &&
-                (event.toolCall.name == 'write_file' ||
-                    event.toolCall.name == 'apply_diff' ||
-                    event.toolCall.name == 'delete_file')) {
-              if (!changed.contains(path)) changed.add(path);
+          if (toolCall.name == 'run_command') {
+            final command = toolCall.arguments['command']?.toString() ?? '';
+            if (command.isNotEmpty) {
+              ref.read(terminalServiceProvider).logAgentRun(
+                    command,
+                    toolCall.result ?? '',
+                  );
             }
-            final command = event.toolCall.name == 'run_command'
-                ? event.toolCall.arguments['command']?.toString() ?? ''
-                : '';
-            final verifications = <String>[...(current?.verificationCommands ?? const [])];
-            if (command.isNotEmpty && _isVerificationCommand(command) && !verifications.contains(command)) {
-              verifications.add(command);
-              store.update(taskId, status: AgentTaskStatus.verifying);
-            }
-            store.update(
-              taskId,
-              toolCalls: count,
-              changedFiles: changed,
-              verificationCommands: verifications,
-              verificationPassed: command.isNotEmpty && _isVerificationCommand(command)
-                  ? event.toolCall.status == AgentToolStatus.success
-                  : current?.verificationPassed,
-            );
-            // Checkpoint the live transcript after every completed tool. The
-            // task store coalesces these writes, so crashes can resume from a
-            // recent consistent conversation state without write amplification.
-            store.replaceTranscript(taskId, controller.workingMessages);
-            if (command.isNotEmpty && _isVerificationCommand(command)) {
-              store.addArtifact(
-                taskId,
-                AgentArtifact(
-                  id: 'artifact_verification_' + DateTime.now().microsecondsSinceEpoch.toString(),
-                  type: AgentArtifactType.verification,
-                  title: 'Verification: ' + command,
-                  content: (event.toolCall.status == AgentToolStatus.success ? 'PASS' : 'FAIL') +
-                      '\n\n' + _truncateTaskDetail(event.toolCall.result ?? 'No output'),
-                  createdAt: DateTime.now(),
-                ),
-              );
-            }
-            store.addEvent(
-              taskId,
-              kind: event.toolCall.name == 'run_command' && _isVerificationCommand(command)
-                  ? 'verification'
-                  : 'tool.finish',
-              title: event.toolCall.name,
-              detail: _truncateTaskDetail(event.toolCall.result ?? 'No output'),
-              success: event.toolCall.status == AgentToolStatus.success,
-            );
-            ref.read(agentTaskVersionProvider.notifier).state++;
           }
-          if (event.toolCall.name == 'run_command') {
-            final command = event.toolCall.arguments['command']?.toString() ?? '';
-            if (command.isNotEmpty) ref.read(terminalServiceProvider).logAgentRun(command, event.toolCall.result ?? '');
-          }
-        case AgentDoneEvent():
-          unawaited(
-            aiMemoryStore
-                .storeConversationSummary(
-                  workspaceRoot: workspace.rootPath,
-                  summary: event.text,
-                  topics: _memoryKeywords(text),
-                )
-                .catchError((_) {}),
-          );
+        case AgentDoneEvent(:final text):
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
-
-          var reviewResults = const <AgentSpecialistResult>[];
-          if (taskId != null) {
-            final current = store.byId(taskId);
-            final verificationFailed = current?.verificationPassed == false;
-            final changedFiles = List<String>.from(
-              current?.changedFiles ?? const <String>[],
-            );
-
-            if (!verificationFailed) {
-              store.update(taskId, status: AgentTaskStatus.verifying);
-              store.addEvent(
-                taskId,
-                kind: 'specialist.start',
-                title: 'Uzman agent incelemeleri başlatıldı',
-                detail: 'Explore + Reviewer + Security paralel çalışıyor.',
-              );
-              ref.read(agentTaskVersionProvider.notifier).state++;
-
-              reviewResults = await _runSpecialistReviews(
-                text,
-                changedFiles: changedFiles,
-              );
-
-              for (final result in reviewResults) {
-                store.addArtifact(
-                  taskId,
-                  AgentArtifact(
-                    id: 'artifact_' +
-                        result.profile.id.name +
-                        '_' +
-                        DateTime.now().microsecondsSinceEpoch.toString(),
-                    type: AgentArtifactType.report,
-                    title: result.profile.label + ' specialist report',
-                    content: result.output,
-                    createdAt: DateTime.now(),
-                  ),
-                );
-                store.addEvent(
-                  taskId,
-                  kind: 'specialist.finish',
-                  title: result.profile.label + ' tamamlandı',
-                  detail: result.output,
-                  success: result.success,
-                );
-              }
-              ref.read(agentTaskVersionProvider.notifier).state++;
-            }
-
-            final specialistFailed =
-                reviewResults.any((result) => !result.success);
-            final finalStatus = verificationFailed
-                ? AgentTaskStatus.failed
-                : specialistFailed
-                    ? AgentTaskStatus.succeededWithWarnings
-                    : AgentTaskStatus.succeeded;
-            final finalSummary = verificationFailed
-                ? 'Agent completed the conversation, but the latest recorded verification failed.'
-                : specialistFailed
-                    ? 'Implementation completed, but at least one independent specialist review did not complete successfully.'
-                    : event.text;
-            final reviewSummary = reviewResults.isEmpty
-                ? 'Specialist review: not run.'
-                : reviewResults
-                    .map(
-                      (result) =>
-                          result.profile.label +
-                          ': ' +
-                          (result.success ? 'completed' : 'failed'),
-                    )
-                    .join(' | ');
-            final report = [
-              'Objective: ' + (current?.objective ?? text),
-              'Changed files: ' +
-                  (changedFiles.isEmpty ? 'none' : changedFiles.join(', ')),
-              'Verification: ' +
-                  ((current?.verificationCommands ?? const []).isEmpty
-                      ? 'none recorded'
-                      : current!.verificationCommands.join(' | ')),
-              'Verification result: ' +
-                  (current?.verificationPassed == null
-                      ? 'not recorded'
-                      : (current!.verificationPassed! ? 'passed' : 'failed')),
-              reviewSummary,
-              '',
-              event.text.trim(),
-            ].join('\n');
-            store.update(
-              taskId,
-              status: finalStatus,
-              summary: finalSummary,
-            );
-            store.addArtifact(
-              taskId,
-              AgentArtifact(
-                id: 'artifact_report_' +
-                    DateTime.now().microsecondsSinceEpoch.toString(),
-                type: AgentArtifactType.report,
-                title: 'Execution report',
-                content: report,
-                createdAt: DateTime.now(),
-              ),
-            );
-            store.addEvent(
-              taskId,
-              kind: verificationFailed
-                  ? 'completed_with_failure'
-                  : 'completed',
-              title: verificationFailed
-                  ? 'Görev doğrulama hatasıyla sonlandı'
-                  : specialistFailed
-                      ? 'Görev tamamlandı; uzman incelemesi eksik'
-                      : 'Görev tamamlandı ve uzman incelemeleri kaydedildi',
-              success: !verificationFailed && !specialistFailed,
-            );
-            ref.read(agentTaskVersionProvider.notifier).state++;
-          }
-          if (event.text.trim().isNotEmpty) {
+          if (text.trim().isNotEmpty) {
             _addMessage(
               ChatMessage(
                 role: ChatRole.assistant,
-                content: event.text,
+                content: text,
                 timestamp: DateTime.now(),
               ),
             );
           }
-        case AgentErrorEvent(:final message, :final rollback):
-          _recordRollback(store, taskId, rollback);
+        case AgentErrorEvent(:final message):
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
-          if (taskId != null) {
-            store.update(taskId, status: AgentTaskStatus.failed, error: message, summary: 'Agent execution failed');
-            store.addEvent(taskId, kind: 'error', title: 'Agent hatası', detail: message, success: false);
-            ref.read(agentTaskVersionProvider.notifier).state++;
-          }
-          _addMessage(ChatMessage(role: ChatRole.error, content: 'Error: ' + message, timestamp: DateTime.now()));
-        case AgentStoppedEvent(:final rollback):
-          _recordRollback(store, taskId, rollback);
+          _addMessage(
+            ChatMessage(
+              role: ChatRole.error,
+              content: 'Error: ' + message,
+              timestamp: DateTime.now(),
+            ),
+          );
+        case AgentStoppedEvent():
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
-          if (taskId != null) {
-            store.update(taskId, status: AgentTaskStatus.canceled, summary: 'Kullanıcı tarafından durduruldu.');
-            store.addEvent(taskId, kind: 'canceled', title: 'Görev durduruldu', detail: 'Kullanıcı durdurdu.');
-            ref.read(agentTaskVersionProvider.notifier).state++;
-          }
-          _addMessage(ChatMessage(role: ChatRole.system, content: '⏹ Stopped by user.', timestamp: DateTime.now()));
+          _addMessage(
+            ChatMessage(
+              role: ChatRole.system,
+              content: '⏹ Stopped by user.',
+              timestamp: DateTime.now(),
+            ),
+          );
         case AgentIterationLimitEvent(
-              :final iterations,
-              :final reason,
-              :final rollback,
-            ):
-          _recordRollback(store, taskId, rollback);
+            :final iterations,
+            :final reason,
+          ):
           _finishStreamingText();
           ref.read(streamingMessageProvider.notifier).state = '';
-          final message = reason + ' (iteration ' + iterations.toString() + ').';
-          if (taskId != null) {
-            store.update(taskId, status: AgentTaskStatus.failed, error: message, summary: 'Agent budget limit reached');
-            store.addEvent(taskId, kind: 'limit', title: 'Agent budget limit', detail: message, success: false);
-            ref.read(agentTaskVersionProvider.notifier).state++;
-          }
-          _addMessage(ChatMessage(role: ChatRole.error, content: message, timestamp: DateTime.now()));
+          _addMessage(
+            ChatMessage(
+              role: ChatRole.error,
+              content:
+                  reason + ' (iteration ' + iterations.toString() + ').',
+              timestamp: DateTime.now(),
+            ),
+          );
       }
     }
-    if (!mounted) return;
-    ref.read(agentMessagesProvider.notifier).state =
-        _boundedAgentMessages(controller.workingMessages);
-    if (taskId != null) {
-      store.replaceTranscript(taskId, controller.workingMessages);
-      ref.read(agentTaskVersionProvider.notifier).state++;
-    }
-  }
 
-  Future<List<AgentSpecialistResult>> _runSpecialistReviews(
-    String objective, {
-    required List<String> changedFiles,
-  }) async {
-    final providerManager = ref.read(providerManagerProvider);
-    final orchestrator = AgentOrchestrator(
-      ai: providerManager,
-      backend: ref.read(backendServiceProvider),
-      workspaceRoot: ref.read(workspaceServiceProvider).rootPath,
-      model: providerManager.activeModel,
-    );
-    return orchestrator.runParallelReadOnlyReview(
-      objective: objective,
-      changedFiles: changedFiles,
-    );
+    final saved = store.byId(taskId);
+    if (mounted && saved != null) {
+      ref.read(agentMessagesProvider.notifier).state =
+          _boundedAgentMessages(saved.transcript);
+    }
   }
 
   void _recordRollback(
@@ -843,24 +638,24 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     ];
     return markers.any(lower.contains);
   }
-  Future<bool> _requestAgentApproval(
-      String toolName, Map<String, dynamic> arguments) async {
-    if (toolName != 'run_command') return true;
-    if (!mounted) return false;
-    final command = arguments['command']?.toString() ?? '';
-    final taskId = ref.read(activeAgentTaskIdProvider);
-    if (taskId != null) {
-      ref.read(agentTaskStoreProvider).update(taskId, status: AgentTaskStatus.waitingApproval);
-      ref.read(agentTaskStoreProvider).addEvent(taskId, kind: 'approval', title: 'Kullanıcı onayı bekleniyor', detail: command);
-      ref.read(agentTaskVersionProvider.notifier).state++;
-    }
+  Future<void> _showAgentApprovalRequest(
+    AgentApprovalRequest request,
+  ) async {
+    if (!mounted) return;
+
+    final manager = ref.read(agentRunManagerProvider);
+    final command = request.arguments['command']?.toString() ?? '';
+    final detail = command.isNotEmpty
+        ? command
+        : request.arguments['path']?.toString() ?? request.toolName;
+
     final approved = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         final cs = Theme.of(dialogContext).colorScheme;
         return AlertDialog(
-          title: const Text('Agent command approval'),
+          title: const Text('Agent approval required'),
           content: SizedBox(
             width: 520,
             child: Column(
@@ -868,35 +663,27 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Agent wants to execute a shell command in the active workspace.',
-                  style: TextStyle(color: cs.onSurfaceVariant, height: 1.4),
+                  'The agent requested a protected operation.',
+                  style: TextStyle(
+                    color: cs.onSurfaceVariant,
+                    height: 1.4,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: cs.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: cs.outlineVariant),
-                  ),
-                  child: SelectableText(
-                    command,
-                    style: const TextStyle(
-                      fontFamily: 'JetBrains Mono',
-                      fontSize: 12,
-                      height: 1.45,
-                    ),
+                SelectableText(
+                  detail,
+                  style: const TextStyle(
+                    fontFamily: 'JetBrains Mono',
+                    fontSize: 12,
+                    height: 1.45,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'This approval applies only to this exact command call. '
-                  'Every later process execution requires a new decision.',
+                  'This decision applies only to this exact request.',
                   style: TextStyle(
                     color: cs.onSurfaceVariant,
                     fontSize: 12,
-                    height: 1.35,
                   ),
                 ),
               ],
@@ -907,16 +694,16 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
               onPressed: () => Navigator.of(dialogContext).pop(false),
               child: const Text('Reject'),
             ),
-            FilledButton.icon(
+            FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              icon: const Icon(Icons.play_arrow_rounded, size: 18),
-              label: const Text('Run command'),
+              child: const Text('Approve'),
             ),
           ],
         );
       },
     );
-    return approved == true;
+
+    await manager.resolveApproval(request.id, approved == true);
   }
 
   void _stopAgent() {
