@@ -59,6 +59,7 @@ class AgentRunManager {
   final void Function()? onChanged;
 
   final Map<String, AgentController> _controllers = <String, AgentController>{};
+  final Set<String> _startingTasks = <String>{};
   final Map<String, String> _workspaceByTask = <String, String>{};
   final Map<String, Future<void>> _runs = <String, Future<void>>{};
   final Map<String, Completer<bool>> _approvalWaiters =
@@ -72,7 +73,8 @@ class AgentRunManager {
   Stream<AgentApprovalRequest> get approvalRequests =>
       _approvalController.stream;
 
-  bool isRunning(String taskId) => _runs.containsKey(taskId);
+  bool isRunning(String taskId) =>
+      _runs.containsKey(taskId) || _startingTasks.contains(taskId);
 
   void _changed() => onChanged?.call();
 
@@ -87,12 +89,15 @@ class AgentRunManager {
     required String model,
     required AgentProfile profile,
   }) async {
-    if (isRunning(taskId)) {
+    if (!_startingTasks.add(taskId) || _runs.containsKey(taskId)) {
       throw StateError('Agent task is already running: ' + taskId);
     }
 
+    _workspaceByTask[taskId] = workspaceRoot;
     final activeRoots = _workspaceByTask.values.toSet();
     if (activeRoots.any((root) => root != workspaceRoot)) {
+      _startingTasks.remove(taskId);
+      _workspaceByTask.remove(taskId);
       throw StateError(
         'Cannot start an MCP-enabled task in another workspace while a background task is active.',
       );
@@ -119,10 +124,12 @@ class AgentRunManager {
         detail: error.toString(),
         success: false,
       );
+      _startingTasks.remove(taskId);
+      _workspaceByTask.remove(taskId);
       _changed();
       rethrow;
     }
-    _workspaceByTask[taskId] = workspaceRoot;
+
 
     taskStore.update(
       taskId,
@@ -151,6 +158,7 @@ class AgentRunManager {
     );
 
     _controllers[taskId] = controller;
+    _startingTasks.remove(taskId);
 
     final eventController = StreamController<AgentEvent>();
     final run = _consumeBuild(
@@ -168,6 +176,7 @@ class AgentRunManager {
     run.whenComplete(() {
       _runs.remove(taskId);
       _controllers.remove(taskId);
+      _startingTasks.remove(taskId);
       _workspaceByTask.remove(taskId);
     });
 
@@ -670,6 +679,7 @@ class AgentRunManager {
     }
 
     await mcpManager.closeAll();
+    _startingTasks.clear();
     _workspaceByTask.clear();
     await _approvalController.close();
   }
