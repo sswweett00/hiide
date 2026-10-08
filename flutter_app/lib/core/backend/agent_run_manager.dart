@@ -661,6 +661,15 @@ class AgentRunManager {
     }
     _approvalWaiters.clear();
     _pendingApprovals.clear();
+
+    final active = List<Future<void>>.from(_runs.values);
+    if (active.isNotEmpty) {
+      try {
+        await Future.wait(active).timeout(const Duration(seconds: 5));
+      } catch (_) {}
+    }
+
+    await mcpManager.closeAll();
     _workspaceByTask.clear();
     await _approvalController.close();
   }
