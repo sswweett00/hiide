@@ -86,7 +86,7 @@ class AgentRunManager {
     required String workspaceRoot,
     required String model,
     required AgentProfile profile,
-  }) {
+  }) async {
     if (isRunning(taskId)) {
       throw StateError('Agent task is already running: ' + taskId);
     }
