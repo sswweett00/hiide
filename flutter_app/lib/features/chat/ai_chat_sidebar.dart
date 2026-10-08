@@ -75,7 +75,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   VoidCallback? _stopActiveAgent;
-  bool _approveCommandsForSession = false;
   Timer? _streamFlushTimer;
   final StringBuffer _streamBuffer = StringBuffer();
 
@@ -211,7 +210,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
     _addMessage(ChatMessage(role: ChatRole.user, content: text, timestamp: DateTime.now()));
 
     final mode = ref.read(agentModeProvider);
-    _approveCommandsForSession = false;
     final workspace = ref.read(workspaceServiceProvider).rootPath;
     final store = ref.read(agentTaskStoreProvider);
     final task = store.create(
@@ -820,7 +818,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
   Future<bool> _requestAgentApproval(
       String toolName, Map<String, dynamic> arguments) async {
     if (toolName != 'run_command') return true;
-    if (_approveCommandsForSession) return true;
     if (!mounted) return false;
     final command = arguments['command']?.toString() ?? '';
     final taskId = ref.read(activeAgentTaskIdProvider);
@@ -834,7 +831,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
       barrierDismissible: false,
       builder: (dialogContext) {
         final cs = Theme.of(dialogContext).colorScheme;
-        var approveSession = false;
         return AlertDialog(
           title: const Text('Agent command approval'),
           content: SizedBox(
@@ -865,16 +861,14 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                StatefulBuilder(
-                  builder: (context, setState) => CheckboxListTile(
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    value: approveSession,
-                    onChanged: (value) =>
-                        setState(() => approveSession = value ?? false),
-                    title: const Text('Approve commands for this task'),
-                    subtitle: const Text('Future shell commands will not ask again until this task ends.'),
+                const SizedBox(height: 10),
+                Text(
+                  'This approval applies only to this exact command call. '
+                  'Every later process execution requires a new decision.',
+                  style: TextStyle(
+                    color: cs.onSurfaceVariant,
+                    fontSize: 12,
+                    height: 1.35,
                   ),
                 ),
               ],
@@ -886,10 +880,7 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
               child: const Text('Reject'),
             ),
             FilledButton.icon(
-              onPressed: () {
-                if (approveSession) _approveCommandsForSession = true;
-                Navigator.of(dialogContext).pop(true);
-              },
+              onPressed: () => Navigator.of(dialogContext).pop(true),
               icon: const Icon(Icons.play_arrow_rounded, size: 18),
               label: const Text('Run command'),
             ),
@@ -897,37 +888,6 @@ class _AiChatSidebarState extends ConsumerState<AiChatSidebar> {
         );
       },
     );
-    if (!mounted) return false;
-    if (approved == true) {
-      if (taskId != null) {
-        ref.read(agentTaskStoreProvider).update(taskId, status: AgentTaskStatus.executing);
-      }
-      if (taskId != null) {
-        final store = ref.read(agentTaskStoreProvider);
-        store.addEvent(
-          taskId,
-          kind: 'approval',
-          title: 'Shell command approved',
-          detail: command,
-        );
-        ref.read(agentTaskVersionProvider.notifier).state++;
-      }
-    } else {
-      if (taskId != null) {
-        ref.read(agentTaskStoreProvider).update(taskId, status: AgentTaskStatus.executing);
-      }
-      if (taskId != null) {
-        final store = ref.read(agentTaskStoreProvider);
-        store.addEvent(
-          taskId,
-          kind: 'approval',
-          title: 'Shell command rejected',
-          detail: command,
-          success: false,
-        );
-        ref.read(agentTaskVersionProvider.notifier).state++;
-      }
-    }
     return approved == true;
   }
 
