@@ -6,12 +6,12 @@ enum AgentMode { plan, code }
 extension AgentModeX on AgentMode {
   String get label => switch (this) {
     AgentMode.plan => 'Plan',
-    AgentMode.code => 'Code',
+    AgentMode.code => 'Build',
   };
 
   String get description => switch (this) {
     AgentMode.plan => 'Kapsamı, bağımlılıkları, riskleri ve doğrulamayı çıkarır; dosya değiştirmez.',
-    AgentMode.code => 'İsteği uygular, dosyaları düzenler, testleri çalıştırır ve sonucu doğrular.',
+    AgentMode.code => 'İsteği uygular, dosyaları agent araçlarıyla değiştirir, testleri çalıştırır ve sonucu doğrular.',
   };
 
   IconData get icon => switch (this) {
