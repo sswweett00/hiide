@@ -119,49 +119,8 @@ abstract class BackendService {
 
   Future<String> ping();
 
-  /// Creates an engine editor buffer and loads [text] into it.
-  /// Returns the opaque engine handle used by every other editor.* call.
-  Future<int> editorLoad(String text);
-
-  /// Returns the full buffer content as the engine currently holds it.
-  Future<String> editorGetText(int handle);
-
-  /// Inserts [text] at byte offset [pos]; returns the new buffer size.
-  Future<int> editorInsert(int handle, int pos, String text);
-
-  /// Deletes [len] bytes at byte offset [pos]; returns the new buffer size.
-  Future<int> editorDelete(int handle, int pos, int len);
-
-  Future<void> editorUndo(int handle);
-
-  Future<void> editorRedo(int handle);
-
-  Future<int> editorLineCount(int handle);
-
-  Future<int> editorSize(int handle);
-
-  /// Case-insensitive search inside the engine buffer.
-  Future<List<EditorSearchResult>> editorSearch(int handle, String query);
-
-  /// Syntax highlighting of the buffer rendered as HTML spans.
-  Future<String> editorHighlight(int handle, String lang);
-
-  /// Frees the engine buffer.
-  Future<void> editorDestroy(int handle);
-
-  /// Reconciles the engine buffer with [text] using a single minimal edit
-  /// computed natively (common prefix/suffix in UTF-8 bytes). Replaces the
-  /// Dart-side diff + code-unit→byte conversion for the keystroke path.
-  Future<void> editorApplyText(int handle, String text);
-
-  /// Line-based diff of the engine buffer against [diskText] (the on-disk
-  /// reference), computed natively (Myers). Returns sparse change regions for
-  /// the gutter: `{line (0-based buffer line), kind, count}`.
-  Future<List<EditorDiffRegion>> editorDiffLines(int handle, String diskText);
-
   /// Recursive, case-insensitive grep across [root], executed in Zig.
   Future<List<WorkspaceSearchResult>> workspaceSearch(
-    String root,
     String query, {
     int maxResults = 200,
   });
