@@ -379,7 +379,35 @@ class HiideMcpManager {
     }
   }
 
+  String _stdioWorkingDirectory(
+    String? configured,
+    String workspaceRoot,
+  ) {
+    if (configured == null || configured.isEmpty) return workspaceRoot;
+    final normalized = configured.replaceAll('\\', '/');
+    if (normalized.startsWith('/') ||
+        RegExp(r'^[A-Za-z]:/').hasMatch(normalized) ||
+        normalized.split('/').contains('..')) {
+      throw StateError(
+        'MCP stdio workingDirectory must stay inside the workspace.',
+      );
+    }
+    return workspaceRoot + '/' + normalized;
+  }
+
   Map<String, String> _stdioEnvironment(McpServerConfig config) {
+    const unsafeEnvironmentKeys = <String>{
+      'LD_PRELOAD',
+      'LD_LIBRARY_PATH',
+      'DYLD_INSERT_LIBRARIES',
+      'DYLD_LIBRARY_PATH',
+      'NODE_OPTIONS',
+      'NODE_PATH',
+      'PYTHONPATH',
+      'PYTHONHOME',
+      'RUBYOPT',
+      'PERL5OPT',
+    };
     const safeKeys = <String>{
       'PATH',
       'HOME',
@@ -410,6 +438,11 @@ class HiideMcpManager {
       }
     }
     for (final entry in config.environment.entries) {
+      if (unsafeEnvironmentKeys.contains(entry.key.toUpperCase())) {
+        throw StateError(
+          'MCP environment variable is not permitted: ' + entry.key,
+        );
+      }
       final raw = entry.value;
       if (raw.startsWith(r'$env:')) {
         final envName = raw.substring(5).trim();
