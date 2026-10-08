@@ -48,11 +48,13 @@ class AgentRunManager {
     required this.ai,
     required this.backend,
     required this.taskStore,
+    this.onChanged,
   });
 
   final AiChatClient ai;
   final BackendService backend;
   final AgentTaskStore taskStore;
+  final VoidCallback? onChanged;
 
   final Map<String, AgentController> _controllers = <String, AgentController>{};
   final Map<String, Future<void>> _runs = <String, Future<void>>{};
@@ -68,6 +70,8 @@ class AgentRunManager {
       _approvalController.stream;
 
   bool isRunning(String taskId) => _runs.containsKey(taskId);
+
+  void _changed() => onChanged?.call();
 
   List<AgentApprovalRequest> get pendingApprovals =>
       List.unmodifiable(_pendingApprovals.values);
@@ -95,6 +99,7 @@ class AgentRunManager {
       title: 'Agent runtime started',
       detail: 'Execution is owned by the task manager, not the chat widget.',
     );
+    _changed();
 
     final controller = AgentController(
       ai: ai,
@@ -164,6 +169,7 @@ class AgentRunManager {
         detail: requestId,
         success: approved,
       );
+      _changed();
     }
   }
 
@@ -197,6 +203,7 @@ class AgentRunManager {
     );
     _pendingApprovals[requestId] = request;
     _approvalController.add(request);
+    _changed();
 
     return waiter.future;
   }
@@ -224,23 +231,26 @@ class AgentRunManager {
               summary: text,
             );
             output.add(event);
-          case AgentErrorEvent(:final message):
+          case AgentErrorEvent(:final message, :final rollback):
             output.add(event);
+            _recordRollback(taskId, rollback);
             taskStore.update(
               taskId,
               status: AgentTaskStatus.failed,
               error: message,
               summary: 'Agent execution failed.',
             );
-          case AgentStoppedEvent():
+          case AgentStoppedEvent(:final rollback):
             output.add(event);
+            _recordRollback(taskId, rollback);
             taskStore.update(
               taskId,
               status: AgentTaskStatus.canceled,
               summary: 'Agent stopped by user.',
             );
-          case AgentIterationLimitEvent(:final iterations, :final reason):
+          case AgentIterationLimitEvent(:final iterations, :final reason, :final rollback):
             output.add(event);
+            _recordRollback(taskId, rollback);
             final message = reason + ' (iteration ' + iterations.toString() + ').';
             taskStore.update(
               taskId,
@@ -258,6 +268,7 @@ class AgentRunManager {
         }
 
         taskStore.replaceTranscript(taskId, controller.workingMessages);
+        _changed();
       }
     } catch (error) {
       taskStore.update(
@@ -276,8 +287,29 @@ class AgentRunManager {
     } finally {
       taskStore.replaceTranscript(taskId, controller.workingMessages);
       await taskStore.flush();
+      _changed();
       await output.close();
     }
+  }
+
+  void _recordRollback(String taskId, AgentRollbackReport? rollback) {
+    if (rollback == null || !rollback.hasChanges) return;
+    final detail = <String>[
+      'Restored: ' + rollback.restored.toString(),
+      'Skipped: ' + rollback.skipped.toString(),
+      if (rollback.errors.isNotEmpty)
+        'Details: ' + rollback.errors.join(' | '),
+    ].join('\\n');
+    taskStore.addEvent(
+      taskId,
+      kind: rollback.complete ? 'rollback' : 'rollback_partial',
+      title: rollback.complete
+          ? 'Agent changes rolled back'
+          : 'Rollback completed with conflicts',
+      detail: detail,
+      success: rollback.complete,
+    );
+    _changed();
   }
 
   void _checkpointEvent(
@@ -334,6 +366,7 @@ class AgentRunManager {
         detail: _truncate(tool.result ?? 'No output'),
         success: tool.status == AgentToolStatus.success,
       );
+      _changed();
     } else if (event is AgentToolStartedEvent) {
       taskStore.addEvent(
         taskId,
@@ -344,6 +377,7 @@ class AgentRunManager {
           event.toolCall.arguments,
         ),
       );
+      _changed();
     }
   }
 
