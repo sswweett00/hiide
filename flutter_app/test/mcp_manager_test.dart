@@ -61,6 +61,59 @@ void main() {
     );
   });
 
+  test('accepts explicit environment references and rejects unsafe names', () {
+    final config = McpServerConfig.fromJson({
+      'id': 'env-test',
+      'transport': 'stdio',
+      'command': 'node',
+      'environment': {
+        'NODE_ENV': 'production',
+        'API_TOKEN': r'\$env:HIIDE_MCP_TOKEN',
+      },
+    });
+
+    expect(config, isNotNull);
+    expect(config!.environment['NODE_ENV'], 'production');
+    expect(config.environment['API_TOKEN'], r'\$env:HIIDE_MCP_TOKEN');
+
+    expect(
+      McpServerConfig.fromJson({
+        'id': 'bad-env',
+        'transport': 'stdio',
+        'command': 'node',
+        'environment': {'BAD-NAME': 'x'},
+      }),
+      isNull,
+    );
+  });
+
+  test('rejects plaintext remote HTTP except loopback', () {
+    expect(
+      McpServerConfig.fromJson({
+        'id': 'remote',
+        'transport': 'streamable-http',
+        'url': 'http://mcp.example.com/mcp',
+      }),
+      isNull,
+    );
+    expect(
+      McpServerConfig.fromJson({
+        'id': 'local',
+        'transport': 'streamable-http',
+        'url': 'http://127.0.0.1:8080/mcp',
+      }),
+      isNotNull,
+    );
+    expect(
+      McpServerConfig.fromJson({
+        'id': 'secure',
+        'transport': 'streamable-http',
+        'url': 'https://mcp.example.com/mcp',
+      }),
+      isNotNull,
+    );
+  });
+
   test('MCP result wrapper preserves success state', () {
     const success = McpToolCallResult(
       success: true,
