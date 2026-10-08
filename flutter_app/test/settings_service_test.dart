@@ -2,6 +2,8 @@
 // API currently serves (and that support function calling) are advertised,
 // and a retired model persisted in storage is sanitized to the default.
 
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -123,6 +125,37 @@ void main() {
     expect(await settingsService.getAiApiKey('openrouter'), 'router-secret');
     expect(await settingsService.getAiApiKey('deepseek'), 'deep-secret');
     expect(await settingsService.getAiApiKey('missing'), isEmpty);
+  });
+
+  test('stores provider credentials outside SharedPreferences', () async {
+    settingsService.resetForTesting();
+    SharedPreferences.setMockInitialValues({});
+
+    await settingsService.setAiApiKey('openrouter', 'router-secret');
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('ai_api_keys_v2'), isNull);
+    expect(await settingsService.getAiApiKey('openrouter'), 'router-secret');
+  });
+
+  test('migrates legacy plaintext provider keys into secure storage', () async {
+    settingsService.resetForTesting();
+    SharedPreferences.setMockInitialValues({
+      'ai_api_keys_v2': jsonEncode({
+        'openrouter': 'router-secret',
+        'deepseek': 'deep-secret',
+      }),
+      'groq_api_key': 'legacy-groq-secret',
+    });
+
+    final values = await settingsService.getAiApiKeys();
+    expect(values['openrouter'], 'router-secret');
+    expect(values['deepseek'], 'deep-secret');
+    expect(values['groq'], 'legacy-groq-secret');
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('ai_api_keys_v2'), isNull);
+    expect(prefs.getString('groq_api_key'), isNull);
   });
 
   test('AI provider model selections round-trip and tolerate corrupt data',
