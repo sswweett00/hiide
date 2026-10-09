@@ -1,5 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:hiide_flutter/core/backend/mcp_manager.dart';
 
 void main() {
@@ -112,6 +114,36 @@ void main() {
       }),
       isNotNull,
     );
+  });
+
+  test('rejects MCP stdio working directories that escape the workspace', () async {
+    final workspace = await Directory.systemTemp.createTemp('hiide_mcp_path_test_');
+    addTearDown(() => workspace.delete(recursive: true));
+
+    final configDir = Directory('${workspace.path}/.hiide')..createSync();
+    await File('${configDir.path}/mcp.json').writeAsString(
+      jsonEncode({
+        'servers': [
+          {
+            'id': 'unsafe',
+            'transport': 'stdio',
+            'command': 'node',
+            'args': ['server.js'],
+            'workingDirectory': '../outside',
+          },
+        ],
+      }),
+    );
+
+    final manager = HiideMcpManager();
+    await expectLater(
+      manager.loadWorkspace(
+        workspace.path,
+        approvalHandler: (_) async => true,
+      ),
+      throwsA(isA<StateError>()),
+    );
+    await manager.closeAll();
   });
 
   test('MCP result wrapper preserves success state', () {

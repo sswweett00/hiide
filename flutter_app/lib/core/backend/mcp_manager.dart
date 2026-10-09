@@ -314,7 +314,10 @@ class HiideMcpManager {
           args: config.args,
           environment: _stdioEnvironment(config),
           includeParentEnvironment: false,
-          workingDirectory: config.workingDirectory ?? workspaceRoot,
+          workingDirectory: _stdioWorkingDirectory(
+            config.workingDirectory,
+            workspaceRoot,
+          ),
           restartOnUnexpectedExit: true,
           maxIncomingMessageBytes: 2 * 1024 * 1024,
         ),

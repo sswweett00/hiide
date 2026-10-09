@@ -6,10 +6,12 @@ This document is the release gate for Hiide. It is intentionally evidence-based:
 
 **Status: NOT READY FOR GENERAL RELEASE.**
 
-The repository has automated Zig, Flutter, and Flutter↔Zig checks, but the most recent observed CI run (2026-10-07) failed:
-- Zig unit tests and native builds stopped at a syntax error in `src/core/editor/editor.zig`. The newline escaping has since been corrected; the next CI run must confirm this fix.
-- Flutter analysis passed, but the Flutter test suite reported multiple failures across widget rendering, retry mechanics, provider/model expectations, agent tools, and workspace behavior. These failures must be triaged and fixed, not hidden by weakening or skipping tests.
-- The native integration suite could not build because it shares the Zig compile failure. It must pass after the compiler issue is resolved.
+The repository has automated Zig, Flutter, and Flutter↔Zig checks. The most recent observed CI run (2026-10-08, commit `067ab304d81923e057fd7b6472cc46fcb1eef617`) was not green:
+- Flutter analysis failed on two warnings: an unused MCP working-directory validator and an unused local workspace-root variable. The validator is now wired into MCP stdio startup, and the dead local is removed; CI must confirm the analyzer is clean.
+- The real IPC integration suite crashed the native server with `free(): double free detected in tcache 2` during agent-tool execution. The workspace search tool transferred a managed buffer with `toOwnedSlice()` while also scheduling unconditional deferred cleanup. The cleanup is now error-only, so ownership is released exactly once; the existing agent-tool regression test and integration suite must confirm the fix.
+- The Zig unit-test job was cancelled before it reported a result; its status remains unverified for that commit.
+
+These changes are awaiting a fresh CI run. No compile, unit-test, integration-test, or release gate is considered passed until that run provides evidence.
 
 ## Release-blocking gates
 

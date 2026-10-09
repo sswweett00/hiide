@@ -64,7 +64,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     try {
       if (backend.isConnected) {
-        final root = ref.read(workspaceRootProvider);
         final hits = await backend.workspaceSearch(query, maxResults: _maxResults);
         if (!mounted || token != _generation) return;
         for (final hit in hits.take(_maxResults)) {

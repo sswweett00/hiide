@@ -203,7 +203,7 @@ pub fn searchWorkspaceTool() tool_mod.Tool {
             }
 
             var output = compat.ManagedArrayList(u8).init(allocator);
-            defer output.deinit();
+            errdefer output.deinit();
             const bytes = try compat.jsonStringifyAlloc(allocator, entries, .{});
             defer allocator.free(bytes);
             try output.appendSlice(bytes);
