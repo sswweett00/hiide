@@ -24,28 +24,34 @@ class NativeEngineSupervisor {
 
   Future<NativeEngineLaunch> connectOrStart() async {
     final inheritedToken = Platform.environment['HIIDE_IPC_TOKEN'];
-    final existing = HiideBackendService(
-      host: host,
-      port: port,
-      ipcToken: inheritedToken,
-    );
-    try {
-      await existing.connect();
-      return NativeEngineLaunch(backend: existing);
-    } catch (error) {
-      await existing.disconnect();
-      final message = error.toString();
-      if (message.contains('unauthorized')) {
-        throw StateError(
-          'A protected Hiide IPC engine is already running on $host:$port '
-          'but its session token is unavailable to this application.',
-        );
-      }
-      if (message.contains('Incompatible Hiide IPC') ||
-          message.contains('IPC contract violation')) {
-        // An engine is reachable but speaks an incompatible wire contract.
-        // Starting another process on the same port cannot repair that state.
-        rethrow;
+
+    // Only attach to an existing engine when this process inherited its
+    // unguessable session token. Without it, a different local process could
+    // impersonate the engine on loopback and receive workspace contents.
+    if (inheritedToken != null && inheritedToken.isNotEmpty) {
+      final existing = HiideBackendService(
+        host: host,
+        port: port,
+        ipcToken: inheritedToken,
+      );
+      try {
+        await existing.connect();
+        return NativeEngineLaunch(backend: existing);
+      } catch (error) {
+        await existing.disconnect();
+        final message = error.toString();
+        if (message.contains('unauthorized')) {
+          throw StateError(
+            'A protected Hiide IPC engine is already running on $host:$port '
+            'but its session token is unavailable to this application.',
+          );
+        }
+        if (message.contains('Incompatible Hiide IPC') ||
+            message.contains('IPC contract violation')) {
+          // An engine is reachable but speaks an incompatible wire contract.
+          // Starting another process on the same port cannot repair that state.
+          rethrow;
+        }
       }
     }
 
