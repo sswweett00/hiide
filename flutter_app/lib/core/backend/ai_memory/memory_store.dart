@@ -214,17 +214,6 @@ class AiMemoryStore {
   }) async {
     final sections = <String>[];
 
-    final project = await getProjectContext(workspaceRoot);
-    if (project.isNotEmpty) {
-      sections.add(
-        'PROJECT CONTEXT:\n' +
-            project.entries
-                .take(32)
-                .map((e) => '- ' + e.key + ': ' + e.value)
-                .join('\n'),
-      );
-    }
-
     final conversations = await searchConversations(
       workspaceRoot,
       keywords,
@@ -254,6 +243,21 @@ class AiMemoryStore {
       );
     }
 
+    // Lower-priority project notes come after keyword-matched conversation
+    // memory and observed patterns. A single oversized note must not crowd out
+    // the relevant context the caller explicitly requested.
+    final project = await getProjectContext(workspaceRoot);
+    if (project.isNotEmpty) {
+      sections.add(
+        'PROJECT CONTEXT:\n' +
+            project.entries
+                .take(32)
+                .map((e) => '- ' + e.key + ': ' + e.value)
+                .join('\n'),
+      );
+    }
+
+    if (maxChars <= 0) return '';
     final text = sections.join('\n\n');
     if (text.length <= maxChars) return text;
     return text.substring(0, maxChars) + '\n…[memory truncated]';
