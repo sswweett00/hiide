@@ -42,9 +42,9 @@ void main() {
   test('getModel keeps a still-valid stored model', () async {
     settingsService.resetForTesting();
     SharedPreferences.setMockInitialValues(
-        {'groq_model': 'llama-3.3-70b-versatile'});
+        {'groq_model': 'openai/gpt-oss-20b'});
 
-    expect(await settingsService.getModel(), 'llama-3.3-70b-versatile');
+    expect(await settingsService.getModel(), 'openai/gpt-oss-20b');
   });
 
   test('getModel keeps a model picked from the live /models list', () async {
@@ -67,7 +67,6 @@ void main() {
     ];
 
     expect(SettingsService.filterLiveModels(live), [
-      'llama-3.3-70b-versatile',
       'openai/gpt-oss-120b',
       'llama-4-scout-17b-16e-instruct',
     ]);
@@ -181,7 +180,7 @@ void main() {
       () async {
     settingsService.resetForTesting();
     SharedPreferences.setMockInitialValues({
-      'ai_provider_models_v2': {'openrouter': 'model-x'},
+      'ai_provider_models_v2': jsonEncode({'openrouter': 'model-x'}),
     });
 
     expect(await settingsService.getAiProviderModels(), {'openrouter': 'model-x'});
