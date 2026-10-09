@@ -96,7 +96,7 @@ class AgentContextCompactor {
         remaining = nextLength == remaining.length
             ? remaining.substring(0, remaining.length - 1)
             : remaining.substring(0, nextLength);
-        message['content'] = remaining.isEmpty ? '[content truncated]' : remaining;
+        message['content'] = remaining;
         size = _encodedSize(messages);
       }
     }
