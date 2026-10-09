@@ -6,12 +6,12 @@ This document is the release gate for Hiide. It is intentionally evidence-based:
 
 **Status: NOT READY FOR GENERAL RELEASE.**
 
-The repository has automated Zig, Flutter, and Flutter↔Zig checks. The most recent observed CI run (2026-10-08, commit `067ab304d81923e057fd7b6472cc46fcb1eef617`) was not green:
-- Flutter analysis failed on two warnings: an unused MCP working-directory validator and an unused local workspace-root variable. The validator is now wired into MCP stdio startup, and the dead local is removed; CI must confirm the analyzer is clean.
-- The real IPC integration suite crashed the native server with `free(): double free detected in tcache 2` during agent-tool execution. The workspace search tool transferred a managed buffer with `toOwnedSlice()` while also scheduling unconditional deferred cleanup. The cleanup is now error-only, so ownership is released exactly once; the existing agent-tool regression test and integration suite must confirm the fix.
-- The Zig unit-test job was cancelled before it reported a result; its status remains unverified for that commit.
+The most recent observed CI run before this update (2026-10-09, commit `0cd332bdd3fc76b03275125474358aec5b50b02d`) was not green:
+- Flutter analysis passed, but the Flutter suite had 29 failing tests spanning widget rendering, stale test expectations, settings/model fixtures, agent file operations, and memory behavior. These failures need individual triage; do not skip tests or loosen assertions to obtain a green build.
+- The Flutter↔Zig integration suite crashed the native engine during `agent.tool.execute` with `free(): double free detected in tcache 2`; the subsequent watch test then failed to connect because the engine had exited. The workspace-search ownership path was corrected, but that correction alone did not resolve the crash. A newer diagnostic commit is tracing process-tool cleanup, and the root cause remains unconfirmed.
+- The Zig unit-test job was still running when the latest status was inspected, so its result is not yet verified.
 
-These changes are awaiting a fresh CI run. No compile, unit-test, integration-test, or release gate is considered passed until that run provides evidence.
+The IPC dispatcher now rejects an explicitly supplied zero or negative `timeout_ms` instead of silently treating it as “use the default timeout”; a regression test covers the zero case. CI must validate this change. No build, test, integration, or release gate is considered passed without a successful result on the exact commit.
 
 ## Release-blocking gates
 
