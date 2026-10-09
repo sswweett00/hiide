@@ -130,7 +130,17 @@ class AiMemoryStore {
       return (score: score, entry: entry);
     }).toList();
 
-    scored.sort((a, b) => b.score.compareTo(a.score));
+    scored.sort((a, b) {
+      final scoreOrder = b.score.compareTo(a.score);
+      if (scoreOrder != 0) return scoreOrder;
+      // Stable, explicit recency tie-breaker: equal relevance should prefer
+      // the most recent useful memory, regardless of sort implementation.
+      final aTime = DateTime.tryParse(a.entry['timestamp']?.toString() ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0);
+      final bTime = DateTime.tryParse(b.entry['timestamp']?.toString() ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0);
+      return bTime.compareTo(aTime);
+    });
     return scored
         .where((s) => s.score > 0)
         .take(5)
@@ -238,7 +248,7 @@ class AiMemoryStore {
 
     final normalizedKeywords = keywords
         .map((word) => word.trim().toLowerCase())
-        .where((word) => word.isNotEmpty)
+        .where((word) => word.length >= 2)
         .toSet()
         .toList();
 
