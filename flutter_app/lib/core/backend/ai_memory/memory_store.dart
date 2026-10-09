@@ -334,8 +334,10 @@ class AiMemoryStore {
   }
 
   String _truncate(String text, int maxLen) {
+    if (maxLen <= 0) return '';
     if (text.length <= maxLen) return text;
-    return '${text.substring(0, maxLen)}...';
+    if (maxLen <= 3) return text.substring(0, maxLen);
+    return '${text.substring(0, maxLen - 1)}…';
   }
 }
 
