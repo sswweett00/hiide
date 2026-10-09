@@ -19,6 +19,10 @@ void main() {
     final backend = MockBackendService();
     addTearDown(backend.dispose);
 
+    tester.view.physicalSize = const Size(1280, 720);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
