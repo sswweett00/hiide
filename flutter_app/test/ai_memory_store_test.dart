@@ -31,6 +31,55 @@ void main() {
     expect(summaries, containsAll(<String>{'first summary', 'second summary'}));
   });
 
+  test('oversized project notes cannot crowd out relevant conversation memory',
+      () async {
+    final store = AiMemoryStore();
+    await store.storeProjectContext(
+      workspaceRoot: '/workspace/demo',
+      key: 'huge',
+      value: 'irrelevant-project-note-' * 10000,
+    );
+    await store.storeConversationSummary(
+      workspaceRoot: '/workspace/demo',
+      summary: 'Important authentication decision',
+      topics: const ['auth'],
+    );
+
+    final context = await store.buildContext(
+      workspaceRoot: '/workspace/demo',
+      keywords: const ['auth'],
+      maxChars: 500,
+    );
+
+    expect(context.length, lessThanOrEqualTo(500));
+    expect(context, contains('Important authentication decision'));
+  });
+
+  test('memory writes bound individual entries and collection sizes', () async {
+    final store = AiMemoryStore();
+    await store.storeProjectContext(
+      workspaceRoot: '/workspace/demo',
+      key: 'k' * 500,
+      value: 'v' * 5000,
+    );
+    await store.storeConversationSummary(
+      workspaceRoot: '/workspace/demo',
+      summary: 's' * 5000,
+      topics: List<String>.filled(100, 'topic'),
+    );
+
+    final project = await store.getProjectContext('/workspace/demo');
+    final conversations =
+        await store.searchConversations('/workspace/demo', const []);
+
+    expect(project.length, 1);
+    expect(project.keys.single.length, lessThanOrEqualTo(160));
+    expect(project.values.single.length, lessThanOrEqualTo(2000));
+    expect((conversations.first['summary'] as String).length,
+        lessThanOrEqualTo(2000));
+    expect((conversations.first['topics'] as List).length, lessThanOrEqualTo(1));
+  });
+
   test('buildContext stays bounded for oversized memory records', () async {
     final store = AiMemoryStore();
 
