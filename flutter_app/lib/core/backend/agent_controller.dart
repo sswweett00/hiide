@@ -625,7 +625,15 @@ Guidelines:
         call.result = _truncate(result.output, toolResultMaxChars);
 
         if (result.success) {
-          if (_isMutationTool(call.name)) _workspaceMutated = true;
+          if (_isMutationTool(call.name)) {
+            // A verification only covers the workspace state that existed
+            // when it ran. Any later successful mutation invalidates it and
+            // reopens the one-turn verification allowance.
+            _workspaceMutated = true;
+            _verificationObserved = false;
+            _verificationFailed = false;
+            _verificationNudgeSent = false;
+          }
           if (call.name == 'run_command' &&
               _isVerificationCommand(
                 call.arguments['command']?.toString() ?? '',
