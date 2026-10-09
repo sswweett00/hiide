@@ -54,7 +54,19 @@ jobs:
             echo "No changed Zig files."
             exit 0
           fi
-          printf '%s\0' "${zig_files[@]}" | xargs -0 zig fmt --check
+          for file in "${zig_files[@]}"; do
+            if ! zig fmt --check "$file"; then
+              original="$(mktemp)"
+              formatted="$(mktemp --suffix=.zig)"
+              cp "$file" "$original"
+              cp "$file" "$formatted"
+              zig fmt "$formatted" >/dev/null
+              echo "::error file=$file::zig fmt --check failed; formatter diff follows"
+              diff -u --label "$file (committed)" --label "$file (zig fmt)" "$original" "$formatted" || true
+              rm -f "$original" "$formatted"
+              exit 1
+            fi
+          done
 
 
       - name: Check patch whitespace
