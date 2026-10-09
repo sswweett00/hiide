@@ -48,14 +48,20 @@ fn initRegistry() !void {
 }
 
 fn approvalGranted(allocator: std.mem.Allocator, input: []const u8) bool {
-    var parsed = std.json.parseFromSlice(std.json.Value, allocator, input, .{}) catch return false;
+    // Decode only the field the gate needs. A typed parse avoids building a
+    // dynamically allocated JSON Value tree for every process invocation.
+    const parsed = std.json.parseFromSlice(struct {
+        approved: bool = false,
+    }, allocator, input, .{ .ignore_unknown_fields = true }) catch return false;
     defer parsed.deinit();
-    if (parsed.value != .object) return false;
-    const value = parsed.value.object.get("approved") orelse return false;
-    return switch (value) {
-        .bool => |flag| flag,
-        else => false,
-    };
+    return parsed.value.approved;
+}
+
+test "agent runtime: approval flag parsing fails closed" {
+    try std.testing.expect(approvalGranted(std.testing.allocator, "{\"approved\":true}"));
+    try std.testing.expect(!approvalGranted(std.testing.allocator, "{\"approved\":false}"));
+    try std.testing.expect(!approvalGranted(std.testing.allocator, "{\"approved\":\"true\"}"));
+    try std.testing.expect(!approvalGranted(std.testing.allocator, "not-json"));
 }
 
 fn ensureRegistry() !void {
