@@ -52,7 +52,10 @@ fn approvalGranted(allocator: std.mem.Allocator, input: []const u8) bool {
     defer parsed.deinit();
     if (parsed.value != .object) return false;
     const value = parsed.value.object.get("approved") orelse return false;
-    return switch (value) { .bool => |flag| flag, else => false };
+    return switch (value) {
+        .bool => |flag| flag,
+        else => false,
+    };
 }
 
 fn ensureRegistry() !void {
@@ -438,4 +441,3 @@ test "agent runtime: dangerous tools require an explicit approval token" {
     try std.testing.expect(approved.ok);
     try std.testing.expectEqualStrings("approved", std.mem.trim(u8, approved.output, " \r\n"));
 }
-
