@@ -192,6 +192,7 @@ void main() {
         'path': 'new_file.txt',
         'content': 'line1\nline2',
       }),
+      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
       _textResponse('done'),
     ]);
 
@@ -217,6 +218,7 @@ void main() {
       _toolResponse('call_1', 'delete_file', {
         'path': 'to_delete.txt',
       }),
+      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
       _textResponse('deleted'),
     ]);
 
@@ -238,6 +240,7 @@ void main() {
       _toolResponse('call_1', 'create_directory', {
         'path': 'sub/folder',
       }),
+      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
       _textResponse('created'),
     ]);
 
@@ -260,6 +263,7 @@ void main() {
         'target': 'run()',
         'replacement': 'runTwice()',
       }),
+      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
       _textResponse('edited'),
     ]);
 
@@ -307,6 +311,7 @@ void main() {
         'path': 'nested/out.txt',
         'content': 'abc',
       }),
+      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
       _textResponse('done'),
     ]);
 
@@ -324,6 +329,7 @@ void main() {
       'file.read',
       'file.list',
       'file.write',
+      'process.run',
     ]);
     // Absolute paths inside the workspace are normalized to relative so the
     // engine sandbox can enforce them.
@@ -362,7 +368,7 @@ void main() {
         'content': 'updated',
       }),
       _textResponse('I changed the file.'),
-      _toolResponse('call_2', 'run_command', {'command': 'printf verified'}),
+      _toolResponse('call_2', 'run_command', {'command': 'printf test-passed'}),
       _textResponse('done and verified'),
     ]);
 
