@@ -126,8 +126,11 @@ void main() {
         'content': 'secret=transcript-secret',
       },
     ]);
+    // Keep the record terminal so restart recovery does not replace the
+    // fields under test with the interrupted-task diagnostic.
     store.update(
       task.id,
+      status: AgentTaskStatus.failed,
       error: 'api_key=error-secret',
       summary: 'secret=summary-secret',
     );
