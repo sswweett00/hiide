@@ -393,6 +393,39 @@ void main() {
     expect(events.last, isA<AgentDoneEvent>());
   });
 
+  test('requires re-verification when a later tool mutates the workspace',
+      () async {
+    final ai = FakeAiClient([
+      _toolResponse('write_1', 'write_file', {
+        'path': 'first.txt',
+        'content': 'first',
+      }),
+      _toolResponse('check_1', 'run_command', {
+        'command': 'git add -N . && git diff --check',
+      }),
+      _toolResponse('write_2', 'write_file', {
+        'path': 'second.txt',
+        'content': 'second',
+      }),
+      _textResponse('Both changes are complete.'),
+      _toolResponse('check_2', 'run_command', {
+        'command': 'git add -N . && git diff --check',
+      }),
+      _textResponse('Both changes are verified.'),
+    ]);
+
+    final controller = makeController(ai);
+    final events = await controller.run([
+      {'role': 'user', 'content': 'create two files and verify the result'},
+    ]).toList();
+
+    expect(ai.calls, 6);
+    expect(File('${tempDir.path}/first.txt').existsSync(), isTrue);
+    expect(File('${tempDir.path}/second.txt').existsSync(), isTrue);
+    expect(events.whereType<AgentToolFinishedEvent>().length, 4);
+    expect(events.last, isA<AgentDoneEvent>());
+  });
+
   test('does not treat printed test text as successful verification', () async {
     final ai = FakeAiClient([
       _toolResponse('write_1', 'write_file', {
