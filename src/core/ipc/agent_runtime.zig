@@ -93,7 +93,10 @@ pub fn executeTool(
     // journaling, telemetry, and audit; keeping that path alive would make the
     // security contract dependent on the caller behaving honestly.
     var arena = std.heap.ArenaAllocator.init(allocator);
-    defer arena.deinit();
+    defer {
+        std.debug.print("[trace] agent runtime arena deinit\\n", .{});
+        arena.deinit();
+    }
     const arena_alloc = arena.allocator();
 
     var board = blackboard_mod.Blackboard.init(allocator, clock_mod.system());
@@ -172,6 +175,7 @@ pub fn executeTool(
         .budget = &meter,
     };
 
+    std.debug.print("[trace] agent runtime before invoke tool={s}\\n", .{tool_id});
     var result = ctx.invokeTool(tool_id, input) catch |err| {
         return ToolResponse{
             .ok = false,
@@ -179,6 +183,8 @@ pub fn executeTool(
             .error_message = try allocator.dupe(u8, @errorName(err)),
         };
     };
+
+    std.debug.print("[trace] agent runtime after invoke ok={} output_len={d}\\n", .{ result.ok, result.output.len });
 
     // Tool output is the boundary where workspace data can leave the local
     // engine and enter the model provider. Never return detected secrets or

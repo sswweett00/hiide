@@ -16,6 +16,7 @@ pub fn processRunTool() tool_mod.Tool {
     const Impl = struct {
         fn invoke(ctx: *tool_mod.ToolContext, input: []const u8) anyerror!tool_mod.ToolResult {
             const allocator = ctx.allocator;
+            std.debug.print("[trace] process.run entered\\n", .{});
 
             var parsed = try std.json.parseFromSlice(struct {
                 command: []const u8,
@@ -47,10 +48,15 @@ pub fn processRunTool() tool_mod.Tool {
             // The child runner may reallocate and free buffers during process
             // teardown; returning only an arena-owned copy makes the lifetime
             // boundary explicit and prevents allocator-specific double frees.
+            std.debug.print("[trace] process.run before OS runner\\n", .{});
             var result = compat.runCommandWithTimeout(std.heap.page_allocator, &argv, timeout_ms) catch |err| {
                 return tool_mod.ToolResult.failure(@errorName(err));
             };
-            defer result.deinit(std.heap.page_allocator);
+            defer {
+                std.debug.print("[trace] process.run deinit OS result\\n", .{});
+                result.deinit(std.heap.page_allocator);
+            }
+            std.debug.print("[trace] process.run after OS runner stdout_len={d}\\n", .{result.stdout.len});
 
             // Build the combined, trimmed output the model will see.
             const out_trimmed = std.mem.trim(u8, result.stdout, " \t\r\n");
@@ -68,6 +74,7 @@ pub fn processRunTool() tool_mod.Tool {
             }
 
             const output = try allocator.dupe(u8, combined.items);
+            std.debug.print("[trace] process.run combined output_len={d}\\n", .{output.len});
             if (result.timed_out) {
                 return .{ .ok = false, .output = output, .error_message = "command timed out" };
             }
