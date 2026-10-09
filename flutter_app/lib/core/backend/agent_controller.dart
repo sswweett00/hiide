@@ -697,11 +697,11 @@ Guidelines:
 
   bool _isVerificationCommand(String command) {
     // Arbitrary output text must never count as verification.
-    final segments = command.split(RegExp(r'\\s*(?:&&|\\|\\||[;|])\\s*'));
+    final segments = command.split(RegExp(r'\s*(?:&&|\|\||[;|])\\s*'));
     for (var segment in segments) {
       var normalized = segment.trim().replaceAll('"', '').replaceAll("'", '').replaceAll('`', '');
       if (normalized.isEmpty || normalized.startsWith('#')) continue;
-      var tokens = normalized.split(RegExp(r'\\s+'));
+      var tokens = normalized.split(RegExp(r'\s+'));
       while (tokens.isNotEmpty && {'sudo', 'env'}.contains(tokens.first)) {
         tokens = tokens.skip(1).toList();
       }
