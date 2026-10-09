@@ -61,10 +61,41 @@ class AgentContextCompactor {
     }
 
     final ordered = selected.reversed.toList();
-    return <Map<String, dynamic>>[
+    final compacted = <Map<String, dynamic>>[
       ...system,
       ...ordered.expand((segment) => segment),
     ];
+
+    // A single newest user message or tool result can itself exceed the whole
+    // budget. Trim textual payloads (never tool-call IDs/arguments) from older
+    // retained messages first, preserving the latest request whenever possible.
+    _fitTextToBudget(compacted);
+    return compacted;
+  }
+
+  void _fitTextToBudget(List<Map<String, dynamic>> messages) {
+    var size = _encodedSize(messages);
+    if (size <= maxCharacters) return;
+
+    for (var i = 0; i < messages.length && size > maxCharacters; i++) {
+      final message = messages[i];
+      if (message['role'] == 'system') continue;
+      final content = message['content'];
+      if (content is! String || content.isEmpty) continue;
+
+      var remaining = content;
+      while (remaining.isNotEmpty && size > maxCharacters) {
+        final excess = size - maxCharacters;
+        final nextLength = (remaining.length - excess - 1)
+            .clamp(0, remaining.length)
+            .toInt();
+        remaining = nextLength == remaining.length
+            ? remaining.substring(0, remaining.length - 1)
+            : remaining.substring(0, nextLength);
+        message['content'] = remaining.isEmpty ? '[content truncated]' : remaining;
+        size = _encodedSize(messages);
+      }
+    }
   }
 
   List<List<Map<String, dynamic>>> _segments(
