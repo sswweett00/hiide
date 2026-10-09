@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hiide_flutter/core/mechanics/agent_context.dart';
 
@@ -48,6 +50,23 @@ void main() {
     final toolIndex = result.indexWhere((m) => m['tool_call_id'] == 'c2');
     expect(assistantIndex, greaterThanOrEqualTo(0));
     expect(toolIndex, greaterThan(assistantIndex));
+  });
+
+  test('trims oversized message content to the context budget without mutating history',
+      () {
+    const compact = AgentContextCompactor(
+      maxMessages: 8,
+      maxCharacters: 4096,
+    );
+    final messages = <Map<String, dynamic>>[
+      {'role': 'system', 'content': 'system prompt'},
+      {'role': 'user', 'content': 'current task: ' + ('important ' * 5000)},
+    ];
+
+    final result = compact.compact(messages);
+    expect(utf8.encode(jsonEncode(result)).length, lessThanOrEqualTo(4096));
+    expect(result.last['content'], contains('current task:'));
+    expect((messages.last['content'] as String).length, greaterThan(4096));
   });
 
   test('drops stale complete segments before current work', () {
