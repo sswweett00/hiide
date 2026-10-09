@@ -192,7 +192,7 @@ void main() {
         'path': 'new_file.txt',
         'content': 'line1\nline2',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
       _textResponse('done'),
     ]);
 
@@ -218,7 +218,7 @@ void main() {
       _toolResponse('call_1', 'delete_file', {
         'path': 'to_delete.txt',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
       _textResponse('deleted'),
     ]);
 
@@ -240,7 +240,7 @@ void main() {
       _toolResponse('call_1', 'create_directory', {
         'path': 'sub/folder',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
       _textResponse('created'),
     ]);
 
@@ -263,7 +263,7 @@ void main() {
         'target': 'run()',
         'replacement': 'runTwice()',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
       _textResponse('edited'),
     ]);
 
@@ -311,7 +311,7 @@ void main() {
         'path': 'nested/out.txt',
         'content': 'abc',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'printf test-passed'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
       _textResponse('done'),
     ]);
 
@@ -368,7 +368,7 @@ void main() {
         'content': 'updated',
       }),
       _textResponse('I changed the file.'),
-      _toolResponse('call_2', 'run_command', {'command': 'printf test-passed'}),
+      _toolResponse('call_2', 'run_command', {'command': 'flutter test'}),
       _textResponse('done and verified'),
     ]);
 
@@ -385,6 +385,30 @@ void main() {
       'run_command',
     );
     expect(events.last, isA<AgentDoneEvent>());
+  });
+
+  test('does not treat printed test text as successful verification', () async {
+    final ai = FakeAiClient([
+      _toolResponse('write_1', 'write_file', {
+        'path': 'unverified.txt',
+        'content': 'changed',
+      }),
+      _textResponse('I changed the file.'),
+      _toolResponse('fake_check', 'run_command', {
+        'command': 'printf test-passed',
+      }),
+      _textResponse('Everything is verified.'),
+    ]);
+
+    final controller = makeController(ai);
+    final events = await controller.run([
+      {'role': 'user', 'content': 'write a file and verify it'},
+    ]).toList();
+
+    expect(ai.calls, 4);
+    expect(events.whereType<AgentDoneEvent>(), isEmpty);
+    expect(events.whereType<AgentErrorEvent>(), isNotEmpty);
+    expect(File('${tempDir.path}/unverified.txt').existsSync(), isFalse);
   });
 
   test('stops cleanly when stop() is requested', () async {
