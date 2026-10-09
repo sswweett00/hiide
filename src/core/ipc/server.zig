@@ -435,7 +435,7 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
         const timeout_ms: ?u32 = blk: {
             const value = params.get("timeout_ms") orelse break :blk null;
             const raw = intValue(value) catch return errResp(req.id, "timeout_ms must be an integer");
-            if (raw <= 0) break :blk null;
+            if (raw <= 0) return errResp(req.id, "timeout_ms must be greater than zero");
             break :blk @intCast(@min(raw, 600_000));
         };
 
@@ -526,6 +526,19 @@ test "dispatch: unknown method" {
     defer cleanupResponse(testing.allocator, &resp);
     try testing.expect(resp.err != null);
     try testing.expect(std.mem.startsWith(u8, resp.err.?, "unknown method"));
+}
+
+test "dispatch: agent.tool.execute rejects non-positive timeouts" {
+    var params: json.ObjectMap = .empty;
+    try params.put(testing.allocator, "tool", .{ .string = "file.read" });
+    try params.put(testing.allocator, "input", .{ .string = "missing.txt" });
+    try params.put(testing.allocator, "workspace_root", .{ .string = "." });
+    try params.put(testing.allocator, "timeout_ms", .{ .integer = 0 });
+    defer params.deinit(testing.allocator);
+
+    var response = try runDispatch(testing.allocator, "agent.tool.execute", .{ .object = params });
+    defer cleanupResponse(testing.allocator, &response);
+    try testing.expectEqualStrings("timeout_ms must be greater than zero", response.err.?);
 }
 
 test "dispatch: agent.tool.execute runs framework tools" {
