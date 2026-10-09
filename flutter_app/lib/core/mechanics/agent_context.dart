@@ -61,9 +61,13 @@ class AgentContextCompactor {
     }
 
     final ordered = selected.reversed.toList();
+    // Copy message maps before trimming so persisted conversation history
+    // remains complete and only the API request receives compacted content.
     final compacted = <Map<String, dynamic>>[
-      ...system,
-      ...ordered.expand((segment) => segment),
+      ...system.map((message) => Map<String, dynamic>.from(message)),
+      ...ordered.expand((segment) => segment.map(
+            (message) => Map<String, dynamic>.from(message),
+          )),
     ];
 
     // A single newest user message or tool result can itself exceed the whole
