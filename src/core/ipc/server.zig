@@ -515,6 +515,36 @@ test "ipc auth token validation" {
     try std.testing.expect(!authTokenMatches("secret", null));
 }
 
+test "dispatch: authenticated connection stays authenticated after hello" {
+    const allocator = testing.allocator;
+    var params: json.ObjectMap = .empty;
+    try params.put(allocator, "auth_token", .{ .string = "test-session-token" });
+    defer params.deinit(allocator);
+
+    var write_mutex: compat.Mutex = .init;
+    var ctx = DispatchContext{
+        .conn = .{ .stream = .{ .fd = -1 } },
+        .write_mutex = &write_mutex,
+        .conn_id = 1,
+        .auth_token = "test-session-token",
+        .authenticated = false,
+    };
+
+    var hello = try dispatch(allocator, .{
+        .id = 1,
+        .method = "hello",
+        .params = .{ .object = params },
+    }, &ctx);
+    defer cleanupResponse(allocator, &hello);
+    try expectNoErr(hello);
+    try testing.expect(ctx.authenticated);
+
+    var ping = try dispatch(allocator, .{ .id = 2, .method = "ping" }, &ctx);
+    defer cleanupResponse(allocator, &ping);
+    try expectNoErr(ping);
+    try testing.expectEqualStrings("pong", ping.result.?.string);
+}
+
 test "dispatch: hello and ping" {
     var resp = try runDispatch(testing.allocator, "hello", null);
     defer cleanupResponse(testing.allocator, &resp);
