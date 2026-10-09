@@ -27,9 +27,16 @@ class AiMemoryStore {
     required String value,
   }) async {
     await init();
+    final normalizedKey = _truncate(key.trim(), 160);
+    if (normalizedKey.isEmpty) return;
+    final normalizedValue = _truncate(value.trim(), _maxTokensPerEntry);
     await _serializeWrite(() async {
       final memories = await getProjectContext(workspaceRoot);
-      memories[key] = value;
+      memories[normalizedKey] = normalizedValue;
+      // Keep persistence bounded even if an agent repeatedly learns new keys.
+      while (memories.length > 64) {
+        memories.remove(memories.keys.first);
+      }
       await _prefs.setString(
         'ai_mem_ctx_$workspaceRoot',
         jsonEncode(memories),
@@ -61,9 +68,17 @@ class AiMemoryStore {
     await init();
     await _serializeWrite(() async {
       final entries = await _getConversations(workspaceRoot);
+      final normalizedTopics = topics
+          .map((topic) => _truncate(topic.trim().toLowerCase(), 80))
+          .where((topic) => topic.isNotEmpty)
+          .toSet()
+          .take(24)
+          .toList();
+      final normalizedSummary = _truncate(summary.trim(), _maxTokensPerEntry);
+      if (normalizedSummary.isEmpty) return;
       entries.insert(0, {
-        'summary': summary,
-        'topics': topics,
+        'summary': normalizedSummary,
+        'topics': normalizedTopics,
         'timestamp': DateTime.now().toIso8601String(),
       });
       if (entries.length > _maxEntries) {
@@ -132,14 +147,16 @@ class AiMemoryStore {
     required String example,
   }) async {
     await init();
+    final normalizedPattern = _truncate(pattern.trim(), 240);
+    if (normalizedPattern.isEmpty) return;
     await _serializeWrite(() async {
       final patterns = await getCodePatterns(workspaceRoot);
-      if (patterns.any((p) => p['pattern']?.toString() == pattern)) {
+      if (patterns.any((p) => p['pattern']?.toString() == normalizedPattern)) {
         return;
       }
       patterns.add({
-        'pattern': pattern,
-        'example': _truncate(example, _maxTokensPerEntry),
+        'pattern': normalizedPattern,
+        'example': _truncate(example.trim(), 800),
         'timestamp': DateTime.now().toIso8601String(),
       });
       if (patterns.length > 50) {
@@ -175,8 +192,13 @@ class AiMemoryStore {
   }) async {
     await init();
     await _serializeWrite(() async {
+      final normalizedKey = _truncate(key.trim(), 120);
+      if (normalizedKey.isEmpty) return;
       final prefs = await getPreferences();
-      prefs[key] = value;
+      prefs[normalizedKey] = _truncate(value.trim(), 1000);
+      while (prefs.length > 128) {
+        prefs.remove(prefs.keys.first);
+      }
       await _prefs.setString('ai_mem_prefs', jsonEncode(prefs));
     });
   }
@@ -212,55 +234,78 @@ class AiMemoryStore {
     List<String> keywords = const <String>[],
     int maxChars = 8000,
   }) async {
+    if (maxChars <= 0) return '';
+
+    final normalizedKeywords = keywords
+        .map((word) => word.trim().toLowerCase())
+        .where((word) => word.isNotEmpty)
+        .toSet()
+        .toList();
+
+    // Reserve space for each memory class so a single oversized project note
+    // cannot starve relevant conversation history or learned code conventions.
+    final conversationBudget = (maxChars * 0.45).floor();
+    final patternBudget = (maxChars * 0.25).floor();
+    final projectBudget = maxChars - conversationBudget - patternBudget;
     final sections = <String>[];
 
     final conversations = await searchConversations(
       workspaceRoot,
-      keywords,
+      normalizedKeywords,
     );
-    if (conversations.isNotEmpty) {
-      sections.add(
-        'RELEVANT PAST TASK SUMMARIES:\n' +
-            conversations
-                .take(5)
-                .map((e) => '- ' + (e['summary']?.toString() ?? ''))
-                .where((e) => e.length > 2)
-                .join('\n'),
-      );
-    }
+    final conversationSection = _boundedSection(
+      'RELEVANT PAST TASK SUMMARIES',
+      conversations
+          .take(5)
+          .map((entry) => entry['summary']?.toString() ?? '')
+          .where((summary) => summary.trim().isNotEmpty)
+          .toList(),
+      conversationBudget,
+    );
+    if (conversationSection.isNotEmpty) sections.add(conversationSection);
 
     final patterns = await getCodePatterns(workspaceRoot);
-    if (patterns.isNotEmpty) {
-      sections.add(
-        'OBSERVED CODE PATTERNS:\n' +
-            patterns
-                .reversed
-                .take(12)
-                .map((e) => '- ' + (e['pattern']?.toString() ?? '') +
-                    (e['example'] == null ? '' : ': ' + e['example'].toString()))
-                .where((e) => e.length > 2)
-                .join('\n'),
-      );
-    }
+    final patternSection = _boundedSection(
+      'OBSERVED CODE PATTERNS',
+      patterns.reversed.take(12).map((entry) {
+        final pattern = entry['pattern']?.toString() ?? '';
+        final example = entry['example']?.toString();
+        return example == null || example.isEmpty
+            ? pattern
+            : '$pattern: $example';
+      }).where((entry) => entry.trim().isNotEmpty).toList(),
+      patternBudget,
+    );
+    if (patternSection.isNotEmpty) sections.add(patternSection);
 
-    // Lower-priority project notes come after keyword-matched conversation
-    // memory and observed patterns. A single oversized note must not crowd out
-    // the relevant context the caller explicitly requested.
     final project = await getProjectContext(workspaceRoot);
-    if (project.isNotEmpty) {
-      sections.add(
-        'PROJECT CONTEXT:\n' +
-            project.entries
-                .take(32)
-                .map((e) => '- ' + e.key + ': ' + e.value)
-                .join('\n'),
-      );
-    }
+    final projectSection = _boundedSection(
+      'PROJECT CONTEXT',
+      project.entries
+          .take(32)
+          .map((entry) => '${entry.key}: ${entry.value}')
+          .toList(),
+      projectBudget,
+    );
+    if (projectSection.isNotEmpty) sections.add(projectSection);
 
-    if (maxChars <= 0) return '';
-    final text = sections.join('\n\n');
-    if (text.length <= maxChars) return text;
-    return text.substring(0, maxChars) + '\n…[memory truncated]';
+    return sections.join('\n\n');
+  }
+
+  String _boundedSection(String title, List<String> entries, int budget) {
+    if (budget <= title.length + 2 || entries.isEmpty) return '';
+    final lines = <String>[title];
+    var used = title.length;
+    for (final entry in entries) {
+      final remaining = budget - used - 2;
+      if (remaining <= 0) break;
+      final line = '- ' + _truncate(entry, remaining - 2);
+      if (line.length <= 2) break;
+      lines.add(line);
+      used += line.length + 1;
+    }
+    if (lines.length == 1) return '';
+    return lines.join('\n');
   }
 
   // ─── Cleanup ─────────────────────────────────────────────────────────────
