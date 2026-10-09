@@ -6,12 +6,22 @@ This document is the release gate for Hiide. It is intentionally evidence-based:
 
 **Status: NOT READY FOR GENERAL RELEASE.**
 
-The most recent observed CI run before this update (2026-10-09, commit `0cd332bdd3fc76b03275125474358aec5b50b02d`) was not green:
-- Flutter analysis passed, but the Flutter suite had 29 failing tests spanning widget rendering, stale test expectations, settings/model fixtures, agent file operations, and memory behavior. These failures need individual triage; do not skip tests or loosen assertions to obtain a green build.
-- The Flutter↔Zig integration suite crashed the native engine during `agent.tool.execute` with `free(): double free detected in tcache 2`; the subsequent watch test then failed to connect because the engine had exited. The workspace-search ownership path was corrected, but that correction alone did not resolve the crash. A newer diagnostic commit is tracing process-tool cleanup, and the root cause remains unconfirmed.
-- The Zig unit-test job was still running when the latest status was inspected, so its result is not yet verified.
+The latest observed failing CI baseline (2026-10-09, run [37933687502](https://github.com/sswweett00/hiide/actions/runs/37933687502), commit `ad22378019d1089d726f63ccb5333844aca9a5aa`) was not green:
+- Flutter analysis passed, but the Flutter suite reported 29 failing tests spanning widget layout, stale model/mode expectations, settings fixtures, agent mutation/verification flow, task persistence, and memory prioritization.
+- The Flutter↔Zig integration suite crashed the native engine during `agent.tool.execute` with `free(): double free detected in tcache 2`; the subsequent watch test then failed to connect because the engine had exited. The earlier workspace-search ownership correction did not resolve this crash. Its root cause is still unconfirmed.
+- The Zig unit-test job was still running when its status was inspected, so that result was not verified.
 
-The IPC dispatcher now rejects an explicitly supplied zero or negative `timeout_ms` instead of silently treating it as “use the default timeout”; a regression test covers the zero case. CI must validate this change. No build, test, integration, or release gate is considered passed without a successful result on the exact commit.
+### Changes since the failing baseline — awaiting CI evidence
+
+The following changes have landed on `main`, but they are **not considered verified until CI completes successfully on the exact commit**:
+- Persist IPC authentication state across requests on a single TCP connection, and add a regression test for the authenticated hello-then-ping sequence.
+- Do not trust an already-running loopback service unless the application inherited its session token; the supervisor starts its own token-protected engine otherwise.
+- Parse process approval flags through a typed, fail-closed decoder.
+- Prioritize keyword-matched conversation memory ahead of oversized project notes so bounded context retains relevant information.
+- Require Zig tests, Flutter analysis/tests, and real Flutter↔Zig integration tests to pass before the Linux release workflow builds or publishes packages.
+- Correct stale test fixtures and add post-mutation verification calls where the agent loop requires them.
+
+The IPC dispatcher also rejects explicitly supplied zero or negative `timeout_ms` values instead of silently using a default. The latest observed CI run for the newer changes is still pending/in progress. No build, test, integration, security, or release gate is considered passed without a successful result on the exact release commit.
 
 ## Release-blocking gates
 
