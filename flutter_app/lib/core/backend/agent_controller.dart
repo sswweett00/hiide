@@ -1321,30 +1321,40 @@ Guidelines:
           args.isNotEmpty && args.first == first && args.skip(1).any(second.contains);
 
       if (executable == 'flutter' &&
-          hasAny({'test', 'analyze', 'build', 'doctor'})) {
+          hasAny({'test', 'analyze', 'build'})) {
         return true;
       }
       if (executable == 'dart' &&
-          (hasAny({'test', 'analyze', 'pub'}) ||
-              (hasAny({'format'}) && hasAny({'--set-exit-if-changed'})))) {
+          (args.isNotEmpty && {'test', 'analyze'}.contains(args.first) ||
+              (args.isNotEmpty &&
+                  args.first == 'format' &&
+                  hasAny({'--set-exit-if-changed'})))) {
         return true;
       }
       if (executable == 'zig' &&
-          (hasAny({'build', 'test'}) ||
-              (hasAny({'fmt'}) && hasAny({'--check'})))) {
+          (args.isNotEmpty && {'build', 'test'}.contains(args.first) ||
+              (args.isNotEmpty &&
+                  args.first == 'fmt' &&
+                  hasAny({'--check'})))) {
         return true;
       }
-      if (executable == 'cargo' && hasAny({'test', 'check', 'build', 'clippy'})) {
+      if (executable == 'cargo' &&
+          args.isNotEmpty &&
+          {'test', 'check', 'build', 'clippy'}.contains(args.first)) {
         return true;
       }
-      if (executable == 'go' && hasAny({'test', 'vet', 'build'})) return true;
+      if (executable == 'go' &&
+          args.isNotEmpty &&
+          {'test', 'vet', 'build'}.contains(args.first)) return true;
       if (executable == 'npm' &&
-          (hasAny({'test', 'build', 'lint', 'check'}) ||
+          (args.isNotEmpty &&
+                  {'test', 'build', 'lint', 'check'}.contains(args.first) ||
               hasPair('run', {'test', 'build', 'lint', 'check', 'typecheck'}))) {
         return true;
       }
       if ((executable == 'pnpm' || executable == 'yarn' || executable == 'bun') &&
-          (hasAny({'test', 'build', 'lint', 'check', 'typecheck'}) ||
+          (args.isNotEmpty &&
+                  {'test', 'build', 'lint', 'check', 'typecheck'}.contains(args.first) ||
               hasPair('run', {'test', 'build', 'lint', 'check', 'typecheck'}))) {
         return true;
       }
@@ -1354,10 +1364,14 @@ Guidelines:
               executable == 'ctest' ||
               executable == 'tsc' ||
               executable == 'mypy' ||
-              executable == 'ruff' ||
               executable == 'eslint' ||
               executable == 'shellcheck') &&
           !hasAny({'--version', '-v', '--help', '-h'})) {
+        return true;
+      }
+      if (executable == 'ruff' &&
+          args.isNotEmpty &&
+          args.first == 'check') {
         return true;
       }
       if (executable == 'python' || executable == 'python3') {
