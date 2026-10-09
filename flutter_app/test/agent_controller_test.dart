@@ -83,6 +83,12 @@ void main() {
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync('hiide_agent_test');
+    final gitInit = Process.runSync(
+      'git',
+      const ['init', '--quiet'],
+      workingDirectory: tempDir.path,
+    );
+    expect(gitInit.exitCode, 0, reason: 'test workspace git init failed');
     terminal = TerminalService();
     backend = MockBackendService();
   });
@@ -192,7 +198,7 @@ void main() {
         'path': 'new_file.txt',
         'content': 'line1\nline2',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'git diff --check'}),
       _textResponse('done'),
     ]);
 
@@ -218,7 +224,7 @@ void main() {
       _toolResponse('call_1', 'delete_file', {
         'path': 'to_delete.txt',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'git diff --check'}),
       _textResponse('deleted'),
     ]);
 
@@ -240,7 +246,7 @@ void main() {
       _toolResponse('call_1', 'create_directory', {
         'path': 'sub/folder',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'git diff --check'}),
       _textResponse('created'),
     ]);
 
@@ -263,7 +269,7 @@ void main() {
         'target': 'run()',
         'replacement': 'runTwice()',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'git diff --check'}),
       _textResponse('edited'),
     ]);
 
@@ -311,7 +317,7 @@ void main() {
         'path': 'nested/out.txt',
         'content': 'abc',
       }),
-      _toolResponse('verify_1', 'run_command', {'command': 'flutter test'}),
+      _toolResponse('verify_1', 'run_command', {'command': 'git diff --check'}),
       _textResponse('done'),
     ]);
 
@@ -368,7 +374,7 @@ void main() {
         'content': 'updated',
       }),
       _textResponse('I changed the file.'),
-      _toolResponse('call_2', 'run_command', {'command': 'flutter test'}),
+      _toolResponse('call_2', 'run_command', {'command': 'git diff --check'}),
       _textResponse('done and verified'),
     ]);
 
