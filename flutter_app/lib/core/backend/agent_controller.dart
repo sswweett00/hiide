@@ -696,28 +696,38 @@ Guidelines:
   }
 
   bool _isVerificationCommand(String command) {
-    // Do not infer verification from arbitrary substrings: commands such as
-    // "printf test-passed" or "echo build complete" are not checks.
-    // Recognize known verification executables/subcommands instead.
-    final segments = command.split(RegExp(r'\s*(?:&&|\|\||[;|])\s*'));
+    // Arbitrary output text must never count as verification.
+    final segments = command.split(RegExp(r'\\s*(?:&&|\\|\\||[;|])\\s*'));
     for (var segment in segments) {
-      var normalized = segment
-          .trim()
-          .replaceAll('"', '')
-          .replaceAll("'", '')
-          .replaceAll('`', '');
+      var normalized = segment.trim().replaceAll('"', '').replaceAll("'", '').replaceAll('`', '');
       if (normalized.isEmpty || normalized.startsWith('#')) continue;
-
-      var tokens = normalized.split(RegExp(r'\s+'));
-      while (tokens.isNotEmpty &&
-          (tokens.first == 'sudo' ||
-              tokens.first == 'env' ||
-              tokens.first == 'timeout')) {
+      var tokens = normalized.split(RegExp(r'\\s+'));
+      while (tokens.isNotEmpty && {'sudo', 'env'}.contains(tokens.first)) {
         tokens = tokens.skip(1).toList();
       }
-      while (tokens.isNotEmpty &&
-          RegExp(r'^[A-Za-z_][A-Za-z0-9_]*=.*
-
+      while (tokens.isNotEmpty && RegExp(r'^[A-Za-z_][A-Za-z0-9_]*=').hasMatch(tokens.first)) {
+        tokens = tokens.skip(1).toList();
+      }
+      if (tokens.isEmpty || tokens.first == 'cd') continue;
+      final executable = tokens.first.split('/').last.toLowerCase();
+      final args = tokens.skip(1).map((arg) => arg.toLowerCase()).toList();
+      final first = args.isEmpty ? '' : args.first;
+      if (executable == 'flutter' && {'test', 'analyze', 'build'}.contains(first)) return true;
+      if (executable == 'dart' && ({'test', 'analyze'}.contains(first) || (first == 'format' && args.contains('--set-exit-if-changed')))) return true;
+      if (executable == 'zig' && ({'build', 'test'}.contains(first) || (first == 'fmt' && args.contains('--check')))) return true;
+      if (executable == 'cargo' && {'test', 'check', 'build', 'clippy'}.contains(first)) return true;
+      if (executable == 'go' && {'test', 'vet', 'build'}.contains(first)) return true;
+      if (executable == 'npm' && ({'test', 'build', 'lint', 'check'}.contains(first) || (first == 'run' && args.skip(1).any({'test', 'build', 'lint', 'check', 'typecheck'}.contains)))) return true;
+      if ({'pnpm', 'yarn', 'bun'}.contains(executable) && ({'test', 'build', 'lint', 'check', 'typecheck'}.contains(first) || (first == 'run' && args.skip(1).any({'test', 'build', 'lint', 'check', 'typecheck'}.contains)))) return true;
+      if ({'pytest', 'jest', 'vitest', 'ctest', 'tsc', 'mypy', 'eslint', 'shellcheck'}.contains(executable) && !args.any({'--version', '-v', '--help', '-h'}.contains)) return true;
+      if (executable == 'ruff' && first == 'check') return true;
+      if ((executable == 'python' || executable == 'python3') && args.length >= 2 && first == '-m' && {'pytest', 'unittest', 'mypy'}.contains(args[1])) return true;
+      if (executable == 'make' && {'test', 'check', 'build', 'lint'}.contains(first)) return true;
+      if (executable == 'cmake' && first == '--build') return true;
+      if (executable == 'git' && first == 'diff' && args.contains('--check')) return true;
+    }
+    return false;
+  }
   Future<_ToolResult> _executeGuardedTool(
     AgentToolCall call,
     AgentRunGuard guard,
