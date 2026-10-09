@@ -116,6 +116,11 @@ fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator, auth_toke
     var pending = compat.ManagedArrayList(u8).init(allocator);
     defer pending.deinit();
 
+    // Authentication is scoped to the TCP connection, not an individual
+    // NDJSON line. Preserve the successful hello handshake for subsequent
+    // requests on this same socket.
+    var authenticated = auth_token == null;
+
     const max_pending = 2 * 1024 * 1024; // keep server/client response limits aligned
     const max_line = 2 * 1024 * 1024;
 
@@ -134,7 +139,7 @@ fn handleConnection(conn: TcpConnection, allocator: std.mem.Allocator, auth_toke
                 writeResponse(allocator, conn, &write_mutex, IpcResponse{ .id = 0, .err = "line too large" });
                 return;
             }
-            handleLine(allocator, conn, line, &write_mutex, conn_id, auth_token);
+            handleLine(allocator, conn, line, &write_mutex, conn_id, auth_token, &authenticated);
         }
 
         // Keep the (possibly partial) remainder for the next read.
@@ -161,6 +166,7 @@ fn handleLine(
     write_mutex: *compat.Mutex,
     conn_id: u64,
     auth_token: ?[]u8,
+    authenticated: *bool,
 ) void {
     var parsed = json.parseFromSlice(IpcMessage, allocator, line, .{}) catch |err| {
         writeResponse(allocator, conn, write_mutex, IpcResponse{ .id = 0, .err = @errorName(err) });
@@ -173,12 +179,13 @@ fn handleLine(
         .write_mutex = write_mutex,
         .conn_id = conn_id,
         .auth_token = auth_token,
-        .authenticated = auth_token == null,
+        .authenticated = authenticated.*,
     };
     var resp = dispatch(allocator, parsed.value, &ctx) catch |err| {
         writeResponse(allocator, conn, write_mutex, IpcResponse{ .id = parsed.value.id, .err = @errorName(err) });
         return;
     };
+    authenticated.* = ctx.authenticated;
     writeResponse(allocator, conn, write_mutex, resp);
     cleanupResponse(allocator, &resp);
 }
