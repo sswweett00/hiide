@@ -85,9 +85,12 @@ pub fn executeTool(
     workspace_root: []const u8,
     timeout_ms: ?u32,
 ) !ToolResponse {
-    std.debug.print("[diagnostic] runtime entered\n", .{});\n    try ensureRegistry();\n    std.debug.print("[diagnostic] registry ready\n", .{});
+    std.debug.print("[diagnostic] runtime entered\n", .{});
+    try ensureRegistry();
+    std.debug.print("[diagnostic] registry ready\n", .{});
 
-    const tool = registry.get(tool_id) orelse return error.ToolNotFound;\n    std.debug.print("[diagnostic] tool resolved\n", .{});
+    const tool = registry.get(tool_id) orelse return error.ToolNotFound;
+    std.debug.print("[diagnostic] tool resolved\n", .{});
     const needs_approval = tool.spec.needsApproval();
     if (needs_approval and !approvalGranted(allocator, input)) {
         return ToolResponse{
@@ -97,7 +100,9 @@ pub fn executeTool(
         };
     }
 
-    std.debug.print("[diagnostic] approval validated\n", .{});\n\n    // The IPC boundary must use the same mediation pipeline as the native
+    std.debug.print("[diagnostic] approval validated\n", .{});
+
+    // The IPC boundary must use the same mediation pipeline as the native
     // executor. Direct Tool.invoke bypasses classification, policy, approval,
     // journaling, telemetry, and audit; keeping that path alive would make the
     // security contract dependent on the caller behaving honestly.
@@ -116,7 +121,8 @@ pub fn executeTool(
 
     var policy = policy_mod.PolicyEngine.init(allocator);
     defer policy.deinit();
-    try policy.loadDefaults();\n    std.debug.print("[diagnostic] policy loaded\n", .{});
+    try policy.loadDefaults();
+    std.debug.print("[diagnostic] policy loaded\n", .{});
 
     var ledger = policy_mod.AuditLedger.init(allocator);
     defer ledger.deinit();
@@ -184,7 +190,7 @@ pub fn executeTool(
         .budget = &meter,
     };
 
-    std.debug.print("[trace] agent runtime before invoke tool={s}\\n", .{tool_id});
+    std.debug.print("[diagnostic] before invoke {s}\n", .{tool_id});
     var result = ctx.invokeTool(tool_id, input) catch |err| {
         return ToolResponse{
             .ok = false,
@@ -193,7 +199,7 @@ pub fn executeTool(
         };
     };
 
-    std.debug.print("[trace] agent runtime after invoke ok={} output_len={d}\\n", .{ result.ok, result.output.len });
+    std.debug.print("[diagnostic] after invoke ok={} output_len={d}\n", .{ result.ok, result.output.len });
 
     // Tool output is the boundary where workspace data can leave the local
     // engine and enter the model provider. Never return detected secrets or
