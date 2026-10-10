@@ -448,9 +448,11 @@ fn dispatch(allocator: std.mem.Allocator, req: IpcMessage, ctx: ?*DispatchContex
 
         // Tool-level failures are NOT transport errors: the model must see the
         // error text as tool output so it can react (read again, retry, ...).
-        std.debug.print("[diagnostic] IPC before agent runtime\n", .{});\n        const resp = agent_runtime.executeTool(allocator, tool, input, workspace_root, timeout_ms) catch |err| {
+        std.debug.print("[diagnostic] IPC before agent runtime\n", .{});
+        const resp = agent_runtime.executeTool(allocator, tool, input, workspace_root, timeout_ms) catch |err| {
             return errResp(req.id, @errorName(err));
         };
+        std.debug.print("[diagnostic] IPC after agent runtime\n", .{});
         defer {
             allocator.free(resp.output);
             allocator.free(resp.error_message);
