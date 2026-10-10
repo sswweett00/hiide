@@ -509,7 +509,7 @@ test "ipc auth token validation" {
         var obj = json.ObjectMap.empty;
         try obj.put(std.testing.allocator, "auth_token", .{ .string = "secret" });
         break :blk obj;
-    }};
+    } };
     defer @constCast(&params).object.deinit(std.testing.allocator);
 
     try std.testing.expect(authTokenMatches("secret", params));
