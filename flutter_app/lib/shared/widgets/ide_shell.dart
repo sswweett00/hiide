@@ -141,26 +141,20 @@ class IdeShell extends ConsumerWidget {
                         ),
                         const VerticalDivider(width: 1),
                       ],
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(child: child),
-                            if (showChat)
-                              Container(
-                                width: 320,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    left: BorderSide(
-                                      color: cs.outlineVariant,
-                                      width: DesignTokens.borderWidthThin,
-                                    ),
-                                  ),
-                                ),
-                                child: const AiChatSidebar(),
+                      Expanded(child: child),
+                      if (showChat)
+                        Container(
+                          width: 320,
+                          decoration: BoxDecoration(
+                            border: Border(
+                              left: BorderSide(
+                                color: cs.outlineVariant,
+                                width: DesignTokens.borderWidthThin,
                               ),
-                          ],
+                            ),
+                          ),
+                          child: const AiChatSidebar(),
                         ),
-                      ),
                     ],
                   );
                 },
