@@ -85,9 +85,9 @@ pub fn executeTool(
     workspace_root: []const u8,
     timeout_ms: ?u32,
 ) !ToolResponse {
-    try ensureRegistry();
+    std.debug.print("[diagnostic] runtime entered\n", .{});\n    try ensureRegistry();\n    std.debug.print("[diagnostic] registry ready\n", .{});
 
-    const tool = registry.get(tool_id) orelse return error.ToolNotFound;
+    const tool = registry.get(tool_id) orelse return error.ToolNotFound;\n    std.debug.print("[diagnostic] tool resolved\n", .{});
     const needs_approval = tool.spec.needsApproval();
     if (needs_approval and !approvalGranted(allocator, input)) {
         return ToolResponse{
@@ -97,7 +97,7 @@ pub fn executeTool(
         };
     }
 
-    // The IPC boundary must use the same mediation pipeline as the native
+    std.debug.print("[diagnostic] approval validated\n", .{});\n\n    // The IPC boundary must use the same mediation pipeline as the native
     // executor. Direct Tool.invoke bypasses classification, policy, approval,
     // journaling, telemetry, and audit; keeping that path alive would make the
     // security contract dependent on the caller behaving honestly.
@@ -116,7 +116,7 @@ pub fn executeTool(
 
     var policy = policy_mod.PolicyEngine.init(allocator);
     defer policy.deinit();
-    try policy.loadDefaults();
+    try policy.loadDefaults();\n    std.debug.print("[diagnostic] policy loaded\n", .{});
 
     var ledger = policy_mod.AuditLedger.init(allocator);
     defer ledger.deinit();
