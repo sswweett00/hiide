@@ -713,3 +713,39 @@ test "dispatch: agent.tool.execute rejects unknown tools" {
     try testing.expect(resp.err != null);
     try testing.expect(std.mem.eql(u8, resp.err.?, "ToolNotFound"));
 }
+
+
+test "dispatch: workspace.tree response releases nested JSON allocations exactly once" {
+    const allocator = testing.allocator;
+    var tmp = testing.tmpDir(.{});
+    defer tmp.cleanup();
+    const io = std.Io.Threaded.global_single_threaded.io();
+
+    try tmp.dir.createDirPath(io, "src");
+    try tmp.dir.writeFile(io, .{ .sub_path = "zeta.txt", .data = "12345" });
+    try tmp.dir.writeFile(io, .{ .sub_path = "src/main.zig", .data = "abcde" });
+
+    const root = try std.fs.path.join(allocator, &.{ ".zig-cache", "tmp", &tmp.sub_path });
+    defer allocator.free(root);
+
+    var params: json.ObjectMap = .empty;
+    try params.put(allocator, "root", .{ .string = try allocator.dupe(u8, root) });
+    try params.put(allocator, "max_entries", .{ .integer = 10 });
+    defer deinitObject(allocator, &params);
+
+    var response = try runDispatch(allocator, "workspace.tree", .{ .object = params });
+    defer cleanupResponse(allocator, &response);
+    try expectNoErr(response);
+
+    const result = response.result orelse return error.MissingResult;
+    const object = switch (result) {
+        .object => |value| value,
+        else => return error.InvalidResponse,
+    };
+    const entries_value = object.get("entries") orelse return error.MissingEntries;
+    const entries = switch (entries_value) {
+        .array => |value| value,
+        else => return error.InvalidEntries,
+    };
+    try testing.expectEqual(@as(usize, 3), entries.items.len);
+}
