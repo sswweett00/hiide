@@ -714,7 +714,6 @@ test "dispatch: agent.tool.execute rejects unknown tools" {
     try testing.expect(std.mem.eql(u8, resp.err.?, "ToolNotFound"));
 }
 
-
 test "dispatch: workspace.tree response releases nested JSON allocations exactly once" {
     const allocator = testing.allocator;
     var tmp = testing.tmpDir(.{});
