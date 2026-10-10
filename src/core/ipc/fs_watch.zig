@@ -206,20 +206,32 @@ pub fn unsubscribeAll(id: u64) void {
 }
 
 fn pruneSnapshotsLocked() void {
-    var it = snapshots.iterator();
-    while (it.next()) |entry| {
-        var still_watched = false;
-        for (registry.items) |sub| {
-            if (std.mem.eql(u8, sub.root, entry.key_ptr.*)) {
-                still_watched = true;
+    // Removing from a hash map invalidates its iterator. Find one stale entry,
+    // remove it while its key is still valid, then restart iteration. In
+    // particular, never free the stored key before asking the map to remove it:
+    // doing so hashes a dangling slice and can leave a stale entry that is freed
+    // a second time on the next disconnect.
+    while (true) {
+        var stale_key: ?[]const u8 = null;
+        var it = snapshots.iterator();
+        while (it.next()) |entry| {
+            var still_watched = false;
+            for (registry.items) |sub| {
+                if (std.mem.eql(u8, sub.root, entry.key_ptr.*)) {
+                    still_watched = true;
+                    break;
+                }
+            }
+            if (!still_watched) {
+                stale_key = entry.key_ptr.*;
                 break;
             }
         }
-        if (!still_watched) {
-            freeEntries(entry.value_ptr.*);
-            allocator.free(entry.key_ptr.*);
-            _ = snapshots.remove(entry.key_ptr.*);
-        }
+
+        const key = stale_key orelse return;
+        const removed = snapshots.fetchRemove(key) orelse continue;
+        freeEntries(removed.value);
+        allocator.free(removed.key);
     }
 }
 
