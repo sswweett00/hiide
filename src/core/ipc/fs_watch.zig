@@ -446,7 +446,7 @@ fn linuxWatcherThread() void {
         var touched = false;
         var off: usize = 0;
         while (off < count) {
-            const ev: *const linux.inotify_event = @alignCast(@ptrCast(&buf[off]));
+            const ev: *const linux.inotify_event = @ptrCast(@alignCast(&buf[off]));
             off += @sizeOf(linux.inotify_event) + ev.len;
 
             if (ev.mask & (IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_TO | IN_DELETE_SELF | IN_MOVE_SELF | IN_Q_OVERFLOW) != 0) {
