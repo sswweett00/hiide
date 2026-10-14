@@ -11,19 +11,19 @@ class AppThemes {
     return ColorScheme.fromSeed(
       seedColor: DesignTokens.aiViolet,
       brightness: brightness,
-      surface: dark ? const Color(0xFF090A0F) : const Color(0xFFF7F8FC),
-      onSurface: dark ? const Color(0xFFE8EAF1) : const Color(0xFF20222A),
-      surfaceContainerHighest: dark ? const Color(0xFF151721) : const Color(0xFFEEF0F6),
-      surfaceContainerHigh: dark ? const Color(0xFF11131B) : const Color(0xFFF1F3F8),
-      surfaceContainer: dark ? const Color(0xFF0E1017) : const Color(0xFFF4F5F9),
-      primary: dark ? const Color(0xFF9A82FF) : const Color(0xFF6C55E8),
+      surface: dark ? const Color(0xFF141720) : const Color(0xFFF5F6F8),
+      onSurface: dark ? const Color(0xFFE4E7EE) : const Color(0xFF242833),
+      surfaceContainerHighest: dark ? const Color(0xFF202430) : const Color(0xFFFFFFFF),
+      surfaceContainerHigh: dark ? const Color(0xFF1B1F2A) : const Color(0xFFFAFAFC),
+      surfaceContainer: dark ? const Color(0xFF181B24) : const Color(0xFFF0F2F5),
+      primary: dark ? const Color(0xFFB0A2FF) : const Color(0xFF6554C0),
       onPrimary: Colors.white,
-      secondary: dark ? const Color(0xFF55D6BE) : const Color(0xFF008F7A),
+      secondary: dark ? const Color(0xFF79CDBB) : const Color(0xFF167C6D),
       onSecondary: dark ? const Color(0xFF07110E) : Colors.white,
-      tertiary: dark ? const Color(0xFF54B7FF) : const Color(0xFF087DC1),
+      tertiary: dark ? const Color(0xFF83BDF0) : const Color(0xFF286DAD),
       error: dark ? const Color(0xFFFF7181) : const Color(0xFFD92D43),
-      outline: dark ? const Color(0xFF343847) : const Color(0xFFD5D8E2),
-      outlineVariant: dark ? const Color(0xFF242735) : const Color(0xFFE2E5EC),
+      outline: dark ? const Color(0xFF414654) : const Color(0xFFD7DAE2),
+      outlineVariant: dark ? const Color(0xFF303541) : const Color(0xFFE6E8ED),
     );
   }
 
@@ -32,8 +32,8 @@ class AppThemes {
 
   static ThemeData _build(ColorScheme colorScheme) {
     final dark = colorScheme.brightness == Brightness.dark;
-    final pageBackground = dark ? const Color(0xFF090A0F) : const Color(0xFFF7F8FC);
-    final fieldBackground = dark ? const Color(0xFF11131B) : Colors.white;
+    final pageBackground = dark ? const Color(0xFF141720) : const Color(0xFFF5F6F8);
+    final fieldBackground = dark ? const Color(0xFF1B1F2A) : const Color(0xFFFFFFFF);
 
     return ThemeData(
       useMaterial3: true,
@@ -42,8 +42,8 @@ class AppThemes {
       scaffoldBackgroundColor: pageBackground,
       canvasColor: pageBackground,
       splashFactory: NoSplash.splashFactory,
-      visualDensity: VisualDensity.compact,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: VisualDensity.standard,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       textTheme: Typography.material2021(colorScheme: colorScheme).black.apply(
             bodyColor: colorScheme.onSurface,
             displayColor: colorScheme.onSurface,
@@ -60,7 +60,7 @@ class AppThemes {
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
-        toolbarHeight: 46,
+        toolbarHeight: 52,
         titleTextStyle: TextStyle(
           fontFamily: fontFamily,
           fontSize: DesignTokens.fontSizeLG,
@@ -86,7 +86,7 @@ class AppThemes {
           disabledForegroundColor: colorScheme.onSurfaceVariant,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          minimumSize: const Size(0, 36),
+          minimumSize: const Size(0, 40),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(controlRadius)),
         ),
       ),
@@ -104,7 +104,7 @@ class AppThemes {
           foregroundColor: colorScheme.onSurface,
           overlayColor: colorScheme.primary.withValues(alpha: 0.10),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          minimumSize: const Size(0, 32),
+          minimumSize: const Size(0, 36),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(controlRadius)),
         ),
       ),
@@ -113,8 +113,8 @@ class AppThemes {
           foregroundColor: colorScheme.onSurfaceVariant,
           hoverColor: colorScheme.primary.withValues(alpha: dark ? 0.14 : 0.08),
           focusColor: colorScheme.primary.withValues(alpha: 0.14),
-          minimumSize: const Size(34, 34),
-          maximumSize: const Size(34, 34),
+          minimumSize: const Size(40, 40),
+          maximumSize: const Size(40, 40),
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
         ),
@@ -122,8 +122,8 @@ class AppThemes {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: fieldBackground,
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 11, vertical: 10),
+        isDense: false,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(controlRadius),
           borderSide: BorderSide(color: colorScheme.outlineVariant),
@@ -143,7 +143,7 @@ class AppThemes {
         showDuration: const Duration(seconds: 4),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
-          color: dark ? const Color(0xFF1B1E29) : const Color(0xFF2D3040),
+          color: dark ? const Color(0xFF292E3A) : const Color(0xFF343947),
           borderRadius: BorderRadius.circular(7),
           border: Border.all(color: colorScheme.outline),
           boxShadow: const [BoxShadow(blurRadius: 18, spreadRadius: -4, offset: Offset(0, 8), color: Color(0x55000000))],
