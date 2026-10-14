@@ -115,7 +115,7 @@ jobs:
           rm -rf squashfs-root
 
       - name: Upload Linux packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: hiide-linux-packages
           path: |
